@@ -1020,14 +1020,25 @@ export default function Admin() {
                         Добавить товар
                       </Button>
                     </DialogTrigger>
-                  <DialogContent className="max-w-2xl h-[95vh] md:max-h-[90vh] flex flex-col p-0 overflow-hidden">
+                  <DialogContent 
+                    className="max-w-2xl h-[95vh] md:max-h-[90vh] flex flex-col p-0"
+                    style={{ overflow: 'hidden' } as React.CSSProperties}
+                  >
                     <DialogHeader className="flex-shrink-0 p-6 pb-4">
                       <DialogTitle>{editingProduct ? 'Редактировать товар' : 'Добавить новый товар'}</DialogTitle>
                       <DialogDescription>
                         Заполните информацию о товаре
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 overflow-y-auto flex-1 px-6 pb-6 touch-pan-y" style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
+                    <div 
+                      className="space-y-4 flex-1 px-6 pb-6" 
+                      style={{ 
+                        overflow: 'auto',
+                        WebkitOverflowScrolling: 'touch',
+                        touchAction: 'pan-y',
+                        overscrollBehavior: 'contain'
+                      } as React.CSSProperties}
+                    >
                       <div>
                         <Label htmlFor="product-name">Название</Label>
                         <Input
