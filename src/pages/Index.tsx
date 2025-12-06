@@ -283,6 +283,14 @@ const Index = () => {
               <div className="flex flex-wrap gap-4 mb-6">
                 <Button 
                   size="lg" 
+                  className="bg-[#f59f0a] hover:bg-[#d88a09] text-white font-oswald text-lg px-8 py-6"
+                  onClick={() => navigate('/catalog')}
+                >
+                  <Icon name="ShoppingBag" className="mr-2" size={20} />
+                  ПЕРЕЙТИ В КАТАЛОГ
+                </Button>
+                <Button 
+                  size="lg" 
                   className="bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-lg px-8 py-6"
                   onClick={() => navigate('/constructor')}
                 >
