@@ -1020,14 +1020,14 @@ export default function Admin() {
                         Добавить товар
                       </Button>
                     </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
-                    <DialogHeader className="flex-shrink-0">
+                  <DialogContent className="max-w-2xl h-[95vh] md:max-h-[90vh] flex flex-col p-0">
+                    <DialogHeader className="flex-shrink-0 p-6 pb-4">
                       <DialogTitle>{editingProduct ? 'Редактировать товар' : 'Добавить новый товар'}</DialogTitle>
                       <DialogDescription>
                         Заполните информацию о товаре
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 overflow-y-auto flex-1 pr-2 -mr-2 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
+                    <div className="space-y-4 overflow-y-scroll flex-1 px-6 pb-6" style={{ WebkitOverflowScrolling: 'touch' }}>
                       <div>
                         <Label htmlFor="product-name">Название</Label>
                         <Input
