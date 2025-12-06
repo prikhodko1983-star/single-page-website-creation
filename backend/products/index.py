@@ -14,12 +14,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     GET /products - получить все товары (с фильтрами)
     GET /products?id=1 - получить товар по ID
-    GET /products?slug=classic-1 - получить товар по slug
-    GET /products?category_id=1 - товары категории
-    GET /products?featured=true - избранные товары
+    POST /products - создать товар
+    PUT /products?id=1 - обновить товар
+    DELETE /products?id=1 - удалить товар
     
     GET /categories - получить все категории
-    GET /categories?id=1 - получить категорию по ID
+    POST /categories - создать категорию
+    PUT /categories?id=1 - обновить категорию
+    DELETE /categories?id=1 - удалить категорию
     '''
     method: str = event.get('httpMethod', 'GET')
     
@@ -39,17 +41,38 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     path = event.get('path', '/')
     params = event.get('queryStringParameters') or {}
+    body = {}
+    if event.get('body'):
+        body = json.loads(event['body'])
     
     conn = get_db_connection()
     
     try:
+        is_category = 'categories' in path or params.get('type') == 'categories'
+        
         if method == 'GET':
-            # Получение категорий
-            if 'categories' in path or params.get('type') == 'categories':
+            if is_category:
                 return get_categories(conn, params)
-            # Получение товаров
             else:
                 return get_products(conn, params)
+        
+        elif method == 'POST':
+            if is_category:
+                return create_category(conn, body)
+            else:
+                return create_product(conn, body)
+        
+        elif method == 'PUT':
+            if is_category:
+                return update_category(conn, params.get('id'), body)
+            else:
+                return update_product(conn, params.get('id'), body)
+        
+        elif method == 'DELETE':
+            if is_category:
+                return delete_category(conn, params.get('id'))
+            else:
+                return delete_product(conn, params.get('id'))
         
         return {
             'statusCode': 405,
@@ -193,5 +216,229 @@ def get_products(conn, params: Dict[str, Any]) -> Dict[str, Any]:
         'statusCode': 200,
         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
         'body': json.dumps(products, default=str),
+        'isBase64Encoded': False
+    }
+
+def create_category(conn, data: Dict[str, Any]) -> Dict[str, Any]:
+    '''Создание категории'''
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    name = data.get('name', '').replace("'", "''")
+    slug = data.get('slug', '').replace("'", "''")
+    description = data.get('description', '').replace("'", "''")
+    
+    if not name or not slug:
+        return {
+            'statusCode': 400,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Name and slug are required'}),
+            'isBase64Encoded': False
+        }
+    
+    query = f"""
+        INSERT INTO categories (name, slug, description, is_active, display_order)
+        VALUES ('{name}', '{slug}', '{description}', true, 999)
+        RETURNING *
+    """
+    cursor.execute(query)
+    conn.commit()
+    category = cursor.fetchone()
+    
+    return {
+        'statusCode': 201,
+        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+        'body': json.dumps(dict(category), default=str),
+        'isBase64Encoded': False
+    }
+
+def update_category(conn, category_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    '''Обновление категории'''
+    if not category_id:
+        return {
+            'statusCode': 400,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Category ID is required'}),
+            'isBase64Encoded': False
+        }
+    
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    name = data.get('name', '').replace("'", "''")
+    slug = data.get('slug', '').replace("'", "''")
+    description = data.get('description', '').replace("'", "''")
+    
+    query = f"""
+        UPDATE categories 
+        SET name = '{name}', slug = '{slug}', description = '{description}', updated_at = NOW()
+        WHERE id = {category_id}
+        RETURNING *
+    """
+    cursor.execute(query)
+    conn.commit()
+    category = cursor.fetchone()
+    
+    if not category:
+        return {
+            'statusCode': 404,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Category not found'}),
+            'isBase64Encoded': False
+        }
+    
+    return {
+        'statusCode': 200,
+        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+        'body': json.dumps(dict(category), default=str),
+        'isBase64Encoded': False
+    }
+
+def delete_category(conn, category_id: str) -> Dict[str, Any]:
+    '''Удаление категории (soft delete)'''
+    if not category_id:
+        return {
+            'statusCode': 400,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Category ID is required'}),
+            'isBase64Encoded': False
+        }
+    
+    cursor = conn.cursor()
+    query = f"UPDATE categories SET is_active = false WHERE id = {category_id}"
+    cursor.execute(query)
+    conn.commit()
+    
+    return {
+        'statusCode': 200,
+        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+        'body': json.dumps({'success': True}),
+        'isBase64Encoded': False
+    }
+
+def create_product(conn, data: Dict[str, Any]) -> Dict[str, Any]:
+    '''Создание товара'''
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    name = data.get('name', '').replace("'", "''")
+    slug = data.get('slug', '').replace("'", "''")
+    description = data.get('description', '').replace("'", "''")
+    price = data.get('price', 0)
+    old_price = data.get('old_price') or 'NULL'
+    image_url = data.get('image_url', '').replace("'", "''")
+    material = data.get('material', '').replace("'", "''")
+    size = data.get('size', '').replace("'", "''")
+    category_id = data.get('category_id') or 'NULL'
+    in_stock = data.get('in_stock', True)
+    is_featured = data.get('is_featured', False)
+    
+    if not name or not slug:
+        return {
+            'statusCode': 400,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Name and slug are required'}),
+            'isBase64Encoded': False
+        }
+    
+    old_price_str = f"'{old_price}'" if old_price != 'NULL' else 'NULL'
+    image_url_str = f"'{image_url}'" if image_url else 'NULL'
+    material_str = f"'{material}'" if material else 'NULL'
+    size_str = f"'{size}'" if size else 'NULL'
+    
+    query = f"""
+        INSERT INTO products 
+        (name, slug, description, price, old_price, image_url, material, size, 
+         category_id, in_stock, is_featured, display_order)
+        VALUES 
+        ('{name}', '{slug}', '{description}', '{price}', {old_price_str}, {image_url_str}, 
+         {material_str}, {size_str}, {category_id}, {in_stock}, {is_featured}, 999)
+        RETURNING *
+    """
+    cursor.execute(query)
+    conn.commit()
+    product = cursor.fetchone()
+    
+    return {
+        'statusCode': 201,
+        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+        'body': json.dumps(dict(product), default=str),
+        'isBase64Encoded': False
+    }
+
+def update_product(conn, product_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    '''Обновление товара'''
+    if not product_id:
+        return {
+            'statusCode': 400,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Product ID is required'}),
+            'isBase64Encoded': False
+        }
+    
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    name = data.get('name', '').replace("'", "''")
+    slug = data.get('slug', '').replace("'", "''")
+    description = data.get('description', '').replace("'", "''")
+    price = data.get('price', 0)
+    old_price = data.get('old_price')
+    image_url = data.get('image_url', '').replace("'", "''")
+    material = data.get('material', '').replace("'", "''")
+    size = data.get('size', '').replace("'", "''")
+    category_id = data.get('category_id')
+    in_stock = data.get('in_stock', True)
+    is_featured = data.get('is_featured', False)
+    
+    old_price_str = f"'{old_price}'" if old_price else 'NULL'
+    image_url_str = f"'{image_url}'" if image_url else 'NULL'
+    material_str = f"'{material}'" if material else 'NULL'
+    size_str = f"'{size}'" if size else 'NULL'
+    category_id_str = str(category_id) if category_id else 'NULL'
+    
+    query = f"""
+        UPDATE products 
+        SET name = '{name}', slug = '{slug}', description = '{description}',
+            price = '{price}', old_price = {old_price_str}, image_url = {image_url_str},
+            material = {material_str}, size = {size_str}, category_id = {category_id_str},
+            in_stock = {in_stock}, is_featured = {is_featured}, updated_at = NOW()
+        WHERE id = {product_id}
+        RETURNING *
+    """
+    cursor.execute(query)
+    conn.commit()
+    product = cursor.fetchone()
+    
+    if not product:
+        return {
+            'statusCode': 404,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Product not found'}),
+            'isBase64Encoded': False
+        }
+    
+    return {
+        'statusCode': 200,
+        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+        'body': json.dumps(dict(product), default=str),
+        'isBase64Encoded': False
+    }
+
+def delete_product(conn, product_id: str) -> Dict[str, Any]:
+    '''Удаление товара'''
+    if not product_id:
+        return {
+            'statusCode': 400,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Product ID is required'}),
+            'isBase64Encoded': False
+        }
+    
+    cursor = conn.cursor()
+    query = f"DELETE FROM products WHERE id = {product_id}"
+    cursor.execute(query)
+    conn.commit()
+    
+    return {
+        'statusCode': 200,
+        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+        'body': json.dumps({'success': True}),
         'isBase64Encoded': False
     }

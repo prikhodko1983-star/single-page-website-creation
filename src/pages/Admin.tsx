@@ -874,18 +874,46 @@ export default function Admin() {
                           />
                         </div>
                         <div className="flex gap-2">
-                          <Button onClick={() => {
-                            toast({
-                              title: 'Информация',
-                              description: 'Функция сохранения категорий находится в разработке. Категории создаются через SQL.',
-                            });
-                            setIsCategoryDialogOpen(false);
-                            setEditingCategory(null);
-                            setCategoryForm({
-                              name: '',
-                              slug: '',
-                              description: '',
-                            });
+                          <Button onClick={async () => {
+                            if (!categoryForm.name || !categoryForm.slug) {
+                              toast({
+                                title: 'Ошибка',
+                                description: 'Заполните название и slug',
+                                variant: 'destructive'
+                              });
+                              return;
+                            }
+
+                            try {
+                              const url = editingCategory 
+                                ? `${PRODUCTS_API}?type=categories&id=${editingCategory.id}`
+                                : `${PRODUCTS_API}?type=categories`;
+                              
+                              const response = await fetch(url, {
+                                method: editingCategory ? 'PUT' : 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(categoryForm)
+                              });
+
+                              if (response.ok) {
+                                toast({
+                                  title: '✅ Успешно',
+                                  description: editingCategory ? 'Категория обновлена' : 'Категория создана'
+                                });
+                                loadCategories();
+                                setIsCategoryDialogOpen(false);
+                                setEditingCategory(null);
+                                setCategoryForm({ name: '', slug: '', description: '' });
+                              } else {
+                                throw new Error('Failed to save category');
+                              }
+                            } catch (error) {
+                              toast({
+                                title: '❌ Ошибка',
+                                description: 'Не удалось сохранить категорию',
+                                variant: 'destructive'
+                              });
+                            }
                           }}>
                             <Icon name={editingCategory ? "Save" : "Plus"} size={16} className="mr-2" />
                             {editingCategory ? 'Сохранить изменения' : 'Добавить категорию'}
@@ -1091,26 +1119,58 @@ export default function Admin() {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button onClick={() => {
-                          toast({
-                            title: 'Информация',
-                            description: 'Функция сохранения товаров находится в разработке. Товары создаются через SQL.',
-                          });
-                          setIsProductDialogOpen(false);
-                          setEditingProduct(null);
-                          setProductForm({
-                            name: '',
-                            slug: '',
-                            description: '',
-                            price: '',
-                            old_price: '',
-                            image_url: '',
-                            material: '',
-                            size: '',
-                            category_id: '',
-                            in_stock: true,
-                            is_featured: false,
-                          });
+                        <Button onClick={async () => {
+                          if (!productForm.name || !productForm.slug || !productForm.price) {
+                            toast({
+                              title: 'Ошибка',
+                              description: 'Заполните название, slug и цену',
+                              variant: 'destructive'
+                            });
+                            return;
+                          }
+
+                          try {
+                            const url = editingProduct 
+                              ? `${PRODUCTS_API}?id=${editingProduct.id}`
+                              : PRODUCTS_API;
+                            
+                            const response = await fetch(url, {
+                              method: editingProduct ? 'PUT' : 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify(productForm)
+                            });
+
+                            if (response.ok) {
+                              toast({
+                                title: '✅ Успешно',
+                                description: editingProduct ? 'Товар обновлён' : 'Товар создан'
+                              });
+                              loadProducts();
+                              setIsProductDialogOpen(false);
+                              setEditingProduct(null);
+                              setProductForm({
+                                name: '',
+                                slug: '',
+                                description: '',
+                                price: '',
+                                old_price: '',
+                                image_url: '',
+                                material: '',
+                                size: '',
+                                category_id: '',
+                                in_stock: true,
+                                is_featured: false,
+                              });
+                            } else {
+                              throw new Error('Failed to save product');
+                            }
+                          } catch (error) {
+                            toast({
+                              title: '❌ Ошибка',
+                              description: 'Не удалось сохранить товар',
+                              variant: 'destructive'
+                            });
+                          }
                         }}>
                           <Icon name={editingProduct ? "Save" : "Plus"} size={16} className="mr-2" />
                           {editingProduct ? 'Сохранить изменения' : 'Добавить товар'}
