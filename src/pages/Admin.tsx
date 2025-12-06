@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
+import * as XLSX from 'xlsx';
 import {
   Dialog,
   DialogContent,
@@ -507,6 +508,74 @@ export default function Admin() {
       .replace(/^-|-$/g, '');
   };
 
+  const handleExcelImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const row of jsonData as any[]) {
+        try {
+          const productData = {
+            name: row['Название'] || row['name'] || '',
+            slug: generateSlug(row['Название'] || row['name'] || ''),
+            description: row['Описание'] || row['description'] || '',
+            price: String(row['Цена'] || row['price'] || 0),
+            old_price: row['Старая цена'] || row['old_price'] || '',
+            image_url: row['URL изображения'] || row['image_url'] || '',
+            material: row['Материал'] || row['material'] || '',
+            size: row['Размер'] || row['size'] || '',
+            category_id: row['ID категории'] || row['category_id'] || '',
+            in_stock: row['В наличии'] !== undefined ? Boolean(row['В наличии']) : true,
+            is_featured: row['Хит продаж'] !== undefined ? Boolean(row['Хит продаж']) : false,
+            is_price_from: row['Цена от'] !== undefined ? Boolean(row['Цена от']) : false,
+          };
+
+          if (!productData.name || !productData.price) {
+            errorCount++;
+            continue;
+          }
+
+          const response = await fetch(PRODUCTS_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(productData)
+          });
+
+          if (response.ok) {
+            successCount++;
+          } else {
+            errorCount++;
+          }
+        } catch (error) {
+          errorCount++;
+        }
+      }
+
+      toast({
+        title: '✅ Импорт завершён',
+        description: `Добавлено: ${successCount}, Ошибок: ${errorCount}`
+      });
+
+      loadProducts();
+      e.target.value = '';
+    } catch (error) {
+      console.error('Excel import error:', error);
+      toast({
+        title: '❌ Ошибка',
+        description: 'Не удалось обработать файл Excel',
+        variant: 'destructive'
+      });
+    }
+  };
+
   const filteredMonuments = filterCategory === "Все" 
     ? monuments 
     : monuments.filter(m => m.category === filterCategory);
@@ -840,7 +909,7 @@ export default function Admin() {
                 <CardTitle className="font-oswald">Управление магазином</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Dialog open={isCategoryDialogOpen} onOpenChange={(open) => {
                     setIsCategoryDialogOpen(open);
                     if (!open) {
@@ -1026,6 +1095,57 @@ export default function Admin() {
                       </div>
                     </DialogContent>
                   </Dialog>
+
+                  <div className="relative">
+                    <Input
+                      type="file"
+                      accept=".xlsx,.xls"
+                      onChange={handleExcelImport}
+                      className="hidden"
+                      id="excel-import"
+                    />
+                    <Button 
+                      variant="outline" 
+                      className="font-oswald"
+                      onClick={() => document.getElementById('excel-import')?.click()}
+                    >
+                      <Icon name="Upload" size={20} className="mr-2" />
+                      Импорт из Excel
+                    </Button>
+                  </div>
+
+                  <Button 
+                    variant="outline" 
+                    className="font-oswald"
+                    onClick={() => {
+                      const template = [
+                        {
+                          'Название': 'Пример товара',
+                          'Описание': 'Описание товара',
+                          'Цена': 50000,
+                          'Старая цена': 60000,
+                          'URL изображения': 'https://example.com/image.jpg',
+                          'Материал': 'Гранит',
+                          'Размер': '100x50x8 см',
+                          'ID категории': 1,
+                          'В наличии': 1,
+                          'Хит продаж': 0,
+                          'Цена от': 0
+                        }
+                      ];
+                      const ws = XLSX.utils.json_to_sheet(template);
+                      const wb = XLSX.utils.book_new();
+                      XLSX.utils.book_append_sheet(wb, ws, 'Товары');
+                      XLSX.writeFile(wb, 'шаблон_товаров.xlsx');
+                      toast({
+                        title: '✅ Шаблон скачан',
+                        description: 'Заполните файл и импортируйте обратно'
+                      });
+                    }}
+                  >
+                    <Icon name="Download" size={20} className="mr-2" />
+                    Скачать шаблон
+                  </Button>
 
                   <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
                     setIsProductDialogOpen(open);
