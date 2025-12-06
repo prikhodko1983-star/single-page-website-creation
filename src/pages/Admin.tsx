@@ -1243,7 +1243,7 @@ export default function Admin() {
                     <Card key={product.id} className="overflow-hidden">
                       <div className="aspect-[4/3] bg-secondary relative">
                         {product.image_url ? (
-                          <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                          <img src={product.image_url} alt={product.name} className="w-full h-full object-contain" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <Icon name="Image" size={48} className="text-muted-foreground" />
