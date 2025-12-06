@@ -1034,7 +1034,10 @@ export default function Admin() {
                                 <CardContent className="p-4">
                                   <div className="flex items-center justify-between">
                                     <div className="flex-1">
-                                      <h4 className="font-semibold">{category.name}</h4>
+                                      <div className="flex items-center gap-3 mb-1">
+                                        <Badge variant="outline" className="font-mono text-sm px-2 py-0.5">ID: {category.id}</Badge>
+                                        <h4 className="font-semibold">{category.name}</h4>
+                                      </div>
                                       <p className="text-sm text-muted-foreground">/{category.slug}</p>
                                     </div>
                                     <div className="flex gap-2">
