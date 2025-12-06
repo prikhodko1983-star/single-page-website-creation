@@ -1053,14 +1053,17 @@ export default function Admin() {
                         Добавить товар
                       </Button>
                     </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogContent 
+                    className="max-w-2xl max-h-[90vh] overflow-y-auto"
+                    style={{ touchAction: 'pan-y' } as React.CSSProperties}
+                  >
                     <DialogHeader>
                       <DialogTitle>{editingProduct ? 'Редактировать товар' : 'Добавить новый товар'}</DialogTitle>
                       <DialogDescription>
                         Заполните информацию о товаре
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-4 pb-20">
                       <div>
                         <Label htmlFor="product-name">Название</Label>
                         <Input
