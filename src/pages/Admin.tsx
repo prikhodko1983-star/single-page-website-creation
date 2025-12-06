@@ -857,13 +857,13 @@ export default function Admin() {
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-xl">
-                      <DialogHeader>
+                      <DialogHeader className="flex-shrink-0">
                         <DialogTitle>{editingCategory ? 'Редактировать категорию' : 'Добавить категорию'}</DialogTitle>
                         <DialogDescription>
                           Создайте новую категорию для товаров
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="space-y-4">
+                      <div className="space-y-4 overflow-y-auto flex-1 pr-2 -mr-2">
                         <div>
                           <Label htmlFor="category-name">Название категории</Label>
                           <Input
