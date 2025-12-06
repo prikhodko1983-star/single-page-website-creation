@@ -203,8 +203,16 @@ export default function Admin() {
     desc: ''
   });
 
+  const [categoryForm, setCategoryForm] = useState({
+    name: '',
+    slug: '',
+    description: '',
+  });
+
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editingGalleryId, setEditingGalleryId] = useState<number | null>(null);
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [galleryUploadProgress, setGalleryUploadProgress] = useState(0);
@@ -809,31 +817,150 @@ export default function Admin() {
                 <CardTitle className="font-oswald">Управление магазином</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
-                  setIsProductDialogOpen(open);
-                  if (!open) {
-                    setEditingProduct(null);
-                    setProductForm({
-                      name: '',
-                      slug: '',
-                      description: '',
-                      price: '',
-                      old_price: '',
-                      image_url: '',
-                      material: '',
-                      size: '',
-                      category_id: '',
-                      in_stock: true,
-                      is_featured: false,
-                    });
-                  }
-                }}>
-                  <DialogTrigger asChild>
-                    <Button className="font-oswald">
-                      <Icon name="Plus" size={20} className="mr-2" />
-                      Добавить товар
-                    </Button>
-                  </DialogTrigger>
+                <div className="flex gap-2">
+                  <Dialog open={isCategoryDialogOpen} onOpenChange={(open) => {
+                    setIsCategoryDialogOpen(open);
+                    if (!open) {
+                      setEditingCategory(null);
+                      setCategoryForm({
+                        name: '',
+                        slug: '',
+                        description: '',
+                      });
+                    }
+                  }}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="font-oswald">
+                        <Icon name="FolderPlus" size={20} className="mr-2" />
+                        Категории
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-xl">
+                      <DialogHeader>
+                        <DialogTitle>{editingCategory ? 'Редактировать категорию' : 'Добавить категорию'}</DialogTitle>
+                        <DialogDescription>
+                          Создайте новую категорию для товаров
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="category-name">Название категории</Label>
+                          <Input
+                            id="category-name"
+                            value={categoryForm.name}
+                            onChange={(e) => {
+                              setCategoryForm({ ...categoryForm, name: e.target.value, slug: generateSlug(e.target.value) });
+                            }}
+                            placeholder="Вертикальные памятники"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="category-slug">URL (slug)</Label>
+                          <Input
+                            id="category-slug"
+                            value={categoryForm.slug}
+                            onChange={(e) => setCategoryForm({ ...categoryForm, slug: e.target.value })}
+                            placeholder="vertikalnye-pamyatniki"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="category-description">Описание</Label>
+                          <Textarea
+                            id="category-description"
+                            value={categoryForm.description}
+                            onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                            placeholder="Краткое описание категории"
+                            rows={3}
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button onClick={() => {
+                            toast({
+                              title: 'Информация',
+                              description: 'Функция сохранения категорий находится в разработке. Категории создаются через SQL.',
+                            });
+                          }}>
+                            <Icon name={editingCategory ? "Save" : "Plus"} size={16} className="mr-2" />
+                            {editingCategory ? 'Сохранить изменения' : 'Добавить категорию'}
+                          </Button>
+                          {editingCategory && (
+                            <Button variant="outline" onClick={() => {
+                              setEditingCategory(null);
+                              setCategoryForm({
+                                name: '',
+                                slug: '',
+                                description: '',
+                              });
+                            }}>
+                              Отменить
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="border-t pt-4 mt-6">
+                          <h3 className="font-oswald font-semibold text-lg mb-4">Существующие категории ({categories.length})</h3>
+                          <div className="space-y-2">
+                            {categories.map((category) => (
+                              <Card key={category.id}>
+                                <CardContent className="p-4">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <h4 className="font-semibold">{category.name}</h4>
+                                      <p className="text-sm text-muted-foreground">/{category.slug}</p>
+                                    </div>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => {
+                                        setEditingCategory(category);
+                                        setCategoryForm({
+                                          name: category.name,
+                                          slug: category.slug,
+                                          description: category.description,
+                                        });
+                                      }}
+                                    >
+                                      <Icon name="Edit" size={14} className="mr-1" />
+                                      Изменить
+                                    </Button>
+                                  </div>
+                                  {category.description && (
+                                    <p className="text-sm text-muted-foreground mt-2">{category.description}</p>
+                                  )}
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
+                    setIsProductDialogOpen(open);
+                    if (!open) {
+                      setEditingProduct(null);
+                      setProductForm({
+                        name: '',
+                        slug: '',
+                        description: '',
+                        price: '',
+                        old_price: '',
+                        image_url: '',
+                        material: '',
+                        size: '',
+                        category_id: '',
+                        in_stock: true,
+                        is_featured: false,
+                      });
+                    }
+                  }}>
+                    <DialogTrigger asChild>
+                      <Button className="font-oswald">
+                        <Icon name="Plus" size={20} className="mr-2" />
+                        Добавить товар
+                      </Button>
+                    </DialogTrigger>
                   <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>{editingProduct ? 'Редактировать товар' : 'Добавить новый товар'}</DialogTitle>
@@ -990,6 +1117,7 @@ export default function Admin() {
                     </div>
                   </DialogContent>
                 </Dialog>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {products.slice(0, 6).map((product) => (
