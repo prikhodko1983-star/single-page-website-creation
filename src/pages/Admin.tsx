@@ -527,8 +527,8 @@ export default function Admin() {
 
       let successCount = 0;
       let errorCount = 0;
-      const updatedCount = 0;
-      const createdCount = 0;
+      let updatedCount = 0;
+      let createdCount = 0;
 
       for (const row of jsonData as any[]) {
         try {
