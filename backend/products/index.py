@@ -343,15 +343,17 @@ def create_product(conn, data: Dict[str, Any]) -> Dict[str, Any]:
     image_url_str = f"'{image_url}'" if image_url and image_url != '' else 'NULL'
     material_str = f"'{material}'" if material and material != '' else 'NULL'
     size_str = f"'{size}'" if size and size != '' else 'NULL'
+    sku_str = f"'{sku}'" if sku and sku != '' else 'NULL'
+    polish_str = f"'{polish}'" if polish and polish != '' else 'NULL'
     category_id_str = str(category_id) if category_id and category_id != '' else 'NULL'
     
     query = f"""
         INSERT INTO products 
-        (name, slug, description, price, old_price, image_url, material, size, 
+        (name, slug, description, price, old_price, image_url, material, size, sku, polish,
          category_id, in_stock, is_featured, is_price_from, display_order)
         VALUES 
         ('{name}', '{slug}', '{description}', '{price}', {old_price_str}, {image_url_str}, 
-         {material_str}, {size_str}, {category_id_str}, {in_stock}, {is_featured}, {is_price_from}, 999)
+         {material_str}, {size_str}, {sku_str}, {polish_str}, {category_id_str}, {in_stock}, {is_featured}, {is_price_from}, 999)
         RETURNING *
     """
     cursor.execute(query)
@@ -385,6 +387,8 @@ def update_product(conn, product_id: str, data: Dict[str, Any]) -> Dict[str, Any
     image_url = data.get('image_url', '').replace("'", "''")
     material = data.get('material', '').replace("'", "''")
     size = data.get('size', '').replace("'", "''")
+    sku = data.get('sku', '').replace("'", "''")
+    polish = data.get('polish', '').replace("'", "''")
     category_id = data.get('category_id')
     in_stock = data.get('in_stock', True)
     is_featured = data.get('is_featured', False)
@@ -394,13 +398,16 @@ def update_product(conn, product_id: str, data: Dict[str, Any]) -> Dict[str, Any
     image_url_str = f"'{image_url}'" if image_url else 'NULL'
     material_str = f"'{material}'" if material else 'NULL'
     size_str = f"'{size}'" if size else 'NULL'
+    sku_str = f"'{sku}'" if sku else 'NULL'
+    polish_str = f"'{polish}'" if polish else 'NULL'
     category_id_str = str(category_id) if category_id else 'NULL'
     
     query = f"""
         UPDATE products 
         SET name = '{name}', slug = '{slug}', description = '{description}',
             price = '{price}', old_price = {old_price_str}, image_url = {image_url_str},
-            material = {material_str}, size = {size_str}, category_id = {category_id_str},
+            material = {material_str}, size = {size_str}, sku = {sku_str}, polish = {polish_str},
+            category_id = {category_id_str},
             in_stock = {in_stock}, is_featured = {is_featured}, is_price_from = {is_price_from}, updated_at = NOW()
         WHERE id = {product_id}
         RETURNING *
