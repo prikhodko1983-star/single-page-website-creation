@@ -83,7 +83,7 @@ export default function IndexHeroSections({
                   onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <Icon name="ShoppingBag" className="mr-2" size={20} />
-                  ИНТЕРНЕТ-МАГАЗИН
+                  КАТАЛОГ
                 </Button>
                 <Button 
                   size="lg" 
