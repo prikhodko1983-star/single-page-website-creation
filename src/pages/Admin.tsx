@@ -879,6 +879,13 @@ export default function Admin() {
                               title: 'Информация',
                               description: 'Функция сохранения категорий находится в разработке. Категории создаются через SQL.',
                             });
+                            setIsCategoryDialogOpen(false);
+                            setEditingCategory(null);
+                            setCategoryForm({
+                              name: '',
+                              slug: '',
+                              description: '',
+                            });
                           }}>
                             <Icon name={editingCategory ? "Save" : "Plus"} size={16} className="mr-2" />
                             {editingCategory ? 'Сохранить изменения' : 'Добавить категорию'}
@@ -1088,6 +1095,21 @@ export default function Admin() {
                           toast({
                             title: 'Информация',
                             description: 'Функция сохранения товаров находится в разработке. Товары создаются через SQL.',
+                          });
+                          setIsProductDialogOpen(false);
+                          setEditingProduct(null);
+                          setProductForm({
+                            name: '',
+                            slug: '',
+                            description: '',
+                            price: '',
+                            old_price: '',
+                            image_url: '',
+                            material: '',
+                            size: '',
+                            category_id: '',
+                            in_stock: true,
+                            is_featured: false,
                           });
                         }}>
                           <Icon name={editingProduct ? "Save" : "Plus"} size={16} className="mr-2" />
