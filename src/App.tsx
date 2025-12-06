@@ -6,9 +6,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
 import Constructor from "./pages/Constructor";
 import Admin from "./pages/Admin";
+import AdminProducts from "./pages/AdminProducts";
+import Catalog from "./pages/Catalog";
+import Product from "./pages/Product";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,7 +31,15 @@ const NavigationBar = () => {
           onClick={() => navigate("/")}
         >
           <Icon name="Home" size={16} className="mr-2" />
-          Сайт
+          Главная
+        </Button>
+        <Button
+          variant={location.pathname === "/catalog" || location.pathname.startsWith("/product") ? "default" : "outline"}
+          size="sm"
+          onClick={() => navigate("/catalog")}
+        >
+          <Icon name="ShoppingBag" size={16} className="mr-2" />
+          Каталог
         </Button>
         <Button
           variant={location.pathname === "/admin" ? "default" : "outline"}
@@ -69,7 +81,19 @@ const NavigationBar = () => {
               className="w-full justify-start"
             >
               <Icon name="Home" size={16} className="mr-2" />
-              Сайт
+              Главная
+            </Button>
+            <Button
+              variant={location.pathname === "/catalog" || location.pathname.startsWith("/product") ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                navigate("/catalog");
+                setIsOpen(false);
+              }}
+              className="w-full justify-start"
+            >
+              <Icon name="ShoppingBag" size={16} className="mr-2" />
+              Каталог
             </Button>
             <Button
               variant={location.pathname === "/admin" ? "default" : "outline"}
@@ -108,8 +132,11 @@ const AppContent = () => {
       <NavigationBar />
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/catalog" element={<Catalog />} />
+        <Route path="/product/:slug" element={<Product />} />
         <Route path="/constructor" element={<Constructor />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/products" element={<AdminProducts />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -120,11 +147,13 @@ const AppContent = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
+      <CartProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </CartProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

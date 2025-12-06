@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import Icon from "@/components/ui/icon";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   DndContext,
   closestCenter,
@@ -127,6 +128,7 @@ const SortableGalleryItem = ({ item, index, onEdit, onDelete }: SortableGalleryI
 };
 
 const Admin = () => {
+  const navigate = useNavigate();
   const [monuments, setMonuments] = useState<Monument[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -560,8 +562,16 @@ const Admin = () => {
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="font-oswald font-bold text-4xl mb-2">Админ-панель</h1>
-          <p className="text-muted-foreground">Управление каталогом памятников</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-oswald font-bold text-4xl mb-2">Админ-панель</h1>
+              <p className="text-muted-foreground">Управление каталогом памятников</p>
+            </div>
+            <Button onClick={() => navigate('/admin/products')} className="font-oswald">
+              <Icon name="ShoppingBag" size={20} className="mr-2" />
+              Управление товарами
+            </Button>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
