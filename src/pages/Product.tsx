@@ -19,6 +19,7 @@ interface Product {
   gallery_urls?: string[];
   in_stock: boolean;
   is_featured: boolean;
+  is_price_from?: boolean;
   material?: string;
   size?: string;
   weight?: string;
@@ -175,7 +176,7 @@ export default function Product() {
 
               <div className="flex items-baseline gap-3">
                 <span className="font-oswald font-bold text-5xl text-primary">
-                  {parseFloat(product.price).toLocaleString('ru-RU')} ₽
+                  {product.is_price_from && 'от '}{parseFloat(product.price).toLocaleString('ru-RU')} ₽
                 </span>
                 {product.old_price && (
                   <span className="text-xl text-muted-foreground line-through">

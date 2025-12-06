@@ -329,6 +329,7 @@ def create_product(conn, data: Dict[str, Any]) -> Dict[str, Any]:
     category_id = data.get('category_id')
     in_stock = data.get('in_stock', True)
     is_featured = data.get('is_featured', False)
+    is_price_from = data.get('is_price_from', False)
     
     if not name or not slug:
         return {
@@ -347,10 +348,10 @@ def create_product(conn, data: Dict[str, Any]) -> Dict[str, Any]:
     query = f"""
         INSERT INTO products 
         (name, slug, description, price, old_price, image_url, material, size, 
-         category_id, in_stock, is_featured, display_order)
+         category_id, in_stock, is_featured, is_price_from, display_order)
         VALUES 
         ('{name}', '{slug}', '{description}', '{price}', {old_price_str}, {image_url_str}, 
-         {material_str}, {size_str}, {category_id_str}, {in_stock}, {is_featured}, 999)
+         {material_str}, {size_str}, {category_id_str}, {in_stock}, {is_featured}, {is_price_from}, 999)
         RETURNING *
     """
     cursor.execute(query)
@@ -387,6 +388,7 @@ def update_product(conn, product_id: str, data: Dict[str, Any]) -> Dict[str, Any
     category_id = data.get('category_id')
     in_stock = data.get('in_stock', True)
     is_featured = data.get('is_featured', False)
+    is_price_from = data.get('is_price_from', False)
     
     old_price_str = f"'{old_price}'" if old_price else 'NULL'
     image_url_str = f"'{image_url}'" if image_url else 'NULL'
@@ -399,7 +401,7 @@ def update_product(conn, product_id: str, data: Dict[str, Any]) -> Dict[str, Any
         SET name = '{name}', slug = '{slug}', description = '{description}',
             price = '{price}', old_price = {old_price_str}, image_url = {image_url_str},
             material = {material_str}, size = {size_str}, category_id = {category_id_str},
-            in_stock = {in_stock}, is_featured = {is_featured}, updated_at = NOW()
+            in_stock = {in_stock}, is_featured = {is_featured}, is_price_from = {is_price_from}, updated_at = NOW()
         WHERE id = {product_id}
         RETURNING *
     """

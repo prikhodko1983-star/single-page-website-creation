@@ -24,6 +24,7 @@ interface Product {
   image_url?: string;
   in_stock: boolean;
   is_featured: boolean;
+  is_price_from?: boolean;
   material?: string;
   size?: string;
   category_name: string;
@@ -150,7 +151,7 @@ export default function IndexShopSection() {
                   </p>
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="font-oswald font-bold text-2xl text-primary">
-                      {parseFloat(product.price).toLocaleString('ru-RU')} ₽
+                      {product.is_price_from && 'от '}{parseFloat(product.price).toLocaleString('ru-RU')} ₽
                     </span>
                     {product.old_price && (
                       <span className="text-sm text-muted-foreground line-through">

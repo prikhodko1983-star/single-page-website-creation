@@ -70,6 +70,7 @@ interface Product {
   image_url?: string;
   in_stock: boolean;
   is_featured: boolean;
+  is_price_from?: boolean;
   material?: string;
   size?: string;
   category_id?: number;
@@ -194,6 +195,7 @@ export default function Admin() {
     category_id: '',
     in_stock: true,
     is_featured: false,
+    is_price_from: false,
   });
 
   const [galleryForm, setGalleryForm] = useState<Omit<GalleryItem, 'id'>>({
@@ -1133,7 +1135,7 @@ export default function Admin() {
                           />
                         )}
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-3 gap-4">
                         <div className="flex items-center space-x-2">
                           <input
                             type="checkbox"
@@ -1153,6 +1155,16 @@ export default function Admin() {
                             className="rounded border-gray-300"
                           />
                           <Label htmlFor="is_featured" className="cursor-pointer">Хит продаж</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="is_price_from"
+                            checked={productForm.is_price_from}
+                            onChange={(e) => setProductForm({ ...productForm, is_price_from: e.target.checked })}
+                            className="rounded border-gray-300"
+                          />
+                          <Label htmlFor="is_price_from" className="cursor-pointer">Цена "от"</Label>
                         </div>
                       </div>
                       <div className="flex gap-2">
@@ -1197,6 +1209,7 @@ export default function Admin() {
                                 category_id: '',
                                 in_stock: true,
                                 is_featured: false,
+                                is_price_from: false,
                               });
                             } else {
                               throw new Error('Failed to save product');
@@ -1227,6 +1240,7 @@ export default function Admin() {
                               category_id: '',
                               in_stock: true,
                               is_featured: false,
+                              is_price_from: false,
                             });
                           }}>
                             Отменить
@@ -1275,6 +1289,7 @@ export default function Admin() {
                               category_id: product.category_id?.toString() || '',
                               in_stock: product.in_stock,
                               is_featured: product.is_featured,
+                              is_price_from: product.is_price_from || false,
                             });
                             setIsProductDialogOpen(true);
                           }}
