@@ -75,6 +75,7 @@ interface Product {
   material?: string;
   size?: string;
   sku?: string;
+  polish?: string;
   category_id?: number;
   category_name: string;
 }
@@ -195,6 +196,7 @@ export default function Admin() {
     material: '',
     size: '',
     sku: '',
+    polish: '',
     category_id: '',
     in_stock: true,
     is_featured: false,
@@ -538,6 +540,7 @@ export default function Admin() {
             material: row['Материал'] || row['material'] || '',
             size: row['Размер'] || row['size'] || '',
             sku: row['Артикул'] || row['sku'] || '',
+            polish: row['Полировка'] || row['polish'] || '',
             category_id: row['ID категории'] || row['category_id'] || '',
             in_stock: row['В наличии'] !== undefined ? Boolean(row['В наличии']) : true,
             is_featured: row['Хит продаж'] !== undefined ? Boolean(row['Хит продаж']) : false,
@@ -1149,6 +1152,7 @@ export default function Admin() {
                         'URL изображения': product.image_url || '',
                         'Материал': product.material || '',
                         'Размер': product.size || '',
+                        'Полировка': product.polish || '',
                         'ID категории': product.category_id || '',
                         'Категория': product.category_name,
                         'В наличии': product.in_stock ? 1 : 0,
@@ -1212,6 +1216,7 @@ export default function Admin() {
                           'URL изображения': 'https://example.com/image.jpg',
                           'Материал': 'Гранит',
                           'Размер': '100х50х8',
+                          'Полировка': '3 стороны',
                           'ID категории': categories.length > 0 ? categories[0].id : 1,
                           'В наличии': 1,
                           'Хит продаж': 0,
@@ -1338,6 +1343,7 @@ export default function Admin() {
                         material: '',
                         size: '',
                         sku: '',
+                        polish: '',
                         category_id: '',
                         in_stock: true,
                         is_featured: false,
@@ -1409,7 +1415,7 @@ export default function Admin() {
                           />
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="product-sku">Артикул</Label>
                           <Input
@@ -1427,6 +1433,8 @@ export default function Admin() {
                             onChange={(e) => setProductForm({ ...productForm, material: e.target.value })}
                           />
                         </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="product-size">Размер (см)</Label>
                           <Select
@@ -1467,6 +1475,24 @@ export default function Admin() {
                               onChange={(e) => setProductForm({ ...productForm, size: e.target.value })}
                             />
                           )}
+                        </div>
+                        <div>
+                          <Label htmlFor="product-polish">Полировка</Label>
+                          <Select
+                            value={productForm.polish}
+                            onValueChange={(value) => setProductForm({ ...productForm, polish: value })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Выберите полировку" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="1 сторона">1 сторона</SelectItem>
+                              <SelectItem value="2 стороны">2 стороны</SelectItem>
+                              <SelectItem value="3 стороны">3 стороны</SelectItem>
+                              <SelectItem value="4 стороны">4 стороны</SelectItem>
+                              <SelectItem value="5 сторон">5 сторон</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
                       <div>
@@ -1584,6 +1610,7 @@ export default function Admin() {
                                 material: '',
                                 size: '',
                                 sku: '',
+                                polish: '',
                                 category_id: '',
                                 in_stock: true,
                                 is_featured: false,
@@ -1616,6 +1643,7 @@ export default function Admin() {
                               material: '',
                               size: '',
                               sku: '',
+                              polish: '',
                               category_id: '',
                               in_stock: true,
                               is_featured: false,
@@ -1690,6 +1718,9 @@ export default function Admin() {
                         {product.sku && (
                           <p className="text-xs text-muted-foreground mb-1">Артикул: {product.sku}</p>
                         )}
+                        {product.polish && (
+                          <p className="text-xs text-muted-foreground mb-1">Полировка: {product.polish}</p>
+                        )}
                         <p className="font-oswald text-xl text-primary mb-3">{parseFloat(product.price).toLocaleString('ru-RU')} ₽</p>
                         <Button 
                           size="sm" 
@@ -1707,6 +1738,7 @@ export default function Admin() {
                               material: product.material || '',
                               size: product.size || '',
                               sku: product.sku || '',
+                              polish: product.polish || '',
                               category_id: product.category_id?.toString() || '',
                               in_stock: product.in_stock,
                               is_featured: product.is_featured,
@@ -1754,6 +1786,9 @@ export default function Admin() {
                               {product.sku && (
                                 <p className="text-xs text-muted-foreground mb-1">Артикул: {product.sku}</p>
                               )}
+                              {product.polish && (
+                                <p className="text-xs text-muted-foreground mb-1">Полировка: {product.polish}</p>
+                              )}
                               <p className="text-sm text-muted-foreground mb-2 line-clamp-1">{product.description}</p>
                               <div className="flex items-center gap-4">
                                 <span className="font-oswald text-xl text-primary">
@@ -1788,6 +1823,7 @@ export default function Admin() {
                                     material: product.material || '',
                                     size: product.size || '',
                                     sku: product.sku || '',
+                                    polish: product.polish || '',
                                     category_id: product.category_id?.toString() || '',
                                     in_stock: product.in_stock,
                                     is_featured: product.is_featured,
