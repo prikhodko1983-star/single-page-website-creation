@@ -204,6 +204,7 @@ export default function Admin() {
   });
 
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editingGalleryId, setEditingGalleryId] = useState<number | null>(null);
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [galleryUploadProgress, setGalleryUploadProgress] = useState(0);
@@ -808,7 +809,25 @@ export default function Admin() {
                 <CardTitle className="font-oswald">Управление магазином</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+                <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
+                  setIsProductDialogOpen(open);
+                  if (!open) {
+                    setEditingProduct(null);
+                    setProductForm({
+                      name: '',
+                      slug: '',
+                      description: '',
+                      price: '',
+                      old_price: '',
+                      image_url: '',
+                      material: '',
+                      size: '',
+                      category_id: '',
+                      in_stock: true,
+                      is_featured: false,
+                    });
+                  }
+                }}>
                   <DialogTrigger asChild>
                     <Button className="font-oswald">
                       <Icon name="Plus" size={20} className="mr-2" />
@@ -817,7 +836,7 @@ export default function Admin() {
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                      <DialogTitle>Добавить новый товар</DialogTitle>
+                      <DialogTitle>{editingProduct ? 'Редактировать товар' : 'Добавить новый товар'}</DialogTitle>
                       <DialogDescription>
                         Заполните информацию о товаре
                       </DialogDescription>
@@ -915,14 +934,59 @@ export default function Admin() {
                           <img src={productForm.image_url} alt="Preview" className="w-20 h-20 object-cover rounded border mt-2" />
                         )}
                       </div>
-                      <Button onClick={() => {
-                        toast({
-                          title: 'Информация',
-                          description: 'Функция добавления товаров находится в разработке. Товары создаются через SQL.',
-                        });
-                      }}>
-                        Сохранить товар
-                      </Button>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="in_stock"
+                            checked={productForm.in_stock}
+                            onChange={(e) => setProductForm({ ...productForm, in_stock: e.target.checked })}
+                            className="rounded border-gray-300"
+                          />
+                          <Label htmlFor="in_stock" className="cursor-pointer">В наличии</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="is_featured"
+                            checked={productForm.is_featured}
+                            onChange={(e) => setProductForm({ ...productForm, is_featured: e.target.checked })}
+                            className="rounded border-gray-300"
+                          />
+                          <Label htmlFor="is_featured" className="cursor-pointer">Хит продаж</Label>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button onClick={() => {
+                          toast({
+                            title: 'Информация',
+                            description: 'Функция сохранения товаров находится в разработке. Товары создаются через SQL.',
+                          });
+                        }}>
+                          <Icon name={editingProduct ? "Save" : "Plus"} size={16} className="mr-2" />
+                          {editingProduct ? 'Сохранить изменения' : 'Добавить товар'}
+                        </Button>
+                        {editingProduct && (
+                          <Button variant="outline" onClick={() => {
+                            setEditingProduct(null);
+                            setProductForm({
+                              name: '',
+                              slug: '',
+                              description: '',
+                              price: '',
+                              old_price: '',
+                              image_url: '',
+                              material: '',
+                              size: '',
+                              category_id: '',
+                              in_stock: true,
+                              is_featured: false,
+                            });
+                          }}>
+                            Отменить
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -945,7 +1009,32 @@ export default function Admin() {
                       <CardContent className="p-4">
                         <Badge variant="outline" className="mb-2">{product.category_name}</Badge>
                         <h3 className="font-oswald font-semibold text-lg mb-1">{product.name}</h3>
-                        <p className="font-oswald text-xl text-primary">{parseFloat(product.price).toLocaleString('ru-RU')} ₽</p>
+                        <p className="font-oswald text-xl text-primary mb-3">{parseFloat(product.price).toLocaleString('ru-RU')} ₽</p>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="w-full"
+                          onClick={() => {
+                            setEditingProduct(product);
+                            setProductForm({
+                              name: product.name,
+                              slug: product.slug,
+                              description: product.description,
+                              price: product.price,
+                              old_price: product.old_price || '',
+                              image_url: product.image_url || '',
+                              material: product.material || '',
+                              size: product.size || '',
+                              category_id: product.category_id?.toString() || '',
+                              in_stock: product.in_stock,
+                              is_featured: product.is_featured,
+                            });
+                            setIsProductDialogOpen(true);
+                          }}
+                        >
+                          <Icon name="Edit" size={14} className="mr-1" />
+                          Редактировать
+                        </Button>
                       </CardContent>
                     </Card>
                   ))}
