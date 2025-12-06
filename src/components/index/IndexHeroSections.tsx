@@ -115,7 +115,7 @@ export default function IndexHeroSections({
               до 11 ноября
             </div>
 
-            <div className="grid lg:grid-cols-[400px,1fr] gap-8 items-center p-8 lg:p-12">
+            <div className="grid lg:grid-cols-[400px,1fr] gap-8 items-center p-8 lg:p-12 bg-[#ffffff]">
               <div className="relative">
                 <img 
                   src="https://cdn.poehali.dev/files/5c627d7b-3e9e-4df0-8207-179b8b81c683.png"
@@ -125,7 +125,7 @@ export default function IndexHeroSections({
               </div>
 
               <div className="space-y-6">
-                <h2 className="font-oswald font-bold text-3xl md:text-5xl">Премиум модели со скидкой до 25%</h2>
+                <h2 className="font-oswald font-bold text-3xl md:text-5xl text-zinc-900">Премиум модели со скидкой до 25%</h2>
 
                 <div className="flex flex-wrap gap-4">
                   <Button 
