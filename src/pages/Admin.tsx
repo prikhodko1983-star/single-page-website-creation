@@ -221,6 +221,7 @@ export default function Admin() {
   const [galleryUploadProgress, setGalleryUploadProgress] = useState(0);
   const [isDraggingGallery, setIsDraggingGallery] = useState(false);
   const [productsViewMode, setProductsViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('all');
 
   const categories_list = ["Вертикальные", "Горизонтальные", "Эксклюзивные", "С крестом"];
   const filterCategories = ["Все", ...categories_list];
@@ -1410,31 +1411,46 @@ export default function Admin() {
                 </Dialog>
                 </div>
 
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm text-muted-foreground">Всего товаров: {products.length}</p>
-                  <div className="flex gap-1 border rounded-lg p-1">
-                    <Button
-                      size="sm"
-                      variant={productsViewMode === 'grid' ? 'default' : 'ghost'}
-                      onClick={() => setProductsViewMode('grid')}
-                      className="h-8 px-3"
-                    >
-                      <Icon name="LayoutGrid" size={16} />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={productsViewMode === 'list' ? 'default' : 'ghost'}
-                      onClick={() => setProductsViewMode('list')}
-                      className="h-8 px-3"
-                    >
-                      <Icon name="List" size={16} />
-                    </Button>
+                <div className="space-y-4 mb-4">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <p className="text-sm text-muted-foreground">Всего товаров: {products.filter(p => selectedCategoryFilter === 'all' || p.category_id?.toString() === selectedCategoryFilter).length}</p>
+                      <Select value={selectedCategoryFilter} onValueChange={setSelectedCategoryFilter}>
+                        <SelectTrigger className="w-[200px] h-8">
+                          <SelectValue placeholder="Все категории" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Все категории</SelectItem>
+                          {categories.map(cat => (
+                            <SelectItem key={cat.id} value={cat.id.toString()}>{cat.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex gap-1 border rounded-lg p-1">
+                      <Button
+                        size="sm"
+                        variant={productsViewMode === 'grid' ? 'default' : 'ghost'}
+                        onClick={() => setProductsViewMode('grid')}
+                        className="h-8 px-3"
+                      >
+                        <Icon name="LayoutGrid" size={16} />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={productsViewMode === 'list' ? 'default' : 'ghost'}
+                        onClick={() => setProductsViewMode('list')}
+                        className="h-8 px-3"
+                      >
+                        <Icon name="List" size={16} />
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
                 {productsViewMode === 'grid' ? (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {products.map((product) => (
+                    {products.filter(p => selectedCategoryFilter === 'all' || p.category_id?.toString() === selectedCategoryFilter).map((product) => (
                     <Card key={product.id} className="overflow-hidden">
                       <div className="aspect-[4/3] bg-secondary relative">
                         {product.image_url ? (
@@ -1484,7 +1500,7 @@ export default function Admin() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {products.map((product) => (
+                    {products.filter(p => selectedCategoryFilter === 'all' || p.category_id?.toString() === selectedCategoryFilter).map((product) => (
                       <Card key={product.id}>
                         <CardContent className="p-4">
                           <div className="flex items-center gap-4">
