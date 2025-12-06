@@ -915,7 +915,10 @@ export default function Admin() {
                 <CardTitle className="font-oswald">Управление магазином</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex flex-wrap gap-2">
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">Товары и категории</p>
+                    <div className="flex flex-wrap gap-2">
                   <Dialog open={isCategoryDialogOpen} onOpenChange={(open) => {
                     setIsCategoryDialogOpen(open);
                     if (!open) {
@@ -1128,6 +1131,77 @@ export default function Admin() {
                     variant="outline" 
                     className="font-oswald"
                     onClick={() => {
+                      if (products.length === 0) {
+                        toast({
+                          title: '⚠️ Нет товаров',
+                          description: 'Добавьте товары перед экспортом',
+                          variant: 'destructive'
+                        });
+                        return;
+                      }
+
+                      const exportData = products.map(product => ({
+                        'Название': product.name,
+                        'Артикул': product.sku || '',
+                        'Описание': product.description,
+                        'Цена': parseFloat(product.price),
+                        'Старая цена': product.old_price ? parseFloat(product.old_price) : '',
+                        'URL изображения': product.image_url || '',
+                        'Материал': product.material || '',
+                        'Размер': product.size || '',
+                        'ID категории': product.category_id || '',
+                        'Категория': product.category_name,
+                        'В наличии': product.in_stock ? 1 : 0,
+                        'Хит продаж': product.is_featured ? 1 : 0,
+                        'Цена от': product.is_price_from ? 1 : 0
+                      }));
+
+                      const ws = XLSX.utils.json_to_sheet(exportData);
+                      
+                      const categoriesData = categories.map(cat => ({
+                        'ID': cat.id,
+                        'Название категории': cat.name,
+                        'Описание': cat.description || ''
+                      }));
+                      const wsCat = XLSX.utils.json_to_sheet(categoriesData);
+                      
+                      const sizesData = [
+                        { 'Размер': '60х40х5' },
+                        { 'Размер': '60х40х8' },
+                        { 'Размер': '80х40х5' },
+                        { 'Размер': '80х40х8' },
+                        { 'Размер': '90х45х8' },
+                        { 'Размер': '100х50х5' },
+                        { 'Размер': '100х50х8' },
+                        { 'Размер': '100х60х5' },
+                        { 'Размер': '100х60х8' },
+                        { 'Размер': '120х60х8' },
+                        { 'Размер': '110х70х8' }
+                      ];
+                      const wsSizes = XLSX.utils.json_to_sheet(sizesData);
+                      
+                      const wb = XLSX.utils.book_new();
+                      XLSX.utils.book_append_sheet(wb, ws, 'Товары');
+                      XLSX.utils.book_append_sheet(wb, wsCat, 'Категории (справочник)');
+                      XLSX.utils.book_append_sheet(wb, wsSizes, 'Размеры (справочник)');
+                      
+                      const date = new Date().toISOString().split('T')[0];
+                      XLSX.writeFile(wb, `товары_${date}.xlsx`);
+                      
+                      toast({
+                        title: '✅ Товары экспортированы',
+                        description: `Файл товары_${date}.xlsx успешно скачан`
+                      });
+                    }}
+                  >
+                    <Icon name="FileDown" size={20} className="mr-2" />
+                    Экспорт товаров
+                  </Button>
+
+                  <Button 
+                    variant="outline" 
+                    className="font-oswald"
+                    onClick={() => {
                       const template = [
                         {
                           'Название': 'Пример товара',
@@ -1181,8 +1255,14 @@ export default function Admin() {
                     }}
                   >
                     <Icon name="Download" size={20} className="mr-2" />
-                    Скачать шаблон
+                    Шаблон Excel
                   </Button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">Справочная информация</p>
+                    <div className="flex flex-wrap gap-2">
 
                   <Dialog>
                     <DialogTrigger asChild>
@@ -1239,7 +1319,11 @@ export default function Admin() {
                       </div>
                     </DialogContent>
                   </Dialog>
+                    </div>
+                  </div>
+                </div>
 
+                <div className="border-t pt-4">
                   <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
                     setIsProductDialogOpen(open);
                     if (!open) {
