@@ -1010,6 +1010,7 @@ export default function Admin() {
                         category_id: '',
                         in_stock: true,
                         is_featured: false,
+                        is_price_from: false,
                       });
                     }
                   }}>
