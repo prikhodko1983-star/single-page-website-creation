@@ -224,7 +224,6 @@ export default function Admin() {
   const API_URL = "https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6";
   const UPLOAD_URL = "https://functions.poehali.dev/96dcc1e1-90f9-4b11-b0c7-2d66559ddcbb";
   const PRODUCTS_API = "https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d";
-  const IMAGE_UPLOAD_API = "https://functions.poehali.dev/0dcf69f8-40b3-4bcf-9d48-59e0c5584e34";
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -369,31 +368,54 @@ export default function Admin() {
     if (target === 'monument') setUploading(true);
     if (target === 'gallery') setUploadingGallery(true);
 
-    const formData = new FormData();
-    formData.append('image', file);
-
     try {
-      const response = await fetch(target === 'product' ? IMAGE_UPLOAD_API : UPLOAD_URL, {
-        method: 'POST',
-        body: formData,
-      });
+      const reader = new FileReader();
+      
+      reader.onload = async () => {
+        const base64String = reader.result as string;
+        const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+        
+        const response = await fetch(UPLOAD_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image: base64String,
+            extension: extension
+          }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (data.url) {
-        if (target === 'monument') {
-          setMonumentForm({ ...monumentForm, image_url: data.url });
-        } else if (target === 'gallery') {
-          setGalleryForm({ ...galleryForm, url: data.url });
-        } else if (target === 'product') {
-          setProductForm({ ...productForm, image_url: data.url });
+        if (data.url) {
+          if (target === 'monument') {
+            setMonumentForm({ ...monumentForm, image_url: data.url });
+          } else if (target === 'gallery') {
+            setGalleryForm({ ...galleryForm, url: data.url });
+          } else if (target === 'product') {
+            setProductForm({ ...productForm, image_url: data.url });
+          }
+          
+          toast({
+            title: '✅ Успешно',
+            description: 'Изображение загружено'
+          });
         }
         
+        if (target === 'monument') setUploading(false);
+        if (target === 'gallery') setUploadingGallery(false);
+      };
+      
+      reader.onerror = () => {
         toast({
-          title: '✅ Успешно',
-          description: 'Изображение загружено'
+          title: '❌ Ошибка',
+          description: 'Не удалось прочитать файл',
+          variant: 'destructive'
         });
-      }
+        if (target === 'monument') setUploading(false);
+        if (target === 'gallery') setUploadingGallery(false);
+      };
+      
+      reader.readAsDataURL(file);
     } catch (error) {
       console.error('Upload error:', error);
       toast({
@@ -401,7 +423,6 @@ export default function Admin() {
         description: 'Не удалось загрузить изображение',
         variant: 'destructive'
       });
-    } finally {
       if (target === 'monument') setUploading(false);
       if (target === 'gallery') setUploadingGallery(false);
     }
