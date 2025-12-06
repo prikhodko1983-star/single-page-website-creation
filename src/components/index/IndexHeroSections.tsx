@@ -118,7 +118,7 @@ export default function IndexHeroSections({
             <div className="grid lg:grid-cols-[400px,1fr] gap-8 items-center p-8 lg:p-12 bg-[#ffffff]">
               <div className="relative">
                 <img 
-                  src="https://cdn.poehali.dev/files/IMG_4107.jpeg"
+                  src="https://cdn.poehali.dev/files/5c627d7b-3e9e-4df0-8207-179b8b81c683.png"
                   alt="Премиум памятники"
                   className="w-full h-auto"
                 />
@@ -131,7 +131,7 @@ export default function IndexHeroSections({
                   <Button 
                     size="lg"
                     variant="default"
-                    className="bg-[rgb(25,25,25)] hover:bg-[rgb(35,35,35)] text-white font-oswald text-base px-8"
+                    className="bg-foreground hover:bg-foreground/90 text-background font-oswald text-base px-8"
                     onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Посмотреть все памятники
