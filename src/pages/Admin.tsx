@@ -1021,24 +1021,31 @@ export default function Admin() {
                       </Button>
                     </DialogTrigger>
                   <DialogContent 
-                    className="max-w-2xl h-[95vh] md:max-h-[90vh] flex flex-col p-0"
-                    style={{ overflow: 'hidden' } as React.CSSProperties}
+                    className="max-w-2xl p-0"
+                    style={{ 
+                      height: '95vh',
+                      maxHeight: '95vh',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      overflow: 'hidden'
+                    } as React.CSSProperties}
                   >
-                    <DialogHeader className="flex-shrink-0 p-6 pb-4">
+                    <DialogHeader className="p-6 pb-4" style={{ flexShrink: 0 } as React.CSSProperties}>
                       <DialogTitle>{editingProduct ? 'Редактировать товар' : 'Добавить новый товар'}</DialogTitle>
                       <DialogDescription>
                         Заполните информацию о товаре
                       </DialogDescription>
                     </DialogHeader>
                     <div 
-                      className="space-y-4 flex-1 px-6 pb-6" 
+                      className="px-6 pb-6" 
                       style={{ 
-                        overflow: 'auto',
+                        flex: '1 1 0',
+                        overflowY: 'scroll',
                         WebkitOverflowScrolling: 'touch',
-                        touchAction: 'pan-y',
-                        overscrollBehavior: 'contain'
+                        minHeight: 0
                       } as React.CSSProperties}
                     >
+                      <div className="space-y-4">
                       <div>
                         <Label htmlFor="product-name">Название</Label>
                         <Input
@@ -1258,6 +1265,7 @@ export default function Admin() {
                             Отменить
                           </Button>
                         )}
+                      </div>
                       </div>
                     </div>
                   </DialogContent>
