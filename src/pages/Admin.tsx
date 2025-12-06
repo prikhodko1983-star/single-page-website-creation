@@ -962,25 +962,58 @@ export default function Admin() {
                               <Card key={category.id}>
                                 <CardContent className="p-4">
                                   <div className="flex items-center justify-between">
-                                    <div>
+                                    <div className="flex-1">
                                       <h4 className="font-semibold">{category.name}</h4>
                                       <p className="text-sm text-muted-foreground">/{category.slug}</p>
                                     </div>
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline"
-                                      onClick={() => {
-                                        setEditingCategory(category);
-                                        setCategoryForm({
-                                          name: category.name,
-                                          slug: category.slug,
-                                          description: category.description,
-                                        });
-                                      }}
-                                    >
-                                      <Icon name="Edit" size={14} className="mr-1" />
-                                      Изменить
-                                    </Button>
+                                    <div className="flex gap-2">
+                                      <Button 
+                                        size="sm" 
+                                        variant="outline"
+                                        onClick={() => {
+                                          setEditingCategory(category);
+                                          setCategoryForm({
+                                            name: category.name,
+                                            slug: category.slug,
+                                            description: category.description,
+                                          });
+                                        }}
+                                      >
+                                        <Icon name="Edit" size={14} className="mr-1" />
+                                        Изменить
+                                      </Button>
+                                      <Button 
+                                        size="sm" 
+                                        variant="destructive"
+                                        onClick={async () => {
+                                          if (!confirm(`Удалить категорию "${category.name}"?`)) return;
+                                          
+                                          try {
+                                            const response = await fetch(`${PRODUCTS_API}?type=categories&id=${category.id}`, {
+                                              method: 'DELETE'
+                                            });
+                                            
+                                            if (response.ok) {
+                                              toast({
+                                                title: '✅ Успешно',
+                                                description: 'Категория удалена'
+                                              });
+                                              loadCategories();
+                                            } else {
+                                              throw new Error('Failed to delete');
+                                            }
+                                          } catch (error) {
+                                            toast({
+                                              title: '❌ Ошибка',
+                                              description: 'Не удалось удалить категорию',
+                                              variant: 'destructive'
+                                            });
+                                          }
+                                        }}
+                                      >
+                                        <Icon name="Trash2" size={14} />
+                                      </Button>
+                                    </div>
                                   </div>
                                   {category.description && (
                                     <p className="text-sm text-muted-foreground mt-2">{category.description}</p>
