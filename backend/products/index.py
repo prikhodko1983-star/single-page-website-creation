@@ -322,11 +322,11 @@ def create_product(conn, data: Dict[str, Any]) -> Dict[str, Any]:
     slug = data.get('slug', '').replace("'", "''")
     description = data.get('description', '').replace("'", "''")
     price = data.get('price', 0)
-    old_price = data.get('old_price') or 'NULL'
+    old_price = data.get('old_price')
     image_url = data.get('image_url', '').replace("'", "''")
     material = data.get('material', '').replace("'", "''")
     size = data.get('size', '').replace("'", "''")
-    category_id = data.get('category_id') or 'NULL'
+    category_id = data.get('category_id')
     in_stock = data.get('in_stock', True)
     is_featured = data.get('is_featured', False)
     
@@ -338,10 +338,11 @@ def create_product(conn, data: Dict[str, Any]) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
-    old_price_str = f"'{old_price}'" if old_price != 'NULL' else 'NULL'
-    image_url_str = f"'{image_url}'" if image_url else 'NULL'
-    material_str = f"'{material}'" if material else 'NULL'
-    size_str = f"'{size}'" if size else 'NULL'
+    old_price_str = f"'{old_price}'" if old_price and old_price != '' else 'NULL'
+    image_url_str = f"'{image_url}'" if image_url and image_url != '' else 'NULL'
+    material_str = f"'{material}'" if material and material != '' else 'NULL'
+    size_str = f"'{size}'" if size and size != '' else 'NULL'
+    category_id_str = str(category_id) if category_id and category_id != '' else 'NULL'
     
     query = f"""
         INSERT INTO products 
@@ -349,7 +350,7 @@ def create_product(conn, data: Dict[str, Any]) -> Dict[str, Any]:
          category_id, in_stock, is_featured, display_order)
         VALUES 
         ('{name}', '{slug}', '{description}', '{price}', {old_price_str}, {image_url_str}, 
-         {material_str}, {size_str}, {category_id}, {in_stock}, {is_featured}, 999)
+         {material_str}, {size_str}, {category_id_str}, {in_stock}, {is_featured}, 999)
         RETURNING *
     """
     cursor.execute(query)
