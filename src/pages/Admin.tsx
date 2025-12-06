@@ -497,8 +497,8 @@ export default function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
+    <div className="bg-background pb-20">
+      <div className="w-full border-b bg-background sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -515,7 +515,7 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8 sticky top-[73px] z-30 bg-background">
             <TabsTrigger value="overview" className="font-oswald">
               <Icon name="LayoutDashboard" size={16} className="mr-2" />
               Обзор
