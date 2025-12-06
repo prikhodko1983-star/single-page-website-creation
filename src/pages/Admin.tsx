@@ -1114,7 +1114,23 @@ export default function Admin() {
                           onChange={(e) => handleImageUpload(e, 'product')}
                         />
                         {productForm.image_url && (
-                          <img src={productForm.image_url} alt="Preview" className="w-20 h-20 object-cover rounded border mt-2" />
+                          <div className="mt-2 space-y-2">
+                            <img src={productForm.image_url} alt="Preview" className="w-20 h-20 object-cover rounded border" />
+                            <Input
+                              value={productForm.image_url}
+                              onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
+                              placeholder="Или вставьте URL изображения"
+                              className="text-xs"
+                            />
+                          </div>
+                        )}
+                        {!productForm.image_url && (
+                          <Input
+                            value={productForm.image_url}
+                            onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
+                            placeholder="Или вставьте URL изображения"
+                            className="text-xs mt-2"
+                          />
                         )}
                       </div>
                       <div className="grid grid-cols-2 gap-4">
