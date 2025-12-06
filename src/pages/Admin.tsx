@@ -1020,14 +1020,14 @@ export default function Admin() {
                         Добавить товар
                       </Button>
                     </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
-                    <DialogHeader>
+                  <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
+                    <DialogHeader className="flex-shrink-0">
                       <DialogTitle>{editingProduct ? 'Редактировать товар' : 'Добавить новый товар'}</DialogTitle>
                       <DialogDescription>
                         Заполните информацию о товаре
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-4 overflow-y-auto flex-1 pr-2 -mr-2">
                       <div>
                         <Label htmlFor="product-name">Название</Label>
                         <Input
