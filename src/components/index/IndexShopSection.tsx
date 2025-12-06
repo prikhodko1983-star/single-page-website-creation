@@ -110,7 +110,7 @@ export default function IndexShopSection() {
             {products.slice(0, 6).map((product) => (
               <Card key={product.id} className="group hover:shadow-xl transition-shadow overflow-hidden">
                 <Link to={`/product/${product.slug}`}>
-                  <div className="aspect-[4/3] bg-secondary relative overflow-hidden">
+                  <div className="aspect-square bg-secondary relative overflow-hidden">
                     {product.image_url ? (
                       <img
                         src={product.image_url}
@@ -148,20 +148,6 @@ export default function IndexShopSection() {
                   <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                     {product.description}
                   </p>
-                  <div className="flex items-center gap-3 mb-3 text-sm text-muted-foreground">
-                    {product.material && (
-                      <div className="flex items-center gap-1">
-                        <Icon name="Box" size={16} />
-                        <span>{product.material}</span>
-                      </div>
-                    )}
-                    {product.size && (
-                      <div className="flex items-center gap-1">
-                        <Icon name="Ruler" size={16} />
-                        <span>{product.size}</span>
-                      </div>
-                    )}
-                  </div>
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="font-oswald font-bold text-2xl text-primary">
                       {parseFloat(product.price).toLocaleString('ru-RU')} ₽
