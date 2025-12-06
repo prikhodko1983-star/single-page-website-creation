@@ -527,6 +527,8 @@ export default function Admin() {
 
       let successCount = 0;
       let errorCount = 0;
+      const updatedCount = 0;
+      const createdCount = 0;
 
       for (const row of jsonData as any[]) {
         try {
@@ -552,14 +554,29 @@ export default function Admin() {
             continue;
           }
 
-          const response = await fetch(PRODUCTS_API, {
-            method: 'POST',
+          const existingProduct = products.find(p => 
+            p.sku && productData.sku && p.sku === productData.sku
+          );
+
+          const url = existingProduct 
+            ? `${PRODUCTS_API}?id=${existingProduct.id}`
+            : PRODUCTS_API;
+          
+          const method = existingProduct ? 'PUT' : 'POST';
+
+          const response = await fetch(url, {
+            method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(productData)
           });
 
           if (response.ok) {
             successCount++;
+            if (existingProduct) {
+              updatedCount++;
+            } else {
+              createdCount++;
+            }
           } else {
             errorCount++;
           }
@@ -570,7 +587,7 @@ export default function Admin() {
 
       toast({
         title: '✅ Импорт завершён',
-        description: `Добавлено: ${successCount}, Ошибок: ${errorCount}`
+        description: `Создано: ${createdCount}, Обновлено: ${updatedCount}, Ошибок: ${errorCount}`
       });
 
       loadProducts();
