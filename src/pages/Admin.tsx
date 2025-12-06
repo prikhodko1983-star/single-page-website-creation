@@ -1029,12 +1029,13 @@ export default function Admin() {
                         <div className="border-t pt-4 mt-6">
                           <h3 className="font-oswald font-semibold text-lg mb-4">Существующие категории ({categories.length})</h3>
                           <div className="space-y-2">
-                            {categories.map((category) => (
+                            {categories.map((category, index) => (
                               <Card key={category.id}>
                                 <CardContent className="p-4">
                                   <div className="flex items-center justify-between">
                                     <div className="flex-1">
                                       <div className="flex items-center gap-3 mb-1">
+                                        <Badge variant="secondary" className="font-semibold text-sm px-2 py-1">#{index + 1}</Badge>
                                         <Badge variant="outline" className="font-mono text-sm px-2 py-0.5">ID: {category.id}</Badge>
                                         <h4 className="font-semibold">{category.name}</h4>
                                       </div>
