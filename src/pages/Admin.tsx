@@ -1129,25 +1129,91 @@ export default function Admin() {
                           'URL изображения': 'https://example.com/image.jpg',
                           'Материал': 'Гранит',
                           'Размер': '100x50x8 см',
-                          'ID категории': 1,
+                          'ID категории': categories.length > 0 ? categories[0].id : 1,
                           'В наличии': 1,
                           'Хит продаж': 0,
                           'Цена от': 0
                         }
                       ];
                       const ws = XLSX.utils.json_to_sheet(template);
+                      
+                      // Добавляем лист со справочником категорий
+                      const categoriesData = categories.map(cat => ({
+                        'ID': cat.id,
+                        'Название категории': cat.name,
+                        'Описание': cat.description || ''
+                      }));
+                      const wsCat = XLSX.utils.json_to_sheet(categoriesData);
+                      
                       const wb = XLSX.utils.book_new();
                       XLSX.utils.book_append_sheet(wb, ws, 'Товары');
+                      XLSX.utils.book_append_sheet(wb, wsCat, 'Категории (справочник)');
                       XLSX.writeFile(wb, 'шаблон_товаров.xlsx');
                       toast({
                         title: '✅ Шаблон скачан',
-                        description: 'Заполните файл и импортируйте обратно'
+                        description: 'В файле 2 листа: "Товары" и "Категории (справочник)"'
                       });
                     }}
                   >
                     <Icon name="Download" size={20} className="mr-2" />
                     Скачать шаблон
                   </Button>
+
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="font-oswald">
+                        <Icon name="Info" size={20} className="mr-2" />
+                        ID категорий
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>Справочник ID категорий</DialogTitle>
+                        <DialogDescription>
+                          Используйте эти ID при заполнении Excel файла в колонке "ID категории"
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                        {categories.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">Категории не созданы. Создайте категории перед импортом товаров.</p>
+                        ) : (
+                          categories.map((category) => (
+                            <Card key={category.id}>
+                              <CardContent className="p-4">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-3">
+                                      <Badge variant="outline" className="font-mono text-base px-3 py-1">{category.id}</Badge>
+                                      <div>
+                                        <h4 className="font-semibold text-base">{category.name}</h4>
+                                        {category.description && (
+                                          <p className="text-sm text-muted-foreground mt-1">{category.description}</p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(category.id.toString());
+                                      toast({
+                                        title: '✅ Скопировано',
+                                        description: `ID ${category.id} скопирован в буфер обмена`
+                                      });
+                                    }}
+                                  >
+                                    <Icon name="Copy" size={14} className="mr-1" />
+                                    Копировать
+                                  </Button>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))
+                        )}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
 
                   <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
                     setIsProductDialogOpen(open);
