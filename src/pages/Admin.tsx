@@ -224,6 +224,7 @@ export default function Admin() {
   const [isDraggingGallery, setIsDraggingGallery] = useState(false);
   const [productsViewMode, setProductsViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('all');
+  const [customSize, setCustomSize] = useState<string>('');
 
   const categories_list = ["Вертикальные", "Горизонтальные", "Эксклюзивные", "С крестом"];
   const filterCategories = ["Все", ...categories_list];
@@ -1136,7 +1137,7 @@ export default function Admin() {
                           'Старая цена': 60000,
                           'URL изображения': 'https://example.com/image.jpg',
                           'Материал': 'Гранит',
-                          'Размер': '100x50x8 см',
+                          'Размер': '100х50х8',
                           'ID категории': categories.length > 0 ? categories[0].id : 1,
                           'В наличии': 1,
                           'Хит продаж': 0,
@@ -1145,7 +1146,6 @@ export default function Admin() {
                       ];
                       const ws = XLSX.utils.json_to_sheet(template);
                       
-                      // Добавляем лист со справочником категорий
                       const categoriesData = categories.map(cat => ({
                         'ID': cat.id,
                         'Название категории': cat.name,
@@ -1153,13 +1153,30 @@ export default function Admin() {
                       }));
                       const wsCat = XLSX.utils.json_to_sheet(categoriesData);
                       
+                      const sizesData = [
+                        { 'Размер': '60х40х5' },
+                        { 'Размер': '60х40х8' },
+                        { 'Размер': '80х40х5' },
+                        { 'Размер': '80х40х8' },
+                        { 'Размер': '90х45х8' },
+                        { 'Размер': '100х50х5' },
+                        { 'Размер': '100х50х8' },
+                        { 'Размер': '100х60х5' },
+                        { 'Размер': '100х60х8' },
+                        { 'Размер': '120х60х8' },
+                        { 'Размер': '110х70х8' },
+                        { 'Размер': 'или свой размер' }
+                      ];
+                      const wsSizes = XLSX.utils.json_to_sheet(sizesData);
+                      
                       const wb = XLSX.utils.book_new();
                       XLSX.utils.book_append_sheet(wb, ws, 'Товары');
                       XLSX.utils.book_append_sheet(wb, wsCat, 'Категории (справочник)');
+                      XLSX.utils.book_append_sheet(wb, wsSizes, 'Размеры (справочник)');
                       XLSX.writeFile(wb, 'шаблон_товаров.xlsx');
                       toast({
                         title: '✅ Шаблон скачан',
-                        description: 'В файле 2 листа: "Товары" и "Категории (справочник)"'
+                        description: 'В файле 3 листа: "Товары", "Категории" и "Размеры"'
                       });
                     }}
                   >
@@ -1327,12 +1344,45 @@ export default function Admin() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="product-size">Размер</Label>
-                          <Input
-                            id="product-size"
-                            value={productForm.size}
-                            onChange={(e) => setProductForm({ ...productForm, size: e.target.value })}
-                          />
+                          <Label htmlFor="product-size">Размер (см)</Label>
+                          <Select
+                            value={['60х40х5', '60х40х8', '80х40х5', '80х40х8', '90х45х8', '100х50х5', '100х50х8', '100х60х5', '100х60х8', '120х60х8', '110х70х8'].includes(productForm.size) ? productForm.size : 'custom'}
+                            onValueChange={(value) => {
+                              if (value === 'custom') {
+                                setCustomSize(productForm.size);
+                                setProductForm({ ...productForm, size: '' });
+                              } else {
+                                setCustomSize('');
+                                setProductForm({ ...productForm, size: value });
+                              }
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Выберите размер" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="60х40х5">60х40х5</SelectItem>
+                              <SelectItem value="60х40х8">60х40х8</SelectItem>
+                              <SelectItem value="80х40х5">80х40х5</SelectItem>
+                              <SelectItem value="80х40х8">80х40х8</SelectItem>
+                              <SelectItem value="90х45х8">90х45х8</SelectItem>
+                              <SelectItem value="100х50х5">100х50х5</SelectItem>
+                              <SelectItem value="100х50х8">100х50х8</SelectItem>
+                              <SelectItem value="100х60х5">100х60х5</SelectItem>
+                              <SelectItem value="100х60х8">100х60х8</SelectItem>
+                              <SelectItem value="120х60х8">120х60х8</SelectItem>
+                              <SelectItem value="110х70х8">110х70х8</SelectItem>
+                              <SelectItem value="custom">Свой размер</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {!['60х40х5', '60х40х8', '80х40х5', '80х40х8', '90х45х8', '100х50х5', '100х50х8', '100х60х5', '100х60х8', '120х60х8', '110х70х8'].includes(productForm.size) && (
+                            <Input
+                              className="mt-2"
+                              placeholder="Введите свой размер (например: 150х80х10)"
+                              value={productForm.size}
+                              onChange={(e) => setProductForm({ ...productForm, size: e.target.value })}
+                            />
+                          )}
                         </div>
                       </div>
                       <div>
