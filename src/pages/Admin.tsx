@@ -1027,7 +1027,7 @@ export default function Admin() {
                         Заполните информацию о товаре
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 overflow-y-auto flex-1 pr-2 -mr-2">
+                    <div className="space-y-4 overflow-y-auto flex-1 pr-2 -mr-2 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
                       <div>
                         <Label htmlFor="product-name">Название</Label>
                         <Input
