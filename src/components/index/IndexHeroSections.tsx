@@ -50,7 +50,7 @@ export default function IndexHeroSections({
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-[1fr,auto] gap-8 lg:gap-12 items-start">
             <div className="max-w-3xl">
-              <h2 className="font-oswald font-bold text-4xl md:text-6xl mb-6 animate-fade-in">
+              <h2 className="font-oswald font-black text-5xl md:text-7xl lg:text-8xl mb-6 animate-fade-in uppercase leading-none bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent" style={{ textShadow: '0 4px 8px rgba(0,0,0,0.3)' }}>
                 Изготовление памятников из гранита
               </h2>
               <p className="text-lg md:text-xl text-muted-foreground mb-8 animate-fade-in">
