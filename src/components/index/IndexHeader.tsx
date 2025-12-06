@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import { CartSheet } from "@/components/CartSheet";
 
 interface IndexHeaderProps {
   mobileMenuOpen: boolean;
@@ -17,6 +18,7 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
             <p className="text-xs text-muted-foreground">Производство с 2008 года</p>
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm">
+            <a href="#shop" className="hover:text-primary transition-colors">Магазин</a>
             <a href="#catalog" className="hover:text-primary transition-colors">Каталог</a>
             <a href="#portfolio" className="hover:text-primary transition-colors">Наши работы</a>
             <a href="#services" className="hover:text-primary transition-colors">Услуги</a>
@@ -35,6 +37,9 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
             <a href="https://t.me/79960681168" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors">
               <Icon name="Send" size={18} />
             </a>
+            <div className="hidden md:block">
+              <CartSheet />
+            </div>
             <Button
               variant="outline"
               size="sm"
@@ -58,6 +63,13 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
         {mobileMenuOpen && (
           <div className="md:hidden mt-4 py-4 border-t border-border animate-in slide-in-from-top-2">
             <nav className="flex flex-col gap-4">
+              <a 
+                href="#shop" 
+                className="text-base hover:text-primary transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Магазин
+              </a>
               <a 
                 href="#catalog" 
                 className="text-base hover:text-primary transition-colors py-2"

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import IndexHeader from "@/components/index/IndexHeader";
 import IndexHeroSections from "@/components/index/IndexHeroSections";
+import IndexShopSection from "@/components/index/IndexShopSection";
 import IndexContentSections from "@/components/index/IndexContentSections";
 import IndexContactFooter from "@/components/index/IndexContactFooter";
 
@@ -139,6 +140,8 @@ const Index = () => {
         setDesignerSlideIndex={setDesignerSlideIndex}
         designerSlides={designerSlides}
       />
+
+      <IndexShopSection />
 
       <IndexContentSections 
         services={services}

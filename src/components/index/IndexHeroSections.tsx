@@ -80,10 +80,10 @@ export default function IndexHeroSections({
                 <Button 
                   size="lg" 
                   className="bg-[#f59f0a] hover:bg-[#d88a09] text-white font-oswald text-lg px-8 py-6"
-                  onClick={onNavigateCatalog}
+                  onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <Icon name="ShoppingBag" className="mr-2" size={20} />
-                  ПЕРЕЙТИ В КАТАЛОГ
+                  ИНТЕРНЕТ-МАГАЗИН
                 </Button>
                 <Button 
                   size="lg" 
