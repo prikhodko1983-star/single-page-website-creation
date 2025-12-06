@@ -220,6 +220,7 @@ export default function Admin() {
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [galleryUploadProgress, setGalleryUploadProgress] = useState(0);
   const [isDraggingGallery, setIsDraggingGallery] = useState(false);
+  const [productsViewMode, setProductsViewMode] = useState<'grid' | 'list'>('grid');
 
   const categories_list = ["Вертикальные", "Горизонтальные", "Эксклюзивные", "С крестом"];
   const filterCategories = ["Все", ...categories_list];
@@ -1409,8 +1410,31 @@ export default function Admin() {
                 </Dialog>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {products.slice(0, 6).map((product) => (
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-sm text-muted-foreground">Всего товаров: {products.length}</p>
+                  <div className="flex gap-1 border rounded-lg p-1">
+                    <Button
+                      size="sm"
+                      variant={productsViewMode === 'grid' ? 'default' : 'ghost'}
+                      onClick={() => setProductsViewMode('grid')}
+                      className="h-8 px-3"
+                    >
+                      <Icon name="LayoutGrid" size={16} />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={productsViewMode === 'list' ? 'default' : 'ghost'}
+                      onClick={() => setProductsViewMode('list')}
+                      className="h-8 px-3"
+                    >
+                      <Icon name="List" size={16} />
+                    </Button>
+                  </div>
+                </div>
+
+                {productsViewMode === 'grid' ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {products.map((product) => (
                     <Card key={product.id} className="overflow-hidden">
                       <div className="aspect-[4/3] bg-secondary relative">
                         {product.image_url ? (
@@ -1456,8 +1480,117 @@ export default function Admin() {
                         </Button>
                       </CardContent>
                     </Card>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {products.map((product) => (
+                      <Card key={product.id}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-20 h-20 bg-secondary rounded overflow-hidden flex-shrink-0">
+                              {product.image_url ? (
+                                <img src={product.image_url} alt={product.name} className="w-full h-full object-contain" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Icon name="Image" size={24} className="text-muted-foreground" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Badge variant="outline" className="text-xs">{product.category_name}</Badge>
+                                {product.is_featured && (
+                                  <Badge className="bg-primary text-xs">Хит</Badge>
+                                )}
+                                {!product.in_stock && (
+                                  <Badge variant="destructive" className="text-xs">Нет в наличии</Badge>
+                                )}
+                                {product.is_price_from && (
+                                  <Badge variant="secondary" className="text-xs">Цена от</Badge>
+                                )}
+                              </div>
+                              <h3 className="font-oswald font-semibold text-lg mb-1 truncate">{product.name}</h3>
+                              <p className="text-sm text-muted-foreground mb-2 line-clamp-1">{product.description}</p>
+                              <div className="flex items-center gap-4">
+                                <span className="font-oswald text-xl text-primary">
+                                  {product.is_price_from && 'от '}{parseFloat(product.price).toLocaleString('ru-RU')} ₽
+                                </span>
+                                {product.old_price && (
+                                  <span className="text-sm text-muted-foreground line-through">
+                                    {parseFloat(product.old_price).toLocaleString('ru-RU')} ₽
+                                  </span>
+                                )}
+                                {product.material && (
+                                  <span className="text-sm text-muted-foreground">{product.material}</span>
+                                )}
+                                {product.size && (
+                                  <span className="text-sm text-muted-foreground">{product.size}</span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex gap-2 flex-shrink-0">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => {
+                                  setEditingProduct(product);
+                                  setProductForm({
+                                    name: product.name,
+                                    slug: product.slug,
+                                    description: product.description,
+                                    price: product.price,
+                                    old_price: product.old_price || '',
+                                    image_url: product.image_url || '',
+                                    material: product.material || '',
+                                    size: product.size || '',
+                                    category_id: product.category_id?.toString() || '',
+                                    in_stock: product.in_stock,
+                                    is_featured: product.is_featured,
+                                    is_price_from: product.is_price_from || false,
+                                  });
+                                  setIsProductDialogOpen(true);
+                                }}
+                              >
+                                <Icon name="Edit" size={14} className="mr-1" />
+                                Изменить
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="destructive"
+                                onClick={async () => {
+                                  if (!confirm(`Удалить товар "${product.name}"?`)) return;
+                                  
+                                  try {
+                                    const response = await fetch(`${PRODUCTS_API}?id=${product.id}`, {
+                                      method: 'DELETE'
+                                    });
+                                    
+                                    if (response.ok) {
+                                      toast({
+                                        title: '✅ Успешно',
+                                        description: 'Товар удалён'
+                                      });
+                                      loadProducts();
+                                    }
+                                  } catch (error) {
+                                    toast({
+                                      title: '❌ Ошибка',
+                                      description: 'Не удалось удалить товар',
+                                      variant: 'destructive'
+                                    });
+                                  }
+                                }}
+                              >
+                                <Icon name="Trash2" size={14} />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
