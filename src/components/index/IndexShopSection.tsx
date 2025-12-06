@@ -115,7 +115,7 @@ export default function IndexShopSection() {
                       <img
                         src={product.image_url}
                         alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
@@ -172,34 +172,11 @@ export default function IndexShopSection() {
                       </span>
                     )}
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      variant="outline"
-                      className="font-oswald"
-                      onClick={() => {
-                        addToCart({
-                          id: product.id,
-                          name: product.name,
-                          slug: product.slug,
-                          price: product.price,
-                          image_url: product.image_url,
-                        });
-                        toast({
-                          title: 'Добавлено в корзину',
-                          description: product.name,
-                        });
-                      }}
-                      disabled={!product.in_stock}
-                    >
-                      <Icon name="ShoppingCart" size={16} className="mr-1" />
-                      В корзину
+                  <Link to={`/product/${product.slug}`}>
+                    <Button className="w-full font-oswald">
+                      Подробнее
                     </Button>
-                    <Link to={`/product/${product.slug}`}>
-                      <Button className="w-full font-oswald">
-                        Подробнее
-                      </Button>
-                    </Link>
-                  </div>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
