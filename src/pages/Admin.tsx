@@ -1,11 +1,30 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
-import Icon from "@/components/ui/icon";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
+import Icon from '@/components/ui/icon';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   DndContext,
   closestCenter,
@@ -34,6 +53,29 @@ interface Monument {
   description?: string;
 }
 
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  price: string;
+  old_price?: string;
+  image_url?: string;
+  in_stock: boolean;
+  is_featured: boolean;
+  material?: string;
+  size?: string;
+  category_id?: number;
+  category_name: string;
+}
+
 interface GalleryItem {
   id: string;
   type: 'image' | 'video';
@@ -42,14 +84,12 @@ interface GalleryItem {
   desc: string;
 }
 
-interface SortableGalleryItemProps {
+const SortableGalleryItem = ({ item, index, onEdit, onDelete }: {
   item: GalleryItem;
   index: number;
   onEdit: (idx: number) => void;
   onDelete: (idx: number) => void;
-}
-
-const SortableGalleryItem = ({ item, index, onEdit, onDelete }: SortableGalleryItemProps) => {
+}) => {
   const {
     attributes,
     listeners,
@@ -79,16 +119,9 @@ const SortableGalleryItem = ({ item, index, onEdit, onDelete }: SortableGalleryI
             </div>
             <div className="w-24 h-24 bg-secondary rounded overflow-hidden flex-shrink-0">
               {item.type === 'video' ? (
-                <video
-                  src={item.url}
-                  className="w-full h-full object-cover"
-                />
+                <video src={item.url} className="w-full h-full object-cover" />
               ) : (
-                <img
-                  src={item.url}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
+                <img src={item.url} alt={item.title} className="w-full h-full object-cover" />
               )}
             </div>
             <div className="flex-1 min-w-0">
@@ -100,21 +133,11 @@ const SortableGalleryItem = ({ item, index, onEdit, onDelete }: SortableGalleryI
               <h4 className="font-semibold mb-1 truncate">{item.title}</h4>
               <p className="text-sm text-muted-foreground line-clamp-2">{item.desc}</p>
               <div className="flex gap-2 mt-3">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => onEdit(index)}
-                  className="min-w-[80px]"
-                >
+                <Button size="sm" variant="outline" onClick={() => onEdit(index)}>
                   <Icon name="Edit" size={14} className="mr-1" />
                   Изменить
                 </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => onDelete(index)}
-                  className="min-w-[80px]"
-                >
+                <Button size="sm" variant="destructive" onClick={() => onDelete(index)}>
                   <Icon name="Trash2" size={14} className="mr-1" />
                   Удалить
                 </Button>
@@ -127,23 +150,14 @@ const SortableGalleryItem = ({ item, index, onEdit, onDelete }: SortableGalleryI
   );
 };
 
-const Admin = () => {
+export default function Admin() {
   const navigate = useNavigate();
-  const [monuments, setMonuments] = useState<Monument[]>([]);
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [filterCategory, setFilterCategory] = useState<string>("Все");
-  const [formData, setFormData] = useState<Monument>({
-    title: "",
-    image_url: "",
-    price: "",
-    size: "",
-    category: "Вертикальные",
-    description: ""
-  });
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState('overview');
 
+  const [monuments, setMonuments] = useState<Monument[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([
     { id: '1', type: 'image', url: 'https://cdn.poehali.dev/files/bbcac88c-6deb-429e-b227-40488c7c5273.jpg', title: 'Комплексное благоустройство', desc: 'Установка памятников и уход за территорией' },
     { id: '2', type: 'image', url: 'https://cdn.poehali.dev/files/58ba923f-a428-4ebd-a17d-2cd8e5b523a8.jpg', title: 'Художественная гравировка', desc: 'Индивидуальный дизайн и качественное исполнение' },
@@ -152,16 +166,56 @@ const Admin = () => {
     { id: '5', type: 'image', url: 'https://cdn.poehali.dev/files/a92e8f49-5be4-4b4b-939f-e97e69b14d55.jpg', title: 'Мемориальные комплексы', desc: 'С благоустройством и цветником' },
     { id: '6', type: 'image', url: 'https://cdn.poehali.dev/files/e4f88cd9-b74c-4b96-bf11-ab78a26bc19a.jpg', title: 'Элитные памятники', desc: 'Эксклюзивный дизайн по индивидуальному проекту' }
   ]);
-  const [editingGalleryId, setEditingGalleryId] = useState<number | null>(null);
-  const [uploadingGallery, setUploadingGallery] = useState(false);
-  const [galleryUploadProgress, setGalleryUploadProgress] = useState(0);
-  const [isDraggingGallery, setIsDraggingGallery] = useState(false);
-  const [galleryFormData, setGalleryFormData] = useState<Omit<GalleryItem, 'id'>>({
+
+  const [editingMonument, setEditingMonument] = useState<number | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [filterCategory, setFilterCategory] = useState<string>("Все");
+
+  const [monumentForm, setMonumentForm] = useState<Monument>({
+    title: "",
+    image_url: "",
+    price: "",
+    size: "",
+    category: "Вертикальные",
+    description: ""
+  });
+
+  const [productForm, setProductForm] = useState({
+    name: '',
+    slug: '',
+    description: '',
+    price: '',
+    old_price: '',
+    image_url: '',
+    material: '',
+    size: '',
+    category_id: '',
+    in_stock: true,
+    is_featured: false,
+  });
+
+  const [galleryForm, setGalleryForm] = useState<Omit<GalleryItem, 'id'>>({
     type: 'image',
     url: '',
     title: '',
     desc: ''
   });
+
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [editingGalleryId, setEditingGalleryId] = useState<number | null>(null);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [galleryUploadProgress, setGalleryUploadProgress] = useState(0);
+  const [isDraggingGallery, setIsDraggingGallery] = useState(false);
+
+  const categories_list = ["Вертикальные", "Горизонтальные", "Эксклюзивные", "С крестом"];
+  const filterCategories = ["Все", ...categories_list];
+
+  const API_URL = "https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6";
+  const UPLOAD_URL = "https://functions.poehali.dev/96dcc1e1-90f9-4b11-b0c7-2d66559ddcbb";
+  const PRODUCTS_API = "https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d";
+  const IMAGE_UPLOAD_API = "https://functions.poehali.dev/0dcf69f8-40b3-4bcf-9d48-59e0c5584e34";
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -170,14 +224,10 @@ const Admin = () => {
     })
   );
 
-  const categories = ["Вертикальные", "Горизонтальные", "Эксклюзивные", "С крестом"];
-  const filterCategories = ["Все", ...categories];
-
-  const API_URL = "https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6";
-  const UPLOAD_URL = "https://functions.poehali.dev/96dcc1e1-90f9-4b11-b0c7-2d66559ddcbb";
-
   useEffect(() => {
     fetchMonuments();
+    loadProducts();
+    loadCategories();
     
     const savedGallery = localStorage.getItem('galleryItems');
     if (savedGallery) {
@@ -199,810 +249,822 @@ const Admin = () => {
       const data = await response.json();
       if (Array.isArray(data)) {
         setMonuments(data);
-      } else {
-        console.error("API returned non-array data:", data);
-        setMonuments([]);
       }
     } catch (error) {
       console.error("Error fetching monuments:", error);
-      setMonuments([]);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const loadProducts = async () => {
+    try {
+      const response = await fetch(PRODUCTS_API);
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error('Error loading products:', error);
+    }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const response = await fetch(`${PRODUCTS_API}?type=categories`);
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  };
+
+  const handleMonumentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Валидация обязательных полей
-    if (!formData.title.trim()) {
-      alert('❌ Пожалуйста, введите название памятника');
-      return;
-    }
-    if (!formData.image_url.trim()) {
-      alert('❌ Пожалуйста, загрузите изображение памятника');
-      return;
-    }
-    if (!formData.price.trim()) {
-      alert('❌ Пожалуйста, укажите цену');
-      return;
-    }
-    if (!formData.size.trim()) {
-      alert('❌ Пожалуйста, укажите размер');
+    if (!monumentForm.title.trim() || !monumentForm.image_url.trim() || !monumentForm.price.trim() || !monumentForm.size.trim()) {
+      toast({
+        title: '❌ Ошибка',
+        description: 'Заполните все обязательные поля',
+        variant: 'destructive'
+      });
       return;
     }
 
     try {
       let response;
-      if (editingId) {
-        response = await fetch(`${API_URL}?id=${editingId}`, {
+      if (editingMonument) {
+        response = await fetch(`${API_URL}?id=${editingMonument}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(monumentForm)
         });
       } else {
         response = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(monumentForm)
         });
       }
 
       if (response.ok) {
-        alert(editingId ? '✓ Памятник успешно обновлён' : '✓ Памятник успешно добавлен');
-        setFormData({ title: "", image_url: "", price: "", size: "", category: "Вертикальные", description: "" });
-        setEditingId(null);
+        toast({
+          title: '✅ Успешно',
+          description: editingMonument ? 'Памятник обновлён' : 'Памятник добавлен'
+        });
         fetchMonuments();
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Server error:', errorData);
-        alert('✗ Ошибка при сохранении памятника');
+        setMonumentForm({ title: "", image_url: "", price: "", size: "", category: "Вертикальные", description: "" });
+        setEditingMonument(null);
       }
     } catch (error) {
       console.error("Error saving monument:", error);
-      alert('✗ Ошибка при сохранении памятника');
+      toast({
+        title: '❌ Ошибка',
+        description: 'Не удалось сохранить памятник',
+        variant: 'destructive'
+      });
     }
   };
 
   const handleEdit = (monument: Monument) => {
-    setFormData(monument);
-    setEditingId(monument.id || null);
+    setMonumentForm(monument);
+    setEditingMonument(monument.id || null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: number) => {
-    const monument = monuments.find(m => m.id === id);
-    if (!confirm(`Вы уверены, что хотите удалить памятник "${monument?.title}"?\n\nЭто действие нельзя отменить.`)) return;
+    if (!confirm('Удалить этот памятник?')) return;
 
     try {
       const response = await fetch(`${API_URL}?id=${id}`, {
         method: "DELETE"
       });
-      
+
       if (response.ok) {
-        alert('✓ Памятник успешно удалён');
+        toast({
+          title: '✅ Успешно',
+          description: 'Памятник удалён'
+        });
         fetchMonuments();
-      } else {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('Delete error:', errorData);
-        alert(`✗ Ошибка при удалении: ${errorData.error || 'Неизвестная ошибка'}`);
       }
     } catch (error) {
       console.error("Error deleting monument:", error);
-      alert(`✗ Ошибка при удалении: ${error}`);
-    }
-  };
-
-  const handleCancel = () => {
-    setFormData({ title: "", image_url: "", price: "", size: "", category: "Вертикальные", description: "" });
-    setEditingId(null);
-  };
-
-  const uploadFile = async (file: File, targetForm: 'monument' | 'gallery' = 'gallery') => {
-    const isImage = file.type.startsWith('image/');
-    const isVideo = file.type.startsWith('video/');
-    
-    if (!isImage && !isVideo) {
-      alert('❌ Пожалуйста, выберите изображение или видео');
-      return;
-    }
-
-    const maxSize = 10 * 1024 * 1024;
-    if (file.size > maxSize) {
-      alert('❌ Размер файла не должен превышать 10 МБ');
-      return;
-    }
-
-    if (targetForm === 'monument') {
-      setUploading(true);
-      setUploadProgress(0);
-    } else {
-      setUploadingGallery(true);
-      setGalleryUploadProgress(0);
-    }
-
-    try {
-      const reader = new FileReader();
-      
-      reader.onprogress = (e) => {
-        if (e.lengthComputable) {
-          const percentLoaded = Math.round((e.loaded / e.total) * 50);
-          if (targetForm === 'monument') {
-            setUploadProgress(percentLoaded);
-          } else {
-            setGalleryUploadProgress(percentLoaded);
-          }
-        }
-      };
-      
-      reader.onerror = () => {
-        console.error('FileReader error');
-        alert('❌ Ошибка чтения файла. Попробуйте другое изображение.');
-        if (targetForm === 'monument') {
-          setUploading(false);
-          setUploadProgress(0);
-        } else {
-          setUploadingGallery(false);
-          setGalleryUploadProgress(0);
-        }
-      };
-      
-      reader.onload = async (event) => {
-        try {
-          if (!event.target?.result) {
-            throw new Error('Не удалось прочитать файл');
-          }
-          
-          if (targetForm === 'monument') {
-            setUploadProgress(50);
-          } else {
-            setGalleryUploadProgress(50);
-          }
-          
-          const base64 = event.target.result as string;
-          
-          if (!base64 || !base64.startsWith('data:')) {
-            throw new Error('Неверный формат данных');
-          }
-          
-          const extension = file.name.split('.').pop()?.toLowerCase() || (file.type.startsWith('video/') ? 'mp4' : 'jpg');
-
-          if (targetForm === 'monument') {
-            setUploadProgress(60);
-          } else {
-            setGalleryUploadProgress(60);
-          }
-
-          const uploadTimeout = setTimeout(() => {
-            throw new Error('Превышено время ожидания загрузки');
-          }, 60000);
-          
-          const response = await fetch(UPLOAD_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              image: base64,
-              extension: extension
-            })
-          });
-          
-          clearTimeout(uploadTimeout);
-
-          if (targetForm === 'monument') {
-            setUploadProgress(90);
-          } else {
-            setGalleryUploadProgress(90);
-          }
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-            console.error('Upload error:', errorData);
-            alert(`❌ Ошибка загрузки: ${errorData.error || 'Неизвестная ошибка'}`);
-            if (targetForm === 'monument') {
-              setUploading(false);
-              setUploadProgress(0);
-            } else {
-              setUploadingGallery(false);
-              setGalleryUploadProgress(0);
-            }
-            return;
-          }
-
-          const data = await response.json();
-
-          if (!data || typeof data !== 'object') {
-            throw new Error('Неверный ответ сервера');
-          }
-
-          if (data.url && typeof data.url === 'string') {
-            if (targetForm === 'monument') {
-              setUploadProgress(100);
-              setFormData({ ...formData, image_url: data.url });
-              setTimeout(() => {
-                setUploading(false);
-                setUploadProgress(0);
-              }, 500);
-            } else {
-              setGalleryUploadProgress(100);
-              setGalleryFormData({ ...galleryFormData, url: data.url, type: isImage ? 'image' : 'video' });
-              setTimeout(() => {
-                setUploadingGallery(false);
-                setGalleryUploadProgress(0);
-              }, 500);
-            }
-          } else {
-            alert('❌ Ошибка: не получен URL изображения');
-            if (targetForm === 'monument') {
-              setUploading(false);
-              setUploadProgress(0);
-            } else {
-              setUploadingGallery(false);
-              setGalleryUploadProgress(0);
-            }
-          }
-        } catch (error) {
-          console.error('Upload error:', error);
-          const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
-          alert(`❌ Ошибка загрузки: ${errorMessage}`);
-          if (targetForm === 'monument') {
-            setUploading(false);
-            setUploadProgress(0);
-          } else {
-            setUploadingGallery(false);
-            setGalleryUploadProgress(0);
-          }
-        }
-      };
-
-      reader.readAsDataURL(file);
-    } catch (error) {
-      console.error('Upload error:', error);
-      alert('❌ Ошибка загрузки изображения');
-      if (targetForm === 'monument') {
-        setUploading(false);
-        setUploadProgress(0);
-      } else {
-        setUploadingGallery(false);
-        setGalleryUploadProgress(0);
-      }
-    }
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    uploadFile(file, 'monument');
-  };
-
-  const handleDragOver = (e: React.DragEvent, target: 'monument' | 'gallery' = 'monument') => {
-    e.preventDefault();
-    if (target === 'monument') {
-      setIsDragging(true);
-    } else {
-      setIsDraggingGallery(true);
-    }
-  };
-
-  const handleDragLeave = (e: React.DragEvent, target: 'monument' | 'gallery' = 'monument') => {
-    e.preventDefault();
-    if (target === 'monument') {
-      setIsDragging(false);
-    } else {
-      setIsDraggingGallery(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent, target: 'monument' | 'gallery' = 'monument') => {
-    e.preventDefault();
-    if (target === 'monument') {
-      setIsDragging(false);
-    } else {
-      setIsDraggingGallery(false);
-    }
-
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      uploadFile(file, target);
-    }
-  };
-
-  const handleGalleryImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) uploadFile(file, 'gallery');
-  };
-
-  const handleAddGalleryItem = () => {
-    if (!galleryFormData.url || !galleryFormData.title || !galleryFormData.desc) {
-      alert('Пожалуйста, заполните все поля');
-      return;
-    }
-
-    if (editingGalleryId !== null) {
-      setGalleryItems(galleryItems.map((item, idx) => 
-        idx === editingGalleryId ? { ...galleryFormData, id: item.id } : item
-      ));
-      alert('✓ Элемент галереи обновлён');
-    } else {
-      const newId = Date.now().toString();
-      setGalleryItems([...galleryItems, { ...galleryFormData, id: newId }]);
-      alert('✓ Элемент галереи добавлен');
-    }
-
-    setGalleryFormData({ type: 'image', url: '', title: '', desc: '' });
-    setEditingGalleryId(null);
-  };
-
-  const handleEditGalleryItem = (idx: number) => {
-    const { id, ...rest } = galleryItems[idx];
-    setGalleryFormData(rest);
-    setEditingGalleryId(idx);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      setGalleryItems((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
+      toast({
+        title: '❌ Ошибка',
+        description: 'Не удалось удалить памятник',
+        variant: 'destructive'
       });
     }
   };
 
-  const handleDeleteGalleryItem = (idx: number) => {
-    if (!confirm('Вы уверены, что хотите удалить этот элемент?')) return;
-    setGalleryItems(galleryItems.filter((_, i) => i !== idx));
-    alert('✓ Элемент галереи удалён');
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'monument' | 'gallery' | 'product') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (target === 'monument') setUploading(true);
+    if (target === 'gallery') setUploadingGallery(true);
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch(target === 'product' ? IMAGE_UPLOAD_API : UPLOAD_URL, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        if (target === 'monument') {
+          setMonumentForm({ ...monumentForm, image_url: data.url });
+        } else if (target === 'gallery') {
+          setGalleryForm({ ...galleryForm, url: data.url });
+        } else if (target === 'product') {
+          setProductForm({ ...productForm, image_url: data.url });
+        }
+        
+        toast({
+          title: '✅ Успешно',
+          description: 'Изображение загружено'
+        });
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: '❌ Ошибка',
+        description: 'Не удалось загрузить изображение',
+        variant: 'destructive'
+      });
+    } finally {
+      if (target === 'monument') setUploading(false);
+      if (target === 'gallery') setUploadingGallery(false);
+    }
   };
 
-  const handleCancelGalleryEdit = () => {
-    setGalleryFormData({ type: 'image', url: '', title: '', desc: '' });
+  const handleGallerySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!galleryForm.url || !galleryForm.title) {
+      toast({
+        title: '❌ Ошибка',
+        description: 'Заполните все обязательные поля',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (editingGalleryId !== null) {
+      setGalleryItems(galleryItems.map((item, idx) =>
+        idx === editingGalleryId ? { ...galleryForm, id: item.id } : item
+      ));
+      toast({
+        title: '✅ Успешно',
+        description: 'Элемент галереи обновлён'
+      });
+    } else {
+      setGalleryItems([...galleryItems, { ...galleryForm, id: Date.now().toString() }]);
+      toast({
+        title: '✅ Успешно',
+        description: 'Элемент добавлен в галерею'
+      });
+    }
+
+    setGalleryForm({ type: 'image', url: '', title: '', desc: '' });
     setEditingGalleryId(null);
   };
 
+  const handleGalleryEdit = (index: number) => {
+    const item = galleryItems[index];
+    setGalleryForm(item);
+    setEditingGalleryId(index);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleGalleryDelete = (index: number) => {
+    if (!confirm('Удалить этот элемент из галереи?')) return;
+    setGalleryItems(galleryItems.filter((_, idx) => idx !== index));
+    toast({
+      title: '✅ Успешно',
+      description: 'Элемент удалён из галереи'
+    });
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setGalleryItems((items) => {
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
+      return arrayMove(items, oldIndex, newIndex);
+    });
+  };
+
+  const generateSlug = (text: string) => {
+    const translitMap: { [key: string]: string } = {
+      'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e',
+      'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
+      'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+      'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ъ': '',
+      'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+    };
+
+    return text
+      .toLowerCase()
+      .split('')
+      .map(char => translitMap[char] || char)
+      .join('')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  };
+
+  const filteredMonuments = filterCategory === "Все" 
+    ? monuments 
+    : monuments.filter(m => m.category === filterCategory);
+
+  const stats = {
+    monuments: monuments.length,
+    products: products.length,
+    categories: categories.length,
+    gallery: galleryItems.length,
+    inStock: products.filter(p => p.in_stock).length
+  };
+
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
+    <div className="min-h-screen bg-background pb-20">
+      <div className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-oswald font-bold text-4xl mb-2">Админ-панель</h1>
-              <p className="text-muted-foreground">Управление каталогом памятников</p>
+              <h1 className="font-oswald font-bold text-2xl">Панель администратора</h1>
+              <p className="text-sm text-muted-foreground">Управление сайтом</p>
             </div>
-            <Button onClick={() => navigate('/admin/products')} className="font-oswald">
-              <Icon name="ShoppingBag" size={20} className="mr-2" />
-              Управление товарами
+            <Button variant="outline" onClick={() => navigate('/')}>
+              <Icon name="Home" size={16} className="mr-2" />
+              На сайт
             </Button>
           </div>
         </div>
+      </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-oswald">
-                {editingId ? "Редактировать памятник" : "Добавить памятник"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Название *</label>
-                  <Input
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="Вертикальные памятники"
-                    required
-                  />
-                </div>
+      <div className="container mx-auto px-4 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
+            <TabsTrigger value="overview" className="font-oswald">
+              <Icon name="LayoutDashboard" size={16} className="mr-2" />
+              Обзор
+            </TabsTrigger>
+            <TabsTrigger value="catalog" className="font-oswald">
+              <Icon name="Image" size={16} className="mr-2" />
+              Каталог примеров
+            </TabsTrigger>
+            <TabsTrigger value="shop" className="font-oswald">
+              <Icon name="ShoppingBag" size={16} className="mr-2" />
+              Магазин
+            </TabsTrigger>
+            <TabsTrigger value="gallery" className="font-oswald">
+              <Icon name="Images" size={16} className="mr-2" />
+              Галерея работ
+            </TabsTrigger>
+          </TabsList>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">Изображение *</label>
-                  <div className="space-y-3">
-                    <div 
-                      className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                        isDragging 
-                          ? 'border-primary bg-primary/5' 
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                      onDragOver={(e) => handleDragOver(e, 'monument')}
-                      onDragLeave={(e) => handleDragLeave(e, 'monument')}
-                      onDrop={(e) => handleDrop(e, 'monument')}
-                    >
-                      {uploading ? (
-                        <div className="flex flex-col items-center gap-4 w-full max-w-xs mx-auto">
-                          <Icon name="Loader2" className="animate-spin text-primary" size={40} />
-                          <div className="w-full space-y-2">
-                            <Progress value={uploadProgress} className="h-2" />
-                            <p className="text-sm text-center text-muted-foreground font-medium">
-                              Загрузка {uploadProgress}%
-                            </p>
-                          </div>
-                        </div>
-                      ) : formData.image_url ? (
-                        <div className="space-y-3">
-                          <div className="relative w-full h-48 bg-secondary rounded overflow-hidden flex items-center justify-center">
-                            <img
-                              src={formData.image_url}
-                              alt="Превью"
-                              className="w-full h-full object-contain"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                              }}
-                            />
-                          </div>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setFormData({ ...formData, image_url: "" })}
-                          >
-                            <Icon name="X" className="mr-2" size={16} />
-                            Удалить изображение
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <Icon name="Upload" className="mx-auto text-muted-foreground" size={48} />
-                          <div>
-                            <p className="text-sm font-medium mb-1">
-                              Перетащите изображение сюда
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              или нажмите, чтобы выбрать файл
-                            </p>
-                          </div>
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            disabled={uploading}
-                            className="absolute inset-0 opacity-0 cursor-pointer"
-                          />
-                        </div>
-                      )}
-                    </div>
-                    <Input
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      placeholder="или вставьте URL: https://..."
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Цена *</label>
-                  <Input
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    placeholder="от 15 000 ₽"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Размер *</label>
-                  <Input
-                    value={formData.size}
-                    onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-                    placeholder="100x50x5"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Категория *</label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    required
-                  >
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Описание</label>
-                  <Textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Дополнительная информация"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="flex gap-2">
-                  <Button type="submit" className="flex-1">
-                    <Icon name={editingId ? "Save" : "Plus"} className="mr-2" size={18} />
-                    {editingId ? "Сохранить" : "Добавить"}
-                  </Button>
-                  {editingId && (
-                    <Button type="button" variant="outline" onClick={handleCancel}>
-                      Отмена
-                    </Button>
-                  )}
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-oswald font-bold text-2xl">Список памятников</h2>
-              <div className="flex gap-2">
-                {filterCategories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setFilterCategory(cat)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                      filterCategory === cat
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-secondary text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {monuments.length === 0 ? (
-              <Card className="border-dashed">
-                <CardContent className="p-12 text-center">
-                  <Icon name="Package" size={48} className="mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground mb-2">Пока нет памятников в каталоге</p>
-                  <p className="text-sm text-muted-foreground">Добавьте первый памятник через форму слева</p>
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Примеры памятников</CardTitle>
+                  <Icon name="Image" className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.monuments}</div>
+                  <p className="text-xs text-muted-foreground">В каталоге примеров</p>
                 </CardContent>
               </Card>
-            ) : (
-              monuments
-                .filter(m => filterCategory === "Все" || m.category === filterCategory)
-                .map((monument) => (
-                <Card key={monument.id} className={editingId === monument.id ? 'border-primary border-2' : ''}>
-                  <CardContent className="p-4">
-                    <div className="flex gap-4">
-                      <div className="relative w-32 h-40 flex-shrink-0 bg-secondary rounded border-2 border-border overflow-hidden flex items-center justify-center">
-                        <img
-                          src={monument.image_url}
-                          alt={monument.title}
-                          className="w-full h-full object-contain"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                          }}
-                        />
-                        {editingId === monument.id && (
-                          <div className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold z-10">
-                            ✓
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-oswald font-bold text-lg mb-1 truncate">{monument.title}</h3>
-                        <div className="space-y-1">
-                          <p className="text-sm text-muted-foreground flex items-center gap-2">
-                            <Icon name="DollarSign" size={14} />
-                            {monument.price}
-                          </p>
-                          <p className="text-sm text-muted-foreground flex items-center gap-2">
-                            <Icon name="Maximize2" size={14} />
-                            {monument.size}
-                          </p>
-                          {monument.category && (
-                            <p className="text-sm text-primary font-medium flex items-center gap-2">
-                              <Icon name="Tag" size={14} />
-                              {monument.category}
-                            </p>
-                          )}
-                        </div>
-                        {monument.description && (
-                          <p className="text-sm mt-2 text-muted-foreground line-clamp-2">{monument.description}</p>
-                        )}
-                      </div>
-                      <div className="flex flex-col gap-2 flex-shrink-0">
-                        <Button
-                          size="sm"
-                          variant={editingId === monument.id ? "default" : "outline"}
-                          onClick={() => handleEdit(monument)}
-                          className="min-w-[100px]"
-                        >
-                          <Icon name="Edit" size={16} className="mr-2" />
-                          Изменить
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDelete(monument.id!)}
-                          className="min-w-[100px]"
-                        >
-                          <Icon name="Trash2" size={16} className="mr-2" />
-                          Удалить
-                        </Button>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Товары в магазине</CardTitle>
+                  <Icon name="ShoppingBag" className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.products}</div>
+                  <p className="text-xs text-muted-foreground">{stats.inStock} в наличии</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Категории</CardTitle>
+                  <Icon name="FolderOpen" className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.categories}</div>
+                  <p className="text-xs text-muted-foreground">Для магазина</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Галерея</CardTitle>
+                  <Icon name="Images" className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.gallery}</div>
+                  <p className="text-xs text-muted-foreground">Наши работы</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald">Быстрый доступ</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button variant="outline" className="h-20 justify-start" onClick={() => setActiveTab('catalog')}>
+                    <div className="flex items-center gap-4">
+                      <Icon name="Image" size={24} className="text-primary" />
+                      <div className="text-left">
+                        <div className="font-semibold">Каталог примеров</div>
+                        <div className="text-sm text-muted-foreground">Памятники для вдохновения</div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-        </div>
+                  </Button>
 
-        <div className="mt-12">
-          <h2 className="font-oswald font-bold text-3xl mb-6">Управление галереей работ</h2>
-          
-          <div className="grid lg:grid-cols-2 gap-8">
+                  <Button variant="outline" className="h-20 justify-start" onClick={() => setActiveTab('shop')}>
+                    <div className="flex items-center gap-4">
+                      <Icon name="ShoppingBag" size={24} className="text-primary" />
+                      <div className="text-left">
+                        <div className="font-semibold">Интернет-магазин</div>
+                        <div className="text-sm text-muted-foreground">Товары и категории</div>
+                      </div>
+                    </div>
+                  </Button>
+
+                  <Button variant="outline" className="h-20 justify-start" onClick={() => setActiveTab('gallery')}>
+                    <div className="flex items-center gap-4">
+                      <Icon name="Images" size={24} className="text-primary" />
+                      <div className="text-left">
+                        <div className="font-semibold">Галерея работ</div>
+                        <div className="text-sm text-muted-foreground">Портфолио компании</div>
+                      </div>
+                    </div>
+                  </Button>
+
+                  <Button variant="outline" className="h-20 justify-start" onClick={() => navigate('/')}>
+                    <div className="flex items-center gap-4">
+                      <Icon name="Eye" size={24} className="text-primary" />
+                      <div className="text-left">
+                        <div className="font-semibold">Посмотреть сайт</div>
+                        <div className="text-sm text-muted-foreground">Открыть главную страницу</div>
+                      </div>
+                    </div>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="catalog" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="font-oswald">
-                  {editingGalleryId !== null ? "Редактировать элемент" : "Добавить фото/видео в галерею"}
+                  {editingMonument ? 'Редактировать памятник' : 'Добавить памятник в каталог примеров'}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Тип контента</label>
-                    <select
-                      value={galleryFormData.type}
-                      onChange={(e) => setGalleryFormData({ ...galleryFormData, type: e.target.value as 'image' | 'video' })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      <option value="image">Фото</option>
-                      <option value="video">Видео</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Файл *</label>
-                    <div className="space-y-3">
-                      <div 
-                        className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                          isDraggingGallery 
-                            ? 'border-primary bg-primary/5' 
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                        onDragOver={(e) => handleDragOver(e, 'gallery')}
-                        onDragLeave={(e) => handleDragLeave(e, 'gallery')}
-                        onDrop={(e) => handleDrop(e, 'gallery')}
-                      >
-                        {uploadingGallery ? (
-                          <div className="flex flex-col items-center gap-4 w-full max-w-xs mx-auto">
-                            <Icon name="Loader2" className="animate-spin text-primary" size={40} />
-                            <div className="w-full space-y-2">
-                              <Progress value={galleryUploadProgress} className="h-2" />
-                              <p className="text-sm text-center text-muted-foreground font-medium">
-                                Загрузка {galleryUploadProgress}%
-                              </p>
-                            </div>
-                          </div>
-                        ) : galleryFormData.url ? (
-                          <div className="space-y-3">
-                            <div className="relative w-full h-48 bg-secondary rounded overflow-hidden">
-                              {galleryFormData.type === 'video' ? (
-                                <video
-                                  src={galleryFormData.url}
-                                  className="w-full h-full object-contain"
-                                  controls
-                                />
-                              ) : (
-                                <img
-                                  src={galleryFormData.url}
-                                  alt="Превью"
-                                  className="w-full h-full object-contain"
-                                />
-                              )}
-                            </div>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setGalleryFormData({ ...galleryFormData, url: "" })}
-                            >
-                              <Icon name="X" className="mr-2" size={16} />
-                              Удалить файл
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            <Icon name="Upload" className="mx-auto text-muted-foreground" size={48} />
-                            <div>
-                              <p className="text-sm font-medium mb-1">
-                                Перетащите {galleryFormData.type === 'video' ? 'видео' : 'изображение'} сюда
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                или нажмите, чтобы выбрать файл
-                              </p>
-                            </div>
-                            <Input
-                              type="file"
-                              accept={galleryFormData.type === 'video' ? 'video/*' : 'image/*'}
-                              onChange={handleGalleryImageUpload}
-                              disabled={uploadingGallery}
-                              className="absolute inset-0 opacity-0 cursor-pointer"
-                            />
-                          </div>
-                        )}
-                      </div>
+                <form onSubmit={handleMonumentSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="title">Название *</Label>
                       <Input
-                        value={galleryFormData.url}
-                        onChange={(e) => setGalleryFormData({ ...galleryFormData, url: e.target.value })}
-                        placeholder="или вставьте URL: https://..."
+                        id="title"
+                        value={monumentForm.title}
+                        onChange={(e) => setMonumentForm({ ...monumentForm, title: e.target.value })}
+                        placeholder="Например: Вертикальный памятник №1"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="category">Категория</Label>
+                      <Select
+                        value={monumentForm.category}
+                        onValueChange={(value) => setMonumentForm({ ...monumentForm, category: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories_list.map(cat => (
+                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="price">Цена *</Label>
+                      <Input
+                        id="price"
+                        value={monumentForm.price}
+                        onChange={(e) => setMonumentForm({ ...monumentForm, price: e.target.value })}
+                        placeholder="от 25 000 ₽"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="size">Размер *</Label>
+                      <Input
+                        id="size"
+                        value={monumentForm.size}
+                        onChange={(e) => setMonumentForm({ ...monumentForm, size: e.target.value })}
+                        placeholder="120x60x8 см"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Название *</label>
-                    <Input
-                      value={galleryFormData.title}
-                      onChange={(e) => setGalleryFormData({ ...galleryFormData, title: e.target.value })}
-                      placeholder="Комплексное благоустройство"
+                    <Label htmlFor="description">Описание</Label>
+                    <Textarea
+                      id="description"
+                      value={monumentForm.description || ''}
+                      onChange={(e) => setMonumentForm({ ...monumentForm, description: e.target.value })}
+                      placeholder="Дополнительная информация о памятнике"
+                      rows={3}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Описание *</label>
+                    <Label>Изображение *</Label>
+                    <div className="flex gap-4 items-start">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'monument')}
+                        disabled={uploading}
+                      />
+                      {monumentForm.image_url && (
+                        <img src={monumentForm.image_url} alt="Preview" className="w-20 h-20 object-cover rounded border" />
+                      )}
+                    </div>
+                    {uploading && <Progress value={uploadProgress} className="mt-2" />}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button type="submit" disabled={uploading}>
+                      <Icon name={editingMonument ? "Save" : "Plus"} size={16} className="mr-2" />
+                      {editingMonument ? 'Сохранить изменения' : 'Добавить памятник'}
+                    </Button>
+                    {editingMonument && (
+                      <Button type="button" variant="outline" onClick={() => {
+                        setEditingMonument(null);
+                        setMonumentForm({ title: "", image_url: "", price: "", size: "", category: "Вертикальные", description: "" });
+                      }}>
+                        Отменить
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="font-oswald">Памятники в каталоге ({filteredMonuments.length})</CardTitle>
+                  <Select value={filterCategory} onValueChange={setFilterCategory}>
+                    <SelectTrigger className="w-[200px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filterCategories.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredMonuments.map((monument) => (
+                    <Card key={monument.id} className="overflow-hidden">
+                      <div className="aspect-[3/4] bg-secondary relative">
+                        <img src={monument.image_url} alt={monument.title} className="w-full h-full object-contain" />
+                        {monument.category && (
+                          <Badge className="absolute top-2 right-2">{monument.category}</Badge>
+                        )}
+                      </div>
+                      <CardContent className="p-4">
+                        <h3 className="font-oswald font-semibold text-lg mb-1">{monument.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-2">{monument.size}</p>
+                        <p className="font-oswald text-xl text-primary mb-3">{monument.price}</p>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline" onClick={() => handleEdit(monument)} className="flex-1">
+                            <Icon name="Edit" size={14} className="mr-1" />
+                            Изменить
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={() => monument.id && handleDelete(monument.id)}>
+                            <Icon name="Trash2" size={14} />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="shop" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Всего товаров</CardTitle>
+                  <Icon name="Package" className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{products.length}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Категорий</CardTitle>
+                  <Icon name="FolderOpen" className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{categories.length}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">В наличии</CardTitle>
+                  <Icon name="CheckCircle" className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{products.filter(p => p.in_stock).length}</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald">Управление магазином</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="font-oswald">
+                      <Icon name="Plus" size={20} className="mr-2" />
+                      Добавить товар
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Добавить новый товар</DialogTitle>
+                      <DialogDescription>
+                        Заполните информацию о товаре
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="product-name">Название</Label>
+                        <Input
+                          id="product-name"
+                          value={productForm.name}
+                          onChange={(e) => {
+                            setProductForm({ ...productForm, name: e.target.value, slug: generateSlug(e.target.value) });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="product-slug">URL (slug)</Label>
+                        <Input
+                          id="product-slug"
+                          value={productForm.slug}
+                          onChange={(e) => setProductForm({ ...productForm, slug: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="product-description">Описание</Label>
+                        <Textarea
+                          id="product-description"
+                          value={productForm.description}
+                          onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                          rows={3}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="product-price">Цена</Label>
+                          <Input
+                            id="product-price"
+                            type="number"
+                            value={productForm.price}
+                            onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="product-old-price">Старая цена</Label>
+                          <Input
+                            id="product-old-price"
+                            type="number"
+                            value={productForm.old_price}
+                            onChange={(e) => setProductForm({ ...productForm, old_price: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="product-material">Материал</Label>
+                          <Input
+                            id="product-material"
+                            value={productForm.material}
+                            onChange={(e) => setProductForm({ ...productForm, material: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="product-size">Размер</Label>
+                          <Input
+                            id="product-size"
+                            value={productForm.size}
+                            onChange={(e) => setProductForm({ ...productForm, size: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="product-category">Категория</Label>
+                        <Select
+                          value={productForm.category_id}
+                          onValueChange={(value) => setProductForm({ ...productForm, category_id: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Выберите категорию" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories.map(cat => (
+                              <SelectItem key={cat.id} value={cat.id.toString()}>{cat.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Изображение</Label>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(e, 'product')}
+                        />
+                        {productForm.image_url && (
+                          <img src={productForm.image_url} alt="Preview" className="w-20 h-20 object-cover rounded border mt-2" />
+                        )}
+                      </div>
+                      <Button onClick={() => {
+                        toast({
+                          title: 'Информация',
+                          description: 'Функция добавления товаров находится в разработке. Товары создаются через SQL.',
+                        });
+                      }}>
+                        Сохранить товар
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {products.slice(0, 6).map((product) => (
+                    <Card key={product.id} className="overflow-hidden">
+                      <div className="aspect-[4/3] bg-secondary relative">
+                        {product.image_url ? (
+                          <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Icon name="Image" size={48} className="text-muted-foreground" />
+                          </div>
+                        )}
+                        {product.is_featured && (
+                          <Badge className="absolute top-2 right-2 bg-primary">Хит</Badge>
+                        )}
+                      </div>
+                      <CardContent className="p-4">
+                        <Badge variant="outline" className="mb-2">{product.category_name}</Badge>
+                        <h3 className="font-oswald font-semibold text-lg mb-1">{product.name}</h3>
+                        <p className="font-oswald text-xl text-primary">{parseFloat(product.price).toLocaleString('ru-RU')} ₽</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="gallery" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald">
+                  {editingGalleryId !== null ? 'Редактировать элемент галереи' : 'Добавить в галерею работ'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleGallerySubmit} className="space-y-4">
+                  <div>
+                    <Label>Тип контента</Label>
+                    <Select
+                      value={galleryForm.type}
+                      onValueChange={(value: 'image' | 'video') => setGalleryForm({ ...galleryForm, type: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="image">📷 Изображение</SelectItem>
+                        <SelectItem value="video">🎥 Видео</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Файл *</Label>
+                    <div className="flex gap-4 items-start">
+                      <Input
+                        type="file"
+                        accept={galleryForm.type === 'image' ? 'image/*' : 'video/*'}
+                        onChange={(e) => handleImageUpload(e, 'gallery')}
+                        disabled={uploadingGallery}
+                      />
+                      {galleryForm.url && (
+                        <div className="w-20 h-20 rounded border overflow-hidden">
+                          {galleryForm.type === 'video' ? (
+                            <video src={galleryForm.url} className="w-full h-full object-cover" />
+                          ) : (
+                            <img src={galleryForm.url} alt="Preview" className="w-full h-full object-cover" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {uploadingGallery && <Progress value={galleryUploadProgress} className="mt-2" />}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="gallery-title">Заголовок *</Label>
+                    <Input
+                      id="gallery-title"
+                      value={galleryForm.title}
+                      onChange={(e) => setGalleryForm({ ...galleryForm, title: e.target.value })}
+                      placeholder="Название работы"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="gallery-desc">Описание</Label>
                     <Textarea
-                      value={galleryFormData.desc}
-                      onChange={(e) => setGalleryFormData({ ...galleryFormData, desc: e.target.value })}
-                      placeholder="Установка памятников и уход за территорией"
-                      rows={2}
+                      id="gallery-desc"
+                      value={galleryForm.desc}
+                      onChange={(e) => setGalleryForm({ ...galleryForm, desc: e.target.value })}
+                      placeholder="Краткое описание работы"
+                      rows={3}
                     />
                   </div>
 
                   <div className="flex gap-2">
-                    <Button type="button" onClick={handleAddGalleryItem} className="flex-1">
-                      <Icon name={editingGalleryId !== null ? "Save" : "Plus"} className="mr-2" size={18} />
-                      {editingGalleryId !== null ? "Сохранить" : "Добавить"}
+                    <Button type="submit" disabled={uploadingGallery}>
+                      <Icon name={editingGalleryId !== null ? "Save" : "Plus"} size={16} className="mr-2" />
+                      {editingGalleryId !== null ? 'Сохранить изменения' : 'Добавить в галерею'}
                     </Button>
                     {editingGalleryId !== null && (
-                      <Button type="button" variant="outline" onClick={handleCancelGalleryEdit}>
-                        Отмена
+                      <Button type="button" variant="outline" onClick={() => {
+                        setEditingGalleryId(null);
+                        setGalleryForm({ type: 'image', url: '', title: '', desc: '' });
+                      }}>
+                        Отменить
                       </Button>
                     )}
                   </div>
-                </div>
+                </form>
               </CardContent>
             </Card>
 
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-oswald font-semibold text-xl">
-                  Элементы галереи ({galleryItems.length})
-                </h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Icon name="GripVertical" size={16} />
-                  <span>Перетащите для изменения порядка</span>
-                </div>
-              </div>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={galleryItems.map(item => item.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-4 max-h-[800px] overflow-y-auto pr-2">
-                    {galleryItems.map((item, idx) => (
-                      <SortableGalleryItem
-                        key={item.id}
-                        item={item}
-                        index={idx}
-                        onEdit={handleEditGalleryItem}
-                        onDelete={handleDeleteGalleryItem}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </div>
-          </div>
-        </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald">Элементы галереи ({galleryItems.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                  <SortableContext items={galleryItems.map(item => item.id)} strategy={verticalListSortingStrategy}>
+                    <div className="space-y-3">
+                      {galleryItems.map((item, index) => (
+                        <SortableGalleryItem
+                          key={item.id}
+                          item={item}
+                          index={index}
+                          onEdit={handleGalleryEdit}
+                          onDelete={handleGalleryDelete}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
-};
-
-export default Admin;
+}

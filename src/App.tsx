@@ -10,7 +10,6 @@ import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
 import Constructor from "./pages/Constructor";
 import Admin from "./pages/Admin";
-import AdminProducts from "./pages/AdminProducts";
 import Catalog from "./pages/Catalog";
 import Product from "./pages/Product";
 import NotFound from "./pages/NotFound";
@@ -136,7 +135,6 @@ const AppContent = () => {
         <Route path="/product/:slug" element={<Product />} />
         <Route path="/constructor" element={<Constructor />} />
         <Route path="/admin" element={<Admin />} />
-        <Route path="/admin/products" element={<AdminProducts />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
