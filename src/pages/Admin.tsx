@@ -74,6 +74,7 @@ interface Product {
   is_price_from?: boolean;
   material?: string;
   size?: string;
+  sku?: string;
   category_id?: number;
   category_name: string;
 }
@@ -193,6 +194,7 @@ export default function Admin() {
     image_url: '',
     material: '',
     size: '',
+    sku: '',
     category_id: '',
     in_stock: true,
     is_featured: false,
@@ -534,6 +536,7 @@ export default function Admin() {
             image_url: row['URL изображения'] || row['image_url'] || '',
             material: row['Материал'] || row['material'] || '',
             size: row['Размер'] || row['size'] || '',
+            sku: row['Артикул'] || row['sku'] || '',
             category_id: row['ID категории'] || row['category_id'] || '',
             in_stock: row['В наличии'] !== undefined ? Boolean(row['В наличии']) : true,
             is_featured: row['Хит продаж'] !== undefined ? Boolean(row['Хит продаж']) : false,
@@ -1127,6 +1130,7 @@ export default function Admin() {
                       const template = [
                         {
                           'Название': 'Пример товара',
+                          'Артикул': 'ART-001',
                           'Описание': 'Описание товара',
                           'Цена': 50000,
                           'Старая цена': 60000,
@@ -1232,6 +1236,7 @@ export default function Admin() {
                         image_url: '',
                         material: '',
                         size: '',
+                        sku: '',
                         category_id: '',
                         in_stock: true,
                         is_featured: false,
@@ -1303,7 +1308,16 @@ export default function Admin() {
                           />
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <Label htmlFor="product-sku">Артикул</Label>
+                          <Input
+                            id="product-sku"
+                            value={productForm.sku}
+                            onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
+                            placeholder="ART-001"
+                          />
+                        </div>
                         <div>
                           <Label htmlFor="product-material">Материал</Label>
                           <Input
@@ -1435,6 +1449,7 @@ export default function Admin() {
                                 image_url: '',
                                 material: '',
                                 size: '',
+                                sku: '',
                                 category_id: '',
                                 in_stock: true,
                                 is_featured: false,
@@ -1466,6 +1481,7 @@ export default function Admin() {
                               image_url: '',
                               material: '',
                               size: '',
+                              sku: '',
                               category_id: '',
                               in_stock: true,
                               is_featured: false,
@@ -1537,6 +1553,9 @@ export default function Admin() {
                       <CardContent className="p-4">
                         <Badge variant="outline" className="mb-2">{product.category_name}</Badge>
                         <h3 className="font-oswald font-semibold text-lg mb-1">{product.name}</h3>
+                        {product.sku && (
+                          <p className="text-xs text-muted-foreground mb-1">Артикул: {product.sku}</p>
+                        )}
                         <p className="font-oswald text-xl text-primary mb-3">{parseFloat(product.price).toLocaleString('ru-RU')} ₽</p>
                         <Button 
                           size="sm" 
@@ -1553,6 +1572,7 @@ export default function Admin() {
                               image_url: product.image_url || '',
                               material: product.material || '',
                               size: product.size || '',
+                              sku: product.sku || '',
                               category_id: product.category_id?.toString() || '',
                               in_stock: product.in_stock,
                               is_featured: product.is_featured,
@@ -1597,6 +1617,9 @@ export default function Admin() {
                                 )}
                               </div>
                               <h3 className="font-oswald font-semibold text-lg mb-1 truncate">{product.name}</h3>
+                              {product.sku && (
+                                <p className="text-xs text-muted-foreground mb-1">Артикул: {product.sku}</p>
+                              )}
                               <p className="text-sm text-muted-foreground mb-2 line-clamp-1">{product.description}</p>
                               <div className="flex items-center gap-4">
                                 <span className="font-oswald text-xl text-primary">
@@ -1630,6 +1653,7 @@ export default function Admin() {
                                     image_url: product.image_url || '',
                                     material: product.material || '',
                                     size: product.size || '',
+                                    sku: product.sku || '',
                                     category_id: product.category_id?.toString() || '',
                                     in_stock: product.in_stock,
                                     is_featured: product.is_featured,
