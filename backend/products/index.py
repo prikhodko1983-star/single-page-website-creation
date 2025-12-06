@@ -326,6 +326,8 @@ def create_product(conn, data: Dict[str, Any]) -> Dict[str, Any]:
     image_url = data.get('image_url', '').replace("'", "''")
     material = data.get('material', '').replace("'", "''")
     size = data.get('size', '').replace("'", "''")
+    sku = data.get('sku', '').replace("'", "''")
+    polish = data.get('polish', '').replace("'", "''")
     category_id = data.get('category_id')
     in_stock = data.get('in_stock', True)
     is_featured = data.get('is_featured', False)
