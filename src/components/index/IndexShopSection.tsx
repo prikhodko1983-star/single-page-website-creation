@@ -106,7 +106,7 @@ export default function IndexShopSection() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 md:gap-6">
             {products.slice(0, 6).map((product) => (
               <Card key={product.id} className="group hover:shadow-xl transition-shadow overflow-hidden">
                 <Link to={`/product/${product.slug}`}>
