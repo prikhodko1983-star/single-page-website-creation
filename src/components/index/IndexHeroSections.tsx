@@ -131,7 +131,7 @@ export default function IndexHeroSections({
                   <Button 
                     size="lg"
                     variant="default"
-                    className="bg-foreground hover:bg-foreground/90 text-background font-oswald text-base px-8"
+                    className="bg-[rgb(25,25,25)] hover:bg-[rgb(35,35,35)] text-white font-oswald text-base px-8"
                     onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Посмотреть все памятники
