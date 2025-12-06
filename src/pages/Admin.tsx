@@ -835,14 +835,14 @@ export default function Admin() {
                         Категории
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-xl max-h-[85vh] flex flex-col">
+                    <DialogContent className="max-w-xl">
                       <DialogHeader>
                         <DialogTitle>{editingCategory ? 'Редактировать категорию' : 'Добавить категорию'}</DialogTitle>
                         <DialogDescription>
                           Создайте новую категорию для товаров
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+                      <div className="space-y-4">
                         <div>
                           <Label htmlFor="category-name">Название категории</Label>
                           <Input
@@ -996,14 +996,14 @@ export default function Admin() {
                         Добавить товар
                       </Button>
                     </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+                  <DialogContent className="max-w-2xl">
                     <DialogHeader>
                       <DialogTitle>{editingProduct ? 'Редактировать товар' : 'Добавить новый товар'}</DialogTitle>
                       <DialogDescription>
                         Заполните информацию о товаре
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+                    <div className="space-y-4">
                       <div>
                         <Label htmlFor="product-name">Название</Label>
                         <Input
