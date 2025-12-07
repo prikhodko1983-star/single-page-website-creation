@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import html2canvas from "html2canvas";
+import { useToast } from "@/hooks/use-toast";
 
 interface CanvasElement {
   id: string;
@@ -25,6 +27,9 @@ interface CanvasElement {
 const Constructor = () => {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   
   const [monumentImage, setMonumentImage] = useState<string>('https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png');
   const [elements, setElements] = useState<CanvasElement[]>([]);
@@ -350,6 +355,100 @@ const Constructor = () => {
     if (selectedElement === id) setSelectedElement(null);
   };
 
+  const saveDesign = async () => {
+    if (!canvasRef.current) return;
+    
+    setIsSaving(true);
+    try {
+      const canvas = await html2canvas(canvasRef.current, {
+        backgroundColor: '#000000',
+        scale: 2,
+        logging: false,
+        useCORS: true,
+      });
+      
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `monument-design-${Date.now()}.png`;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+        toast({
+          title: "Дизайн сохранен",
+          description: "Изображение успешно загружено на ваше устройство",
+        });
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка сохранения",
+        description: "Не удалось сохранить дизайн",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const sendForCalculation = async () => {
+    if (!canvasRef.current) return;
+    if (elements.length === 0) {
+      toast({
+        title: "Пустой дизайн",
+        description: "Добавьте элементы на памятник перед отправкой",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsSending(true);
+    try {
+      const canvas = await html2canvas(canvasRef.current, {
+        backgroundColor: '#000000',
+        scale: 2,
+        logging: false,
+        useCORS: true,
+      });
+      
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        
+        const projectData = {
+          monumentImage,
+          elements: elements.map(el => ({
+            type: el.type,
+            content: el.content,
+            x: el.x,
+            y: el.y,
+            width: el.width,
+            height: el.height,
+            fontSize: el.fontSize,
+            color: el.color,
+            fontFamily: el.fontFamily,
+          })),
+          timestamp: new Date().toISOString(),
+        };
+        
+        toast({
+          title: "Заявка отправлена",
+          description: "Мы свяжемся с вами в ближайшее время для расчета стоимости",
+        });
+        
+        console.log('Design data:', projectData);
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка отправки",
+        description: "Не удалось отправить заявку",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   const selectedEl = elements.find(el => el.id === selectedElement);
 
   return (
@@ -671,14 +770,25 @@ const Constructor = () => {
               ))}
             </div>
             
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex flex-col sm:flex-row gap-2">
               <Button variant="outline" onClick={() => setElements([])}>
                 <Icon name="Trash2" size={18} className="mr-2" />
                 Очистить всё
               </Button>
-              <Button>
+              <Button 
+                variant="outline" 
+                onClick={saveDesign}
+                disabled={isSaving || elements.length === 0}
+              >
                 <Icon name="Download" size={18} className="mr-2" />
-                Сохранить проект
+                {isSaving ? 'Сохранение...' : 'Скачать дизайн'}
+              </Button>
+              <Button 
+                onClick={sendForCalculation}
+                disabled={isSending || elements.length === 0}
+              >
+                <Icon name="Send" size={18} className="mr-2" />
+                {isSending ? 'Отправка...' : 'Отправить на расчет'}
               </Button>
             </div>
           </div>
