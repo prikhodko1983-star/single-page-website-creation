@@ -7,6 +7,7 @@ import Icon from "@/components/ui/icon";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { toPng } from 'html-to-image';
 
 interface CanvasElement {
   id: string;
@@ -359,98 +360,25 @@ const Constructor = () => {
     
     setIsSaving(true);
     try {
-      const canvasElement = canvasRef.current;
-      const rect = canvasElement.getBoundingClientRect();
-      const scale = 2;
-      
-      const canvas = document.createElement('canvas');
-      canvas.width = rect.width * scale;
-      canvas.height = rect.height * scale;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) throw new Error('Canvas context not available');
-      
-      ctx.scale(scale, scale);
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, rect.width, rect.height);
-      
-      const monumentImg = new Image();
-      
-      await new Promise((resolve, reject) => {
-        monumentImg.onload = resolve;
-        monumentImg.onerror = (error) => {
-          console.error('Monument image load error:', error);
-          reject(new Error('Не удалось загрузить изображение памятника'));
-        };
-        monumentImg.src = monumentImage;
+      const dataUrl = await toPng(canvasRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
       });
       
-      ctx.drawImage(monumentImg, 0, 0, rect.width, rect.height);
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `monument-design-${Date.now()}.png`;
+      link.click();
       
-      for (const element of elements) {
-        ctx.save();
-        
-        const centerX = element.x + element.width / 2;
-        const centerY = element.y + element.height / 2;
-        ctx.translate(centerX, centerY);
-        ctx.rotate((element.rotation || 0) * Math.PI / 180);
-        ctx.translate(-centerX, -centerY);
-        
-        if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
-          const fontFamily = element.fontFamily?.split('|')[0] || 'serif';
-          const fontWeight = element.fontFamily?.split('|')[1] || '400';
-          const fontSize = element.fontSize || 24;
-          
-          ctx.font = `${element.type === 'epitaph' ? 'italic ' : ''}${fontWeight} ${fontSize}px "${fontFamily}", serif`;
-          ctx.fillStyle = element.color || '#FFFFFF';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 4;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          
-          const lines = (element.content || '').split('\n');
-          const lineHeight = element.type === 'fio' ? fontSize * 1.3 : fontSize * 1.2;
-          const totalHeight = lines.length * lineHeight;
-          const startY = element.y + element.height / 2 - totalHeight / 2 + lineHeight / 2;
-          
-          lines.forEach((line, i) => {
-            ctx.fillText(line, element.x + element.width / 2, startY + i * lineHeight);
-          });
-        } else if (element.type === 'photo' || element.type === 'image' || element.type === 'cross' || element.type === 'flower') {
-          if (element.src) {
-            const img = new Image();
-            await new Promise((resolve) => {
-              img.onload = resolve;
-              img.onerror = resolve;
-              img.src = element.src!;
-            });
-            ctx.drawImage(img, element.x, element.y, element.width, element.height);
-          }
-        }
-        
-        ctx.restore();
-      }
-      
-      canvas.toBlob((blob) => {
-        if (!blob) return;
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `monument-design-${Date.now()}.png`;
-        link.click();
-        URL.revokeObjectURL(url);
-        
-        toast({
-          title: "Дизайн сохранен",
-          description: "Изображение успешно загружено на ваше устройство",
-        });
+      toast({
+        title: "Дизайн сохранен",
+        description: "Изображение успешно загружено на ваше устройство",
       });
     } catch (error) {
       console.error('Save error:', error);
       toast({
         title: "Ошибка сохранения",
-        description: "Не удалось сохранить дизайн",
+        description: "Не удалось сохранить дизайн. Попробуйте еще раз.",
         variant: "destructive",
       });
     } finally {
