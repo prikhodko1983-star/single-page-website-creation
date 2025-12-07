@@ -42,6 +42,8 @@ export default function IndexHeroSections({
   const [blagoustroySlide, setBlagoustroySlide] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [designerTouchStart, setDesignerTouchStart] = useState(0);
+  const [designerTouchEnd, setDesignerTouchEnd] = useState(0);
 
   const blagoustroySlides = [
     {
@@ -93,6 +95,32 @@ export default function IndexHeroSections({
     
     setTouchStart(0);
     setTouchEnd(0);
+  };
+
+  const handleDesignerTouchStart = (e: React.TouchEvent) => {
+    setDesignerTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleDesignerTouchMove = (e: React.TouchEvent) => {
+    setDesignerTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleDesignerTouchEnd = () => {
+    if (!designerTouchStart || !designerTouchEnd) return;
+    
+    const distance = designerTouchStart - designerTouchEnd;
+    const minSwipeDistance = 50;
+    
+    if (distance > minSwipeDistance) {
+      setDesignerSlideIndex((prev) => (prev + 1) % designerSlides.length);
+    }
+    
+    if (distance < -minSwipeDistance) {
+      setDesignerSlideIndex((prev) => (prev - 1 + designerSlides.length) % designerSlides.length);
+    }
+    
+    setDesignerTouchStart(0);
+    setDesignerTouchEnd(0);
   };
 
   return (
@@ -349,7 +377,12 @@ export default function IndexHeroSections({
                   </div>
 
                   <div className="relative group order-1 md:order-2">
-                    <div className="relative overflow-hidden rounded-xl bg-secondary">
+                    <div 
+                      className="relative overflow-hidden rounded-xl bg-secondary"
+                      onTouchStart={handleDesignerTouchStart}
+                      onTouchMove={handleDesignerTouchMove}
+                      onTouchEnd={handleDesignerTouchEnd}
+                    >
                       <div className="aspect-[4/3]">
                         <img 
                           src={designerSlides[designerSlideIndex].image}
