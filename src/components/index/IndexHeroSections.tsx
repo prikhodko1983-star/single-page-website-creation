@@ -125,7 +125,7 @@ export default function IndexHeroSections({
               </div>
 
               <div className="space-y-6 p-8 lg:p-16 text-center lg:text-left">
-                <h2 className="font-oswald font-bold text-4xl md:text-6xl text-zinc-900">Премиум модели со скидкой до 25%</h2>
+                <h2 className="font-oswald font-bold text-4xl md:text-6xl text-zinc-900 whitespace-nowrap">Премиум модели со скидкой до 25%</h2>
 
                 <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
                   <Button 
