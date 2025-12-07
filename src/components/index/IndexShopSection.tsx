@@ -84,18 +84,18 @@ export default function IndexShopSection() {
 
         <div className="flex flex-wrap gap-2 justify-center mb-8">
           <Button
-            variant="outline"
+            variant={selectedCategory === null ? 'default' : 'outline'}
             onClick={() => setSelectedCategory(null)}
-            className={`font-oswald ${selectedCategory === null ? 'bg-[rgb(245,158,11)] text-white border-[rgb(245,158,11)] hover:bg-[rgb(245,158,11)]' : 'bg-[rgb(51,51,51)] text-white border-[rgb(51,51,51)] hover:bg-[rgb(51,51,51)]'}`}
+            className="font-oswald"
           >
             Все категории
           </Button>
           {categories.map((category) => (
             <Button
               key={category.id}
-              variant="outline"
+              variant={selectedCategory === category.slug ? 'default' : 'outline'}
               onClick={() => setSelectedCategory(category.slug)}
-              className={`font-oswald ${selectedCategory === category.slug ? 'bg-[rgb(245,158,11)] text-white border-[rgb(245,158,11)] hover:bg-[rgb(245,158,11)]' : 'bg-[rgb(51,51,51)] text-white border-[rgb(51,51,51)] hover:bg-[rgb(51,51,51)]'}`}
+              className="font-oswald"
             >
               {category.name}
             </Button>
