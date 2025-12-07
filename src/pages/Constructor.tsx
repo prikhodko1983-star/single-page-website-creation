@@ -357,7 +357,6 @@ const Constructor = () => {
 
   const saveDesign = async () => {
     if (!canvasRef.current) {
-      console.error('Canvas ref is not available');
       toast({
         title: "Ошибка",
         description: "Холст недоступен",
@@ -375,47 +374,103 @@ const Constructor = () => {
       return;
     }
     
-    console.log('Starting save design...');
     setIsSaving(true);
     
     try {
-      console.log('Calling html2canvas...');
-      const canvas = await html2canvas(canvasRef.current, {
-        backgroundColor: '#1a1a1a',
-        scale: 2,
-        useCORS: false,
-        allowTaint: true,
-        logging: true,
-        imageTimeout: 0,
-        removeContainer: true,
+      // Создаем canvas вручную
+      const sourceElement = canvasRef.current;
+      const rect = sourceElement.getBoundingClientRect();
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = rect.width * 2;
+      canvas.height = rect.height * 2;
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) {
+        throw new Error('Не удалось создать контекст canvas');
+      }
+      
+      ctx.scale(2, 2);
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(0, 0, rect.width, rect.height);
+      
+      // Рисуем фон памятника
+      const bgImg = new Image();
+      bgImg.crossOrigin = 'anonymous';
+      
+      await new Promise((resolve, reject) => {
+        bgImg.onload = resolve;
+        bgImg.onerror = reject;
+        bgImg.src = monumentImage;
       });
       
-      console.log('Canvas created:', canvas.width, 'x', canvas.height);
+      ctx.drawImage(bgImg, 0, 0, rect.width, rect.height);
       
+      // Рисуем все элементы
+      for (const element of elements) {
+        ctx.save();
+        ctx.translate(element.x + element.width / 2, element.y + element.height / 2);
+        ctx.rotate((element.rotation || 0) * Math.PI / 180);
+        ctx.translate(-element.width / 2, -element.height / 2);
+        
+        if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
+          const fontSize = element.fontSize || 24;
+          const fontFamily = element.fontFamily?.split('|')[0] || 'serif';
+          const fontWeight = element.fontFamily?.split('|')[1] || '400';
+          
+          ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+          ctx.fillStyle = element.color || '#FFFFFF';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0,0,0,0.8)';
+          ctx.shadowBlur = 4;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          
+          const lines = (element.content || '').split('\n');
+          const lineHeight = fontSize * 1.3;
+          const startY = element.height / 2 - (lines.length - 1) * lineHeight / 2;
+          
+          lines.forEach((line, i) => {
+            ctx.fillText(line, element.width / 2, startY + i * lineHeight);
+          });
+        } else if ((element.type === 'image' || element.type === 'cross' || element.type === 'flower' || element.type === 'photo') && element.src) {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = () => resolve(null); // Игнорируем ошибки загрузки
+            img.src = element.src!;
+          });
+          
+          if (img.complete && img.naturalWidth > 0) {
+            ctx.drawImage(img, 0, 0, element.width, element.height);
+          }
+        }
+        
+        ctx.restore();
+      }
+      
+      // Сохраняем
       const dataUrl = canvas.toDataURL('image/png', 1.0);
-      console.log('Data URL created, length:', dataUrl.length);
-      
       const link = document.createElement('a');
       link.href = dataUrl;
       link.download = `monument-design-${Date.now()}.png`;
       document.body.appendChild(link);
-      console.log('Link appended, clicking...');
       link.click();
       document.body.removeChild(link);
       
-      console.log('Download initiated');
       toast({
         title: "Дизайн сохранен",
-        description: "Изображение успешно загружено",
+        description: "Изображение загружено на устройство",
       });
       setIsSaving(false);
     } catch (error) {
-      console.error('Save error details:', error);
-      console.error('Error message:', (error as Error).message);
-      console.error('Error stack:', (error as Error).stack);
+      console.error('Save error:', error);
       toast({
         title: "Ошибка сохранения",
-        description: `${(error as Error).message || 'Неизвестная ошибка'}`,
+        description: `${(error as Error).message || 'Попробуйте еще раз'}`,
         variant: "destructive",
       });
       setIsSaving(false);
