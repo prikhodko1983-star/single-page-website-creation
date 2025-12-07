@@ -51,15 +51,15 @@ const Constructor = () => {
   ];
 
   const fonts = [
-    { id: 'font1', name: '№ 1/1а', style: 'Playfair Display', weight: '400', example: 'Фамилия Имя Отчество' },
-    { id: 'font2', name: '№ 2/2а', style: 'Playfair Display', weight: '700', example: 'Фамилия Имя Отчество' },
-    { id: 'font3', name: '№ 3', style: 'Cormorant Garamond', weight: '400', example: 'Фамилия Имя Отчество' },
-    { id: 'font4', name: '№ 4', style: 'Cormorant Garamond', weight: '700', example: 'Фамилия Имя Отчество' },
-    { id: 'font5', name: '№ 3а', style: 'EB Garamond', weight: '400', example: 'Фамилия Имя Отчество' },
-    { id: 'font6', name: 'Иск 1/1а', style: 'Dancing Script', weight: '400', example: 'Фамилия Имя Отчество' },
-    { id: 'font7', name: 'Иск 2/2а', style: 'Great Vibes', weight: '400', example: 'Фамилия Имя Отчество' },
-    { id: 'font8', name: 'Иск 3/3а', style: 'Allura', weight: '400', example: 'Фамилия Имя Отчество' },
-    { id: 'font9', name: '№ Cinzel', style: 'Cinzel', weight: '700', example: 'Фамилия Имя Отчество' },
+    { id: 'font1', name: '№ 1/1а', style: 'Playfair Display', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Playfair Display|400' },
+    { id: 'font2', name: '№ 2/2а', style: 'Playfair Display', weight: '700', example: 'Фамилия Имя Отчество', fullStyle: 'Playfair Display|700' },
+    { id: 'font3', name: '№ 3', style: 'Cormorant Garamond', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Cormorant Garamond|400' },
+    { id: 'font4', name: '№ 4', style: 'Cormorant Garamond', weight: '700', example: 'Фамилия Имя Отчество', fullStyle: 'Cormorant Garamond|700' },
+    { id: 'font5', name: '№ 3а', style: 'EB Garamond', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'EB Garamond|400' },
+    { id: 'font6', name: 'Иск 1/1а', style: 'Dancing Script', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Dancing Script|400' },
+    { id: 'font7', name: 'Иск 2/2а', style: 'Great Vibes', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Great Vibes|400' },
+    { id: 'font8', name: 'Иск 3/3а', style: 'Allura', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Allura|400' },
+    { id: 'font9', name: '№ Cinzel', style: 'Cinzel', weight: '700', example: 'Фамилия Имя Отчество', fullStyle: 'Cinzel|700' },
   ];
 
   const addTextElement = () => {
@@ -125,7 +125,7 @@ const Constructor = () => {
       fontSize: 28,
       color: '#FFFFFF',
       rotation: 0,
-      fontFamily: selectedFontData?.style || 'serif',
+      fontFamily: selectedFontData?.fullStyle || 'serif',
     };
     setElements([...elements, newElement]);
     
@@ -151,7 +151,7 @@ const Constructor = () => {
       fontSize: 20,
       color: '#FFFFFF',
       rotation: 0,
-      fontFamily: selectedFontData?.style || 'serif',
+      fontFamily: selectedFontData?.fullStyle || 'serif',
     };
     setElements([...elements, newElement]);
     
@@ -617,7 +617,8 @@ const Constructor = () => {
                         fontSize: `${element.fontSize}px`, 
                         color: element.color,
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                        fontFamily: element.fontFamily || 'serif',
+                        fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                        fontWeight: element.fontFamily?.split('|')[1] || '400',
                         lineHeight: 1.3,
                       }}
                     >
@@ -632,7 +633,8 @@ const Constructor = () => {
                         fontSize: `${element.fontSize}px`, 
                         color: element.color,
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                        fontFamily: element.fontFamily || 'serif',
+                        fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                        fontWeight: element.fontFamily?.split('|')[1] || '400',
                         letterSpacing: '0.05em',
                       }}
                     >
@@ -735,9 +737,9 @@ const Constructor = () => {
                           {fonts.map(font => (
                             <button
                               key={font.id}
-                              onClick={() => updateElement(selectedEl.id, { fontFamily: font.style })}
+                              onClick={() => updateElement(selectedEl.id, { fontFamily: font.fullStyle })}
                               className={`w-full text-left p-2 rounded border transition-all ${
-                                selectedEl.fontFamily === font.style ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
+                                selectedEl.fontFamily === font.fullStyle ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
                               }`}
                             >
                               <div className="text-xs text-muted-foreground">{font.name}</div>
