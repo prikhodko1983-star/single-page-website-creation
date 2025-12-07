@@ -2,7 +2,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import RetouchForm from "@/components/RetouchForm";
-import BlagoustroySection from "@/components/sections/BlagoustroySection";
 
 interface Service {
   icon: string;
@@ -210,8 +209,6 @@ export default function IndexContentSections({
           </div>
         </div>
       </section>
-
-      <BlagoustroySection />
 
       <section id="portfolio" className="py-20 bg-secondary">
         <div className="container mx-auto px-4">
