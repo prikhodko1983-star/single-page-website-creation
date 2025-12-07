@@ -164,27 +164,27 @@ export default function IndexHeroSections({
                   <span>Доставка и установка</span>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-4 mb-6">
+              <div className="flex flex-wrap gap-3 mb-6">
                 <Button 
-                  size="lg" 
-                  className="bg-[#f59f0a] hover:bg-[#d88a09] text-white font-oswald text-lg px-8 py-6"
+                  size="default" 
+                  className="bg-[#f59f0a] hover:bg-[#d88a09] text-white font-oswald text-base px-6 py-4"
                   onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                  <Icon name="ShoppingBag" className="mr-2" size={20} />
+                  <Icon name="ShoppingBag" className="mr-2" size={18} />
                   КАТАЛОГ
                 </Button>
                 <Button 
-                  size="lg" 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-lg px-8 py-6"
+                  size="default" 
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-base px-6 py-4"
                   onClick={onNavigateConstructor}
                 >
-                  <Icon name="Wrench" className="mr-2" size={20} />
+                  <Icon name="Wrench" className="mr-2" size={18} />
                   СОЗДАТЬ ПРОЕКТ
                 </Button>
                 <Button 
-                  size="lg"
+                  size="default"
                   variant="outline"
-                  className="font-oswald text-lg px-8 py-6"
+                  className="font-oswald text-base px-6 py-4"
                   onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   ЗАКАЗАТЬ КОНСУЛЬТАЦИЮ
