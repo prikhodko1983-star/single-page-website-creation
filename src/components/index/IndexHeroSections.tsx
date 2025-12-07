@@ -204,36 +204,34 @@ export default function IndexHeroSections({
               до 11 ноября
             </div>
 
-            <div className="relative lg:grid lg:grid-cols-[300px,1fr] gap-0 items-center min-h-[200px]">
-              {/* Изображение - на мобильном как фон */}
-              <div className="absolute lg:relative inset-0 h-full min-h-[280px] lg:min-h-[200px]">
+            <div className="grid grid-cols-[180px,1fr] lg:grid-cols-[300px,1fr] gap-0 items-stretch min-h-[220px] lg:min-h-[200px]">
+              {/* Изображение слева */}
+              <div className="relative h-full">
                 <img 
                   src="https://cdn.poehali.dev/files/76878.jpg"
                   alt="Премиум памятники из гранита со скидкой до 25% - эксклюзивные модели"
                   className="w-full h-full object-cover"
                 />
-                {/* Затемнение для читаемости текста на мобильном */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent lg:hidden"></div>
               </div>
 
-              {/* Контент - наезжает на изображение на мобильном */}
-              <div className="relative z-10 space-y-4 p-6 lg:py-8 lg:px-12 text-center lg:text-left min-h-[280px] lg:min-h-0 flex flex-col justify-end lg:justify-center lg:bg-white">
-                <h2 className="font-oswald font-bold text-2xl md:text-4xl lg:text-6xl text-white lg:text-zinc-900 leading-tight">
+              {/* Контент справа */}
+              <div className="relative bg-white p-4 lg:py-8 lg:px-12 flex flex-col justify-center">
+                <h2 className="font-oswald font-bold text-lg lg:text-6xl text-zinc-900 leading-tight mb-3 lg:mb-4">
                   Премиум памятники из гранита со скидкой до 25%
                 </h2>
 
-                <div className="flex flex-col md:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
+                <div className="flex flex-col gap-2 lg:gap-4">
                   <Button 
-                    size="lg"
+                    size="sm"
                     variant="outline"
-                    className="bg-white/90 hover:bg-white text-zinc-900 border-2 border-white lg:bg-transparent lg:hover:bg-zinc-100 lg:border-zinc-900 font-oswald text-sm md:text-base px-6 md:px-8"
+                    className="bg-transparent hover:bg-zinc-100 text-zinc-900 border-2 border-zinc-900 font-oswald text-xs lg:text-base px-3 lg:px-8 w-full"
                     onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Посмотреть все памятники
                   </Button>
                   <Button 
-                    size="lg"
-                    className="bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-sm md:text-base px-6 md:px-8"
+                    size="sm"
+                    className="bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-xs lg:text-base px-3 lg:px-8 w-full"
                     onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Выбрать с менеджером
