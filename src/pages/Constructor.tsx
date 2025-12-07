@@ -559,9 +559,9 @@ const Constructor = () => {
                 >
                   {element.type === 'text' && (
                     <div 
-                      className="w-full h-full flex items-center justify-center text-center select-none"
+                      className="w-full h-full flex items-center justify-center text-center select-none overflow-hidden"
                       style={{ 
-                        fontSize: element.fontSize, 
+                        fontSize: `${element.fontSize}px`, 
                         color: element.color,
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                         fontWeight: 'bold',
@@ -573,9 +573,9 @@ const Constructor = () => {
                   
                   {element.type === 'epitaph' && (
                     <div 
-                      className="w-full h-full flex items-center justify-center text-center select-none italic"
+                      className="w-full h-full flex items-center justify-center text-center select-none italic overflow-hidden"
                       style={{ 
-                        fontSize: element.fontSize, 
+                        fontSize: `${element.fontSize}px`, 
                         color: element.color,
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       }}
@@ -586,9 +586,9 @@ const Constructor = () => {
                   
                   {element.type === 'fio' && (
                     <div 
-                      className="w-full h-full flex items-center justify-center text-center select-none whitespace-pre-line"
+                      className="w-full h-full flex items-center justify-center text-center select-none whitespace-pre-line overflow-hidden"
                       style={{ 
-                        fontSize: element.fontSize, 
+                        fontSize: `${element.fontSize}px`, 
                         color: element.color,
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                         fontFamily: element.fontFamily || 'serif',
@@ -601,9 +601,9 @@ const Constructor = () => {
                   
                   {element.type === 'dates' && (
                     <div 
-                      className="w-full h-full flex items-center justify-center text-center select-none"
+                      className="w-full h-full flex items-center justify-center text-center select-none overflow-hidden"
                       style={{ 
-                        fontSize: element.fontSize, 
+                        fontSize: `${element.fontSize}px`, 
                         color: element.color,
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                         fontFamily: element.fontFamily || 'serif',
