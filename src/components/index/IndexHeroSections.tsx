@@ -130,7 +130,7 @@ export default function IndexHeroSections({
           <img 
             src="https://cdn.poehali.dev/files/7c3f7bb6-620d-4495-bf82-0abd8136ff4b.png"
             alt="Гранитный памятник с художественной резьбой - производство в Великом Новгороде"
-            className="w-full h-full object-contain object-right object-bottom"
+            className="w-[90%] md:w-full h-full object-contain object-right object-bottom"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/30 to-transparent"></div>
