@@ -40,8 +40,25 @@ const Index = () => {
     }
   ];
 
+  const API_URL = "https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6";
+
   useEffect(() => {
     setSelectedImage(null);
+    
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setMonuments(data);
+        } else {
+          console.error("API returned non-array data:", data);
+          setMonuments([]);
+        }
+      })
+      .catch(err => {
+        console.error("Error loading monuments:", err);
+        setMonuments([]);
+      });
   }, []);
 
   useEffect(() => {
