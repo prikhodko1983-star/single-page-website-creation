@@ -356,20 +356,31 @@ const Constructor = () => {
   };
 
   const saveDesign = async () => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current) {
+      console.error('Canvas ref is not available');
+      return;
+    }
     
+    console.log('Starting save design...');
     setIsSaving(true);
+    
     try {
+      console.log('Calling html2canvas...');
       const canvas = await html2canvas(canvasRef.current, {
         backgroundColor: null,
         scale: 2,
         useCORS: false,
         allowTaint: true,
-        logging: false,
+        logging: true,
       });
       
+      console.log('Canvas created:', canvas.width, 'x', canvas.height);
+      
       canvas.toBlob((blob) => {
+        console.log('Blob created:', blob);
+        
         if (!blob) {
+          console.error('Blob creation failed');
           toast({
             title: "Ошибка сохранения",
             description: "Не удалось создать изображение",
@@ -379,13 +390,20 @@ const Constructor = () => {
           return;
         }
         
+        console.log('Creating download link...');
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
         link.download = `monument-design-${Date.now()}.png`;
+        document.body.appendChild(link);
         link.click();
-        URL.revokeObjectURL(url);
+        document.body.removeChild(link);
         
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 100);
+        
+        console.log('Download initiated');
         toast({
           title: "Дизайн сохранен",
           description: "Изображение успешно загружено на ваше устройство",
@@ -393,10 +411,12 @@ const Constructor = () => {
         setIsSaving(false);
       }, 'image/png');
     } catch (error) {
-      console.error('Save error:', error);
+      console.error('Save error details:', error);
+      console.error('Error message:', (error as Error).message);
+      console.error('Error stack:', (error as Error).stack);
       toast({
         title: "Ошибка сохранения",
-        description: "Не удалось сохранить дизайн. Попробуйте еще раз.",
+        description: `Ошибка: ${(error as Error).message || 'Неизвестная ошибка'}`,
         variant: "destructive",
       });
       setIsSaving(false);
