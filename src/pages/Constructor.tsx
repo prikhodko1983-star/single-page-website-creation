@@ -44,13 +44,15 @@ const Constructor = () => {
   ];
 
   const fonts = [
-    { id: 'font1', name: '№ 1/1а', style: 'serif', weight: 'normal', example: 'Фамилия Имя Отчество' },
-    { id: 'font2', name: '№ 2/2а', style: 'serif', weight: 'bold', example: 'Фамилия Имя Отчество' },
-    { id: 'font3', name: '№ 3', style: 'serif', weight: 'normal', example: 'Фамилия Имя Отчество' },
-    { id: 'font4', name: '№ 4', style: 'serif', weight: 'bold', example: 'Фамилия Имя Отчество' },
-    { id: 'font5', name: '№ 3а', style: 'serif', weight: 'normal', example: 'Фамилия Имя Отчество' },
-    { id: 'font6', name: 'Иск 1/1а', style: 'cursive', weight: 'normal', example: 'Фамилия Имя Отчество' },
-    { id: 'font7', name: 'Иск 2/2а', style: 'cursive', weight: 'normal', example: 'Фамилия Имя Отчество' },
+    { id: 'font1', name: '№ 1/1а', style: 'Playfair Display', weight: '400', example: 'Фамилия Имя Отчество' },
+    { id: 'font2', name: '№ 2/2а', style: 'Playfair Display', weight: '700', example: 'Фамилия Имя Отчество' },
+    { id: 'font3', name: '№ 3', style: 'Cormorant Garamond', weight: '400', example: 'Фамилия Имя Отчество' },
+    { id: 'font4', name: '№ 4', style: 'Cormorant Garamond', weight: '700', example: 'Фамилия Имя Отчество' },
+    { id: 'font5', name: '№ 3а', style: 'EB Garamond', weight: '400', example: 'Фамилия Имя Отчество' },
+    { id: 'font6', name: 'Иск 1/1а', style: 'Dancing Script', weight: '400', example: 'Фамилия Имя Отчество' },
+    { id: 'font7', name: 'Иск 2/2а', style: 'Great Vibes', weight: '400', example: 'Фамилия Имя Отчество' },
+    { id: 'font8', name: 'Иск 3/3а', style: 'Allura', weight: '400', example: 'Фамилия Имя Отчество' },
+    { id: 'font9', name: '№ Cinzel', style: 'Cinzel', weight: '700', example: 'Фамилия Имя Отчество' },
   ];
 
   const addTextElement = () => {
@@ -253,10 +255,14 @@ const Constructor = () => {
                           className={`w-full text-left p-2 rounded border transition-all ${
                             selectedFont === font.id ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
                           }`}
-                          style={{ fontFamily: font.style, fontWeight: font.weight }}
                         >
                           <div className="text-xs text-muted-foreground">{font.name}</div>
-                          <div className="text-sm">{font.example}</div>
+                          <div 
+                            className="text-base"
+                            style={{ fontFamily: font.style, fontWeight: font.weight }}
+                          >
+                            {font.example}
+                          </div>
                         </button>
                       ))}
                     </div>
@@ -366,8 +372,7 @@ const Constructor = () => {
                         fontSize: element.fontSize, 
                         color: element.color,
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                        fontFamily: element.fontFamily,
-                        fontWeight: element.fontFamily === 'cursive' ? 'normal' : 'bold',
+                        fontFamily: element.fontFamily || 'serif',
                         lineHeight: 1.3,
                       }}
                     >
