@@ -365,6 +365,9 @@ const Constructor = () => {
         scale: 2,
         logging: false,
         useCORS: true,
+        allowTaint: true,
+        foreignObjectRendering: false,
+        imageTimeout: 0,
       });
       
       canvas.toBlob((blob) => {
@@ -382,6 +385,7 @@ const Constructor = () => {
         });
       });
     } catch (error) {
+      console.error('Save error:', error);
       toast({
         title: "Ошибка сохранения",
         description: "Не удалось сохранить дизайн",
@@ -410,6 +414,9 @@ const Constructor = () => {
         scale: 2,
         logging: false,
         useCORS: true,
+        allowTaint: true,
+        foreignObjectRendering: false,
+        imageTimeout: 0,
       });
       
       canvas.toBlob(async (blob) => {
@@ -666,6 +673,7 @@ const Constructor = () => {
                 alt="Памятник" 
                 className="w-full h-full object-cover"
                 draggable={false}
+                crossOrigin="anonymous"
               />
               
               {elements.map(element => (
