@@ -28,7 +28,7 @@ const Constructor = () => {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const [isSending, setIsSending] = useState(false);
+
   const [savedDesigns, setSavedDesigns] = useState<Array<{monumentImage: string, elements: CanvasElement[], timestamp: number}>>([]);
   
   const [monumentImage, setMonumentImage] = useState<string>('https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png');
@@ -423,8 +423,7 @@ const Constructor = () => {
     }
   };
 
-  const sendForCalculation = async () => {
-    if (!canvasRef.current) return;
+  const sendForCalculation = () => {
     if (elements.length === 0) {
       toast({
         title: "Пустой дизайн",
@@ -434,39 +433,62 @@ const Constructor = () => {
       return;
     }
     
-    setIsSending(true);
-    try {
-      const projectData = {
-        monumentImage,
-        elements: elements.map(el => ({
-          type: el.type,
-          content: el.content,
-          x: el.x,
-          y: el.y,
-          width: el.width,
-          height: el.height,
-          fontSize: el.fontSize,
-          color: el.color,
-          fontFamily: el.fontFamily,
-        })),
-        timestamp: new Date().toISOString(),
-      };
-      
-      toast({
-        title: "Заявка отправлена",
-        description: "Мы свяжемся с вами в ближайшее время для расчета стоимости",
+    // Формируем текст сообщения для WhatsApp
+    let message = '🪦 *Заявка на расчет памятника*\n\n';
+    message += `📅 Дата: ${new Date().toLocaleString('ru')}\n\n`;
+    
+    // Описание памятника
+    const monumentName = monumentImages.find(m => m.src === monumentImage)?.name || 'Памятник';
+    message += `🗿 *Основа:* ${monumentName}\n\n`;
+    
+    // Список элементов
+    message += `📝 *Элементы дизайна:*\n`;
+    
+    const textElements = elements.filter(el => el.type === 'fio' || el.type === 'text' || el.type === 'dates' || el.type === 'epitaph');
+    const imageElements = elements.filter(el => el.type === 'photo' || el.type === 'cross' || el.type === 'flower' || el.type === 'image');
+    
+    if (textElements.length > 0) {
+      textElements.forEach((el, idx) => {
+        const typeNames: Record<string, string> = {
+          fio: 'ФИО',
+          text: 'Текст',
+          dates: 'Даты',
+          epitaph: 'Эпитафия'
+        };
+        message += `\n${idx + 1}. ${typeNames[el.type] || el.type}:\n`;
+        if (el.content) {
+          message += `   "${el.content.replace(/\n/g, ' ')}"\n`;
+        }
+        if (el.fontSize) {
+          message += `   Размер: ${el.fontSize}px\n`;
+        }
       });
-      
-      console.log('Design data:', projectData);
-    } catch (error) {
-      toast({
-        title: "Ошибка отправки",
-        description: "Не удалось отправить заявку",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSending(false);
     }
+    
+    if (imageElements.length > 0) {
+      message += `\n📷 Изображения:\n`;
+      const photoCount = imageElements.filter(el => el.type === 'photo').length;
+      const crossCount = imageElements.filter(el => el.type === 'cross').length;
+      const flowerCount = imageElements.filter(el => el.type === 'flower').length;
+      
+      if (photoCount > 0) message += `   • Фотографий: ${photoCount}\n`;
+      if (crossCount > 0) message += `   • Крестов: ${crossCount}\n`;
+      if (flowerCount > 0) message += `   • Цветов: ${flowerCount}\n`;
+    }
+    
+    message += `\n📊 *Всего элементов:* ${elements.length}\n\n`;
+    message += '💬 Прошу рассчитать стоимость этого дизайна памятника.';
+    
+    // Открываем WhatsApp
+    const phoneNumber = '79000000000'; // Замени на реальный номер
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+    
+    toast({
+      title: "Открываем WhatsApp",
+      description: "Отправьте сообщение для расчета стоимости",
+    });
   };
 
   const selectedEl = elements.find(el => el.id === selectedElement);
@@ -851,10 +873,11 @@ const Constructor = () => {
               </Button>
               <Button 
                 onClick={sendForCalculation}
-                disabled={isSending || elements.length === 0}
+                disabled={elements.length === 0}
+                className="bg-green-600 hover:bg-green-700"
               >
-                <Icon name="Send" size={18} className="mr-2" />
-                {isSending ? 'Отправка...' : 'Отправить на расчет'}
+                <Icon name="MessageCircle" size={18} className="mr-2" />
+                Отправить в WhatsApp
               </Button>
             </div>
           </div>
