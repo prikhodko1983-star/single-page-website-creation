@@ -109,14 +109,14 @@ export default function IndexHeroSections({
       </section>
 
       <section className="py-16 bg-[#1a1a1a]">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="relative bg-white rounded-2xl overflow-hidden">
-            <div className="absolute top-8 right-8 bg-[#E89C1F] text-white px-6 py-2 rounded-lg font-oswald font-semibold text-sm z-10">
+            <div className="absolute top-6 right-6 bg-[#E89C1F] text-white px-5 py-2 rounded-lg font-oswald font-semibold text-sm z-10">
               до 11 ноября
             </div>
 
-            <div className="grid lg:grid-cols-[300px,1fr] gap-0 items-center min-h-[200px]">
-              <div className="relative h-full min-h-[200px]">
+            <div className="grid lg:grid-cols-[280px,1fr] gap-0 items-center min-h-[240px]">
+              <div className="relative h-full min-h-[240px]">
                 <img 
                   src="https://cdn.poehali.dev/files/76878.jpg"
                   alt="Премиум памятники"
@@ -124,21 +124,21 @@ export default function IndexHeroSections({
                 />
               </div>
 
-              <div className="space-y-4 p-6 lg:py-8 lg:px-12 text-center lg:text-left">
-                <h2 className="font-oswald font-bold text-4xl md:text-6xl text-zinc-900 whitespace-nowrap">Премиум модели со скидкой до 25%</h2>
+              <div className="space-y-6 p-8 lg:py-12 lg:px-20 text-center">
+                <h2 className="font-oswald font-bold text-3xl md:text-5xl lg:text-6xl text-zinc-900 leading-tight">Премиум модели со скидкой до 25%</h2>
 
-                <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                <div className="flex flex-wrap gap-4 justify-center">
                   <Button 
                     size="lg"
                     variant="outline"
-                    className="bg-transparent hover:bg-zinc-100 text-zinc-900 border-2 border-zinc-900 font-oswald text-base px-8"
+                    className="bg-transparent hover:bg-zinc-100 text-zinc-900 border-2 border-zinc-900 font-oswald text-base px-8 py-6 h-auto"
                     onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Посмотреть все памятники
                   </Button>
                   <Button 
                     size="lg"
-                    className="bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-base px-8"
+                    className="bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-base px-8 py-6 h-auto"
                     onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Выбрать с менеджером
