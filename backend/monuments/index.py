@@ -11,12 +11,9 @@ from typing import Dict, Any
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-SCHEMA = 't_p78642605_single_page_website_'
-
 def get_db_connection():
     database_url = os.environ.get('DATABASE_URL')
-    conn = psycopg2.connect(database_url, cursor_factory=RealDictCursor)
-    return conn
+    return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
@@ -49,7 +46,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if monument_id:
                 safe_id = monument_id.replace("'", "''")
                 cursor.execute(
-                    f"SELECT * FROM {SCHEMA}.monuments WHERE id = '{safe_id}'"
+                    f"SELECT * FROM t_p78642605_single_page_website_.monuments WHERE id = '{safe_id}'"
                 )
                 monument = cursor.fetchone()
                 
@@ -69,7 +66,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             else:
                 cursor.execute(
-                    f"SELECT id, title, image_url, price, size, category, created_at, updated_at FROM {SCHEMA}.monuments ORDER BY created_at DESC"
+                    "SELECT id, title, image_url, price, size, category, created_at, updated_at FROM t_p78642605_single_page_website_.monuments ORDER BY created_at DESC"
                 )
                 monuments = cursor.fetchall()
                 
@@ -99,7 +96,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             cursor.execute(
                 f"""
-                INSERT INTO {SCHEMA}.monuments (title, image_url, price, size, category)
+                INSERT INTO t_p78642605_single_page_website_.monuments (title, image_url, price, size, category)
                 VALUES ('{title}', '{image_url}', '{price}', '{size}', '{category}')
                 RETURNING *
                 """
@@ -137,7 +134,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             cursor.execute(
                 f"""
-                UPDATE {SCHEMA}.monuments 
+                UPDATE t_p78642605_single_page_website_.monuments 
                 SET title = '{title}', image_url = '{image_url}', price = '{price}', size = '{size}', category = '{category}',
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = '{safe_id}'
@@ -180,7 +177,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             safe_id = monument_id.replace("'", "''")
             print(f"Executing DELETE query for ID: {safe_id}")
             cursor.execute(
-                f"DELETE FROM {SCHEMA}.monuments WHERE id = '{safe_id}' RETURNING id"
+                f"DELETE FROM t_p78642605_single_page_website_.monuments WHERE id = '{safe_id}' RETURNING id"
             )
             
             deleted = cursor.fetchone()
