@@ -75,10 +75,10 @@ export default function IndexShopSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="font-oswald font-bold text-3xl md:text-5xl mb-4">
-            Интернет-магазин памятников
+            Купить памятник из гранита в Великом Новгороде
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Закажите онлайн с доставкой. Добавляйте товары в корзину и оформляйте заказ
+            Каталог гранитных памятников с ценами. Заказ онлайн с доставкой по Новгородской области
           </p>
         </div>
 
@@ -181,7 +181,7 @@ export default function IndexShopSection() {
         {!loading && products.length === 0 && (
           <div className="text-center py-20">
             <Icon name="PackageSearch" size={64} className="text-muted-foreground mx-auto mb-4" />
-            <h3 className="font-oswald font-bold text-2xl mb-2">Товары не найдены</h3>
+            <h3 className="font-oswald font-bold text-2xl mb-2">Памятники не найдены</h3>
             <p className="text-muted-foreground">
               Попробуйте выбрать другую категорию
             </p>

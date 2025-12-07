@@ -44,7 +44,7 @@ export default function IndexHeroSections({
         <div className="absolute inset-0 opacity-70">
           <img 
             src="https://cdn.poehali.dev/files/7c3f7bb6-620d-4495-bf82-0abd8136ff4b.png"
-            alt="Памятник фон"
+            alt="Гранитный памятник с художественной резьбой - производство в Великом Новгороде"
             className="w-full h-full object-contain object-right"
           />
         </div>
@@ -53,9 +53,9 @@ export default function IndexHeroSections({
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-[1fr,auto] gap-8 lg:gap-12 items-start">
             <div className="max-w-3xl">
-              <h2 className="font-oswald font-black text-5xl md:text-7xl lg:text-8xl mb-6 animate-fade-in uppercase leading-none bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent" style={{ textShadow: '0 4px 8px rgba(0,0,0,0.3)' }}>
-                Изготовление памятников из гранита
-              </h2>
+              <h1 className="font-oswald font-black text-5xl md:text-7xl lg:text-8xl mb-6 animate-fade-in uppercase leading-none bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent" style={{ textShadow: '0 4px 8px rgba(0,0,0,0.3)' }}>
+                Изготовление памятников из гранита в Великом Новгороде
+              </h1>
               <p className="text-lg md:text-xl text-muted-foreground mb-8 animate-fade-in">
                 Более 16 лет создаём памятники, которые сохраняют память о ваших близких
               </p>
@@ -122,7 +122,7 @@ export default function IndexHeroSections({
               <div className="absolute lg:relative inset-0 h-full min-h-[280px] lg:min-h-[200px]">
                 <img 
                   src="https://cdn.poehali.dev/files/76878.jpg"
-                  alt="Премиум памятники"
+                  alt="Премиум памятники из гранита со скидкой до 25% - эксклюзивные модели"
                   className="w-full h-full object-cover"
                 />
                 {/* Затемнение для читаемости текста на мобильном */}
@@ -132,7 +132,7 @@ export default function IndexHeroSections({
               {/* Контент - наезжает на изображение на мобильном */}
               <div className="relative z-10 space-y-4 p-6 lg:py-8 lg:px-12 text-center lg:text-left min-h-[280px] lg:min-h-0 flex flex-col justify-end lg:justify-center lg:bg-white">
                 <h2 className="font-oswald font-bold text-2xl md:text-4xl lg:text-6xl text-white lg:text-zinc-900 leading-tight">
-                  Премиум модели со скидкой до 25%
+                  Премиум памятники из гранита со скидкой до 25%
                 </h2>
 
                 <div className="flex flex-col md:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
@@ -226,7 +226,7 @@ export default function IndexHeroSections({
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="font-oswald font-bold text-2xl md:text-3xl lg:text-5xl mb-3 md:mb-4 px-4">
-              Помощь дизайнера в подборе памятника
+              Помощь дизайнера в подборе гранитного памятника
             </h2>
             <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto px-4">
               Не знаете, какой памятник выбрать? Наш дизайнер поможет подобрать идеальный вариант
@@ -296,7 +296,7 @@ export default function IndexHeroSections({
                       <div className="aspect-[4/3]">
                         <img 
                           src={designerSlides[designerSlideIndex].image}
-                          alt={"Пример работы"}
+                          alt={`Пример работы дизайнера: ${designerSlides[designerSlideIndex].title} - гранитные памятники`}
                           className="w-full h-full object-contain transition-all duration-500"
                         />
                       </div>
@@ -348,7 +348,7 @@ export default function IndexHeroSections({
                 <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border border-primary/20">
                   <img 
                     src="https://cdn.poehali.dev/files/IMG_4105.jpeg"
-                    alt="Комплексное благоустройство участка"
+                    alt="Комплексное благоустройство могил: укладка плитки, установка оград, мемориальные комплексы в Великом Новгороде"
                     className="w-full h-auto"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
@@ -363,8 +363,8 @@ export default function IndexHeroSections({
                     </Badge>
                   </div>
                   <h2 className="font-oswald font-bold text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-3 md:mb-4 tracking-tight leading-tight">
-                    Благоустройство
-                    <span className="block text-primary mt-1 md:mt-2">участка</span>
+                    Благоустройство могил
+                    <span className="block text-primary mt-1 md:mt-2">и мемориальных участков</span>
                   </h2>
                   <p className="text-sm md:text-base lg:text-lg text-muted-foreground">
                     Комплексное обустройство мемориального места с использованием качественных материалов

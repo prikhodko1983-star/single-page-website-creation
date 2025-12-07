@@ -47,7 +47,7 @@ export default function IndexContentSections({
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="font-oswald font-bold text-3xl md:text-5xl mb-4">
-              Наши услуги
+              Услуги по изготовлению памятников
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Полный комплекс услуг от изготовления до установки
@@ -100,7 +100,7 @@ export default function IndexContentSections({
                     <div className="relative aspect-[3/4] mb-4 rounded-lg overflow-hidden border-2 border-border bg-secondary">
                       <img 
                         src="https://cdn.poehali.dev/files/3e19395b-495c-4eef-91ce-74b56fbffe66.jpg"
-                        alt="Фото до реставрации"
+                        alt="Старое фото до реставрации - поврежденная фотография для памятника"
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute top-4 left-4 bg-secondary text-foreground px-4 py-2 rounded-lg font-oswald font-semibold text-sm border border-border">
@@ -133,7 +133,7 @@ export default function IndexContentSections({
                     <div className="relative aspect-[3/4] mb-4 rounded-lg overflow-hidden border-2 border-primary bg-secondary">
                       <img 
                         src="https://cdn.poehali.dev/files/ed11db8d-2e82-4c44-a219-2b25cbe05cd3.jpg"
-                        alt="Фото после реставрации"
+                        alt="Отреставрированное фото для памятника - профессиональная ретушь в Великом Новгороде"
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-oswald font-semibold text-sm">

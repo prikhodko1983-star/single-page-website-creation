@@ -1,14 +1,40 @@
+# Robots.txt для поисковых систем
+User-agent: *
+Allow: /
+Allow: /catalog
+Allow: /product/
+
+# Запрещаем индексацию админки
+Disallow: /admin
+Disallow: /constructor
+
+# Yandex
+User-agent: Yandex
+Allow: /
+Disallow: /admin
+Disallow: /constructor
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term
+
+# Google
 User-agent: Googlebot
 Allow: /
+Disallow: /admin
+Disallow: /constructor
 
+# Bing
 User-agent: Bingbot
 Allow: /
+Disallow: /admin
 
+# Social networks
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
-Allow: /
+# Sitemap
+Sitemap: https://your-domain.ru/sitemap.xml
+
+# Частота сканирования
+Crawl-delay: 1
