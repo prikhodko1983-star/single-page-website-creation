@@ -7,6 +7,8 @@ import Icon from "@/components/ui/icon";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 
 interface CanvasElement {
@@ -423,7 +425,7 @@ const Constructor = () => {
     }
   };
 
-  const sendForCalculation = () => {
+  const sendForCalculation = async () => {
     if (elements.length === 0) {
       toast({
         title: "Пустой дизайн",
@@ -433,62 +435,99 @@ const Constructor = () => {
       return;
     }
     
-    // Формируем текст сообщения для WhatsApp
-    let message = '🪦 *Заявка на расчет памятника*\n\n';
-    message += `📅 Дата: ${new Date().toLocaleString('ru')}\n\n`;
-    
-    // Описание памятника
-    const monumentName = monumentImages.find(m => m.src === monumentImage)?.name || 'Памятник';
-    message += `🗿 *Основа:* ${monumentName}\n\n`;
-    
-    // Список элементов
-    message += `📝 *Элементы дизайна:*\n`;
-    
-    const textElements = elements.filter(el => el.type === 'fio' || el.type === 'text' || el.type === 'dates' || el.type === 'epitaph');
-    const imageElements = elements.filter(el => el.type === 'photo' || el.type === 'cross' || el.type === 'flower' || el.type === 'image');
-    
-    if (textElements.length > 0) {
-      textElements.forEach((el, idx) => {
-        const typeNames: Record<string, string> = {
-          fio: 'ФИО',
-          text: 'Текст',
-          dates: 'Даты',
-          epitaph: 'Эпитафия'
-        };
-        message += `\n${idx + 1}. ${typeNames[el.type] || el.type}:\n`;
-        if (el.content) {
-          message += `   "${el.content.replace(/\n/g, ' ')}"\n`;
-        }
-        if (el.fontSize) {
-          message += `   Размер: ${el.fontSize}px\n`;
-        }
+    try {
+      toast({
+        title: "Создание PDF...",
+        description: "Пожалуйста, подождите",
+      });
+
+      // Создаём скриншот холста
+      if (!canvasRef.current) return;
+      
+      const canvas = await html2canvas(canvasRef.current, {
+        backgroundColor: '#000000',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      // Создаём PDF
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const pdf = new jsPDF({
+        orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+      
+      // Сохраняем PDF
+      const fileName = `monument_design_${Date.now()}.pdf`;
+      pdf.save(fileName);
+
+      // Формируем текст сообщения для WhatsApp
+      let message = '🪦 *Заявка на расчет памятника*\n\n';
+      message += `📅 Дата: ${new Date().toLocaleString('ru')}\n\n`;
+      
+      const monumentName = monumentImages.find(m => m.src === monumentImage)?.name || 'Памятник';
+      message += `🗿 *Основа:* ${monumentName}\n\n`;
+      
+      message += `📝 *Элементы дизайна:*\n`;
+      
+      const textElements = elements.filter(el => el.type === 'fio' || el.type === 'text' || el.type === 'dates' || el.type === 'epitaph');
+      const imageElements = elements.filter(el => el.type === 'photo' || el.type === 'cross' || el.type === 'flower' || el.type === 'image');
+      
+      if (textElements.length > 0) {
+        textElements.forEach((el, idx) => {
+          const typeNames: Record<string, string> = {
+            fio: 'ФИО',
+            text: 'Текст',
+            dates: 'Даты',
+            epitaph: 'Эпитафия'
+          };
+          message += `\n${idx + 1}. ${typeNames[el.type] || el.type}:\n`;
+          if (el.content) {
+            message += `   "${el.content.replace(/\n/g, ' ')}"\n`;
+          }
+          if (el.fontSize) {
+            message += `   Размер: ${el.fontSize}px\n`;
+          }
+        });
+      }
+      
+      if (imageElements.length > 0) {
+        message += `\n📷 Изображения:\n`;
+        const photoCount = imageElements.filter(el => el.type === 'photo').length;
+        const crossCount = imageElements.filter(el => el.type === 'cross').length;
+        const flowerCount = imageElements.filter(el => el.type === 'flower').length;
+        
+        if (photoCount > 0) message += `   • Фотографий: ${photoCount}\n`;
+        if (crossCount > 0) message += `   • Крестов: ${crossCount}\n`;
+        if (flowerCount > 0) message += `   • Цветов: ${flowerCount}\n`;
+      }
+      
+      message += `\n📊 *Всего элементов:* ${elements.length}\n\n`;
+      message += `📄 PDF макет сохранён на устройстве: ${fileName}\n\n`;
+      message += '💬 Прошу рассчитать стоимость этого дизайна памятника.';
+      
+      // Открываем WhatsApp
+      const phoneNumber = '79960681168';
+      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+      
+      window.open(whatsappUrl, '_blank');
+      
+      toast({
+        title: "PDF создан!",
+        description: "Файл сохранён, отправьте его в WhatsApp",
+      });
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      toast({
+        title: "Ошибка создания PDF",
+        description: "Попробуйте ещё раз",
+        variant: "destructive",
       });
     }
-    
-    if (imageElements.length > 0) {
-      message += `\n📷 Изображения:\n`;
-      const photoCount = imageElements.filter(el => el.type === 'photo').length;
-      const crossCount = imageElements.filter(el => el.type === 'cross').length;
-      const flowerCount = imageElements.filter(el => el.type === 'flower').length;
-      
-      if (photoCount > 0) message += `   • Фотографий: ${photoCount}\n`;
-      if (crossCount > 0) message += `   • Крестов: ${crossCount}\n`;
-      if (flowerCount > 0) message += `   • Цветов: ${flowerCount}\n`;
-    }
-    
-    message += `\n📊 *Всего элементов:* ${elements.length}\n\n`;
-    message += '💬 Прошу рассчитать стоимость этого дизайна памятника.';
-    
-    // Открываем WhatsApp
-    const phoneNumber = '79960681168';
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    
-    window.open(whatsappUrl, '_blank');
-    
-    toast({
-      title: "Открываем WhatsApp",
-      description: "Отправьте сообщение для расчета стоимости",
-    });
   };
 
   const selectedEl = elements.find(el => el.id === selectedElement);
@@ -876,8 +915,8 @@ const Constructor = () => {
                 disabled={elements.length === 0}
                 className="bg-green-600 hover:bg-green-700"
               >
-                <Icon name="MessageCircle" size={18} className="mr-2" />
-                Отправить в WhatsApp
+                <Icon name="FileText" size={18} className="mr-2" />
+                Скачать PDF и отправить
               </Button>
             </div>
           </div>
