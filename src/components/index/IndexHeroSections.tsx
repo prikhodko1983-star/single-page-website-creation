@@ -143,7 +143,7 @@ export default function IndexHeroSections({
                   Изготовление памятников из гранита
                 </h1>
                 <p className="text-sm md:text-base text-white mb-4 animate-fade-in leading-tight">
-                  Более 16 лет создаём памятники, которые сохраняют память о ваших близких
+                  Создаём памятники, которые сохраняют память о ваших близких
                 </p>
               </div>
               <div className="flex flex-col md:flex-row md:flex-wrap gap-2 mb-8 md:mb-8 md:mt-0">
