@@ -393,7 +393,7 @@ export default function IndexHeroSections({
                   </div>
                 </div>
 
-                <div className="pt-4">
+                <div className="pt-4 my-2.5">
                   <Button 
                     size="lg"
                     className="bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-lg px-8 py-6 h-auto shadow-lg hover:shadow-xl transition-all"
