@@ -32,13 +32,14 @@ const Constructor = () => {
 
   const [savedDesigns, setSavedDesigns] = useState<Array<{monumentImage: string, elements: CanvasElement[], timestamp: number}>>([]);
   
-  const [monumentImage, setMonumentImage] = useState<string>('https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png');
+  const [monumentImage, setMonumentImage] = useState<string>('https://cdn.poehali.dev/projects/d1d7s7q7v03n2o0mj75m/bucket/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png');
   const [elements, setElements] = useState<CanvasElement[]>([]);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0, fontSize: 0 });
+  const [imageError, setImageError] = useState(false);
   
   const [surname, setSurname] = useState('');
   const [name, setName] = useState('');
@@ -83,9 +84,9 @@ const Constructor = () => {
   };
 
   const monumentImages = [
-    { id: '1', src: 'https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png', name: 'Вертикальный' },
-    { id: '2', src: 'https://cdn.poehali.dev/files/c80c1bd4-c413-425a-a1fc-91dbb36a8de4.jpg', name: 'Горизонтальный' },
-    { id: '3', src: 'https://cdn.poehali.dev/files/a6e29eb2-0f18-47ca-917e-adac360db4c3.jpeg', name: 'Эксклюзивный' },
+    { id: '1', src: 'https://cdn.poehali.dev/projects/d1d7s7q7v03n2o0mj75m/bucket/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png', name: 'Вертикальный' },
+    { id: '2', src: 'https://cdn.poehali.dev/projects/d1d7s7q7v03n2o0mj75m/bucket/c80c1bd4-c413-425a-a1fc-91dbb36a8de4.jpg', name: 'Горизонтальный' },
+    { id: '3', src: 'https://cdn.poehali.dev/projects/d1d7s7q7v03n2o0mj75m/bucket/a6e29eb2-0f18-47ca-917e-adac360db4c3.jpeg', name: 'Эксклюзивный' },
   ];
 
   const fonts = [
@@ -570,7 +571,10 @@ const Constructor = () => {
                     {monumentImages.map(img => (
                       <button
                         key={img.id}
-                        onClick={() => setMonumentImage(img.src)}
+                        onClick={() => {
+                          setMonumentImage(img.src);
+                          setImageError(false);
+                        }}
                         className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
                           monumentImage === img.src ? 'border-primary' : 'border-border hover:border-primary/50'
                         }`}
@@ -781,12 +785,27 @@ const Constructor = () => {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              <img 
-                src={monumentImage} 
-                alt="Памятник" 
-                className="w-full h-full object-cover"
-                draggable={false}
-              />
+              {imageError ? (
+                <div className="w-full h-full flex items-center justify-center bg-secondary text-muted-foreground">
+                  <div className="text-center p-4">
+                    <Icon name="ImageOff" size={48} className="mx-auto mb-2" />
+                    <p>Не удалось загрузить изображение памятника</p>
+                    <p className="text-xs mt-2">Выберите другой памятник слева</p>
+                  </div>
+                </div>
+              ) : (
+                <img 
+                  src={monumentImage} 
+                  alt="Памятник" 
+                  className="w-full h-full object-cover"
+                  draggable={false}
+                  onError={() => {
+                    console.error('Failed to load monument image:', monumentImage);
+                    setImageError(true);
+                  }}
+                  onLoad={() => setImageError(false)}
+                />
+              )}
               
               {elements.map(element => (
                 <div
