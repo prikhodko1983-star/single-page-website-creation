@@ -32,7 +32,7 @@ const Constructor = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0, fontSize: 0 });
   
   const [surname, setSurname] = useState('');
   const [name, setName] = useState('');
@@ -225,11 +225,23 @@ const Constructor = () => {
       const newWidth = Math.max(50, resizeStart.width + deltaX);
       const newHeight = Math.max(30, resizeStart.height + deltaY);
       
-      setElements(elements.map(el => 
-        el.id === selectedElement 
-          ? { ...el, width: newWidth, height: newHeight }
-          : el
-      ));
+      const element = elements.find(el => el.id === selectedElement);
+      if (element && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
+        const scaleRatio = Math.max(newWidth / resizeStart.width, newHeight / resizeStart.height);
+        const newFontSize = Math.max(12, Math.min(72, Math.round(resizeStart.fontSize * scaleRatio)));
+        
+        setElements(elements.map(el => 
+          el.id === selectedElement 
+            ? { ...el, width: newWidth, height: newHeight, fontSize: newFontSize }
+            : el
+        ));
+      } else {
+        setElements(elements.map(el => 
+          el.id === selectedElement 
+            ? { ...el, width: newWidth, height: newHeight }
+            : el
+        ));
+      }
     } else if (isDragging) {
       const canvasRect = canvasRef.current.getBoundingClientRect();
       const newX = e.clientX - canvasRect.left - dragOffset.x;
@@ -255,11 +267,23 @@ const Constructor = () => {
       const newWidth = Math.max(50, resizeStart.width + deltaX);
       const newHeight = Math.max(30, resizeStart.height + deltaY);
       
-      setElements(elements.map(el => 
-        el.id === selectedElement 
-          ? { ...el, width: newWidth, height: newHeight }
-          : el
-      ));
+      const element = elements.find(el => el.id === selectedElement);
+      if (element && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
+        const scaleRatio = Math.max(newWidth / resizeStart.width, newHeight / resizeStart.height);
+        const newFontSize = Math.max(12, Math.min(72, Math.round(resizeStart.fontSize * scaleRatio)));
+        
+        setElements(elements.map(el => 
+          el.id === selectedElement 
+            ? { ...el, width: newWidth, height: newHeight, fontSize: newFontSize }
+            : el
+        ));
+      } else {
+        setElements(elements.map(el => 
+          el.id === selectedElement 
+            ? { ...el, width: newWidth, height: newHeight }
+            : el
+        ));
+      }
     } else if (isDragging) {
       const canvasRect = canvasRef.current.getBoundingClientRect();
       const newX = touch.clientX - canvasRect.left - dragOffset.x;
@@ -296,6 +320,7 @@ const Constructor = () => {
       y: e.clientY,
       width: element.width,
       height: element.height,
+      fontSize: element.fontSize || 24,
     });
   };
 
@@ -312,6 +337,7 @@ const Constructor = () => {
       y: touch.clientY,
       width: element.width,
       height: element.height,
+      fontSize: element.fontSize || 24,
     });
   };
 
