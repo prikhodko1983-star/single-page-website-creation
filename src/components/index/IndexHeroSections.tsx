@@ -164,7 +164,7 @@ export default function IndexHeroSections({
                   <span>Доставка и установка</span>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-3 mb-6">
+              <div className="flex flex-col md:flex-row md:flex-wrap gap-3 mb-6">
                 <Button 
                   size="default" 
                   className="bg-[#f59f0a] hover:bg-[#d88a09] text-white font-oswald text-base px-6 py-4"
