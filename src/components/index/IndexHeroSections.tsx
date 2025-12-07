@@ -40,6 +40,8 @@ export default function IndexHeroSections({
   children
 }: IndexHeroSectionsProps) {
   const [blagoustroySlide, setBlagoustroySlide] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
   const blagoustroySlides = [
     {
@@ -65,6 +67,32 @@ export default function IndexHeroSections({
 
   const prevBlagoustroySlide = () => {
     setBlagoustroySlide((prev) => (prev - 1 + blagoustroySlides.length) % blagoustroySlides.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const minSwipeDistance = 50;
+    
+    if (distance > minSwipeDistance) {
+      nextBlagoustroySlide();
+    }
+    
+    if (distance < -minSwipeDistance) {
+      prevBlagoustroySlide();
+    }
+    
+    setTouchStart(0);
+    setTouchEnd(0);
   };
 
   return (
@@ -374,7 +402,12 @@ export default function IndexHeroSections({
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
               <div className="order-2 lg:order-1">
-                <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border border-primary/20 group">
+                <div 
+                  className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border border-primary/20 group"
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                >
                   {blagoustroySlides.map((slide, index) => (
                     <div
                       key={index}
