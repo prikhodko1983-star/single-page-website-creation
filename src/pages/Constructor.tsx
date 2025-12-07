@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 interface CanvasElement {
   id: string;
-  type: 'text' | 'image' | 'cross' | 'flower' | 'epitaph' | 'fio' | 'dates';
+  type: 'text' | 'image' | 'cross' | 'flower' | 'epitaph' | 'fio' | 'dates' | 'photo';
   x: number;
   y: number;
   width: number;
@@ -42,6 +42,7 @@ const Constructor = () => {
   const [birthDate, setBirthDate] = useState('');
   const [deathDate, setDeathDate] = useState('');
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const monumentImages = [
     { id: '1', src: 'https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png', name: 'Вертикальный' },
@@ -156,6 +157,32 @@ const Constructor = () => {
     
     setBirthDate('');
     setDeathDate('');
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const photoUrl = event.target?.result as string;
+      const newElement: CanvasElement = {
+        id: Date.now().toString(),
+        type: 'photo',
+        x: 100,
+        y: 50,
+        width: 150,
+        height: 200,
+        src: photoUrl,
+        rotation: 0,
+      };
+      setElements([...elements, newElement]);
+    };
+    reader.readAsDataURL(file);
+    
+    if (photoInputRef.current) {
+      photoInputRef.current.value = '';
+    }
   };
 
   const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
@@ -447,6 +474,25 @@ const Constructor = () => {
                     </Button>
                   </div>
                   
+                  <div className="space-y-2">
+                    <input 
+                      ref={photoInputRef}
+                      type="file" 
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                      id="photo-upload"
+                    />
+                    <Button 
+                      onClick={() => photoInputRef.current?.click()} 
+                      variant="default" 
+                      className="w-full justify-start bg-primary"
+                    >
+                      <Icon name="Image" size={18} className="mr-2" />
+                      Добавить фотографию
+                    </Button>
+                  </div>
+                  
                   <Button onClick={addTextElement} variant="outline" className="w-full justify-start">
                     <Icon name="Type" size={18} className="mr-2" />
                     Добавить текст
@@ -568,6 +614,15 @@ const Constructor = () => {
                     </div>
                   )}
                   
+                  {element.type === 'photo' && element.src && (
+                    <img 
+                      src={element.src} 
+                      alt="Фотография"
+                      className="w-full h-full object-cover select-none rounded-lg border-4 border-white/80 shadow-lg"
+                      draggable={false}
+                    />
+                  )}
+                  
                   {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && (
                     <img 
                       src={element.src} 
@@ -612,7 +667,7 @@ const Constructor = () => {
               {selectedEl && (
                 <div className="space-y-4">
                   <div>
-                    <Label>Тип: {selectedEl.type === 'text' ? 'Текст' : selectedEl.type === 'epitaph' ? 'Эпитафия' : selectedEl.type === 'fio' ? 'ФИО' : selectedEl.type === 'dates' ? 'Даты' : 'Изображение'}</Label>
+                    <Label>Тип: {selectedEl.type === 'text' ? 'Текст' : selectedEl.type === 'epitaph' ? 'Эпитафия' : selectedEl.type === 'fio' ? 'ФИО' : selectedEl.type === 'dates' ? 'Даты' : selectedEl.type === 'photo' ? 'Фотография' : 'Изображение'}</Label>
                   </div>
                   
                   {(selectedEl.type === 'text' || selectedEl.type === 'epitaph' || selectedEl.type === 'fio' || selectedEl.type === 'dates') && (
