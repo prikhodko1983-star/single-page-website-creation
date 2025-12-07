@@ -135,7 +135,7 @@ export default function IndexHeroSections({
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/30 to-transparent"></div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 relative z-10 pt-8 md:pt-0">
           <div className="grid lg:grid-cols-[1fr,auto] gap-8 lg:gap-12 items-start">
             <div className="max-w-3xl">
               <h1 className="font-oswald font-black text-4xl md:text-5xl lg:text-6xl mb-4 md:mb-3 animate-fade-in uppercase leading-[0.9] bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent" style={{ textShadow: '0 4px 8px rgba(0,0,0,0.3)' }}>
