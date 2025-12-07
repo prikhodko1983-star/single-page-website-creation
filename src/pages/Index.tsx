@@ -19,12 +19,7 @@ interface Monument {
 const Index = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: "", phone: "", message: "" });
-  const mockMonuments: Monument[] = [
-    { id: 1, image_url: "https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png", title: "Памятник вертикальный 100x50x5", price: "от 15 000 ₽", size: "100x50x5 см", category: "Вертикальные" },
-    { id: 2, image_url: "https://cdn.poehali.dev/files/c80c1bd4-c413-425a-a1fc-91dbb36a8de4.jpg", title: "Памятник горизонтальный 120x60x8", price: "от 25 000 ₽", size: "120x60x8 см", category: "Горизонтальные" },
-    { id: 3, image_url: "https://cdn.poehali.dev/files/a6e29eb2-0f18-47ca-917e-adac360db4c3.jpeg", title: "Эксклюзивный памятник", price: "от 45 000 ₽", size: "Индивидуально", category: "Эксклюзивные" },
-  ];
-  const [monuments, setMonuments] = useState<Monument[]>(mockMonuments);
+  const [monuments, setMonuments] = useState<Monument[]>([]);
   const [activeCategory, setActiveCategory] = useState("Все");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -45,8 +40,25 @@ const Index = () => {
     }
   ];
 
+  const API_URL = "https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6";
+
   useEffect(() => {
     setSelectedImage(null);
+    
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setMonuments(data);
+        } else {
+          console.error("API returned non-array data:", data);
+          setMonuments([]);
+        }
+      })
+      .catch(err => {
+        console.error("Error loading monuments:", err);
+        setMonuments([]);
+      });
   }, []);
 
   useEffect(() => {

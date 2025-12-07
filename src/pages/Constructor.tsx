@@ -7,7 +7,6 @@ import Icon from "@/components/ui/icon";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { toPng } from 'html-to-image';
 
 
 interface CanvasElement {
@@ -39,7 +38,6 @@ const Constructor = () => {
   const [isResizing, setIsResizing] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0, fontSize: 0 });
-  const [imageError, setImageError] = useState(false);
   
   const [surname, setSurname] = useState('');
   const [name, setName] = useState('');
@@ -425,7 +423,7 @@ const Constructor = () => {
     }
   };
 
-  const sendForCalculation = async () => {
+  const sendForCalculation = () => {
     if (elements.length === 0) {
       toast({
         title: "Пустой дизайн",
@@ -434,94 +432,63 @@ const Constructor = () => {
       });
       return;
     }
-
-    if (!canvasRef.current) {
-      toast({
-        title: "Ошибка",
-        description: "Холст недоступен",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Запрашиваем имя и телефон
-    const name = prompt('Введите ваше имя:');
-    if (!name) return;
     
-    const phone = prompt('Введите ваш телефон:');
-    if (!phone) return;
-
-    toast({
-      title: "Создаем изображение...",
-      description: "Подождите, идет подготовка дизайна",
-    });
-
-    try {
-      // Создаем скриншот холста
-      const dataUrl = await toPng(canvasRef.current, {
-        quality: 0.95,
-        backgroundColor: '#1a1a1a',
-      });
-
-      // Конвертируем dataURL в Blob
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
-      const file = new File([blob], `monument-design-${Date.now()}.png`, { type: 'image/png' });
-
-      // Формируем описание дизайна
-      const monumentName = monumentImages.find(m => m.src === monumentImage)?.name || 'Памятник';
-      
-      let comment = `🪦 ДИЗАЙН ПАМЯТНИКА\n\n`;
-      comment += `Основа: ${monumentName}\n`;
-      comment += `Элементов: ${elements.length}\n\n`;
-      
-      const textElements = elements.filter(el => el.type === 'fio' || el.type === 'text' || el.type === 'dates' || el.type === 'epitaph');
-      if (textElements.length > 0) {
-        comment += `ТЕКСТ:\n`;
-        textElements.forEach(el => {
-          if (el.content) {
-            comment += `• ${el.content.replace(/\n/g, ' ')}\n`;
-          }
-        });
-      }
-      
-      const photoCount = elements.filter(el => el.type === 'photo').length;
-      if (photoCount > 0) comment += `\nФотографий: ${photoCount}`;
-
-      // Отправляем на сервер
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('phone', phone);
-      formData.append('comment', comment);
-      formData.append('photo', file);
-
-      const submitResponse = await fetch('https://functions.poehali.dev/8fc1d3aa-d848-4664-99c3-7ad60233aa64', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const result = await submitResponse.json();
-
-      if (submitResponse.ok && result.success) {
-        toast({
-          title: "Заявка отправлена!",
-          description: "Мы свяжемся с вами в течение 30 минут",
-        });
-      } else {
-        toast({
-          title: "Ошибка отправки",
-          description: result.error || "Попробуйте позже",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('Send error:', error);
-      toast({
-        title: "Ошибка",
-        description: "Не удалось отправить заявку",
-        variant: "destructive",
+    // Формируем текст сообщения для WhatsApp
+    let message = '🪦 *Заявка на расчет памятника*\n\n';
+    message += `📅 Дата: ${new Date().toLocaleString('ru')}\n\n`;
+    
+    // Описание памятника
+    const monumentName = monumentImages.find(m => m.src === monumentImage)?.name || 'Памятник';
+    message += `🗿 *Основа:* ${monumentName}\n\n`;
+    
+    // Список элементов
+    message += `📝 *Элементы дизайна:*\n`;
+    
+    const textElements = elements.filter(el => el.type === 'fio' || el.type === 'text' || el.type === 'dates' || el.type === 'epitaph');
+    const imageElements = elements.filter(el => el.type === 'photo' || el.type === 'cross' || el.type === 'flower' || el.type === 'image');
+    
+    if (textElements.length > 0) {
+      textElements.forEach((el, idx) => {
+        const typeNames: Record<string, string> = {
+          fio: 'ФИО',
+          text: 'Текст',
+          dates: 'Даты',
+          epitaph: 'Эпитафия'
+        };
+        message += `\n${idx + 1}. ${typeNames[el.type] || el.type}:\n`;
+        if (el.content) {
+          message += `   "${el.content.replace(/\n/g, ' ')}"\n`;
+        }
+        if (el.fontSize) {
+          message += `   Размер: ${el.fontSize}px\n`;
+        }
       });
     }
+    
+    if (imageElements.length > 0) {
+      message += `\n📷 Изображения:\n`;
+      const photoCount = imageElements.filter(el => el.type === 'photo').length;
+      const crossCount = imageElements.filter(el => el.type === 'cross').length;
+      const flowerCount = imageElements.filter(el => el.type === 'flower').length;
+      
+      if (photoCount > 0) message += `   • Фотографий: ${photoCount}\n`;
+      if (crossCount > 0) message += `   • Крестов: ${crossCount}\n`;
+      if (flowerCount > 0) message += `   • Цветов: ${flowerCount}\n`;
+    }
+    
+    message += `\n📊 *Всего элементов:* ${elements.length}\n\n`;
+    message += '💬 Прошу рассчитать стоимость этого дизайна памятника.';
+    
+    // Открываем WhatsApp
+    const phoneNumber = '79000000000'; // Замени на реальный номер
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+    
+    toast({
+      title: "Открываем WhatsApp",
+      description: "Отправьте сообщение для расчета стоимости",
+    });
   };
 
   const selectedEl = elements.find(el => el.id === selectedElement);
@@ -571,10 +538,7 @@ const Constructor = () => {
                     {monumentImages.map(img => (
                       <button
                         key={img.id}
-                        onClick={() => {
-                          setMonumentImage(img.src);
-                          setImageError(false);
-                        }}
+                        onClick={() => setMonumentImage(img.src)}
                         className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
                           monumentImage === img.src ? 'border-primary' : 'border-border hover:border-primary/50'
                         }`}
@@ -785,27 +749,12 @@ const Constructor = () => {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              {imageError ? (
-                <div className="w-full h-full flex items-center justify-center bg-secondary text-muted-foreground">
-                  <div className="text-center p-4">
-                    <Icon name="ImageOff" size={48} className="mx-auto mb-2" />
-                    <p>Не удалось загрузить изображение памятника</p>
-                    <p className="text-xs mt-2">Выберите другой памятник слева</p>
-                  </div>
-                </div>
-              ) : (
-                <img 
-                  src={monumentImage} 
-                  alt="Памятник" 
-                  className="w-full h-full object-cover"
-                  draggable={false}
-                  onError={() => {
-                    console.error('Failed to load monument image:', monumentImage);
-                    setImageError(true);
-                  }}
-                  onLoad={() => setImageError(false)}
-                />
-              )}
+              <img 
+                src={monumentImage} 
+                alt="Памятник" 
+                className="w-full h-full object-cover"
+                draggable={false}
+              />
               
               {elements.map(element => (
                 <div
@@ -925,9 +874,10 @@ const Constructor = () => {
               <Button 
                 onClick={sendForCalculation}
                 disabled={elements.length === 0}
+                className="bg-green-600 hover:bg-green-700"
               >
-                <Icon name="Send" size={18} className="mr-2" />
-                Отправить на расчет
+                <Icon name="MessageCircle" size={18} className="mr-2" />
+                Отправить в WhatsApp
               </Button>
             </div>
           </div>
