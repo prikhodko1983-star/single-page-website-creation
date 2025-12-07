@@ -125,7 +125,7 @@ export default function IndexHeroSections({
 
   return (
     <>
-      <section className="relative py-4 md:py-32 bg-secondary overflow-hidden">
+      <section className="relative py-20 md:py-32 bg-secondary overflow-hidden">
         <div className="absolute inset-0 opacity-90 flex justify-end">
           <img 
             src="https://cdn.poehali.dev/files/7c3f7bb6-620d-4495-bf82-0abd8136ff4b.png"
