@@ -618,7 +618,7 @@ const Constructor = () => {
                     <img 
                       src={element.src} 
                       alt="Фотография"
-                      className="w-full h-full object-cover select-none rounded-lg border-4 border-white/80 shadow-lg"
+                      className="w-full h-full object-cover select-none"
                       draggable={false}
                     />
                   )}
