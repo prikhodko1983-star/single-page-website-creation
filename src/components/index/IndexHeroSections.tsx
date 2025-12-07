@@ -222,68 +222,68 @@ export default function IndexHeroSections({
         </div>
       </section>
 
-      <section className="py-20 bg-gradient-to-b from-background to-secondary">
+      <section className="py-12 md:py-20 bg-gradient-to-b from-background to-secondary">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="font-oswald font-bold text-3xl md:text-5xl mb-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="font-oswald font-bold text-2xl md:text-3xl lg:text-5xl mb-3 md:mb-4 px-4">
               Помощь дизайнера в подборе памятника
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto px-4">
               Не знаете, какой памятник выбрать? Наш дизайнер поможет подобрать идеальный вариант
             </p>
           </div>
 
           <div className="max-w-5xl mx-auto">
             <Card className="bg-card border-border shadow-xl overflow-hidden">
-              <CardContent className="p-4 md:p-12">
-                <div className="grid md:grid-cols-2 gap-6 md:gap-12 items-center">
-                  <div className="space-y-4 md:space-y-6">
+              <CardContent className="p-5 md:p-12">
+                <div className="grid md:grid-cols-2 gap-6 md:gap-12 items-start md:items-center">
+                  <div className="space-y-4 md:space-y-6 order-2 md:order-1">
                     <div className="space-y-3 md:space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Icon name="Palette" size={20} className="text-primary md:w-6 md:h-6" />
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <div className="w-9 h-9 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Icon name="Palette" size={18} className="text-primary md:w-6 md:h-6" />
                         </div>
                         <div>
-                          <h3 className="font-oswald font-bold text-base md:text-xl mb-1 md:mb-2">Индивидуальный подход</h3>
-                          <div className="text-muted-foreground text-sm md:text-base">
+                          <h3 className="font-oswald font-bold text-sm md:text-base lg:text-xl mb-1">Индивидуальный подход</h3>
+                          <div className="text-muted-foreground text-xs md:text-sm lg:text-base">
                             Учтём все ваши пожелания: форму, размер, материал, декоративные элементы
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Icon name="Image" size={20} className="text-primary md:w-6 md:h-6" />
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <div className="w-9 h-9 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Icon name="Image" size={18} className="text-primary md:w-6 md:h-6" />
                         </div>
                         <div>
-                          <h3 className="font-oswald font-bold text-base md:text-xl mb-1 md:mb-2">Визуализация</h3>
-                          <div className="text-muted-foreground text-sm md:text-base">
+                          <h3 className="font-oswald font-bold text-sm md:text-base lg:text-xl mb-1">Визуализация</h3>
+                          <div className="text-muted-foreground text-xs md:text-sm lg:text-base">
                             Покажем, как будет выглядеть памятник до начала работ
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Icon name="Target" size={20} className="text-primary md:w-6 md:h-6" />
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <div className="w-9 h-9 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Icon name="Target" size={18} className="text-primary md:w-6 md:h-6" />
                         </div>
                         <div>
-                          <h3 className="font-oswald font-bold text-base md:text-xl mb-1 md:mb-2">Подбор в рамках бюджета</h3>
-                          <div className="text-muted-foreground text-sm md:text-base">
+                          <h3 className="font-oswald font-bold text-sm md:text-base lg:text-xl mb-1">Подбор в рамках бюджета</h3>
+                          <div className="text-muted-foreground text-xs md:text-sm lg:text-base">
                             Предложим оптимальные варианты под ваш бюджет
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="pt-4 md:pt-6 border-t border-border">
-                      <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
-                        <Icon name="Phone" size={18} className="text-primary md:w-5 md:h-5" />
-                        <span className="font-oswald font-bold text-base md:text-lg">Бесплатная консультация</span>
+                    <div className="pt-3 md:pt-6 border-t border-border">
+                      <div className="flex items-center gap-2 mb-3 md:mb-4">
+                        <Icon name="Phone" size={16} className="text-primary md:w-5 md:h-5" />
+                        <span className="font-oswald font-bold text-sm md:text-base lg:text-lg">Бесплатная консультация</span>
                       </div>
                       <Button 
                         size="lg"
-                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-sm md:text-lg py-3 md:py-6"
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-xs md:text-sm lg:text-lg py-2.5 md:py-3 lg:py-6"
                         onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                       >
                         ПОЛУЧИТЬ КОНСУЛЬТАЦИЮ ДИЗАЙНЕРА
@@ -291,7 +291,7 @@ export default function IndexHeroSections({
                     </div>
                   </div>
 
-                  <div className="relative group">
+                  <div className="relative group order-1 md:order-2">
                     <div className="relative overflow-hidden rounded-xl bg-secondary">
                       <div className="aspect-[4/3]">
                         <img 
@@ -301,26 +301,26 @@ export default function IndexHeroSections({
                         />
                       </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent">
-                        <div className="absolute bottom-0 left-0 right-0 p-6">
-                          <p className="text-white font-oswald font-semibold text-xl">{designerSlides[designerSlideIndex].title}</p>
+                        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                          <p className="text-white font-oswald font-semibold text-base md:text-xl">{designerSlides[designerSlideIndex].title}</p>
                         </div>
                       </div>
 
                       <button
                         onClick={() => setDesignerSlideIndex((prev) => (prev - 1 + designerSlides.length) % designerSlides.length)}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 md:p-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10"
                       >
-                        <Icon name="ChevronLeft" size={24} />
+                        <Icon name="ChevronLeft" size={20} className="md:w-6 md:h-6" />
                       </button>
                       <button
                         onClick={() => setDesignerSlideIndex((prev) => (prev + 1) % designerSlides.length)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 md:p-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10"
                       >
-                        <Icon name="ChevronRight" size={24} />
+                        <Icon name="ChevronRight" size={20} className="md:w-6 md:h-6" />
                       </button>
                     </div>
 
-                    <div className="flex justify-center gap-2 mt-4">
+                    <div className="flex justify-center gap-2 mt-3 md:mt-4">
                       {designerSlides.map((_, index) => (
                         <button
                           key={index}
