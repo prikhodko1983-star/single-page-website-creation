@@ -23,6 +23,7 @@ interface IndexHeroSectionsProps {
   designerSlideIndex: number;
   setDesignerSlideIndex: (index: number) => void;
   designerSlides: Array<{ image: string; title: string }>;
+  children?: React.ReactNode;
 }
 
 export default function IndexHeroSections({
@@ -34,7 +35,8 @@ export default function IndexHeroSections({
   categories,
   designerSlideIndex,
   setDesignerSlideIndex,
-  designerSlides
+  designerSlides,
+  children
 }: IndexHeroSectionsProps) {
   return (
     <>
@@ -149,6 +151,8 @@ export default function IndexHeroSections({
           </div>
         </div>
       </section>
+
+      {children}
 
       <section id="catalog" className="hidden py-20 bg-background">
         <div className="container mx-auto px-4">

@@ -139,9 +139,9 @@ const Index = () => {
         designerSlideIndex={designerSlideIndex}
         setDesignerSlideIndex={setDesignerSlideIndex}
         designerSlides={designerSlides}
-      />
-
-      <IndexShopSection />
+      >
+        <IndexShopSection />
+      </IndexHeroSections>
 
       <IndexContentSections 
         services={services}
