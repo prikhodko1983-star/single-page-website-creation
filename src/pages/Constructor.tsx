@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 interface CanvasElement {
   id: string;
-  type: 'text' | 'image' | 'cross' | 'flower' | 'epitaph' | 'fio';
+  type: 'text' | 'image' | 'cross' | 'flower' | 'epitaph' | 'fio' | 'dates';
   x: number;
   y: number;
   width: number;
@@ -38,6 +38,10 @@ const Constructor = () => {
   const [name, setName] = useState('');
   const [patronymic, setPatronymic] = useState('');
   const [selectedFont, setSelectedFont] = useState('font1');
+  
+  const [birthDate, setBirthDate] = useState('');
+  const [deathDate, setDeathDate] = useState('');
+  const [selectedDateFont, setSelectedDateFont] = useState('font1');
 
   const monumentImages = [
     { id: '1', src: 'https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png', name: 'Вертикальный' },
@@ -127,6 +131,31 @@ const Constructor = () => {
     setSurname('');
     setName('');
     setPatronymic('');
+  };
+
+  const addDatesElement = () => {
+    if (!birthDate && !deathDate) return;
+    
+    const datesText = `${birthDate} — ${deathDate}`.trim();
+    const selectedFontData = fonts.find(f => f.id === selectedDateFont);
+    
+    const newElement: CanvasElement = {
+      id: Date.now().toString(),
+      type: 'dates',
+      x: 100,
+      y: 250,
+      width: 250,
+      height: 40,
+      content: datesText,
+      fontSize: 20,
+      color: '#FFFFFF',
+      rotation: 0,
+      fontFamily: selectedFontData?.style || 'serif',
+    };
+    setElements([...elements, newElement]);
+    
+    setBirthDate('');
+    setDeathDate('');
   };
 
   const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
@@ -375,6 +404,49 @@ const Constructor = () => {
                     </Button>
                   </div>
                   
+                  <div className="space-y-3 p-3 bg-secondary/20 rounded-lg">
+                    <Label className="font-semibold">Даты жизни</Label>
+                    <Input 
+                      placeholder="Дата рождения (01.01.1950)" 
+                      value={birthDate}
+                      onChange={(e) => setBirthDate(e.target.value)}
+                    />
+                    <Input 
+                      placeholder="Дата смерти (01.01.2020)" 
+                      value={deathDate}
+                      onChange={(e) => setDeathDate(e.target.value)}
+                    />
+                    
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {fonts.map(font => (
+                        <button
+                          key={font.id}
+                          onClick={() => setSelectedDateFont(font.id)}
+                          className={`w-full text-left p-2 rounded border transition-all ${
+                            selectedDateFont === font.id ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          <div className="text-xs text-muted-foreground">{font.name}</div>
+                          <div 
+                            className="text-base"
+                            style={{ fontFamily: font.style, fontWeight: font.weight }}
+                          >
+                            01.01.1950 — 01.01.2020
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <Button 
+                      onClick={addDatesElement} 
+                      className="w-full"
+                      disabled={!birthDate && !deathDate}
+                    >
+                      <Icon name="Calendar" size={18} className="mr-2" />
+                      ДОБАВИТЬ ДАТЫ
+                    </Button>
+                  </div>
+                  
                   <Button onClick={addTextElement} variant="outline" className="w-full justify-start">
                     <Icon name="Type" size={18} className="mr-2" />
                     Добавить текст
@@ -481,6 +553,21 @@ const Constructor = () => {
                     </div>
                   )}
                   
+                  {element.type === 'dates' && (
+                    <div 
+                      className="w-full h-full flex items-center justify-center text-center select-none"
+                      style={{ 
+                        fontSize: element.fontSize, 
+                        color: element.color,
+                        textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                        fontFamily: element.fontFamily || 'serif',
+                        letterSpacing: '0.05em',
+                      }}
+                    >
+                      {element.content}
+                    </div>
+                  )}
+                  
                   {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && (
                     <img 
                       src={element.src} 
@@ -525,10 +612,10 @@ const Constructor = () => {
               {selectedEl && (
                 <div className="space-y-4">
                   <div>
-                    <Label>Тип: {selectedEl.type === 'text' ? 'Текст' : selectedEl.type === 'epitaph' ? 'Эпитафия' : selectedEl.type === 'fio' ? 'ФИО' : 'Изображение'}</Label>
+                    <Label>Тип: {selectedEl.type === 'text' ? 'Текст' : selectedEl.type === 'epitaph' ? 'Эпитафия' : selectedEl.type === 'fio' ? 'ФИО' : selectedEl.type === 'dates' ? 'Даты' : 'Изображение'}</Label>
                   </div>
                   
-                  {(selectedEl.type === 'text' || selectedEl.type === 'epitaph' || selectedEl.type === 'fio') && (
+                  {(selectedEl.type === 'text' || selectedEl.type === 'epitaph' || selectedEl.type === 'fio' || selectedEl.type === 'dates') && (
                     <>
                       <div>
                         <Label>Текст</Label>
