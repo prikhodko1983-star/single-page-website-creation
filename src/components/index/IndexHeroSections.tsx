@@ -109,7 +109,7 @@ export default function IndexHeroSections({
       </section>
 
       <section className="py-16 bg-[#1a1a1a]">
-        <div className="container mx-auto px-4 max-w-7xl">
+        <div className="container mx-auto px-4">
           <div className="relative bg-white rounded-2xl overflow-hidden">
             <div className="absolute top-8 right-8 bg-[#E89C1F] text-white px-6 py-2 rounded-lg font-oswald font-semibold text-sm z-10">
               до 11 ноября
