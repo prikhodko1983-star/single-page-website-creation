@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +39,34 @@ export default function IndexHeroSections({
   designerSlides,
   children
 }: IndexHeroSectionsProps) {
+  const [blagoustroySlide, setBlagoustroySlide] = useState(0);
+
+  const blagoustroySlides = [
+    {
+      image: 'https://cdn.poehali.dev/files/IMG_4105.jpeg',
+      title: 'Укладка плитки',
+      description: 'Профессиональная укладка гранитной плитки вокруг памятника'
+    },
+    {
+      image: 'https://cdn.poehali.dev/files/bbcac88c-6deb-429e-b227-40488c7c5273.jpg',
+      title: 'Мемориальные комплексы',
+      description: 'Полное обустройство с плиткой, оградой и элементами благоустройства'
+    },
+    {
+      image: 'https://cdn.poehali.dev/files/a92e8f49-5be4-4b4b-939f-e97e69b14d55.jpg',
+      title: 'Цветники и ограды',
+      description: 'Установка металлических оград и оформление цветников'
+    }
+  ];
+
+  const nextBlagoustroySlide = () => {
+    setBlagoustroySlide((prev) => (prev + 1) % blagoustroySlides.length);
+  };
+
+  const prevBlagoustroySlide = () => {
+    setBlagoustroySlide((prev) => (prev - 1 + blagoustroySlides.length) % blagoustroySlides.length);
+  };
+
   return (
     <>
       <section className="relative py-4 md:py-32 bg-secondary overflow-hidden">
@@ -345,13 +374,61 @@ export default function IndexHeroSections({
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
               <div className="order-2 lg:order-1">
-                <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border border-primary/20">
-                  <img 
-                    src="https://cdn.poehali.dev/files/IMG_4105.jpeg"
-                    alt="Комплексное благоустройство могил: укладка плитки, установка оград, мемориальные комплексы в Великом Новгороде"
-                    className="w-full h-auto"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border border-primary/20 group">
+                  {blagoustroySlides.map((slide, index) => (
+                    <div
+                      key={index}
+                      className={`transition-all duration-500 ease-in-out ${
+                        index === blagoustroySlide
+                          ? 'opacity-100 relative'
+                          : 'opacity-0 absolute inset-0 pointer-events-none'
+                      }`}
+                    >
+                      <img 
+                        src={slide.image}
+                        alt={slide.title}
+                        className="w-full h-auto aspect-[4/3] object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                      <div className="absolute bottom-4 left-4 right-4 text-white">
+                        <h3 className="font-oswald font-bold text-xl md:text-2xl mb-1">{slide.title}</h3>
+                        <p className="text-xs md:text-sm opacity-90">{slide.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={prevBlagoustroySlide}
+                    className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/90 hover:bg-white border-0 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  >
+                    <Icon name="ChevronLeft" size={20} className="text-zinc-900" />
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={nextBlagoustroySlide}
+                    className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/90 hover:bg-white border-0 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  >
+                    <Icon name="ChevronRight" size={20} className="text-zinc-900" />
+                  </Button>
+
+                  <div className="absolute bottom-16 md:bottom-20 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                    {blagoustroySlides.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setBlagoustroySlide(index)}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          index === blagoustroySlide
+                            ? 'w-6 bg-white'
+                            : 'w-1.5 bg-white/50 hover:bg-white/70'
+                        }`}
+                        aria-label={`Перейти к слайду ${index + 1}`}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
 
