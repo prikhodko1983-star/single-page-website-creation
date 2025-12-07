@@ -137,16 +137,16 @@ export default function IndexHeroSections({
 
         <div className="container mx-auto px-4 relative z-10 flex flex-col justify-between h-full">
           <div className="grid lg:grid-cols-[1fr,auto] gap-8 lg:gap-12 items-start">
-            <div className="max-w-3xl flex flex-col h-full md:h-auto md:block">
+            <div className="max-w-[280px] md:max-w-3xl flex flex-col h-full md:h-auto md:block">
               <div>
-                <h1 className="font-oswald font-black text-4xl md:text-5xl lg:text-6xl mb-3 animate-fade-in uppercase leading-[0.9] bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent" style={{ textShadow: '0 4px 8px rgba(0,0,0,0.3)' }}>
+                <h1 className="font-oswald font-black text-3xl md:text-5xl lg:text-6xl mb-2 md:mb-3 animate-fade-in uppercase leading-[0.9] bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent" style={{ textShadow: '0 4px 8px rgba(0,0,0,0.3)' }}>
                   Изготовление памятников из гранита
                 </h1>
-                <p className="text-sm md:text-base text-white mb-4 animate-fade-in leading-tight">
+                <p className="text-xs md:text-base text-white mb-3 md:mb-4 animate-fade-in leading-tight">
                   Создаём памятники, которые сохраняют память о ваших близких
                 </p>
               </div>
-              <div className="flex flex-col md:flex-row md:flex-wrap gap-2 mb-8 md:mb-8 md:mt-0">
+              <div className="flex flex-col md:flex-row md:flex-wrap gap-1.5 md:gap-2 mb-4 md:mb-8 md:mt-0">
                 <div className="flex items-center gap-2 text-sm md:text-base">
                   <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <Icon name="Check" className="text-primary" size={16} />
