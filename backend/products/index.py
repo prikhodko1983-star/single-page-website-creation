@@ -4,6 +4,8 @@ from typing import Dict, Any, Optional, List
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
+SCHEMA = 't_p78642605_single_page_website_'
+
 def get_db_connection():
     '''Создание подключения к базе данных'''
     return psycopg2.connect(os.environ['DATABASE_URL'])
@@ -89,7 +91,7 @@ def get_categories(conn, params: Dict[str, Any]) -> Dict[str, Any]:
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
     if params.get('id'):
-        query = f"SELECT * FROM categories WHERE id = {params['id']} AND is_active = true"
+        query = f"SELECT * FROM {SCHEMA}.categories WHERE id = {params['id']} AND is_active = true"
         cursor.execute(query)
         category = cursor.fetchone()
         
@@ -110,7 +112,7 @@ def get_categories(conn, params: Dict[str, Any]) -> Dict[str, Any]:
     
     # Все категории
     cursor.execute(
-        "SELECT * FROM categories WHERE is_active = true ORDER BY display_order, name"
+        f"SELECT * FROM {SCHEMA}.categories WHERE is_active = true ORDER BY display_order, name"
     )
     categories = [dict(row) for row in cursor.fetchall()]
     
@@ -129,8 +131,8 @@ def get_products(conn, params: Dict[str, Any]) -> Dict[str, Any]:
     if params.get('id'):
         query = f"""
             SELECT p.*, c.name as category_name, c.slug as category_slug
-            FROM products p
-            LEFT JOIN categories c ON p.category_id = c.id
+            FROM {SCHEMA}.products p
+            LEFT JOIN {SCHEMA}.categories c ON p.category_id = c.id
             WHERE p.id = {params['id']}
         """
         cursor.execute(query)
@@ -156,8 +158,8 @@ def get_products(conn, params: Dict[str, Any]) -> Dict[str, Any]:
         slug_escaped = params['slug'].replace("'", "''")
         query = f"""
             SELECT p.*, c.name as category_name, c.slug as category_slug
-            FROM products p
-            LEFT JOIN categories c ON p.category_id = c.id
+            FROM {SCHEMA}.products p
+            LEFT JOIN {SCHEMA}.categories c ON p.category_id = c.id
             WHERE p.slug = '{slug_escaped}'
         """
         cursor.execute(query)
@@ -179,10 +181,10 @@ def get_products(conn, params: Dict[str, Any]) -> Dict[str, Any]:
         }
     
     # Построение запроса с фильтрами
-    query = """
+    query = f"""
         SELECT p.*, c.name as category_name, c.slug as category_slug
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
+        FROM {SCHEMA}.products p
+        LEFT JOIN {SCHEMA}.categories c ON p.category_id = c.id
         WHERE 1=1
     """
     
@@ -236,7 +238,7 @@ def create_category(conn, data: Dict[str, Any]) -> Dict[str, Any]:
         }
     
     query = f"""
-        INSERT INTO categories (name, slug, description, is_active, display_order)
+        INSERT INTO {SCHEMA}.categories (name, slug, description, is_active, display_order)
         VALUES ('{name}', '{slug}', '{description}', true, 999)
         RETURNING *
     """
@@ -268,7 +270,7 @@ def update_category(conn, category_id: str, data: Dict[str, Any]) -> Dict[str, A
     description = data.get('description', '').replace("'", "''")
     
     query = f"""
-        UPDATE categories 
+        UPDATE {SCHEMA}.categories 
         SET name = '{name}', slug = '{slug}', description = '{description}', updated_at = NOW()
         WHERE id = {category_id}
         RETURNING *
@@ -303,7 +305,7 @@ def delete_category(conn, category_id: str) -> Dict[str, Any]:
         }
     
     cursor = conn.cursor()
-    query = f"UPDATE categories SET is_active = false WHERE id = {category_id}"
+    query = f"UPDATE {SCHEMA}.categories SET is_active = false WHERE id = {category_id}"
     cursor.execute(query)
     conn.commit()
     
@@ -350,7 +352,7 @@ def create_product(conn, data: Dict[str, Any]) -> Dict[str, Any]:
     category_id_str = str(category_id) if category_id and category_id != '' else 'NULL'
     
     query = f"""
-        INSERT INTO products 
+        INSERT INTO {SCHEMA}.products 
         (name, slug, description, price, old_price, image_url, material, size, sku, polish,
          category_id, in_stock, is_featured, is_price_from, display_order)
         VALUES 
@@ -405,7 +407,7 @@ def update_product(conn, product_id: str, data: Dict[str, Any]) -> Dict[str, Any
     category_id_str = str(category_id) if category_id else 'NULL'
     
     query = f"""
-        UPDATE products 
+        UPDATE {SCHEMA}.products 
         SET name = '{name}', slug = '{slug}', description = '{description}',
             price = '{price}', old_price = {old_price_str}, image_url = {image_url_str},
             material = {material_str}, size = {size_str}, sku = {sku_str}, polish = {polish_str},
@@ -444,7 +446,7 @@ def delete_product(conn, product_id: str) -> Dict[str, Any]:
         }
     
     cursor = conn.cursor()
-    query = f"DELETE FROM products WHERE id = {product_id}"
+    query = f"DELETE FROM {SCHEMA}.products WHERE id = {product_id}"
     cursor.execute(query)
     conn.commit()
     
