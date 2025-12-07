@@ -139,7 +139,7 @@ export default function IndexHeroSections({
           <div className="grid lg:grid-cols-[1fr,auto] gap-8 lg:gap-12 items-start">
             <div className="max-w-3xl">
               <h1 className="font-oswald font-black text-4xl md:text-5xl lg:text-6xl mb-3 animate-fade-in uppercase leading-[0.9] bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent" style={{ textShadow: '0 4px 8px rgba(0,0,0,0.3)' }}>
-                Изготовление памятников из гранита в Великом Новгороде
+                Изготовление памятников из гранита
               </h1>
               <p className="text-sm md:text-base text-white mb-4 animate-fade-in leading-tight">
                 Более 16 лет создаём памятники, которые сохраняют память о ваших близких
