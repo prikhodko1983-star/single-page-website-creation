@@ -82,11 +82,28 @@ export default function IndexContentSections({
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="font-oswald font-bold text-3xl md:text-5xl mb-4">
-              Ретушь фото для памятника
+              Ретушь фото: возвращение ярких воспоминаний
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Профессиональная обработка и восстановление фотографий
             </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto mb-12 px-4">
+            <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 md:p-8 space-y-4 text-muted-foreground leading-relaxed">
+              <p>
+                Восстановление лиц с помощью ретуши — сложный и творческий процесс, который в нашей команде выполняют только опытные специалисты, профессиональные художники и дизайнеры.
+              </p>
+              <p>
+                Мы бережно восстанавливаем фото: улучшаем качество, добавляем мягкие фактуры, передаём глубину взгляда, теплоту кожи, каждую тонкую деталь — с уважением и трепетом.
+              </p>
+              <p>
+                Высокий уровень нашей ретуши фотографий позволяет не только восстановить черты лица, но и подчеркнуть лучшие моменты, сохранив естественную красоту и выразительность.
+              </p>
+              <p className="text-foreground font-medium">
+                Всё это профессиональный подход, которым мы гордимся.
+              </p>
+            </div>
           </div>
 
           <div className="max-w-5xl mx-auto mb-12">
