@@ -54,7 +54,7 @@ export default function IndexContentSections({
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-3 max-w-6xl mx-auto">
             {services.map((service, idx) => (
               <Card 
                 key={idx}
@@ -221,7 +221,7 @@ export default function IndexContentSections({
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 max-w-7xl mx-auto">
             {portfolioImages.map((item, idx) => (
               <div 
                 key={idx}

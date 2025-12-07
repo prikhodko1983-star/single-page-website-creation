@@ -47,7 +47,7 @@ const GallerySection = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 max-w-7xl mx-auto">
             {galleryItems.map((item) => (
               <div key={item.id} className="relative group overflow-hidden rounded-lg shadow-lg aspect-[4/3]">
                 {item.type === 'video' ? (
