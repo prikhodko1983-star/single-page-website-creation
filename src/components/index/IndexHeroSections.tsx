@@ -235,10 +235,10 @@ export default function IndexHeroSections({
 
           <div className="max-w-5xl mx-auto">
             <Card className="bg-card border-border shadow-xl overflow-hidden">
-              <CardContent className="p-5 md:p-12">
-                <div className="grid md:grid-cols-2 gap-6 md:gap-12 items-start md:items-center">
-                  <div className="space-y-4 md:space-y-6 order-2 md:order-1">
-                    <div className="space-y-3 md:space-y-4">
+              <CardContent className="p-4 md:p-12">
+                <div className="grid md:grid-cols-2 gap-5 md:gap-12 items-start md:items-center">
+                  <div className="space-y-3 md:space-y-6 order-2 md:order-1">
+                    <div className="space-y-2.5 md:space-y-4">
                       <div className="flex items-start gap-2 md:gap-3">
                         <div className="w-9 h-9 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                           <Icon name="Palette" size={18} className="text-primary md:w-6 md:h-6" />
@@ -276,14 +276,14 @@ export default function IndexHeroSections({
                       </div>
                     </div>
 
-                    <div className="pt-3 md:pt-6 border-t border-border">
-                      <div className="flex items-center gap-2 mb-3 md:mb-4">
+                    <div className="pt-2.5 md:pt-6 border-t border-border">
+                      <div className="flex items-center gap-2 mb-2.5 md:mb-4">
                         <Icon name="Phone" size={16} className="text-primary md:w-5 md:h-5" />
                         <span className="font-oswald font-bold text-sm md:text-base lg:text-lg">Бесплатная консультация</span>
                       </div>
                       <Button 
                         size="lg"
-                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-xs md:text-sm lg:text-lg py-2.5 md:py-3 lg:py-6"
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-xs md:text-sm lg:text-lg py-2 md:py-3 lg:py-6"
                         onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                       >
                         ПОЛУЧИТЬ КОНСУЛЬТАЦИЮ ДИЗАЙНЕРА
