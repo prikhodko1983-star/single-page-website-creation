@@ -1,160 +1,135 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+interface CanvasElement {
+  id: string;
+  type: 'text' | 'image' | 'cross' | 'flower' | 'epitaph';
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  content?: string;
+  src?: string;
+  fontSize?: number;
+  color?: string;
+  rotation?: number;
+}
+
 const Constructor = () => {
   const navigate = useNavigate();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
   
-  const [selectedSize, setSelectedSize] = useState("100x50x5");
-  const [selectedColor, setSelectedColor] = useState("black");
-  const [selectedStyle, setSelectedStyle] = useState("vertical");
-  const [selectedDecor, setSelectedDecor] = useState<string[]>([]);
-  const [hasOgrada, setHasOgrada] = useState(false);
-  const [hasCvetnik, setHasCvetnik] = useState(false);
-  const [uploadedPhoto, setUploadedPhoto] = useState<string | null>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [monumentImage, setMonumentImage] = useState<string>('https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png');
+  const [elements, setElements] = useState<CanvasElement[]>([]);
+  const [selectedElement, setSelectedElement] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
-  const sizes = [
-    { id: "100x50x5", label: "100×50×5 см", price: 15000 },
-    { id: "120x60x8", label: "120×60×8 см", price: 25000 },
-    { id: "140x70x10", label: "140×70×10 см", price: 35000 },
-    { id: "custom", label: "Индивидуальный размер", price: 0 }
+  const monumentImages = [
+    { id: '1', src: 'https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png', name: 'Вертикальный' },
+    { id: '2', src: 'https://cdn.poehali.dev/files/c80c1bd4-c413-425a-a1fc-91dbb36a8de4.jpg', name: 'Горизонтальный' },
+    { id: '3', src: 'https://cdn.poehali.dev/files/a6e29eb2-0f18-47ca-917e-adac360db4c3.jpeg', name: 'Эксклюзивный' },
   ];
 
-  const colors = [
-    { id: "black", label: "Чёрный гранит", hex: "#1a1a1a" },
-    { id: "red", label: "Красный гранит", hex: "#8B4513" },
-    { id: "gray", label: "Серый гранит", hex: "#696969" },
-    { id: "green", label: "Зелёный гранит", hex: "#2F4F4F" }
-  ];
-
-  const styles = [
-    { id: "vertical", label: "Вертикальный", image: "https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png" },
-    { id: "horizontal", label: "Горизонтальный", image: "https://cdn.poehali.dev/files/c80c1bd4-c413-425a-a1fc-91dbb36a8de4.jpg" },
-    { id: "exclusive", label: "Эксклюзивный", image: "https://cdn.poehali.dev/files/a6e29eb2-0f18-47ca-917e-adac360db4c3.jpeg" }
-  ];
-
-  const decorOptions = [
-    { id: "cross", label: "Православный крест", price: 3000 },
-    { id: "flowers", label: "Резные цветы", price: 8000 },
-    { id: "angel", label: "Ангел", price: 15000 },
-    { id: "birch", label: "Берёза", price: 10000 }
-  ];
-
-  const toggleDecor = (id: string) => {
-    setSelectedDecor(prev => 
-      prev.includes(id) ? prev.filter(d => d !== id) : [...prev, id]
-    );
+  const addTextElement = () => {
+    const newElement: CanvasElement = {
+      id: Date.now().toString(),
+      type: 'text',
+      x: 50,
+      y: 50,
+      width: 200,
+      height: 40,
+      content: 'Текст',
+      fontSize: 24,
+      color: '#FFFFFF',
+      rotation: 0,
+    };
+    setElements([...elements, newElement]);
   };
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      setUploadError('Пожалуйста, выберите изображение');
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      setUploadError('Файл слишком большой. Максимум 10 МБ');
-      return;
-    }
-
-    setUploadError(null);
-    setIsUploading(true);
-    setUploadProgress(0);
-
-    try {
-      const reader = new FileReader();
-      
-      reader.onprogress = (e) => {
-        if (e.lengthComputable) {
-          const percentLoaded = Math.round((e.loaded / e.total) * 50);
-          setUploadProgress(percentLoaded);
-        }
-      };
-      
-      reader.onloadend = async () => {
-        try {
-          setUploadProgress(50);
-          const base64String = reader.result as string;
-          const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-          
-          setUploadProgress(60);
-          
-          const response = await fetch('https://functions.poehali.dev/96dcc1e1-90f9-4b11-b0c7-2d66559ddcbb', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              image: base64String,
-              extension: extension
-            })
-          });
-
-          setUploadProgress(90);
-
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Ошибка загрузки');
-          }
-
-          const data = await response.json();
-          setUploadProgress(100);
-          setUploadedPhoto(data.url);
-          
-          setTimeout(() => {
-            setIsUploading(false);
-            setUploadProgress(0);
-          }, 500);
-        } catch (error) {
-          console.error('Upload error:', error);
-          setUploadError('Не удалось загрузить фото. Попробуйте ещё раз');
-          setIsUploading(false);
-          setUploadProgress(0);
-        }
-      };
-      
-      reader.onerror = () => {
-        setUploadError('Не удалось прочитать файл');
-        setIsUploading(false);
-        setUploadProgress(0);
-      };
-      
-      reader.readAsDataURL(file);
-      
-    } catch (error) {
-      console.error('Upload error:', error);
-      setUploadError('Не удалось загрузить фото. Попробуйте ещё раз');
-      setIsUploading(false);
-      setUploadProgress(0);
-    }
+  const addImageElement = (src: string, type: 'image' | 'cross' | 'flower') => {
+    const newElement: CanvasElement = {
+      id: Date.now().toString(),
+      type,
+      x: 50,
+      y: 50,
+      width: 100,
+      height: 100,
+      src,
+      rotation: 0,
+    };
+    setElements([...elements, newElement]);
   };
 
-  const calculatePrice = () => {
-    let total = sizes.find(s => s.id === selectedSize)?.price || 0;
+  const addEpitaphElement = () => {
+    const newElement: CanvasElement = {
+      id: Date.now().toString(),
+      type: 'epitaph',
+      x: 50,
+      y: 200,
+      width: 300,
+      height: 100,
+      content: 'Вечная память',
+      fontSize: 18,
+      color: '#FFFFFF',
+      rotation: 0,
+    };
+    setElements([...elements, newElement]);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
+    e.stopPropagation();
+    setSelectedElement(elementId);
+    setIsDragging(true);
     
-    selectedDecor.forEach(decorId => {
-      const decor = decorOptions.find(d => d.id === decorId);
-      if (decor) total += decor.price;
+    const element = elements.find(el => el.id === elementId);
+    if (!element) return;
+    
+    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
     });
-
-    if (hasOgrada) total += 20000;
-    if (hasCvetnik) total += 15000;
-
-    return total;
   };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !selectedElement || !canvasRef.current) return;
+    
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    const newX = e.clientX - canvasRect.left - dragOffset.x;
+    const newY = e.clientY - canvasRect.top - dragOffset.y;
+    
+    setElements(elements.map(el => 
+      el.id === selectedElement 
+        ? { ...el, x: Math.max(0, Math.min(newX, canvasRect.width - el.width)), 
+                  y: Math.max(0, Math.min(newY, canvasRect.height - el.height)) }
+        : el
+    ));
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const updateElement = (id: string, updates: Partial<CanvasElement>) => {
+    setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
+  };
+
+  const deleteElement = (id: string) => {
+    setElements(elements.filter(el => el.id !== id));
+    if (selectedElement === id) setSelectedElement(null);
+  };
+
+  const selectedEl = elements.find(el => el.id === selectedElement);
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-roboto">
+    <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
@@ -169,409 +144,261 @@ const Constructor = () => {
               </Button>
               <div>
                 <h1 className="font-oswald font-bold text-xl text-primary">КОНСТРУКТОР ПАМЯТНИКА</h1>
-                <p className="text-xs text-muted-foreground">Создайте свой уникальный проект</p>
+                <p className="text-xs text-muted-foreground">Создайте уникальный дизайн</p>
               </div>
-            </div>
-            <div className="hidden md:flex items-center gap-3">
-              <a href="tel:+79960681168" className="flex items-center gap-1.5 font-oswald font-bold text-base hover:text-primary transition-colors">
-                <Icon name="Phone" size={18} />
-                8 (996) 068-11-68
-              </a>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid lg:grid-cols-[1fr,400px] gap-8">
-          {/* Левая часть - настройки */}
-          <div className="space-y-8">
-            {/* Размер */}
-            <Card className="bg-card border-border">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Icon name="Maximize2" size={20} className="text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="font-oswald font-bold text-2xl">Размер памятника</h2>
-                    <p className="text-sm text-muted-foreground">Выберите стандартный или закажите индивидуальный</p>
-                  </div>
-                </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid lg:grid-cols-[320px,1fr,320px] gap-6">
+          {/* Левая панель - Библиотека */}
+          <Card className="h-fit">
+            <CardContent className="p-4">
+              <h2 className="font-oswald font-bold text-lg mb-4">Библиотека элементов</h2>
+              
+              <Tabs defaultValue="monuments" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="monuments">Основа</TabsTrigger>
+                  <TabsTrigger value="elements">Элементы</TabsTrigger>
+                </TabsList>
                 
-                <div className="grid md:grid-cols-2 gap-4">
-                  {sizes.map(size => (
-                    <button
-                      key={size.id}
-                      onClick={() => setSelectedSize(size.id)}
-                      className={`p-4 rounded-lg border-2 transition-all text-left ${
-                        selectedSize === size.id 
-                          ? 'border-primary bg-primary/5' 
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                    >
-                      <div className="font-oswald font-bold text-lg">{size.label}</div>
-                      {size.price > 0 && (
-                        <div className="text-sm text-muted-foreground mt-1">от {size.price.toLocaleString()} ₽</div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Форма */}
-            <Card className="bg-card border-border">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Icon name="Shapes" size={20} className="text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="font-oswald font-bold text-2xl">Форма памятника</h2>
-                    <p className="text-sm text-muted-foreground">Классические и эксклюзивные варианты</p>
-                  </div>
-                </div>
-                
-                <div className="grid md:grid-cols-3 gap-4">
-                  {styles.map(style => (
-                    <button
-                      key={style.id}
-                      onClick={() => setSelectedStyle(style.id)}
-                      className={`relative overflow-hidden rounded-lg border-2 transition-all ${
-                        selectedStyle === style.id 
-                          ? 'border-primary' 
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                    >
-                      <div className="aspect-[3/4] bg-secondary">
-                        <img 
-                          src={style.image} 
-                          alt={style.label}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="p-3 text-center font-oswald font-semibold">
-                        {style.label}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Цвет */}
-            <Card className="bg-card border-border">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Icon name="Palette" size={20} className="text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="font-oswald font-bold text-2xl">Цвет гранита</h2>
-                    <p className="text-sm text-muted-foreground">Выберите материал для памятника</p>
-                  </div>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-4">
-                  {colors.map(color => (
-                    <button
-                      key={color.id}
-                      onClick={() => setSelectedColor(color.id)}
-                      className={`p-4 rounded-lg border-2 transition-all flex items-center gap-4 ${
-                        selectedColor === color.id 
-                          ? 'border-primary bg-primary/5' 
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                    >
-                      <div 
-                        className="w-12 h-12 rounded border-2 border-border"
-                        style={{ backgroundColor: color.hex }}
-                      ></div>
-                      <div className="font-oswald font-semibold text-lg text-left">{color.label}</div>
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Загрузка фото */}
-            <Card className="bg-card border-border">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Icon name="Image" size={20} className="text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="font-oswald font-bold text-2xl">Фотография для портрета</h2>
-                    <p className="text-sm text-muted-foreground">Загрузите фото для гравировки на памятнике</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {uploadedPhoto ? (
-                    <div className="relative rounded-lg overflow-hidden border-2 border-primary/20">
-                      <img 
-                        src={uploadedPhoto} 
-                        alt="Загруженное фото" 
-                        className="w-full h-64 object-cover"
-                      />
-                      <div className="absolute top-2 right-2 flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="bg-background/90 backdrop-blur"
-                          onClick={() => {
-                            setUploadedPhoto(null);
-                            if (fileInputRef.current) fileInputRef.current.value = '';
-                          }}
-                        >
-                          <Icon name="X" size={16} className="mr-1" />
-                          Удалить
-                        </Button>
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                        <p className="text-white text-sm flex items-center gap-2">
-                          <Icon name="CheckCircle" size={16} className="text-green-400" />
-                          Фото успешно загружено
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="relative">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileSelect}
-                        className="hidden"
-                        id="photo-upload"
-                      />
-                      <label
-                        htmlFor="photo-upload"
-                        className={`flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg cursor-pointer transition-all ${
-                          isUploading 
-                            ? 'border-primary bg-primary/5' 
-                            : 'border-border hover:border-primary hover:bg-secondary/50'
+                <TabsContent value="monuments" className="space-y-3 mt-4">
+                  <Label>Выберите памятник</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {monumentImages.map(img => (
+                      <button
+                        key={img.id}
+                        onClick={() => setMonumentImage(img.src)}
+                        className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
+                          monumentImage === img.src ? 'border-primary' : 'border-border hover:border-primary/50'
                         }`}
                       >
-                        {isUploading ? (
-                          <div className="flex flex-col items-center gap-4 w-full max-w-xs mx-auto">
-                            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                            <div className="w-full space-y-2">
-                              <Progress value={uploadProgress} className="h-2" />
-                              <p className="text-sm text-center text-muted-foreground font-medium">
-                                Загрузка {uploadProgress}%
-                              </p>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex flex-col items-center gap-3">
-                            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                              <Icon name="Upload" size={28} className="text-primary" />
-                            </div>
-                            <div className="text-center">
-                              <p className="font-semibold mb-1">Нажмите для выбора фото</p>
-                              <p className="text-sm text-muted-foreground">или перетащите файл сюда</p>
-                              <p className="text-xs text-muted-foreground mt-2">Максимум 10 МБ • JPG, PNG, HEIC</p>
-                            </div>
-                          </div>
-                        )}
-                      </label>
-                    </div>
-                  )}
-
-                  {uploadError && (
-                    <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                      <Icon name="AlertCircle" size={18} className="text-red-500" />
-                      <p className="text-sm text-red-500">{uploadError}</p>
-                    </div>
-                  )}
-
-                  <div className="bg-secondary/50 rounded-lg p-4 space-y-2">
-                    <p className="text-sm font-semibold flex items-center gap-2">
-                      <Icon name="Info" size={16} className="text-primary" />
-                      Рекомендации для фото:
-                    </p>
-                    <ul className="text-sm text-muted-foreground space-y-1 ml-6">
-                      <li>• Хорошее освещение и чёткость</li>
-                      <li>• Лицо анфас, без солнцезащитных очков</li>
-                      <li>• Высокое разрешение (минимум 1200×1600 px)</li>
-                      <li>• Наши специалисты бесплатно отретушируют фото</li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Декор */}
-            <Card className="bg-card border-border">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Icon name="Sparkles" size={20} className="text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="font-oswald font-bold text-2xl">Художественные элементы</h2>
-                    <p className="text-sm text-muted-foreground">Выберите декоративные элементы</p>
-                  </div>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-4">
-                  {decorOptions.map(decor => (
-                    <button
-                      key={decor.id}
-                      onClick={() => toggleDecor(decor.id)}
-                      className={`p-4 rounded-lg border-2 transition-all text-left ${
-                        selectedDecor.includes(decor.id) 
-                          ? 'border-primary bg-primary/5' 
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="font-oswald font-bold text-lg">{decor.label}</div>
-                          <div className="text-sm text-muted-foreground mt-1">+{decor.price.toLocaleString()} ₽</div>
+                        <img src={img.src} alt={img.name} className="w-full h-full object-cover" />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 text-center">
+                          {img.name}
                         </div>
-                        {selectedDecor.includes(decor.id) && (
-                          <Icon name="Check" size={20} className="text-primary" />
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Благоустройство */}
-            <Card className="bg-card border-border">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Icon name="Trees" size={20} className="text-primary" />
+                      </button>
+                    ))}
                   </div>
-                  <div>
-                    <h2 className="font-oswald font-bold text-2xl">Благоустройство</h2>
-                    <p className="text-sm text-muted-foreground">Дополнительные элементы комплекса</p>
-                  </div>
-                </div>
+                </TabsContent>
                 
-                <div className="space-y-4">
-                  <button
-                    onClick={() => setHasOgrada(!hasOgrada)}
-                    className={`w-full p-4 rounded-lg border-2 transition-all flex items-center justify-between ${
-                      hasOgrada 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <div className="text-left">
-                      <div className="font-oswald font-bold text-lg">Ограда</div>
-                      <div className="text-sm text-muted-foreground mt-1">Металлическая ограда вокруг участка • +20 000 ₽</div>
-                    </div>
-                    {hasOgrada && <Icon name="Check" size={20} className="text-primary" />}
-                  </button>
-
-                  <button
-                    onClick={() => setHasCvetnik(!hasCvetnik)}
-                    className={`w-full p-4 rounded-lg border-2 transition-all flex items-center justify-between ${
-                      hasCvetnik 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <div className="text-left">
-                      <div className="font-oswald font-bold text-lg">Цветник</div>
-                      <div className="text-sm text-muted-foreground mt-1">Гранитный цветник с уходом • +15 000 ₽</div>
-                    </div>
-                    {hasCvetnik && <Icon name="Check" size={20} className="text-primary" />}
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Правая часть - итоговая стоимость */}
-          <div>
-            <div className="sticky top-24">
-              <Card className="bg-card border-border shadow-xl">
-                <CardContent className="p-6">
-                  <h3 className="font-oswald font-bold text-2xl mb-6">Ваш проект</h3>
+                <TabsContent value="elements" className="space-y-3 mt-4">
+                  <Button onClick={addTextElement} variant="outline" className="w-full justify-start">
+                    <Icon name="Type" size={18} className="mr-2" />
+                    Добавить текст
+                  </Button>
                   
-                  <div className="space-y-4 mb-6 pb-6 border-b border-border">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Размер:</span>
-                      <span className="font-semibold">{sizes.find(s => s.id === selectedSize)?.label}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Форма:</span>
-                      <span className="font-semibold">{styles.find(s => s.id === selectedStyle)?.label}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Цвет:</span>
-                      <span className="font-semibold">{colors.find(c => c.id === selectedColor)?.label}</span>
-                    </div>
-                    {selectedDecor.length > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Декор:</span>
-                        <span className="font-semibold">{selectedDecor.length} элемента</span>
-                      </div>
-                    )}
-                    {hasOgrada && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Ограда:</span>
-                        <span className="font-semibold">Да</span>
-                      </div>
-                    )}
-                    {hasCvetnik && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Цветник:</span>
-                        <span className="font-semibold">Да</span>
-                      </div>
-                    )}
-                  </div>
+                  <Button onClick={addEpitaphElement} variant="outline" className="w-full justify-start">
+                    <Icon name="FileText" size={18} className="mr-2" />
+                    Добавить эпитафию
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-icon.png', 'cross')} 
+                    variant="outline" 
+                    className="w-full justify-start"
+                  >
+                    <Icon name="Plus" size={18} className="mr-2" />
+                    Добавить крест
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => addImageElement('https://cdn.poehali.dev/files/flower-icon.png', 'flower')} 
+                    variant="outline" 
+                    className="w-full justify-start"
+                  >
+                    <Icon name="Flower" size={18} className="mr-2" />
+                    Добавить цветы
+                  </Button>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
 
-                  <div className="bg-primary/10 rounded-lg p-4 mb-6">
-                    <div className="text-sm text-muted-foreground mb-1">Ориентировочная стоимость</div>
-                    <div className="font-oswald font-bold text-4xl text-primary">
-                      {calculatePrice().toLocaleString()} ₽
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-2">
-                      * Точная цена рассчитывается индивидуально
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <Button 
-                      size="lg"
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-lg"
-                      onClick={() => navigate('/?scroll=contact')}
+          {/* Центр - Холст */}
+          <div className="flex flex-col items-center">
+            <div 
+              ref={canvasRef}
+              className="relative w-full max-w-2xl aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl border-4 border-border"
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+            >
+              <img 
+                src={monumentImage} 
+                alt="Памятник" 
+                className="w-full h-full object-cover"
+                draggable={false}
+              />
+              
+              {elements.map(element => (
+                <div
+                  key={element.id}
+                  className={`absolute cursor-move ${selectedElement === element.id ? 'ring-2 ring-primary' : ''}`}
+                  style={{
+                    left: element.x,
+                    top: element.y,
+                    width: element.width,
+                    height: element.height,
+                    transform: `rotate(${element.rotation || 0}deg)`,
+                  }}
+                  onMouseDown={(e) => handleMouseDown(e, element.id)}
+                >
+                  {element.type === 'text' && (
+                    <div 
+                      className="w-full h-full flex items-center justify-center text-center select-none"
+                      style={{ 
+                        fontSize: element.fontSize, 
+                        color: element.color,
+                        textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                        fontWeight: 'bold',
+                      }}
                     >
-                      <Icon name="Send" className="mr-2" size={20} />
-                      ОТПРАВИТЬ ЗАЯВКУ
-                    </Button>
-                    
-                    <Button 
-                      size="lg"
-                      variant="outline"
-                      className="w-full font-oswald text-lg"
-                      onClick={() => window.print()}
-                    >
-                      <Icon name="Download" className="mr-2" size={20} />
-                      СОХРАНИТЬ ПРОЕКТ
-                    </Button>
-                  </div>
-
-                  <div className="mt-6 pt-6 border-t border-border">
-                    <div className="flex items-start gap-3 text-sm text-muted-foreground">
-                      <Icon name="Info" size={16} className="mt-0.5 flex-shrink-0" />
-                      <p>Наш менеджер свяжется с вами для уточнения деталей и согласования проекта</p>
+                      {element.content}
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  )}
+                  
+                  {element.type === 'epitaph' && (
+                    <div 
+                      className="w-full h-full flex items-center justify-center text-center select-none italic"
+                      style={{ 
+                        fontSize: element.fontSize, 
+                        color: element.color,
+                        textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                      }}
+                    >
+                      {element.content}
+                    </div>
+                  )}
+                  
+                  {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && (
+                    <img 
+                      src={element.src} 
+                      alt={element.type}
+                      className="w-full h-full object-contain select-none"
+                      draggable={false}
+                    />
+                  )}
+                  
+                  {selectedElement === element.id && (
+                    <div className="absolute -bottom-2 -right-2 w-4 h-4 bg-primary rounded-full cursor-nwse-resize"></div>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-4 flex gap-2">
+              <Button variant="outline" onClick={() => setElements([])}>
+                <Icon name="Trash2" size={18} className="mr-2" />
+                Очистить всё
+              </Button>
+              <Button>
+                <Icon name="Download" size={18} className="mr-2" />
+                Сохранить проект
+              </Button>
             </div>
           </div>
+
+          {/* Правая панель - Свойства */}
+          <Card className="h-fit">
+            <CardContent className="p-4">
+              <h2 className="font-oswald font-bold text-lg mb-4">Свойства элемента</h2>
+              
+              {!selectedEl && (
+                <p className="text-sm text-muted-foreground">Выберите элемент для редактирования</p>
+              )}
+              
+              {selectedEl && (
+                <div className="space-y-4">
+                  <div>
+                    <Label>Тип: {selectedEl.type === 'text' ? 'Текст' : selectedEl.type === 'epitaph' ? 'Эпитафия' : 'Изображение'}</Label>
+                  </div>
+                  
+                  {(selectedEl.type === 'text' || selectedEl.type === 'epitaph') && (
+                    <>
+                      <div>
+                        <Label>Текст</Label>
+                        <Input 
+                          value={selectedEl.content || ''} 
+                          onChange={(e) => updateElement(selectedEl.id, { content: e.target.value })}
+                          className="mt-1"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label>Размер шрифта: {selectedEl.fontSize}px</Label>
+                        <input 
+                          type="range" 
+                          min="12" 
+                          max="72" 
+                          value={selectedEl.fontSize || 24}
+                          onChange={(e) => updateElement(selectedEl.id, { fontSize: parseInt(e.target.value) })}
+                          className="w-full mt-1"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label>Цвет</Label>
+                        <input 
+                          type="color" 
+                          value={selectedEl.color || '#FFFFFF'}
+                          onChange={(e) => updateElement(selectedEl.id, { color: e.target.value })}
+                          className="w-full h-10 mt-1 rounded border"
+                        />
+                      </div>
+                    </>
+                  )}
+                  
+                  <div>
+                    <Label>Ширина: {selectedEl.width}px</Label>
+                    <input 
+                      type="range" 
+                      min="50" 
+                      max="500" 
+                      value={selectedEl.width}
+                      onChange={(e) => updateElement(selectedEl.id, { width: parseInt(e.target.value) })}
+                      className="w-full mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Высота: {selectedEl.height}px</Label>
+                    <input 
+                      type="range" 
+                      min="30" 
+                      max="400" 
+                      value={selectedEl.height}
+                      onChange={(e) => updateElement(selectedEl.id, { height: parseInt(e.target.value) })}
+                      className="w-full mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Поворот: {selectedEl.rotation || 0}°</Label>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="360" 
+                      value={selectedEl.rotation || 0}
+                      onChange={(e) => updateElement(selectedEl.id, { rotation: parseInt(e.target.value) })}
+                      className="w-full mt-1"
+                    />
+                  </div>
+                  
+                  <Button 
+                    variant="destructive" 
+                    className="w-full"
+                    onClick={() => deleteElement(selectedEl.id)}
+                  >
+                    <Icon name="Trash2" size={18} className="mr-2" />
+                    Удалить элемент
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
