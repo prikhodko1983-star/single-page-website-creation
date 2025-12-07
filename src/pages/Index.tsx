@@ -141,8 +141,6 @@ const Index = () => {
         designerSlides={designerSlides}
       />
 
-      <IndexShopSection />
-
       <IndexContentSections 
         services={services}
         advantages={advantages}
@@ -150,6 +148,8 @@ const Index = () => {
         portfolioImages={portfolioImages}
         setSelectedImage={setSelectedImage}
       />
+
+      <IndexShopSection />
 
       <IndexContactFooter 
         formData={formData}
