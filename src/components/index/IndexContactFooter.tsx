@@ -131,7 +131,7 @@ export default function IndexContactFooter({
             <Card className="overflow-hidden mt-6">
               <CardContent className="p-0">
                 <iframe 
-                  src="https://yandex.ru/map-widget/v1/?ll=31.307429%2C58.545091&z=17&l=map&pt=31.307429,58.545091,pm2rdm"
+                  src="https://yandex.ru/map-widget/v1/?ll=31.322484%2C58.545862&z=17&l=map&pt=31.322484,58.545862,pm2rdm"
                   width="100%" 
                   height="400" 
                   frameBorder="0"
