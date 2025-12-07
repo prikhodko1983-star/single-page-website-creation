@@ -150,68 +150,6 @@ export default function IndexHeroSections({
         </div>
       </section>
 
-      <section id="catalog" className="py-20 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="font-oswald font-bold text-3xl md:text-5xl mb-4">
-              Каталог памятников
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Готовые решения для разных бюджетов
-            </p>
-          </div>
-
-          <div className="flex justify-center mb-8 px-2">
-            <div className="grid grid-cols-2 md:inline-flex bg-secondary rounded-lg p-1 gap-1 w-full md:w-auto">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveCategory(category)}
-                  className={`px-3 md:px-12 py-2 md:py-3 rounded-md font-oswald font-medium text-xs md:text-base transition-all ${
-                    activeCategory === category
-                      ? 'bg-card text-foreground shadow-md'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 md:gap-6">
-            {filteredMonuments.map((item, idx) => (
-              <Card 
-                key={item.id || idx}
-                className="bg-card border-border hover:border-primary transition-all duration-300 overflow-hidden group"
-              >
-                <div className="relative aspect-[3/4] overflow-hidden bg-secondary flex items-center justify-center">
-                  <img 
-                    src={item.image_url} 
-                    alt={item.title}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <CardContent className="p-3 md:p-6">
-                  <h3 className="font-oswald font-semibold text-base md:text-xl mb-1">{item.title}</h3>
-                  <div className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4">{item.size}</div>
-                  <div className="flex flex-col gap-2 md:gap-3">
-                    <span className="font-oswald text-lg md:text-2xl text-[#f59f0a]">{item.price}</span>
-                    <Button 
-                      size="lg"
-                      className="w-full bg-[#f59f0a] hover:bg-[#d88a09] text-white font-oswald text-sm md:text-base py-2 md:py-3"
-                      onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                    >
-                      Подробнее
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="py-20 bg-gradient-to-b from-background to-secondary">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
