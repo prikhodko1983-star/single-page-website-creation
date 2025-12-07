@@ -374,11 +374,13 @@ const Constructor = () => {
       ctx.fillRect(0, 0, rect.width, rect.height);
       
       const monumentImg = new Image();
-      monumentImg.crossOrigin = 'anonymous';
       
       await new Promise((resolve, reject) => {
         monumentImg.onload = resolve;
-        monumentImg.onerror = reject;
+        monumentImg.onerror = (error) => {
+          console.error('Monument image load error:', error);
+          reject(new Error('Не удалось загрузить изображение памятника'));
+        };
         monumentImg.src = monumentImage;
       });
       
