@@ -150,7 +150,7 @@ export default function IndexHeroSections({
         </div>
       </section>
 
-      <section id="catalog" className="py-20 bg-background">
+      <section id="catalog" className="hidden py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="font-oswald font-bold text-3xl md:text-5xl mb-4">
