@@ -144,7 +144,7 @@ export default function IndexHeroSections({
               <p className="text-sm md:text-base text-white mb-4 animate-fade-in leading-tight">
                 Более 16 лет создаём памятники, которые сохраняют память о ваших близких
               </p>
-              <div className="flex flex-col md:flex-row md:flex-wrap gap-4 mb-8">
+              <div className="flex flex-col md:flex-row md:flex-wrap gap-2 mb-8">
                 <div className="flex items-center gap-2 text-sm md:text-base">
                   <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <Icon name="Check" className="text-primary" size={16} />
