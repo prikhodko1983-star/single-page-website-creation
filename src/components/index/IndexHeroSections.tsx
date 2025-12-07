@@ -109,14 +109,14 @@ export default function IndexHeroSections({
       </section>
 
       <section className="py-16 bg-[#1a1a1a]">
-        <div className="container mx-auto px-4 max-w-7xl">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="relative bg-white rounded-2xl overflow-hidden">
             <div className="absolute top-8 right-8 bg-[#E89C1F] text-white px-6 py-2 rounded-lg font-oswald font-semibold text-sm z-10">
               до 11 ноября
             </div>
 
-            <div className="grid lg:grid-cols-[300px,1fr] gap-0 items-center">
-              <div className="relative h-full">
+            <div className="grid lg:grid-cols-[280px,1fr] gap-0 items-center min-h-[220px]">
+              <div className="relative h-full min-h-[220px]">
                 <img 
                   src="https://cdn.poehali.dev/files/76878.jpg"
                   alt="Премиум памятники"
@@ -124,7 +124,7 @@ export default function IndexHeroSections({
                 />
               </div>
 
-              <div className="space-y-6 p-8 lg:p-16 text-center lg:text-left">
+              <div className="space-y-5 p-6 lg:py-8 lg:px-12 text-center lg:text-left">
                 <h2 className="font-oswald font-bold text-4xl md:text-6xl text-zinc-900 whitespace-nowrap">Премиум модели со скидкой до 25%</h2>
 
                 <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
