@@ -396,7 +396,7 @@ export default function IndexHeroSections({
                 <div className="pt-4 my-2.5">
                   <Button 
                     size="lg"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-lg px-8 py-6 h-auto shadow-lg hover:shadow-xl transition-all"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-lg px-6 py-6 h-auto shadow-lg hover:shadow-xl transition-all"
                     onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     <Icon name="Phone" size={20} className="mr-2" />
