@@ -627,7 +627,7 @@ const Constructor = () => {
                   
                   {element.type === 'dates' && (
                     <div 
-                      className="w-full h-full flex items-center justify-center text-center select-none overflow-hidden"
+                      className="w-full h-full flex items-center justify-center text-center select-none overflow-hidden whitespace-nowrap"
                       style={{ 
                         fontSize: `${element.fontSize}px`, 
                         color: element.color,
