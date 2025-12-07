@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 interface CanvasElement {
   id: string;
-  type: 'text' | 'image' | 'cross' | 'flower' | 'epitaph';
+  type: 'text' | 'image' | 'cross' | 'flower' | 'epitaph' | 'fio';
   x: number;
   y: number;
   width: number;
@@ -19,6 +19,7 @@ interface CanvasElement {
   fontSize?: number;
   color?: string;
   rotation?: number;
+  fontFamily?: string;
 }
 
 const Constructor = () => {
@@ -30,11 +31,26 @@ const Constructor = () => {
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  
+  const [surname, setSurname] = useState('');
+  const [name, setName] = useState('');
+  const [patronymic, setPatronymic] = useState('');
+  const [selectedFont, setSelectedFont] = useState('font1');
 
   const monumentImages = [
     { id: '1', src: 'https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png', name: 'Вертикальный' },
     { id: '2', src: 'https://cdn.poehali.dev/files/c80c1bd4-c413-425a-a1fc-91dbb36a8de4.jpg', name: 'Горизонтальный' },
     { id: '3', src: 'https://cdn.poehali.dev/files/a6e29eb2-0f18-47ca-917e-adac360db4c3.jpeg', name: 'Эксклюзивный' },
+  ];
+
+  const fonts = [
+    { id: 'font1', name: '№ 1/1а', style: 'serif', weight: 'normal', example: 'Фамилия Имя Отчество' },
+    { id: 'font2', name: '№ 2/2а', style: 'serif', weight: 'bold', example: 'Фамилия Имя Отчество' },
+    { id: 'font3', name: '№ 3', style: 'serif', weight: 'normal', example: 'Фамилия Имя Отчество' },
+    { id: 'font4', name: '№ 4', style: 'serif', weight: 'bold', example: 'Фамилия Имя Отчество' },
+    { id: 'font5', name: '№ 3а', style: 'serif', weight: 'normal', example: 'Фамилия Имя Отчество' },
+    { id: 'font6', name: 'Иск 1/1а', style: 'cursive', weight: 'normal', example: 'Фамилия Имя Отчество' },
+    { id: 'font7', name: 'Иск 2/2а', style: 'cursive', weight: 'normal', example: 'Фамилия Имя Отчество' },
   ];
 
   const addTextElement = () => {
@@ -81,6 +97,32 @@ const Constructor = () => {
       rotation: 0,
     };
     setElements([...elements, newElement]);
+  };
+
+  const addFIOElement = () => {
+    if (!surname && !name && !patronymic) return;
+    
+    const fioText = `${surname}\n${name}\n${patronymic}`.trim();
+    const selectedFontData = fonts.find(f => f.id === selectedFont);
+    
+    const newElement: CanvasElement = {
+      id: Date.now().toString(),
+      type: 'fio',
+      x: 100,
+      y: 100,
+      width: 300,
+      height: 120,
+      content: fioText,
+      fontSize: 28,
+      color: '#FFFFFF',
+      rotation: 0,
+      fontFamily: selectedFontData?.style || 'serif',
+    };
+    setElements([...elements, newElement]);
+    
+    setSurname('');
+    setName('');
+    setPatronymic('');
   };
 
   const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
@@ -185,6 +227,50 @@ const Constructor = () => {
                 </TabsContent>
                 
                 <TabsContent value="elements" className="space-y-3 mt-4">
+                  <div className="space-y-3 p-3 bg-secondary/20 rounded-lg">
+                    <Label className="font-semibold">ФИО с выбором шрифта</Label>
+                    <Input 
+                      placeholder="Фамилия" 
+                      value={surname}
+                      onChange={(e) => setSurname(e.target.value)}
+                    />
+                    <Input 
+                      placeholder="Имя" 
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                    <Input 
+                      placeholder="Отчество" 
+                      value={patronymic}
+                      onChange={(e) => setPatronymic(e.target.value)}
+                    />
+                    
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {fonts.map(font => (
+                        <button
+                          key={font.id}
+                          onClick={() => setSelectedFont(font.id)}
+                          className={`w-full text-left p-2 rounded border transition-all ${
+                            selectedFont === font.id ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
+                          }`}
+                          style={{ fontFamily: font.style, fontWeight: font.weight }}
+                        >
+                          <div className="text-xs text-muted-foreground">{font.name}</div>
+                          <div className="text-sm">{font.example}</div>
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <Button 
+                      onClick={addFIOElement} 
+                      className="w-full"
+                      disabled={!surname && !name && !patronymic}
+                    >
+                      <Icon name="ArrowRight" size={18} className="mr-2" />
+                      ДОБАВИТЬ
+                    </Button>
+                  </div>
+                  
                   <Button onClick={addTextElement} variant="outline" className="w-full justify-start">
                     <Icon name="Type" size={18} className="mr-2" />
                     Добавить текст
@@ -273,6 +359,22 @@ const Constructor = () => {
                     </div>
                   )}
                   
+                  {element.type === 'fio' && (
+                    <div 
+                      className="w-full h-full flex items-center justify-center text-center select-none whitespace-pre-line"
+                      style={{ 
+                        fontSize: element.fontSize, 
+                        color: element.color,
+                        textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                        fontFamily: element.fontFamily,
+                        fontWeight: element.fontFamily === 'cursive' ? 'normal' : 'bold',
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {element.content}
+                    </div>
+                  )}
+                  
                   {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && (
                     <img 
                       src={element.src} 
@@ -313,10 +415,10 @@ const Constructor = () => {
               {selectedEl && (
                 <div className="space-y-4">
                   <div>
-                    <Label>Тип: {selectedEl.type === 'text' ? 'Текст' : selectedEl.type === 'epitaph' ? 'Эпитафия' : 'Изображение'}</Label>
+                    <Label>Тип: {selectedEl.type === 'text' ? 'Текст' : selectedEl.type === 'epitaph' ? 'Эпитафия' : selectedEl.type === 'fio' ? 'ФИО' : 'Изображение'}</Label>
                   </div>
                   
-                  {(selectedEl.type === 'text' || selectedEl.type === 'epitaph') && (
+                  {(selectedEl.type === 'text' || selectedEl.type === 'epitaph' || selectedEl.type === 'fio') && (
                     <>
                       <div>
                         <Label>Текст</Label>
