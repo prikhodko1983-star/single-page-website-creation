@@ -339,13 +339,13 @@ export default function IndexHeroSections({
         </div>
       </section>
 
-      <section className="py-20 bg-gradient-to-br from-secondary via-background to-secondary relative overflow-hidden">
+      <section className="py-12 md:py-20 bg-gradient-to-br from-secondary via-background to-secondary relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(white,transparent_85%)]"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
               <div className="order-2 lg:order-1">
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/20">
+                <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border border-primary/20">
                   <img 
                     src="https://cdn.poehali.dev/files/IMG_4105.jpeg"
                     alt="Комплексное благоустройство участка"
@@ -355,61 +355,61 @@ export default function IndexHeroSections({
                 </div>
               </div>
 
-              <div className="order-1 lg:order-2 space-y-8">
+              <div className="order-1 lg:order-2 space-y-5 md:space-y-8">
                 <div>
-                  <div className="inline-block mb-4">
-                    <Badge className="bg-primary/10 text-primary border-primary/20 text-sm font-oswald px-4 py-1">
+                  <div className="inline-block mb-3 md:mb-4">
+                    <Badge className="bg-primary/10 text-primary border-primary/20 text-xs md:text-sm font-oswald px-3 py-1 md:px-4">
                       ПРОФЕССИОНАЛЬНОЕ РЕШЕНИЕ
                     </Badge>
                   </div>
-                  <h2 className="font-oswald font-bold text-4xl md:text-5xl lg:text-6xl mb-4 tracking-tight leading-tight">
+                  <h2 className="font-oswald font-bold text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-3 md:mb-4 tracking-tight leading-tight">
                     Благоустройство
-                    <span className="block text-primary mt-2">участка</span>
+                    <span className="block text-primary mt-1 md:mt-2">участка</span>
                   </h2>
-                  <p className="text-lg text-muted-foreground">
+                  <p className="text-sm md:text-base lg:text-lg text-muted-foreground">
                     Комплексное обустройство мемориального места с использованием качественных материалов
                   </p>
                 </div>
 
-                <div className="space-y-5">
-                  <div className="flex items-start gap-4 p-4 rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-colors">
-                    <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-lg bg-primary/10">
-                      <Icon name="Building2" size={28} className="text-primary" />
+                <div className="space-y-3 md:space-y-5">
+                  <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-lg md:rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-colors">
+                    <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-lg bg-primary/10">
+                      <Icon name="Building2" size={22} className="text-primary md:w-7 md:h-7" />
                     </div>
                     <div>
-                      <p className="text-lg font-semibold mb-1">Мемориальный комплекс</p>
-                      <p className="text-sm text-muted-foreground">Полное обустройство с плиткой, оградой и лавкой</p>
+                      <p className="text-base md:text-lg font-semibold mb-0.5 md:mb-1">Мемориальный комплекс</p>
+                      <p className="text-xs md:text-sm text-muted-foreground">Полное обустройство с плиткой, оградой и лавкой</p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 p-4 rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-colors">
-                    <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-lg bg-primary/10">
-                      <Icon name="Maximize2" size={28} className="text-primary" />
+                  <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-lg md:rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-colors">
+                    <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-lg bg-primary/10">
+                      <Icon name="Maximize2" size={22} className="text-primary md:w-7 md:h-7" />
                     </div>
                     <div>
-                      <p className="text-lg font-semibold mb-1">Любые размеры</p>
-                      <p className="text-sm text-muted-foreground">Индивидуальный подход к каждому проекту</p>
+                      <p className="text-base md:text-lg font-semibold mb-0.5 md:mb-1">Любые размеры</p>
+                      <p className="text-xs md:text-sm text-muted-foreground">Индивидуальный подход к каждому проекту</p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 p-4 rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-colors">
-                    <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-lg bg-primary/10">
-                      <Icon name="Shield" size={28} className="text-primary" />
+                  <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-lg md:rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-colors">
+                    <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-lg bg-primary/10">
+                      <Icon name="Shield" size={22} className="text-primary md:w-7 md:h-7" />
                     </div>
                     <div>
-                      <p className="text-lg font-semibold mb-1">Гарантия качества</p>
-                      <p className="text-sm text-muted-foreground">Долговечные материалы и профессиональный монтаж</p>
+                      <p className="text-base md:text-lg font-semibold mb-0.5 md:mb-1">Гарантия качества</p>
+                      <p className="text-xs md:text-sm text-muted-foreground">Долговечные материалы и профессиональный монтаж</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 my-2.5">
+                <div className="pt-2 md:pt-4">
                   <Button 
                     size="lg"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-lg px-6 py-4 h-auto shadow-lg hover:shadow-xl transition-all"
+                    className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-base md:text-lg px-6 md:px-8 py-3 md:py-4 h-auto shadow-lg hover:shadow-xl transition-all"
                     onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                   >
-                    <Icon name="Phone" size={20} className="mr-2" />
+                    <Icon name="Phone" size={18} className="mr-2 md:w-5 md:h-5" />
                     Узнать подробнее
                   </Button>
                 </div>
