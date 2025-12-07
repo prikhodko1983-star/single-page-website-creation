@@ -7,7 +7,7 @@ import Icon from "@/components/ui/icon";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { toPng } from 'html-to-image';
+import html2canvas from 'html2canvas';
 
 interface CanvasElement {
   id: string;
@@ -360,20 +360,38 @@ const Constructor = () => {
     
     setIsSaving(true);
     try {
-      const dataUrl = await toPng(canvasRef.current, {
-        cacheBust: true,
-        pixelRatio: 2,
+      const canvas = await html2canvas(canvasRef.current, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: false,
+        allowTaint: true,
+        logging: false,
       });
       
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `monument-design-${Date.now()}.png`;
-      link.click();
-      
-      toast({
-        title: "Дизайн сохранен",
-        description: "Изображение успешно загружено на ваше устройство",
-      });
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          toast({
+            title: "Ошибка сохранения",
+            description: "Не удалось создать изображение",
+            variant: "destructive",
+          });
+          setIsSaving(false);
+          return;
+        }
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `monument-design-${Date.now()}.png`;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+        toast({
+          title: "Дизайн сохранен",
+          description: "Изображение успешно загружено на ваше устройство",
+        });
+        setIsSaving(false);
+      }, 'image/png');
     } catch (error) {
       console.error('Save error:', error);
       toast({
@@ -381,7 +399,6 @@ const Constructor = () => {
         description: "Не удалось сохранить дизайн. Попробуйте еще раз.",
         variant: "destructive",
       });
-    } finally {
       setIsSaving(false);
     }
   };
