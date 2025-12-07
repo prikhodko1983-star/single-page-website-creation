@@ -673,7 +673,6 @@ const Constructor = () => {
                 alt="Памятник" 
                 className="w-full h-full object-cover"
                 draggable={false}
-                crossOrigin="anonymous"
               />
               
               {elements.map(element => (
