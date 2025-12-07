@@ -480,7 +480,7 @@ const Constructor = () => {
     message += '💬 Прошу рассчитать стоимость этого дизайна памятника.';
     
     // Открываем WhatsApp
-    const phoneNumber = '79000000000'; // Замени на реальный номер
+    const phoneNumber = '79960681168';
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     
     window.open(whatsappUrl, '_blank');
