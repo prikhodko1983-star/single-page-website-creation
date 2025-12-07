@@ -728,6 +728,29 @@ const Constructor = () => {
                           className="w-full h-10 mt-1 rounded border"
                         />
                       </div>
+                      
+                      <div>
+                        <Label>Шрифт</Label>
+                        <div className="space-y-2 mt-2 max-h-48 overflow-y-auto">
+                          {fonts.map(font => (
+                            <button
+                              key={font.id}
+                              onClick={() => updateElement(selectedEl.id, { fontFamily: font.style })}
+                              className={`w-full text-left p-2 rounded border transition-all ${
+                                selectedEl.fontFamily === font.style ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
+                              }`}
+                            >
+                              <div className="text-xs text-muted-foreground">{font.name}</div>
+                              <div 
+                                className="text-sm"
+                                style={{ fontFamily: font.style, fontWeight: font.weight }}
+                              >
+                                {font.example}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </>
                   )}
                   
