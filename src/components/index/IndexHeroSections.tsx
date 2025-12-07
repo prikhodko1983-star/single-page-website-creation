@@ -109,13 +109,13 @@ export default function IndexHeroSections({
       </section>
 
       <section className="py-16 bg-[#1a1a1a]">
-        <div className="container mx-auto px-4 max-w-6xl">
+        <div className="container mx-auto px-4">
           <div className="relative bg-white rounded-2xl overflow-hidden">
             <div className="absolute top-8 right-8 bg-[#E89C1F] text-white px-6 py-2 rounded-lg font-oswald font-semibold text-sm z-10">
               до 11 ноября
             </div>
 
-            <div className="grid lg:grid-cols-[280px,1fr] gap-0 items-center">
+            <div className="grid lg:grid-cols-[300px,1fr] gap-0 items-center">
               <div className="relative h-full">
                 <img 
                   src="https://cdn.poehali.dev/files/76878.jpg"
