@@ -53,6 +53,11 @@ export default function IndexHeroSections({
       description: 'Полное обустройство с плиткой, оградой и элементами благоустройства'
     },
     {
+      image: 'https://cdn.poehali.dev/files/FE57E2C5-D14B-40E8-B4EA-977DE9871C04.png',
+      title: 'Комплексное благоустройство',
+      description: 'Памятник, плитка, ограда и цветник — всё в едином стиле'
+    },
+    {
       image: 'https://cdn.poehali.dev/files/a92e8f49-5be4-4b4b-939f-e97e69b14d55.jpg',
       title: 'Цветники и ограды',
       description: 'Установка металлических оград и оформление цветников'
