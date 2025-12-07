@@ -110,37 +110,43 @@ export default function IndexHeroSections({
         </div>
       </section>
 
-      <section className="py-16 bg-[#1a1a1a]">
+      <section className="py-8 md:py-16 bg-[#1a1a1a]">
         <div className="container mx-auto px-4">
           <div className="relative bg-white rounded-2xl overflow-hidden">
-            <div className="absolute top-8 right-8 bg-[#E89C1F] text-white px-6 py-2 rounded-lg font-oswald font-semibold text-sm z-10">
+            <div className="absolute top-4 right-4 md:top-8 md:right-8 bg-[#E89C1F] text-white px-3 py-1 md:px-6 md:py-2 rounded-lg font-oswald font-semibold text-xs md:text-sm z-20">
               до 11 ноября
             </div>
 
-            <div className="grid lg:grid-cols-[300px,1fr] gap-0 items-center min-h-[200px]">
-              <div className="relative h-full min-h-[200px]">
+            <div className="relative lg:grid lg:grid-cols-[300px,1fr] gap-0 items-center min-h-[200px]">
+              {/* Изображение - на мобильном как фон */}
+              <div className="absolute lg:relative inset-0 h-full min-h-[280px] lg:min-h-[200px]">
                 <img 
                   src="https://cdn.poehali.dev/files/76878.jpg"
                   alt="Премиум памятники"
                   className="w-full h-full object-cover"
                 />
+                {/* Затемнение для читаемости текста на мобильном */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent lg:hidden"></div>
               </div>
 
-              <div className="space-y-4 p-6 lg:py-8 lg:px-12 text-center lg:text-left">
-                <h2 className="font-oswald font-bold text-4xl md:text-6xl text-zinc-900 whitespace-nowrap">Премиум модели со скидкой до 25%</h2>
+              {/* Контент - наезжает на изображение на мобильном */}
+              <div className="relative z-10 space-y-4 p-6 lg:py-8 lg:px-12 text-center lg:text-left min-h-[280px] lg:min-h-0 flex flex-col justify-end lg:justify-center lg:bg-white">
+                <h2 className="font-oswald font-bold text-2xl md:text-4xl lg:text-6xl text-white lg:text-zinc-900 leading-tight">
+                  Премиум модели со скидкой до 25%
+                </h2>
 
-                <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                <div className="flex flex-col md:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
                   <Button 
                     size="lg"
                     variant="outline"
-                    className="bg-transparent hover:bg-zinc-100 text-zinc-900 border-2 border-zinc-900 font-oswald text-base px-8"
+                    className="bg-white/90 hover:bg-white text-zinc-900 border-2 border-white lg:bg-transparent lg:hover:bg-zinc-100 lg:border-zinc-900 font-oswald text-sm md:text-base px-6 md:px-8"
                     onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Посмотреть все памятники
                   </Button>
                   <Button 
                     size="lg"
-                    className="bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-base px-8"
+                    className="bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-sm md:text-base px-6 md:px-8"
                     onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Выбрать с менеджером
