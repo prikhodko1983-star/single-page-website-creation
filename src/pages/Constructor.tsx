@@ -31,9 +31,7 @@ const Constructor = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const [savedDesigns, setSavedDesigns] = useState<Array<{id?: number, monumentImage: string, elements: CanvasElement[], timestamp: number}>>([]);
-  
-  const API_URL = 'https://functions.poehali.dev/15bd3186-2759-4cac-9776-903e17f76f94';
+  const [savedDesigns, setSavedDesigns] = useState<Array<{monumentImage: string, elements: CanvasElement[], timestamp: number}>>([]);
   
   const [monumentImage, setMonumentImage] = useState<string>('https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png');
   const [elements, setElements] = useState<CanvasElement[]>([]);
@@ -53,19 +51,13 @@ const Constructor = () => {
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
   const photoInputRef = useRef<HTMLInputElement>(null);
 
-  // Загружаем сохраненные дизайны из БД
-  const loadSavedDesigns = async () => {
+  // Загружаем сохраненные дизайны при монтировании
+  const loadSavedDesigns = () => {
     try {
-      const response = await fetch(API_URL);
-      const data = await response.json();
-      setSavedDesigns(data);
+      const saved = JSON.parse(localStorage.getItem('monumentDesigns') || '[]');
+      setSavedDesigns(saved);
     } catch (error) {
       console.error('Error loading saved designs:', error);
-      toast({
-        title: "Ошибка загрузки",
-        description: "Не удалось загрузить дизайны",
-        variant: "destructive",
-      });
     }
   };
 
@@ -81,30 +73,14 @@ const Constructor = () => {
     }
   };
 
-  const deleteDesign = async (index: number) => {
-    const design = savedDesigns[index];
-    if (!design.id) return;
-    
-    try {
-      await fetch(`${API_URL}?id=${design.id}`, {
-        method: 'DELETE',
-      });
-      
-      const updated = savedDesigns.filter((_, i) => i !== index);
-      setSavedDesigns(updated);
-      
-      toast({
-        title: "Дизайн удален",
-        description: "Сохраненный проект удален",
-      });
-    } catch (error) {
-      console.error('Error deleting design:', error);
-      toast({
-        title: "Ошибка удаления",
-        description: "Не удалось удалить дизайн",
-        variant: "destructive",
-      });
-    }
+  const deleteDesign = (index: number) => {
+    const updated = savedDesigns.filter((_, i) => i !== index);
+    setSavedDesigns(updated);
+    localStorage.setItem('monumentDesigns', JSON.stringify(updated));
+    toast({
+      title: "Дизайн удален",
+      description: "Сохраненный проект удален",
+    });
   };
 
   const monumentImages = [
@@ -413,7 +389,7 @@ const Constructor = () => {
     if (selectedElement === id) setSelectedElement(null);
   };
 
-  const saveDesign = async () => {
+  const saveDesign = () => {
     if (elements.length === 0) {
       toast({
         title: "Пустой дизайн",
@@ -424,32 +400,23 @@ const Constructor = () => {
     }
     
     try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          monumentImage,
-          elements,
-        }),
+      const designData = {
+        monumentImage,
+        elements,
+        timestamp: Date.now(),
+      };
+      
+      // Сохраняем в localStorage
+      const saved = JSON.parse(localStorage.getItem('monumentDesigns') || '[]');
+      saved.push(designData);
+      localStorage.setItem('monumentDesigns', JSON.stringify(saved));
+      setSavedDesigns(saved);
+      
+      toast({
+        title: "Дизайн сохранен",
+        description: "Проект сохранен в браузере",
       });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        toast({
-          title: "Дизайн сохранен",
-          description: "Проект сохранен в облаке",
-        });
-        
-        // Перезагружаем список дизайнов
-        await loadSavedDesigns();
-      } else {
-        throw new Error('Ошибка сохранения');
-      }
     } catch (error) {
-      console.error('Save error:', error);
       toast({
         title: "Ошибка сохранения",
         description: "Не удалось сохранить дизайн",
