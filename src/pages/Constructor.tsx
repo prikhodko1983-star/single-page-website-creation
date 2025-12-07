@@ -142,6 +142,22 @@ const Constructor = () => {
     });
   };
 
+  const handleTouchStart = (e: React.TouchEvent, elementId: string) => {
+    e.stopPropagation();
+    setSelectedElement(elementId);
+    setIsDragging(true);
+    
+    const element = elements.find(el => el.id === elementId);
+    if (!element) return;
+    
+    const touch = e.touches[0];
+    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    setDragOffset({
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    });
+  };
+
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !selectedElement || !canvasRef.current) return;
     
@@ -157,7 +173,27 @@ const Constructor = () => {
     ));
   };
 
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || !selectedElement || !canvasRef.current) return;
+    
+    const touch = e.touches[0];
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    const newX = touch.clientX - canvasRect.left - dragOffset.x;
+    const newY = touch.clientY - canvasRect.top - dragOffset.y;
+    
+    setElements(elements.map(el => 
+      el.id === selectedElement 
+        ? { ...el, x: Math.max(0, Math.min(newX, canvasRect.width - el.width)), 
+                  y: Math.max(0, Math.min(newY, canvasRect.height - el.height)) }
+        : el
+    ));
+  };
+
   const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleTouchEnd = () => {
     setIsDragging(false);
   };
 
@@ -313,10 +349,12 @@ const Constructor = () => {
           <div className="flex flex-col items-center">
             <div 
               ref={canvasRef}
-              className="relative w-full max-w-2xl aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl border-4 border-border"
+              className="relative w-full max-w-2xl aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl border-4 border-border touch-none"
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
               <img 
                 src={monumentImage} 
@@ -328,7 +366,7 @@ const Constructor = () => {
               {elements.map(element => (
                 <div
                   key={element.id}
-                  className={`absolute cursor-move ${selectedElement === element.id ? 'ring-2 ring-primary' : ''}`}
+                  className={`absolute cursor-move touch-none ${selectedElement === element.id ? 'ring-2 ring-primary' : ''}`}
                   style={{
                     left: element.x,
                     top: element.y,
@@ -337,6 +375,7 @@ const Constructor = () => {
                     transform: `rotate(${element.rotation || 0}deg)`,
                   }}
                   onMouseDown={(e) => handleMouseDown(e, element.id)}
+                  onTouchStart={(e) => handleTouchStart(e, element.id)}
                 >
                   {element.type === 'text' && (
                     <div 
