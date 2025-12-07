@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import html2canvas from "html2canvas";
 import { useToast } from "@/hooks/use-toast";
 
 interface CanvasElement {
@@ -360,15 +359,76 @@ const Constructor = () => {
     
     setIsSaving(true);
     try {
-      const canvas = await html2canvas(canvasRef.current, {
-        backgroundColor: '#000000',
-        scale: 2,
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-        foreignObjectRendering: false,
-        imageTimeout: 0,
+      const canvasElement = canvasRef.current;
+      const rect = canvasElement.getBoundingClientRect();
+      const scale = 2;
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = rect.width * scale;
+      canvas.height = rect.height * scale;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas context not available');
+      
+      ctx.scale(scale, scale);
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, rect.width, rect.height);
+      
+      const monumentImg = new Image();
+      monumentImg.crossOrigin = 'anonymous';
+      
+      await new Promise((resolve, reject) => {
+        monumentImg.onload = resolve;
+        monumentImg.onerror = reject;
+        monumentImg.src = monumentImage;
       });
+      
+      ctx.drawImage(monumentImg, 0, 0, rect.width, rect.height);
+      
+      for (const element of elements) {
+        ctx.save();
+        
+        const centerX = element.x + element.width / 2;
+        const centerY = element.y + element.height / 2;
+        ctx.translate(centerX, centerY);
+        ctx.rotate((element.rotation || 0) * Math.PI / 180);
+        ctx.translate(-centerX, -centerY);
+        
+        if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
+          const fontFamily = element.fontFamily?.split('|')[0] || 'serif';
+          const fontWeight = element.fontFamily?.split('|')[1] || '400';
+          const fontSize = element.fontSize || 24;
+          
+          ctx.font = `${element.type === 'epitaph' ? 'italic ' : ''}${fontWeight} ${fontSize}px "${fontFamily}", serif`;
+          ctx.fillStyle = element.color || '#FFFFFF';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0,0,0,0.8)';
+          ctx.shadowBlur = 4;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          
+          const lines = (element.content || '').split('\n');
+          const lineHeight = element.type === 'fio' ? fontSize * 1.3 : fontSize * 1.2;
+          const totalHeight = lines.length * lineHeight;
+          const startY = element.y + element.height / 2 - totalHeight / 2 + lineHeight / 2;
+          
+          lines.forEach((line, i) => {
+            ctx.fillText(line, element.x + element.width / 2, startY + i * lineHeight);
+          });
+        } else if (element.type === 'photo' || element.type === 'image' || element.type === 'cross' || element.type === 'flower') {
+          if (element.src) {
+            const img = new Image();
+            await new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+              img.src = element.src!;
+            });
+            ctx.drawImage(img, element.x, element.y, element.width, element.height);
+          }
+        }
+        
+        ctx.restore();
+      }
       
       canvas.toBlob((blob) => {
         if (!blob) return;
@@ -409,42 +469,28 @@ const Constructor = () => {
     
     setIsSending(true);
     try {
-      const canvas = await html2canvas(canvasRef.current, {
-        backgroundColor: '#000000',
-        scale: 2,
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-        foreignObjectRendering: false,
-        imageTimeout: 0,
+      const projectData = {
+        monumentImage,
+        elements: elements.map(el => ({
+          type: el.type,
+          content: el.content,
+          x: el.x,
+          y: el.y,
+          width: el.width,
+          height: el.height,
+          fontSize: el.fontSize,
+          color: el.color,
+          fontFamily: el.fontFamily,
+        })),
+        timestamp: new Date().toISOString(),
+      };
+      
+      toast({
+        title: "Заявка отправлена",
+        description: "Мы свяжемся с вами в ближайшее время для расчета стоимости",
       });
       
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
-        
-        const projectData = {
-          monumentImage,
-          elements: elements.map(el => ({
-            type: el.type,
-            content: el.content,
-            x: el.x,
-            y: el.y,
-            width: el.width,
-            height: el.height,
-            fontSize: el.fontSize,
-            color: el.color,
-            fontFamily: el.fontFamily,
-          })),
-          timestamp: new Date().toISOString(),
-        };
-        
-        toast({
-          title: "Заявка отправлена",
-          description: "Мы свяжемся с вами в ближайшее время для расчета стоимости",
-        });
-        
-        console.log('Design data:', projectData);
-      });
+      console.log('Design data:', projectData);
     } catch (error) {
       toast({
         title: "Ошибка отправки",
