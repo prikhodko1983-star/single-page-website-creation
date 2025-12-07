@@ -7,7 +7,7 @@ import Icon from "@/components/ui/icon";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import html2canvas from 'html2canvas';
+
 
 interface CanvasElement {
   id: string;
@@ -28,8 +28,8 @@ const Constructor = () => {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const [isSaving, setIsSaving] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [savedDesigns, setSavedDesigns] = useState<Array<{monumentImage: string, elements: CanvasElement[], timestamp: number}>>([]);
   
   const [monumentImage, setMonumentImage] = useState<string>('https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png');
   const [elements, setElements] = useState<CanvasElement[]>([]);
@@ -48,6 +48,38 @@ const Constructor = () => {
   const [deathDate, setDeathDate] = useState('');
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
   const photoInputRef = useRef<HTMLInputElement>(null);
+
+  // Загружаем сохраненные дизайны при монтировании
+  const loadSavedDesigns = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('monumentDesigns') || '[]');
+      setSavedDesigns(saved);
+    } catch (error) {
+      console.error('Error loading saved designs:', error);
+    }
+  };
+
+  const loadDesign = (index: number) => {
+    const design = savedDesigns[index];
+    if (design) {
+      setMonumentImage(design.monumentImage);
+      setElements(design.elements);
+      toast({
+        title: "Дизайн загружен",
+        description: "Проект восстановлен из сохраненных",
+      });
+    }
+  };
+
+  const deleteDesign = (index: number) => {
+    const updated = savedDesigns.filter((_, i) => i !== index);
+    setSavedDesigns(updated);
+    localStorage.setItem('monumentDesigns', JSON.stringify(updated));
+    toast({
+      title: "Дизайн удален",
+      description: "Сохраненный проект удален",
+    });
+  };
 
   const monumentImages = [
     { id: '1', src: 'https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png', name: 'Вертикальный' },
@@ -355,125 +387,39 @@ const Constructor = () => {
     if (selectedElement === id) setSelectedElement(null);
   };
 
-  const saveDesign = async () => {
-    if (!canvasRef.current) {
-      toast({
-        title: "Ошибка",
-        description: "Холст недоступен",
-        variant: "destructive",
-      });
-      return;
-    }
-    
+  const saveDesign = () => {
     if (elements.length === 0) {
       toast({
         title: "Пустой дизайн",
-        description: "Добавьте элементы на памятник перед сохранением",
+        description: "Добавьте элементы на памятник",
         variant: "destructive",
       });
       return;
     }
     
-    setIsSaving(true);
-    
     try {
-      // Создаем canvas вручную
-      const sourceElement = canvasRef.current;
-      const rect = sourceElement.getBoundingClientRect();
+      const designData = {
+        monumentImage,
+        elements,
+        timestamp: Date.now(),
+      };
       
-      const canvas = document.createElement('canvas');
-      canvas.width = rect.width * 2;
-      canvas.height = rect.height * 2;
-      const ctx = canvas.getContext('2d');
-      
-      if (!ctx) {
-        throw new Error('Не удалось создать контекст canvas');
-      }
-      
-      ctx.scale(2, 2);
-      ctx.fillStyle = '#1a1a1a';
-      ctx.fillRect(0, 0, rect.width, rect.height);
-      
-      // Рисуем фон памятника
-      const bgImg = new Image();
-      bgImg.crossOrigin = 'anonymous';
-      
-      await new Promise((resolve, reject) => {
-        bgImg.onload = resolve;
-        bgImg.onerror = reject;
-        bgImg.src = monumentImage;
-      });
-      
-      ctx.drawImage(bgImg, 0, 0, rect.width, rect.height);
-      
-      // Рисуем все элементы
-      for (const element of elements) {
-        ctx.save();
-        ctx.translate(element.x + element.width / 2, element.y + element.height / 2);
-        ctx.rotate((element.rotation || 0) * Math.PI / 180);
-        ctx.translate(-element.width / 2, -element.height / 2);
-        
-        if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
-          const fontSize = element.fontSize || 24;
-          const fontFamily = element.fontFamily?.split('|')[0] || 'serif';
-          const fontWeight = element.fontFamily?.split('|')[1] || '400';
-          
-          ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
-          ctx.fillStyle = element.color || '#FFFFFF';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 4;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          
-          const lines = (element.content || '').split('\n');
-          const lineHeight = fontSize * 1.3;
-          const startY = element.height / 2 - (lines.length - 1) * lineHeight / 2;
-          
-          lines.forEach((line, i) => {
-            ctx.fillText(line, element.width / 2, startY + i * lineHeight);
-          });
-        } else if ((element.type === 'image' || element.type === 'cross' || element.type === 'flower' || element.type === 'photo') && element.src) {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = () => resolve(null); // Игнорируем ошибки загрузки
-            img.src = element.src!;
-          });
-          
-          if (img.complete && img.naturalWidth > 0) {
-            ctx.drawImage(img, 0, 0, element.width, element.height);
-          }
-        }
-        
-        ctx.restore();
-      }
-      
-      // Сохраняем
-      const dataUrl = canvas.toDataURL('image/png', 1.0);
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `monument-design-${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Сохраняем в localStorage
+      const saved = JSON.parse(localStorage.getItem('monumentDesigns') || '[]');
+      saved.push(designData);
+      localStorage.setItem('monumentDesigns', JSON.stringify(saved));
+      setSavedDesigns(saved);
       
       toast({
         title: "Дизайн сохранен",
-        description: "Изображение загружено на устройство",
+        description: "Проект сохранен в браузере",
       });
-      setIsSaving(false);
     } catch (error) {
-      console.error('Save error:', error);
       toast({
         title: "Ошибка сохранения",
-        description: `${(error as Error).message || 'Попробуйте еще раз'}`,
+        description: "Не удалось сохранить дизайн",
         variant: "destructive",
       });
-      setIsSaving(false);
     }
   };
 
@@ -555,10 +501,13 @@ const Constructor = () => {
             <CardContent className="p-4">
               <h2 className="font-oswald font-bold text-lg mb-4">Библиотека элементов</h2>
               
-              <Tabs defaultValue="monuments" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+              <Tabs defaultValue="monuments" className="w-full" onValueChange={(value) => {
+                if (value === 'saved') loadSavedDesigns();
+              }}>
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="monuments">Основа</TabsTrigger>
                   <TabsTrigger value="elements">Элементы</TabsTrigger>
+                  <TabsTrigger value="saved">Сохр.</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="monuments" className="space-y-3 mt-4">
@@ -720,6 +669,49 @@ const Constructor = () => {
                     Добавить цветы
                   </Button>
                 </TabsContent>
+                
+                <TabsContent value="saved" className="space-y-3 mt-4">
+                  <Label>Сохраненные дизайны ({savedDesigns.length})</Label>
+                  {savedDesigns.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-8">
+                      Нет сохраненных дизайнов
+                    </p>
+                  ) : (
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {savedDesigns.map((design, index) => (
+                        <div 
+                          key={index}
+                          className="border border-border rounded-lg p-3 space-y-2"
+                        >
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(design.timestamp).toLocaleString('ru')}
+                          </div>
+                          <div className="text-sm">
+                            Элементов: {design.elements.length}
+                          </div>
+                          <div className="flex gap-2">
+                            <Button 
+                              size="sm"
+                              variant="outline"
+                              className="flex-1"
+                              onClick={() => loadDesign(index)}
+                            >
+                              <Icon name="Download" size={16} className="mr-1" />
+                              Загрузить
+                            </Button>
+                            <Button 
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => deleteDesign(index)}
+                            >
+                              <Icon name="Trash2" size={16} />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </TabsContent>
               </Tabs>
             </CardContent>
           </Card>
@@ -852,10 +844,10 @@ const Constructor = () => {
               <Button 
                 variant="outline" 
                 onClick={saveDesign}
-                disabled={isSaving || elements.length === 0}
+                disabled={elements.length === 0}
               >
-                <Icon name="Download" size={18} className="mr-2" />
-                {isSaving ? 'Сохранение...' : 'Скачать дизайн'}
+                <Icon name="Save" size={18} className="mr-2" />
+                Сохранить дизайн
               </Button>
               <Button 
                 onClick={sendForCalculation}
