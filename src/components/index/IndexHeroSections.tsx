@@ -135,9 +135,9 @@ export default function IndexHeroSections({
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/30 to-transparent"></div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 relative z-10 flex flex-col justify-between h-full">
           <div className="grid lg:grid-cols-[1fr,auto] gap-8 lg:gap-12 items-start">
-            <div className="max-w-3xl">
+            <div className="max-w-3xl flex flex-col md:block">
               <h1 className="font-oswald font-black text-4xl md:text-5xl lg:text-6xl mb-3 animate-fade-in uppercase leading-[0.9] bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent" style={{ textShadow: '0 4px 8px rgba(0,0,0,0.3)' }}>
                 Изготовление памятников из гранита
               </h1>
@@ -164,7 +164,7 @@ export default function IndexHeroSections({
                   <span>Доставка и установка</span>
                 </div>
               </div>
-              <div className="flex flex-col md:flex-row md:flex-wrap gap-3 mb-6 items-start">
+              <div className="flex flex-col md:flex-row md:flex-wrap gap-3 mb-6 items-start mt-auto md:mt-0">
                 <Button 
                   size="sm" 
                   className="bg-[#f59f0a] hover:bg-[#d88a09] text-white font-oswald text-sm px-4 py-2 w-auto"
