@@ -30,7 +30,9 @@ const Constructor = () => {
   const [elements, setElements] = useState<CanvasElement[]>([]);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
   
   const [surname, setSurname] = useState('');
   const [name, setName] = useState('');
@@ -159,42 +161,102 @@ const Constructor = () => {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !selectedElement || !canvasRef.current) return;
+    if (!canvasRef.current || !selectedElement) return;
     
-    const canvasRect = canvasRef.current.getBoundingClientRect();
-    const newX = e.clientX - canvasRect.left - dragOffset.x;
-    const newY = e.clientY - canvasRect.top - dragOffset.y;
-    
-    setElements(elements.map(el => 
-      el.id === selectedElement 
-        ? { ...el, x: Math.max(0, Math.min(newX, canvasRect.width - el.width)), 
-                  y: Math.max(0, Math.min(newY, canvasRect.height - el.height)) }
-        : el
-    ));
+    if (isResizing) {
+      const deltaX = e.clientX - resizeStart.x;
+      const deltaY = e.clientY - resizeStart.y;
+      const newWidth = Math.max(50, resizeStart.width + deltaX);
+      const newHeight = Math.max(30, resizeStart.height + deltaY);
+      
+      setElements(elements.map(el => 
+        el.id === selectedElement 
+          ? { ...el, width: newWidth, height: newHeight }
+          : el
+      ));
+    } else if (isDragging) {
+      const canvasRect = canvasRef.current.getBoundingClientRect();
+      const newX = e.clientX - canvasRect.left - dragOffset.x;
+      const newY = e.clientY - canvasRect.top - dragOffset.y;
+      
+      setElements(elements.map(el => 
+        el.id === selectedElement 
+          ? { ...el, x: Math.max(0, Math.min(newX, canvasRect.width - el.width)), 
+                    y: Math.max(0, Math.min(newY, canvasRect.height - el.height)) }
+          : el
+      ));
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || !selectedElement || !canvasRef.current) return;
+    if (!canvasRef.current || !selectedElement) return;
     
     const touch = e.touches[0];
-    const canvasRect = canvasRef.current.getBoundingClientRect();
-    const newX = touch.clientX - canvasRect.left - dragOffset.x;
-    const newY = touch.clientY - canvasRect.top - dragOffset.y;
     
-    setElements(elements.map(el => 
-      el.id === selectedElement 
-        ? { ...el, x: Math.max(0, Math.min(newX, canvasRect.width - el.width)), 
-                  y: Math.max(0, Math.min(newY, canvasRect.height - el.height)) }
-        : el
-    ));
+    if (isResizing) {
+      const deltaX = touch.clientX - resizeStart.x;
+      const deltaY = touch.clientY - resizeStart.y;
+      const newWidth = Math.max(50, resizeStart.width + deltaX);
+      const newHeight = Math.max(30, resizeStart.height + deltaY);
+      
+      setElements(elements.map(el => 
+        el.id === selectedElement 
+          ? { ...el, width: newWidth, height: newHeight }
+          : el
+      ));
+    } else if (isDragging) {
+      const canvasRect = canvasRef.current.getBoundingClientRect();
+      const newX = touch.clientX - canvasRect.left - dragOffset.x;
+      const newY = touch.clientY - canvasRect.top - dragOffset.y;
+      
+      setElements(elements.map(el => 
+        el.id === selectedElement 
+          ? { ...el, x: Math.max(0, Math.min(newX, canvasRect.width - el.width)), 
+                    y: Math.max(0, Math.min(newY, canvasRect.height - el.height)) }
+          : el
+      ));
+    }
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    setIsResizing(false);
   };
 
   const handleTouchEnd = () => {
     setIsDragging(false);
+    setIsResizing(false);
+  };
+
+  const handleResizeMouseDown = (e: React.MouseEvent, elementId: string) => {
+    e.stopPropagation();
+    const element = elements.find(el => el.id === elementId);
+    if (!element || !canvasRef.current) return;
+    
+    setSelectedElement(elementId);
+    setIsResizing(true);
+    setResizeStart({
+      x: e.clientX,
+      y: e.clientY,
+      width: element.width,
+      height: element.height,
+    });
+  };
+
+  const handleResizeTouchStart = (e: React.TouchEvent, elementId: string) => {
+    e.stopPropagation();
+    const element = elements.find(el => el.id === elementId);
+    if (!element || !canvasRef.current) return;
+    
+    const touch = e.touches[0];
+    setSelectedElement(elementId);
+    setIsResizing(true);
+    setResizeStart({
+      x: touch.clientX,
+      y: touch.clientY,
+      width: element.width,
+      height: element.height,
+    });
   };
 
   const updateElement = (id: string, updates: Partial<CanvasElement>) => {
@@ -429,7 +491,11 @@ const Constructor = () => {
                   )}
                   
                   {selectedElement === element.id && (
-                    <div className="absolute -bottom-2 -right-2 w-4 h-4 bg-primary rounded-full cursor-nwse-resize"></div>
+                    <div 
+                      className="absolute -bottom-2 -right-2 w-6 h-6 bg-primary rounded-full cursor-nwse-resize hover:scale-110 transition-transform touch-none"
+                      onMouseDown={(e) => handleResizeMouseDown(e, element.id)}
+                      onTouchStart={(e) => handleResizeTouchStart(e, element.id)}
+                    ></div>
                   )}
                 </div>
               ))}
