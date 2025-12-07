@@ -87,6 +87,7 @@ export default function IndexShopSection() {
             variant={selectedCategory === null ? 'default' : 'outline'}
             onClick={() => setSelectedCategory(null)}
             className="font-oswald"
+            style={selectedCategory === null ? { backgroundColor: 'rgb(51, 51, 51)', borderColor: 'rgb(51, 51, 51)' } : {}}
           >
             Все категории
           </Button>
@@ -96,6 +97,7 @@ export default function IndexShopSection() {
               variant={selectedCategory === category.slug ? 'default' : 'outline'}
               onClick={() => setSelectedCategory(category.slug)}
               className="font-oswald"
+              style={selectedCategory === category.slug ? { backgroundColor: 'rgb(51, 51, 51)', borderColor: 'rgb(51, 51, 51)' } : {}}
             >
               {category.name}
             </Button>
