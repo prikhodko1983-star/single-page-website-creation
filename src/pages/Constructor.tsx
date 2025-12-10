@@ -604,27 +604,45 @@ const Constructor = () => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, rect.width, rect.height);
       
-      // Загружаем изображение памятника
-      const monumentImg = new Image();
-      monumentImg.crossOrigin = 'anonymous';
-      
-      await new Promise((resolve, reject) => {
-        monumentImg.onload = resolve;
-        monumentImg.onerror = () => {
-          // Если CORS не работает, пробуем без него
-          const img2 = new Image();
-          img2.onload = () => {
-            ctx.drawImage(img2, 0, 0, rect.width, rect.height);
+      // Функция загрузки изображений только с CORS-поддерживающих источников
+      const loadImageWithCORS = (src: string): Promise<HTMLImageElement | null> => {
+        return new Promise((resolve) => {
+          // Проверяем, поддерживает ли источник CORS
+          const supportsCORS = src.includes('cdn.poehali.dev') || 
+                               src.startsWith('data:') || 
+                               src.startsWith(window.location.origin);
+          
+          if (!supportsCORS) {
+            console.warn('Source does not support CORS, skipping:', src);
+            resolve(null);
+            return;
+          }
+          
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => resolve(img);
+          img.onerror = () => {
+            console.warn('Failed to load image:', src);
             resolve(null);
           };
-          img2.onerror = reject;
-          img2.src = monumentImage;
-        };
-        monumentImg.src = monumentImage;
-      });
+          img.src = src;
+        });
+      };
       
-      if (monumentImg.complete && monumentImg.naturalHeight !== 0) {
+      const monumentImg = await loadImageWithCORS(monumentImage);
+      if (monumentImg) {
         ctx.drawImage(monumentImg, 0, 0, rect.width, rect.height);
+      } else {
+        // Рисуем заглушку с названием памятника
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillRect(0, 0, rect.width, rect.height);
+        ctx.fillStyle = '#666';
+        ctx.font = 'bold 24px sans-serif';
+        ctx.textAlign = 'center';
+        const monumentName = monumentImages.find(m => m.src === monumentImage)?.name || 'Памятник';
+        ctx.fillText(monumentName, rect.width / 2, rect.height / 2 - 20);
+        ctx.font = '16px sans-serif';
+        ctx.fillText('(изображение из внешнего источника)', rect.width / 2, rect.height / 2 + 20);
       }
       
       // Рисуем все элементы поверх
@@ -657,23 +675,11 @@ const Constructor = () => {
             ctx.fillText(line, element.x + element.width / 2, startY + idx * lineHeight);
           });
         } else if (element.src) {
-          try {
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            await new Promise((resolve) => {
-              img.onload = resolve;
-              img.onerror = () => {
-                // Пропускаем изображения с ошибками
-                resolve(null);
-              };
-              img.src = element.screenMode && element.processedSrc ? element.processedSrc : element.src;
-            });
-            
-            if (img.complete && img.naturalHeight !== 0) {
-              ctx.drawImage(img, element.x, element.y, element.width, element.height);
-            }
-          } catch (e) {
-            console.warn('Failed to load image:', element.src);
+          const imgSrc = element.screenMode && element.processedSrc ? element.processedSrc : element.src;
+          const img = await loadImageWithCORS(imgSrc);
+          
+          if (img) {
+            ctx.drawImage(img, element.x, element.y, element.width, element.height);
           }
         }
         
