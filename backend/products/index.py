@@ -10,7 +10,7 @@ def get_db_connection():
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    API для работы с товарами и категориями интернет-магазина
+    API для работы с товарами и категориями интернет-магазина.
     
     GET /products - получить все товары (с фильтрами)
     GET /products?id=1 - получить товар по ID

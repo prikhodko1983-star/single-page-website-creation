@@ -43,8 +43,20 @@ export default function Product() {
 
   const loadProduct = async () => {
     setLoading(true);
-    navigate('/catalog');
-    setLoading(false);
+    try {
+      const response = await fetch(`https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d?slug=${slug}`);
+      if (response.ok) {
+        const data = await response.json();
+        setProduct(data);
+      } else {
+        navigate('/catalog');
+      }
+    } catch (error) {
+      console.error('Error loading product:', error);
+      navigate('/catalog');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOrderClick = () => {

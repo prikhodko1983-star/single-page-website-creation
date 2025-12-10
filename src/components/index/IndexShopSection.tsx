@@ -45,7 +45,11 @@ export default function IndexShopSection() {
 
   const loadCategories = async () => {
     try {
-      setCategories([]);
+      const response = await fetch('https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d?type=categories');
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data);
+      }
     } catch (error) {
       console.error('Error loading categories:', error);
       setCategories([]);
@@ -55,7 +59,14 @@ export default function IndexShopSection() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      setProducts([]);
+      const url = selectedCategory
+        ? `https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d?category_slug=${selectedCategory}`
+        : 'https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d';
+      const response = await fetch(url);
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data);
+      }
     } catch (error) {
       console.error('Error loading products:', error);
       setProducts([]);
