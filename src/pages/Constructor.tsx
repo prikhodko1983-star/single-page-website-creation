@@ -709,6 +709,31 @@ const Constructor = () => {
       const imgData = canvasElement.toDataURL('image/jpeg', 0.95);
       const fileName = `monument_design_${Date.now()}.jpg`;
       
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile && navigator.share && navigator.canShare) {
+        try {
+          const blob = await fetch(imgData).then(r => r.blob());
+          const file = new File([blob], fileName, { type: 'image/jpeg' });
+          
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: 'Дизайн памятника',
+              text: 'Макет памятника из конструктора'
+            });
+            
+            toast({
+              title: "Изображение сохранено!",
+              description: "Выберите 'Сохранить в галерею' или отправьте в WhatsApp",
+            });
+            return;
+          }
+        } catch (error) {
+          console.log('Share API failed, fallback to download:', error);
+        }
+      }
+      
       const link = document.createElement('a');
       link.href = imgData;
       link.download = fileName;
