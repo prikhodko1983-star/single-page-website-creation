@@ -1,15 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-
+import { ConstructorLibrary } from "@/components/constructor/ConstructorLibrary";
+import { ConstructorCanvas } from "@/components/constructor/ConstructorCanvas";
+import { ConstructorProperties } from "@/components/constructor/ConstructorProperties";
+import { TextEditorModal } from "@/components/constructor/TextEditorModal";
 
 interface CanvasElement {
   id: string;
@@ -25,9 +22,9 @@ interface CanvasElement {
   rotation?: number;
   fontFamily?: string;
   screenMode?: boolean;
-  processedSrc?: string; // Обработанное изображение с Screen mode
-  lineHeight?: number; // Межстрочное расстояние
-  letterSpacing?: number; // Расстояние между буквами
+  processedSrc?: string;
+  lineHeight?: number;
+  letterSpacing?: number;
 }
 
 const Constructor = () => {
@@ -63,22 +60,9 @@ const Constructor = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [isLoadingCatalog, setIsLoadingCatalog] = useState(false);
 
-  // Загружаем сохраненные дизайны при монтировании
-  const loadSavedDesigns = () => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('monumentDesigns') || '[]');
-      setSavedDesigns(saved);
-    } catch (error) {
-      console.error('Error loading saved designs:', error);
-    }
-  };
-
-  // Загружаем каталог из базы данных
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
     try {
-      // Здесь будет запрос к базе данных через бэкенд
-      // Пока используем моковые данные из существующих таблиц
       const mockData = [
         {
           id: 2,
@@ -89,7 +73,6 @@ const Constructor = () => {
         }
       ];
       
-      // Группируем по категориям
       const uniqueCategories = new Map();
       mockData.forEach(p => {
         if (!uniqueCategories.has(p.category_id)) {
@@ -118,28 +101,6 @@ const Constructor = () => {
     } finally {
       setIsLoadingCatalog(false);
     }
-  };
-
-  const loadDesign = (index: number) => {
-    const design = savedDesigns[index];
-    if (design) {
-      setMonumentImage(design.monumentImage);
-      setElements(design.elements);
-      toast({
-        title: "Дизайн загружен",
-        description: "Проект восстановлен из сохраненных",
-      });
-    }
-  };
-
-  const deleteDesign = (index: number) => {
-    const updated = savedDesigns.filter((_, i) => i !== index);
-    setSavedDesigns(updated);
-    localStorage.setItem('monumentDesigns', JSON.stringify(updated));
-    toast({
-      title: "Дизайн удален",
-      description: "Сохраненный проект удален",
-    });
   };
 
   const monumentImages = [
@@ -263,7 +224,6 @@ const Constructor = () => {
     setDeathDate('');
   };
 
-  // Функция применения Screen blend mode (как в Photoshop)
   const applyScreenMode = (imageData: string): Promise<string> => {
     return new Promise((resolve) => {
       const img = new Image();
@@ -282,34 +242,25 @@ const Constructor = () => {
         const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = pixels.data;
         
-        // Screen blend mode: убирает темные цвета, осветляет изображение
-        // Формула: Result = 1 - (1-a)*(1-b), где b - яркость фона
         for (let i = 0; i < data.length; i += 4) {
           const r = data[i];
           const g = data[i + 1];
           const b = data[i + 2];
           
-          // Нормализуем к 0-1
           const rNorm = r / 255;
           const gNorm = g / 255;
           const bNorm = b / 255;
           
-          // Вычисляем яркость (luminance)
           const luminance = 0.299 * rNorm + 0.587 * gNorm + 0.114 * bNorm;
           
-          // Screen blend: осветляем цвета
-          // Имитируем наложение на светлый фон
           const screenR = 1 - (1 - rNorm) * (1 - 0.5);
           const screenG = 1 - (1 - gNorm) * (1 - 0.5);
           const screenB = 1 - (1 - bNorm) * (1 - 0.5);
           
-          // Применяем осветленные цвета
           data[i] = screenR * 255;
           data[i + 1] = screenG * 255;
           data[i + 2] = screenB * 255;
           
-          // Альфа: черный = прозрачный, белый = непрозрачный
-          // Используем кривую для более естественного перехода
           data[i + 3] = Math.pow(luminance, 0.7) * 255;
         }
         
@@ -350,7 +301,6 @@ const Constructor = () => {
     const element = elements.find(el => el.id === elementId);
     if (!element) return;
     
-    // Открываем редактор только для текстовых элементов
     if (['text', 'epitaph', 'fio', 'dates'].includes(element.type)) {
       setEditingElement(element);
       setIsTextEditorOpen(true);
@@ -517,16 +467,13 @@ const Constructor = () => {
     const element = elements.find(el => el.id === id);
     if (!element) return;
     
-    // Если включается Screen mode для фотографии
     if (updates.screenMode === true && element.type === 'photo' && element.src && !element.processedSrc) {
       const processed = await applyScreenMode(element.src);
       setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: processed } : el));
     } 
-    // Если выключается Screen mode
     else if (updates.screenMode === false) {
       setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: undefined } : el));
     }
-    // Обычное обновление
     else {
       setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
     }
@@ -554,7 +501,6 @@ const Constructor = () => {
         timestamp: Date.now(),
       };
       
-      // Сохраняем в localStorage
       const saved = JSON.parse(localStorage.getItem('monumentDesigns') || '[]');
       saved.push(designData);
       localStorage.setItem('monumentDesigns', JSON.stringify(saved));
@@ -589,7 +535,6 @@ const Constructor = () => {
         description: "Пожалуйста, подождите",
       });
 
-      // Создаём canvas вручную
       if (!canvasRef.current) return;
       
       const canvasElement = document.createElement('canvas');
@@ -604,10 +549,8 @@ const Constructor = () => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, rect.width, rect.height);
       
-      // Функция загрузки изображений только с CORS-поддерживающих источников
       const loadImageWithCORS = (src: string): Promise<HTMLImageElement | null> => {
         return new Promise((resolve) => {
-          // Проверяем, поддерживает ли источник CORS
           const supportsCORS = src.includes('cdn.poehali.dev') || 
                                src.startsWith('data:') || 
                                src.startsWith(window.location.origin);
@@ -633,7 +576,6 @@ const Constructor = () => {
       if (monumentImg) {
         ctx.drawImage(monumentImg, 0, 0, rect.width, rect.height);
       } else {
-        // Рисуем заглушку с названием памятника
         ctx.fillStyle = '#1a1a1a';
         ctx.fillRect(0, 0, rect.width, rect.height);
         ctx.fillStyle = '#666';
@@ -645,7 +587,6 @@ const Constructor = () => {
         ctx.fillText('(изображение из внешнего источника)', rect.width / 2, rect.height / 2 + 20);
       }
       
-      // Рисуем все элементы поверх
       for (const element of elements) {
         ctx.save();
         
@@ -686,17 +627,14 @@ const Constructor = () => {
         ctx.restore();
       }
       
-      // Сохраняем как JPG
       const imgData = canvasElement.toDataURL('image/jpeg', 0.95);
       const fileName = `monument_design_${Date.now()}.jpg`;
       
-      // Создаём ссылку для скачивания
       const link = document.createElement('a');
       link.href = imgData;
       link.download = fileName;
       link.click();
 
-      // Формируем текст сообщения для WhatsApp
       let message = '🪦 *Заявка на расчет памятника*\n\n';
       message += `📅 Дата: ${new Date().toLocaleString('ru')}\n\n`;
       
@@ -741,7 +679,6 @@ const Constructor = () => {
       message += `📷 Изображение макета сохранено на устройстве: ${fileName}\n\n`;
       message += '💬 Прошу рассчитать стоимость этого дизайна памятника.';
       
-      // Открываем WhatsApp
       const phoneNumber = '79960681168';
       const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
       
@@ -788,678 +725,79 @@ const Constructor = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-[320px,1fr,320px] gap-6">
-          {/* Левая панель - Библиотека */}
-          <Card className="h-fit">
-            <CardContent className="p-4">
-              <h2 className="font-oswald font-bold text-lg mb-4">Библиотека элементов</h2>
-              
-              <Tabs defaultValue="catalog" className="w-full" onValueChange={(value) => {
-                if (value === 'catalog') loadCatalog();
-              }}>
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="catalog">Каталог</TabsTrigger>
-                  <TabsTrigger value="monuments">Шаблоны</TabsTrigger>
-                  <TabsTrigger value="elements">Элементы</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="catalog" className="space-y-3 mt-4">
-                  <Label>Памятники из каталога магазина</Label>
-                  
-                  {isLoadingCatalog ? (
-                    <div className="flex items-center justify-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    </div>
-                  ) : (
-                    <>
-                      {catalogCategories.length > 0 && (
-                        <Tabs value={selectedCategory?.toString()} onValueChange={(val) => setSelectedCategory(parseInt(val))} className="w-full">
-                          <TabsList className="w-full flex-wrap h-auto">
-                            {catalogCategories.map(cat => (
-                              <TabsTrigger key={cat.id} value={cat.id.toString()} className="text-xs">
-                                {cat.name}
-                              </TabsTrigger>
-                            ))}
-                          </TabsList>
-                          
-                          {catalogCategories.map(cat => (
-                            <TabsContent key={cat.id} value={cat.id.toString()} className="mt-3">
-                              <div className="grid grid-cols-2 gap-2">
-                                {catalogProducts
-                                  .filter(p => p.category_id === cat.id && p.image_url)
-                                  .map(product => (
-                                    <button
-                                      key={product.id}
-                                      onClick={() => setMonumentImage(product.image_url!)}
-                                      className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
-                                        monumentImage === product.image_url ? 'border-primary' : 'border-border hover:border-primary/50'
-                                      }`}
-                                    >
-                                      <img src={product.image_url!} alt={product.name} className="w-full h-full object-cover" />
-                                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center">
-                                        {product.name}
-                                      </div>
-                                    </button>
-                                  ))}
-                              </div>
-                            </TabsContent>
-                          ))}
-                        </Tabs>
-                      )}
-                      
-                      {catalogProducts.length === 0 && !isLoadingCatalog && (
-                        <p className="text-sm text-muted-foreground text-center py-4">
-                          Каталог пуст
-                        </p>
-                      )}
-                    </>
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="monuments" className="space-y-3 mt-4">
-                  <Label>Выберите памятник</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {monumentImages.map(img => (
-                      <button
-                        key={img.id}
-                        onClick={() => setMonumentImage(img.src)}
-                        className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
-                          monumentImage === img.src ? 'border-primary' : 'border-border hover:border-primary/50'
-                        }`}
-                      >
-                        <img src={img.src} alt={img.name} className="w-full h-full object-cover" />
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 text-center">
-                          {img.name}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="elements" className="space-y-3 mt-4">
-                  <div className="space-y-3 p-3 bg-secondary/20 rounded-lg">
-                    <Label className="font-semibold">ФИО с выбором шрифта</Label>
-                    <Input 
-                      placeholder="Фамилия" 
-                      value={surname}
-                      onChange={(e) => setSurname(e.target.value)}
-                    />
-                    <Input 
-                      placeholder="Имя" 
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                    <Input 
-                      placeholder="Отчество" 
-                      value={patronymic}
-                      onChange={(e) => setPatronymic(e.target.value)}
-                    />
-                    
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {fonts.map(font => (
-                        <button
-                          key={font.id}
-                          onClick={() => setSelectedFont(font.id)}
-                          className={`w-full text-left p-2 rounded border transition-all ${
-                            selectedFont === font.id ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
-                          }`}
-                        >
-                          <div className="text-xs text-muted-foreground">{font.name}</div>
-                          <div 
-                            className="text-base"
-                            style={{ fontFamily: font.style, fontWeight: font.weight }}
-                          >
-                            {font.example}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                    
-                    <Button 
-                      onClick={addFIOElement} 
-                      className="w-full"
-                      disabled={!surname && !name && !patronymic}
-                    >
-                      <Icon name="ArrowRight" size={18} className="mr-2" />
-                      ДОБАВИТЬ
-                    </Button>
-                  </div>
-                  
-                  <div className="space-y-3 p-3 bg-secondary/20 rounded-lg">
-                    <Label className="font-semibold">Даты жизни</Label>
-                    <Input 
-                      placeholder="Дата рождения (01.01.1950)" 
-                      value={birthDate}
-                      onChange={(e) => setBirthDate(e.target.value)}
-                    />
-                    <Input 
-                      placeholder="Дата смерти (01.01.2020)" 
-                      value={deathDate}
-                      onChange={(e) => setDeathDate(e.target.value)}
-                    />
-                    
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {fonts.map(font => (
-                        <button
-                          key={font.id}
-                          onClick={() => setSelectedDateFont(font.id)}
-                          className={`w-full text-left p-2 rounded border transition-all ${
-                            selectedDateFont === font.id ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
-                          }`}
-                        >
-                          <div className="text-xs text-muted-foreground">{font.name}</div>
-                          <div 
-                            className="text-base"
-                            style={{ fontFamily: font.style, fontWeight: font.weight }}
-                          >
-                            01.01.1950 — 01.01.2020
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                    
-                    <Button 
-                      onClick={addDatesElement} 
-                      className="w-full"
-                      disabled={!birthDate && !deathDate}
-                    >
-                      <Icon name="Calendar" size={18} className="mr-2" />
-                      ДОБАВИТЬ ДАТЫ
-                    </Button>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <input 
-                      ref={photoInputRef}
-                      type="file" 
-                      accept="image/*"
-                      onChange={handlePhotoUpload}
-                      className="hidden"
-                      id="photo-upload"
-                    />
-                    <Button 
-                      onClick={() => photoInputRef.current?.click()} 
-                      variant="default" 
-                      className="w-full justify-start bg-primary"
-                    >
-                      <Icon name="Image" size={18} className="mr-2" />
-                      Добавить фотографию
-                    </Button>
-                  </div>
-                  
-                  <Button onClick={addTextElement} variant="outline" className="w-full justify-start">
-                    <Icon name="Type" size={18} className="mr-2" />
-                    Добавить текст
-                  </Button>
-                  
-                  <Button onClick={addEpitaphElement} variant="outline" className="w-full justify-start">
-                    <Icon name="FileText" size={18} className="mr-2" />
-                    Добавить эпитафию
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-icon.png', 'cross')} 
-                    variant="outline" 
-                    className="w-full justify-start"
-                  >
-                    <Icon name="Plus" size={18} className="mr-2" />
-                    Добавить крест
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => addImageElement('https://cdn.poehali.dev/files/flower-icon.png', 'flower')} 
-                    variant="outline" 
-                    className="w-full justify-start"
-                  >
-                    <Icon name="Flower" size={18} className="mr-2" />
-                    Добавить цветы
-                  </Button>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
+          <ConstructorLibrary
+            monumentImage={monumentImage}
+            setMonumentImage={setMonumentImage}
+            addTextElement={addTextElement}
+            addEpitaphElement={addEpitaphElement}
+            addImageElement={addImageElement}
+            addFIOElement={addFIOElement}
+            addDatesElement={addDatesElement}
+            handlePhotoUpload={handlePhotoUpload}
+            photoInputRef={photoInputRef}
+            surname={surname}
+            setSurname={setSurname}
+            name={name}
+            setName={setName}
+            patronymic={patronymic}
+            setPatronymic={setPatronymic}
+            selectedFont={selectedFont}
+            setSelectedFont={setSelectedFont}
+            birthDate={birthDate}
+            setBirthDate={setBirthDate}
+            deathDate={deathDate}
+            setDeathDate={setDeathDate}
+            selectedDateFont={selectedDateFont}
+            setSelectedDateFont={setSelectedDateFont}
+            catalogCategories={catalogCategories}
+            catalogProducts={catalogProducts}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            isLoadingCatalog={isLoadingCatalog}
+            loadCatalog={loadCatalog}
+            monumentImages={monumentImages}
+            fonts={fonts}
+          />
 
-          {/* Центр - Холст */}
-          <div className="flex flex-col items-center">
-            <div 
-              ref={canvasRef}
-              className="relative w-full max-w-2xl aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl border-4 border-border touch-none"
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              <img 
-                src={monumentImage} 
-                alt="Памятник" 
-                className="w-full h-full object-cover"
-                draggable={false}
-              />
-              
-              {elements.map(element => (
-                <div
-                  key={element.id}
-                  className={`absolute cursor-move touch-none ${selectedElement === element.id ? 'ring-2 ring-primary' : ''}`}
-                  style={{
-                    left: element.x,
-                    top: element.y,
-                    width: element.width,
-                    height: element.height,
-                    transform: `rotate(${element.rotation || 0}deg)`,
-                  }}
-                  onMouseDown={(e) => handleMouseDown(e, element.id)}
-                  onTouchStart={(e) => handleTouchStart(e, element.id)}
-                  onDoubleClick={() => handleDoubleClick(element.id)}
-                >
-                  {element.type === 'text' && (
-                    <div 
-                      className="w-full h-full flex items-center justify-center text-center select-none overflow-hidden"
-                      style={{ 
-                        fontSize: `${element.fontSize}px`, 
-                        color: element.color,
-                        textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                        fontWeight: 'bold',
-                        lineHeight: element.lineHeight || 1.2,
-                        letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
-                      }}
-                    >
-                      {element.content}
-                    </div>
-                  )}
-                  
-                  {element.type === 'epitaph' && (
-                    <div 
-                      className="w-full h-full flex items-center justify-center text-center select-none italic overflow-hidden"
-                      style={{ 
-                        fontSize: `${element.fontSize}px`, 
-                        color: element.color,
-                        textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                        lineHeight: element.lineHeight || 1.4,
-                        letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
-                      }}
-                    >
-                      {element.content}
-                    </div>
-                  )}
-                  
-                  {element.type === 'fio' && (
-                    <div 
-                      className="w-full h-full flex items-center justify-center text-center select-none whitespace-pre-line overflow-hidden"
-                      style={{ 
-                        fontSize: `${element.fontSize}px`, 
-                        color: element.color,
-                        textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                        fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                        fontWeight: element.fontFamily?.split('|')[1] || '400',
-                        lineHeight: element.lineHeight || 1.3,
-                        letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
-                      }}
-                    >
-                      {element.content}
-                    </div>
-                  )}
-                  
-                  {element.type === 'dates' && (
-                    <div 
-                      className="w-full h-full flex items-center justify-center text-center select-none overflow-hidden whitespace-nowrap"
-                      style={{ 
-                        fontSize: `${element.fontSize}px`, 
-                        color: element.color,
-                        textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                        fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                        fontWeight: element.fontFamily?.split('|')[1] || '400',
-                        letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
-                      }}
-                    >
-                      {element.content}
-                    </div>
-                  )}
-                  
-                  {element.type === 'photo' && element.src && (
-                    <img 
-                      src={element.screenMode && element.processedSrc ? element.processedSrc : element.src} 
-                      alt="Фотография"
-                      className="w-full h-full object-cover select-none"
-                      draggable={false}
-                    />
-                  )}
-                  
-                  {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && (
-                    <img 
-                      src={element.src} 
-                      alt={element.type}
-                      className="w-full h-full object-contain select-none"
-                      draggable={false}
-                    />
-                  )}
-                  
-                  {selectedElement === element.id && (
-                    <div 
-                      className="absolute -bottom-2 -right-2 w-6 h-6 bg-primary rounded-full cursor-nwse-resize hover:scale-110 transition-transform touch-none"
-                      onMouseDown={(e) => handleResizeMouseDown(e, element.id)}
-                      onTouchStart={(e) => handleResizeTouchStart(e, element.id)}
-                    ></div>
-                  )}
-                </div>
-              ))}
-            </div>
-            
-            <div className="mt-4 flex flex-col sm:flex-row gap-2">
-              <Button variant="outline" onClick={() => setElements([])}>
-                <Icon name="Trash2" size={18} className="mr-2" />
-                Очистить всё
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={saveDesign}
-                disabled={elements.length === 0}
-              >
-                <Icon name="Save" size={18} className="mr-2" />
-                Сохранить дизайн
-              </Button>
-              <Button 
-                onClick={sendForCalculation}
-                disabled={elements.length === 0}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                <Icon name="Image" size={18} className="mr-2" />
-                Скачать JPG и отправить
-              </Button>
-            </div>
-          </div>
+          <ConstructorCanvas
+            canvasRef={canvasRef}
+            monumentImage={monumentImage}
+            elements={elements}
+            selectedElement={selectedElement}
+            handleMouseDown={handleMouseDown}
+            handleTouchStart={handleTouchStart}
+            handleDoubleClick={handleDoubleClick}
+            handleMouseMove={handleMouseMove}
+            handleMouseUp={handleMouseUp}
+            handleTouchMove={handleTouchMove}
+            handleTouchEnd={handleTouchEnd}
+            handleResizeMouseDown={handleResizeMouseDown}
+            handleResizeTouchStart={handleResizeTouchStart}
+            setElements={setElements}
+            saveDesign={saveDesign}
+            sendForCalculation={sendForCalculation}
+          />
 
-          {/* Правая панель - Свойства */}
-          <Card className="h-fit">
-            <CardContent className="p-4">
-              <h2 className="font-oswald font-bold text-lg mb-4">Свойства элемента</h2>
-              
-              {!selectedEl && (
-                <p className="text-sm text-muted-foreground">Выберите элемент для редактирования</p>
-              )}
-              
-              {selectedEl && (
-                <div className="space-y-4">
-                  <div>
-                    <Label>Тип: {selectedEl.type === 'text' ? 'Текст' : selectedEl.type === 'epitaph' ? 'Эпитафия' : selectedEl.type === 'fio' ? 'ФИО' : selectedEl.type === 'dates' ? 'Даты' : selectedEl.type === 'photo' ? 'Фотография' : 'Изображение'}</Label>
-                  </div>
-                  
-                  {(selectedEl.type === 'text' || selectedEl.type === 'epitaph' || selectedEl.type === 'fio' || selectedEl.type === 'dates') && (
-                    <>
-                      <div>
-                        <Label>Текст</Label>
-                        <Input 
-                          value={selectedEl.content || ''} 
-                          onChange={(e) => updateElement(selectedEl.id, { content: e.target.value })}
-                          className="mt-1"
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label>Размер шрифта: {selectedEl.fontSize}px</Label>
-                        <input 
-                          type="range" 
-                          min="12" 
-                          max="72" 
-                          value={selectedEl.fontSize || 24}
-                          onChange={(e) => updateElement(selectedEl.id, { fontSize: parseInt(e.target.value) })}
-                          className="w-full mt-1"
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label>Цвет</Label>
-                        <input 
-                          type="color" 
-                          value={selectedEl.color || '#FFFFFF'}
-                          onChange={(e) => updateElement(selectedEl.id, { color: e.target.value })}
-                          className="w-full h-10 mt-1 rounded border"
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label>Шрифт</Label>
-                        <div className="space-y-2 mt-2 max-h-48 overflow-y-auto">
-                          {fonts.map(font => (
-                            <button
-                              key={font.id}
-                              onClick={() => updateElement(selectedEl.id, { fontFamily: font.fullStyle })}
-                              className={`w-full text-left p-2 rounded border transition-all ${
-                                selectedEl.fontFamily === font.fullStyle ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
-                              }`}
-                            >
-                              <div className="text-xs text-muted-foreground">{font.name}</div>
-                              <div 
-                                className="text-sm"
-                                style={{ fontFamily: font.style, fontWeight: font.weight }}
-                              >
-                                {font.example}
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <Label>Между строками (Фамилия↔Имя): {selectedEl.lineHeight?.toFixed(1) || '1.2'}</Label>
-                        <input 
-                          type="range" 
-                          min="0.8" 
-                          max="2.5" 
-                          step="0.1"
-                          value={selectedEl.lineHeight || 1.2}
-                          onChange={(e) => updateElement(selectedEl.id, { lineHeight: parseFloat(e.target.value) })}
-                          className="w-full mt-1"
-                        />
-                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                          <span>Узко</span>
-                          <span>Широко</span>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <Label>Между буквами: {selectedEl.letterSpacing?.toFixed(1) || '0'}px</Label>
-                        <input 
-                          type="range" 
-                          min="-2" 
-                          max="10" 
-                          step="0.5"
-                          value={selectedEl.letterSpacing || 0}
-                          onChange={(e) => updateElement(selectedEl.id, { letterSpacing: parseFloat(e.target.value) })}
-                          className="w-full mt-1"
-                        />
-                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                          <span>Сжато</span>
-                          <span>Разрежено</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  
-                  <div>
-                    <Label>Ширина: {selectedEl.width}px</Label>
-                    <input 
-                      type="range" 
-                      min="50" 
-                      max="500" 
-                      value={selectedEl.width}
-                      onChange={(e) => updateElement(selectedEl.id, { width: parseInt(e.target.value) })}
-                      className="w-full mt-1"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label>Высота: {selectedEl.height}px</Label>
-                    <input 
-                      type="range" 
-                      min="30" 
-                      max="400" 
-                      value={selectedEl.height}
-                      onChange={(e) => updateElement(selectedEl.id, { height: parseInt(e.target.value) })}
-                      className="w-full mt-1"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label>Поворот: {selectedEl.rotation || 0}°</Label>
-                    <input 
-                      type="range" 
-                      min="-180" 
-                      max="180" 
-                      value={selectedEl.rotation || 0}
-                      onChange={(e) => updateElement(selectedEl.id, { rotation: parseInt(e.target.value) })}
-                      className="w-full mt-1"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                      <span>← Влево</span>
-                      <span>Вправо →</span>
-                    </div>
-                  </div>
-                  
-                  {selectedEl.type === 'photo' && (
-                    <div className="p-3 bg-secondary/20 rounded-lg space-y-2">
-                      <Label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedEl.screenMode || false}
-                          onChange={(e) => updateElement(selectedEl.id, { screenMode: e.target.checked })}
-                          className="w-4 h-4"
-                        />
-                        Режим "Экран"
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        Убирает черный цвет с фотографии
-                      </p>
-                    </div>
-                  )}
-                  
-                  <Button 
-                    variant="destructive" 
-                    className="w-full"
-                    onClick={() => deleteElement(selectedEl.id)}
-                  >
-                    <Icon name="Trash2" size={18} className="mr-2" />
-                    Удалить элемент
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <ConstructorProperties
+            selectedEl={selectedEl}
+            updateElement={updateElement}
+            deleteElement={deleteElement}
+            fonts={fonts}
+          />
         </div>
       </div>
       
-      {/* Модальное окно текстового редактора */}
-      {isTextEditorOpen && editingElement && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-2xl max-h-[90vh] overflow-auto">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Редактор текста</h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsTextEditorOpen(false)}
-                >
-                  <Icon name="X" size={20} />
-                </Button>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label>Текст</Label>
-                  <textarea
-                    value={editingElement.content || ''}
-                    onChange={(e) => setEditingElement({ ...editingElement, content: e.target.value })}
-                    className="w-full min-h-32 p-3 mt-2 rounded border bg-background text-foreground"
-                    placeholder="Введите текст..."
-                    style={{
-                      fontFamily: editingElement.fontFamily?.split('|')[0] || 'inherit',
-                      fontWeight: editingElement.fontFamily?.split('|')[1] || '400',
-                      fontSize: '18px',
-                    }}
-                  />
-                </div>
-                
-                <div>
-                  <Label>Размер шрифта: {editingElement.fontSize}px</Label>
-                  <input
-                    type="range"
-                    min="12"
-                    max="72"
-                    value={editingElement.fontSize || 24}
-                    onChange={(e) => setEditingElement({ ...editingElement, fontSize: parseInt(e.target.value) })}
-                    className="w-full mt-2"
-                  />
-                </div>
-                
-                <div>
-                  <Label>Цвет текста</Label>
-                  <input
-                    type="color"
-                    value={editingElement.color || '#FFFFFF'}
-                    onChange={(e) => setEditingElement({ ...editingElement, color: e.target.value })}
-                    className="w-full h-12 mt-2 rounded border"
-                  />
-                </div>
-                
-                <div>
-                  <Label>Межстрочное расстояние: {editingElement.lineHeight?.toFixed(1) || '1.2'}</Label>
-                  <input
-                    type="range"
-                    min="0.8"
-                    max="2.5"
-                    step="0.1"
-                    value={editingElement.lineHeight || 1.2}
-                    onChange={(e) => setEditingElement({ ...editingElement, lineHeight: parseFloat(e.target.value) })}
-                    className="w-full mt-2"
-                  />
-                </div>
-                
-                <div>
-                  <Label>Межбуквенное расстояние: {editingElement.letterSpacing?.toFixed(1) || '0'}px</Label>
-                  <input
-                    type="range"
-                    min="-2"
-                    max="10"
-                    step="0.5"
-                    value={editingElement.letterSpacing || 0}
-                    onChange={(e) => setEditingElement({ ...editingElement, letterSpacing: parseFloat(e.target.value) })}
-                    className="w-full mt-2"
-                  />
-                </div>
-                
-                <div className="flex gap-2 pt-4">
-                  <Button
-                    className="flex-1"
-                    onClick={() => {
-                      updateElement(editingElement.id, {
-                        content: editingElement.content,
-                        fontSize: editingElement.fontSize,
-                        color: editingElement.color,
-                        lineHeight: editingElement.lineHeight,
-                        letterSpacing: editingElement.letterSpacing,
-                      });
-                      setIsTextEditorOpen(false);
-                      setEditingElement(null);
-                    }}
-                  >
-                    <Icon name="Check" size={18} className="mr-2" />
-                    Применить
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setIsTextEditorOpen(false);
-                      setEditingElement(null);
-                    }}
-                  >
-                    Отмена
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      <TextEditorModal
+        isOpen={isTextEditorOpen}
+        onClose={() => setIsTextEditorOpen(false)}
+        editingElement={editingElement}
+        setEditingElement={setEditingElement}
+        onApply={(updates) => {
+          if (editingElement) {
+            updateElement(editingElement.id, updates);
+          }
+        }}
+      />
     </div>
   );
 };
