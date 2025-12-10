@@ -595,8 +595,8 @@ const Constructor = () => {
       const canvas = await html2canvas(canvasRef.current, {
         backgroundColor: '#000000',
         scale: 2,
-        useCORS: false,
-        allowTaint: true,
+        useCORS: true,
+        allowTaint: false,
         logging: false,
         imageTimeout: 15000,
       });
@@ -749,7 +749,7 @@ const Constructor = () => {
                                         monumentImage === product.image_url ? 'border-primary' : 'border-border hover:border-primary/50'
                                       }`}
                                     >
-                                      <img src={product.image_url!} alt={product.name} className="w-full h-full object-cover" />
+                                      <img src={product.image_url!} alt={product.name} className="w-full h-full object-cover" crossOrigin="anonymous" />
                                       <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center">
                                         {product.name}
                                       </div>
@@ -781,7 +781,7 @@ const Constructor = () => {
                           monumentImage === img.src ? 'border-primary' : 'border-border hover:border-primary/50'
                         }`}
                       >
-                        <img src={img.src} alt={img.name} className="w-full h-full object-cover" />
+                        <img src={img.src} alt={img.name} className="w-full h-full object-cover" crossOrigin="anonymous" />
                         <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 text-center">
                           {img.name}
                         </div>
@@ -949,6 +949,7 @@ const Constructor = () => {
                 alt="Памятник" 
                 className="w-full h-full object-cover"
                 draggable={false}
+                crossOrigin="anonymous"
               />
               
               {elements.map(element => (
@@ -1036,6 +1037,7 @@ const Constructor = () => {
                       alt="Фотография"
                       className="w-full h-full object-cover select-none"
                       draggable={false}
+                      crossOrigin="anonymous"
                     />
                   )}
                   
@@ -1045,6 +1047,7 @@ const Constructor = () => {
                       alt={element.type}
                       className="w-full h-full object-contain select-none"
                       draggable={false}
+                      crossOrigin="anonymous"
                     />
                   )}
                   
