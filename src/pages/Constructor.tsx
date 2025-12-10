@@ -54,6 +54,7 @@ const Constructor = () => {
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
   
   const [catalogCategories, setCatalogCategories] = useState<Array<{id: number, name: string}>>([]);
   const [catalogProducts, setCatalogProducts] = useState<Array<{id: number, name: string, category_id: number, image_url: string | null}>>([]);
@@ -519,6 +520,84 @@ const Constructor = () => {
     }
   };
 
+  const exportDesign = () => {
+    if (elements.length === 0) {
+      toast({
+        title: "Пустой дизайн",
+        description: "Добавьте элементы на памятник",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      const designData = {
+        monumentImage,
+        elements,
+        timestamp: Date.now(),
+        version: '1.0',
+      };
+      
+      const jsonString = JSON.stringify(designData, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `monument_design_${Date.now()}.json`;
+      link.click();
+      
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Шаблон экспортирован",
+        description: "JSON файл скачан на устройство",
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка экспорта",
+        description: "Не удалось экспортировать шаблон",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const importDesign = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const jsonData = JSON.parse(event.target?.result as string);
+        
+        if (!jsonData.monumentImage || !jsonData.elements) {
+          throw new Error('Неверный формат файла');
+        }
+        
+        setMonumentImage(jsonData.monumentImage);
+        setElements(jsonData.elements);
+        setSelectedElement(null);
+        
+        toast({
+          title: "Шаблон загружен",
+          description: "Дизайн восстановлен из файла",
+        });
+      } catch (error) {
+        toast({
+          title: "Ошибка импорта",
+          description: "Не удалось загрузить шаблон. Проверьте файл",
+          variant: "destructive",
+        });
+      }
+    };
+    reader.readAsText(file);
+    
+    if (e.target) {
+      e.target.value = '';
+    }
+  };
+
   const sendForCalculation = async () => {
     if (elements.length === 0) {
       toast({
@@ -776,6 +855,9 @@ const Constructor = () => {
             setElements={setElements}
             saveDesign={saveDesign}
             sendForCalculation={sendForCalculation}
+            exportDesign={exportDesign}
+            importDesign={importDesign}
+            importInputRef={importInputRef}
           />
 
           <ConstructorProperties

@@ -37,6 +37,9 @@ interface ConstructorCanvasProps {
   setElements: (elements: CanvasElement[]) => void;
   saveDesign: () => void;
   sendForCalculation: () => void;
+  exportDesign: () => void;
+  importDesign: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  importInputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const ConstructorCanvas = ({
@@ -56,6 +59,9 @@ export const ConstructorCanvas = ({
   setElements,
   saveDesign,
   sendForCalculation,
+  exportDesign,
+  importDesign,
+  importInputRef,
 }: ConstructorCanvasProps) => {
   return (
     <div className="flex flex-col items-center">
@@ -203,6 +209,32 @@ export const ConstructorCanvas = ({
         >
           <Icon name="Image" size={18} className="mr-2" />
           Скачать JPG и отправить
+        </Button>
+      </div>
+      
+      <div className="mt-4 flex flex-col sm:flex-row gap-2">
+        <input
+          ref={importInputRef}
+          type="file"
+          accept=".json,application/json"
+          onChange={importDesign}
+          className="hidden"
+          id="import-design"
+        />
+        <Button 
+          variant="secondary" 
+          onClick={exportDesign}
+          disabled={elements.length === 0}
+        >
+          <Icon name="Download" size={18} className="mr-2" />
+          Экспортировать шаблон
+        </Button>
+        <Button 
+          variant="secondary" 
+          onClick={() => importInputRef.current?.click()}
+        >
+          <Icon name="Upload" size={18} className="mr-2" />
+          Загрузить шаблон
         </Button>
       </div>
     </div>
