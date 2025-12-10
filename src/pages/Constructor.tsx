@@ -630,15 +630,16 @@ const Constructor = () => {
       
       const loadImageWithCORS = (src: string): Promise<HTMLImageElement | null> => {
         return new Promise((resolve) => {
-          if (src.startsWith('data:')) {
-            const img = new Image();
-            img.onload = () => resolve(img);
-            img.onerror = () => resolve(null);
-            img.src = src;
+          const supportsCORS = src.includes('cdn.poehali.dev') || 
+                               src.includes('storage.yandexcloud.net') ||
+                               src.startsWith('data:') || 
+                               src.startsWith(window.location.origin);
+          
+          if (!supportsCORS) {
+            console.warn('Source does not support CORS, skipping:', src);
+            resolve(null);
             return;
           }
-          
-          const proxyUrl = `https://functions.poehali.dev/1f513e08-e3d2-4d82-b67b-debbb2d51d74?url=${encodeURIComponent(src)}`;
           
           const img = new Image();
           img.crossOrigin = 'anonymous';
@@ -647,7 +648,7 @@ const Constructor = () => {
             console.warn('Failed to load image:', src);
             resolve(null);
           };
-          img.src = proxyUrl;
+          img.src = src;
         });
       };
       

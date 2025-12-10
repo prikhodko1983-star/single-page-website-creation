@@ -44,13 +44,30 @@ export default function IndexShopSection() {
   }, [selectedCategory]);
 
   const loadCategories = async () => {
-    setCategories([]);
+    try {
+      const response = await fetch('https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d?type=categories');
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error('Ошибка загрузки категорий:', error);
+    }
   };
 
   const loadProducts = async () => {
     setLoading(true);
-    setProducts([]);
-    setLoading(false);
+    try {
+      let url = 'https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d';
+      if (selectedCategory) {
+        url += `?category_slug=${selectedCategory}`;
+      }
+      const response = await fetch(url);
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error('Ошибка загрузки товаров:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -1,0 +1,32 @@
+{
+  "tests": [
+    {
+      "name": "GET - получить список дизайнов",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "POST - создать дизайн",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "monumentImage": "https://cdn.poehali.dev/test.png",
+        "elements": [
+          {
+            "id": "1",
+            "type": "text",
+            "x": 100,
+            "y": 100,
+            "content": "Тест"
+          }
+        ]
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
