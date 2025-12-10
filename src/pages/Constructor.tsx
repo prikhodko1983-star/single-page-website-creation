@@ -1137,12 +1137,16 @@ const Constructor = () => {
                     <Label>Поворот: {selectedEl.rotation || 0}°</Label>
                     <input 
                       type="range" 
-                      min="0" 
-                      max="360" 
+                      min="-180" 
+                      max="180" 
                       value={selectedEl.rotation || 0}
                       onChange={(e) => updateElement(selectedEl.id, { rotation: parseInt(e.target.value) })}
                       className="w-full mt-1"
                     />
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>← Влево</span>
+                      <span>Вправо →</span>
+                    </div>
                   </div>
                   
                   {selectedEl.type === 'photo' && (
