@@ -949,7 +949,6 @@ const Constructor = () => {
                 alt="Памятник" 
                 className="w-full h-full object-cover"
                 draggable={false}
-                {...(monumentImage.includes('cdn.poehali.dev') ? { crossOrigin: 'anonymous' as const } : {})}
               />
               
               {elements.map(element => (
@@ -1046,7 +1045,6 @@ const Constructor = () => {
                       alt={element.type}
                       className="w-full h-full object-contain select-none"
                       draggable={false}
-                      {...(element.src.includes('cdn.poehali.dev') ? { crossOrigin: 'anonymous' as const } : {})}
                     />
                   )}
                   
