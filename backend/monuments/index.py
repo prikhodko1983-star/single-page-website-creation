@@ -23,7 +23,7 @@ def handle_crosses(conn, cursor, method: str, event: Dict[str, Any], headers: Di
         cross_id = params.get('id')
         if cross_id:
             safe_id = cross_id.replace("'", "''")
-            cursor.execute(f"SELECT * FROM crosses WHERE id = '{safe_id}'")
+            cursor.execute(f"SELECT * FROM t_p78642605_single_page_website_.crosses WHERE id = '{safe_id}'")
             cross = cursor.fetchone()
             
             if not cross:
@@ -41,7 +41,7 @@ def handle_crosses(conn, cursor, method: str, event: Dict[str, Any], headers: Di
                 'body': json.dumps(dict(cross), default=str)
             }
         else:
-            cursor.execute("SELECT * FROM crosses WHERE is_active = true ORDER BY display_order, name")
+            cursor.execute("SELECT * FROM t_p78642605_single_page_website_.crosses WHERE is_active = true ORDER BY display_order, name")
             crosses = cursor.fetchall()
             
             return {
@@ -67,7 +67,7 @@ def handle_crosses(conn, cursor, method: str, event: Dict[str, Any], headers: Di
         
         cursor.execute(
             f"""
-            INSERT INTO crosses (name, image_url, display_order, is_active)
+            INSERT INTO t_p78642605_single_page_website_.crosses (name, image_url, display_order, is_active)
             VALUES ('{name}', '{image_url}', {display_order}, true)
             RETURNING *
             """
@@ -100,7 +100,7 @@ def handle_crosses(conn, cursor, method: str, event: Dict[str, Any], headers: Di
         
         cursor.execute(
             f"""
-            UPDATE crosses 
+            UPDATE t_p78642605_single_page_website_.crosses 
             SET name = '{name}', image_url = '{image_url}', display_order = {display_order}, updated_at = NOW()
             WHERE id = '{safe_id}'
             RETURNING *
@@ -135,7 +135,7 @@ def handle_crosses(conn, cursor, method: str, event: Dict[str, Any], headers: Di
             }
         
         safe_id = cross_id.replace("'", "''")
-        cursor.execute(f"DELETE FROM crosses WHERE id = '{safe_id}' RETURNING id")
+        cursor.execute(f"DELETE FROM t_p78642605_single_page_website_.crosses WHERE id = '{safe_id}' RETURNING id")
         deleted = cursor.fetchone()
         conn.commit()
         
