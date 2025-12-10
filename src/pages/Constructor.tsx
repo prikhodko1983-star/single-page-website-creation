@@ -870,16 +870,19 @@ const Constructor = () => {
                   )}
                   
                   {element.type === 'photo' && element.src && (
-                    <img 
-                      src={element.src} 
-                      alt="Фотография"
-                      className="w-full h-full object-cover select-none"
-                      draggable={false}
+                    <div 
+                      className="w-full h-full"
                       style={element.screenMode ? {
-                        mixBlendMode: 'screen',
-                        filter: 'brightness(1.1) contrast(1.1)'
+                        mixBlendMode: 'screen'
                       } : {}}
-                    />
+                    >
+                      <img 
+                        src={element.src} 
+                        alt="Фотография"
+                        className="w-full h-full object-cover select-none"
+                        draggable={false}
+                      />
+                    </div>
                   )}
                   
                   {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && (
