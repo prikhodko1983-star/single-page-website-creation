@@ -219,28 +219,35 @@ const Constructor = () => {
         const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = pixels.data;
         
-        // Применяем Screen blend mode: убираем темные цвета, оставляем светлые
+        // Screen blend mode: убирает темные цвета, осветляет изображение
+        // Формула: Result = 1 - (1-a)*(1-b), где b - яркость фона
         for (let i = 0; i < data.length; i += 4) {
           const r = data[i];
           const g = data[i + 1];
           const b = data[i + 2];
           
-          // Вычисляем яркость пикселя (0-255)
-          const brightness = (r + g + b) / 3;
+          // Нормализуем к 0-1
+          const rNorm = r / 255;
+          const gNorm = g / 255;
+          const bNorm = b / 255;
           
-          // Screen mode: чем темнее - тем прозрачнее
-          // Но белый должен остаться ярким!
-          // Черный (0) -> alpha = 0 (прозрачный)
-          // Белый (255) -> alpha = 255 (непрозрачный)
-          data[i + 3] = brightness;
+          // Вычисляем яркость (luminance)
+          const luminance = 0.299 * rNorm + 0.587 * gNorm + 0.114 * bNorm;
           
-          // Компенсируем затемнение светлых участков
-          if (brightness > 50) {
-            const boost = 1.3; // Усиление яркости светлых участков
-            data[i] = Math.min(255, r * boost);
-            data[i + 1] = Math.min(255, g * boost);
-            data[i + 2] = Math.min(255, b * boost);
-          }
+          // Screen blend: осветляем цвета
+          // Имитируем наложение на светлый фон
+          const screenR = 1 - (1 - rNorm) * (1 - 0.5);
+          const screenG = 1 - (1 - gNorm) * (1 - 0.5);
+          const screenB = 1 - (1 - bNorm) * (1 - 0.5);
+          
+          // Применяем осветленные цвета
+          data[i] = screenR * 255;
+          data[i + 1] = screenG * 255;
+          data[i + 2] = screenB * 255;
+          
+          // Альфа: черный = прозрачный, белый = непрозрачный
+          // Используем кривую для более естественного перехода
+          data[i + 3] = Math.pow(luminance, 0.7) * 255;
         }
         
         ctx.putImageData(pixels, 0, 0);
