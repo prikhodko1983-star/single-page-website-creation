@@ -953,7 +953,7 @@ const Constructor = () => {
                 alt="Памятник" 
                 className="w-full h-full object-cover"
                 draggable={false}
-                crossOrigin="anonymous"
+                {...(monumentImage.includes('cdn.poehali.dev') ? { crossOrigin: 'anonymous' as const } : {})}
               />
               
               {elements.map(element => (
@@ -1041,7 +1041,6 @@ const Constructor = () => {
                       alt="Фотография"
                       className="w-full h-full object-cover select-none"
                       draggable={false}
-                      crossOrigin="anonymous"
                     />
                   )}
                   
@@ -1051,7 +1050,7 @@ const Constructor = () => {
                       alt={element.type}
                       className="w-full h-full object-contain select-none"
                       draggable={false}
-                      crossOrigin="anonymous"
+                      {...(element.src.includes('cdn.poehali.dev') ? { crossOrigin: 'anonymous' as const } : {})}
                     />
                   )}
                   
