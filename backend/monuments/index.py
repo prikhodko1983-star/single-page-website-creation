@@ -15,6 +15,152 @@ def get_db_connection():
     database_url = os.environ.get('DATABASE_URL')
     return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
 
+def handle_crosses(conn, cursor, method: str, event: Dict[str, Any], headers: Dict[str, str]) -> Dict[str, Any]:
+    '''Обработка запросов для крестов'''
+    params = event.get('queryStringParameters', {})
+    
+    if method == 'GET':
+        cross_id = params.get('id')
+        if cross_id:
+            safe_id = cross_id.replace("'", "''")
+            cursor.execute(f"SELECT * FROM crosses WHERE id = '{safe_id}'")
+            cross = cursor.fetchone()
+            
+            if not cross:
+                return {
+                    'statusCode': 404,
+                    'headers': headers,
+                    'isBase64Encoded': False,
+                    'body': json.dumps({'error': 'Cross not found'})
+                }
+            
+            return {
+                'statusCode': 200,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps(dict(cross), default=str)
+            }
+        else:
+            cursor.execute("SELECT * FROM crosses WHERE is_active = true ORDER BY display_order, name")
+            crosses = cursor.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps([dict(c) for c in crosses], default=str)
+            }
+    
+    elif method == 'POST':
+        body_data = json.loads(event.get('body', '{}'))
+        name = body_data.get('name', '').replace("'", "''")
+        image_url = body_data.get('image_url', '').replace("'", "''")
+        display_order = body_data.get('display_order', 999)
+        
+        if not name or not image_url:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Name and image_url are required'})
+            }
+        
+        cursor.execute(
+            f"""
+            INSERT INTO crosses (name, image_url, display_order, is_active)
+            VALUES ('{name}', '{image_url}', {display_order}, true)
+            RETURNING *
+            """
+        )
+        new_cross = cursor.fetchone()
+        conn.commit()
+        
+        return {
+            'statusCode': 201,
+            'headers': headers,
+            'isBase64Encoded': False,
+            'body': json.dumps(dict(new_cross), default=str)
+        }
+    
+    elif method == 'PUT':
+        cross_id = params.get('id')
+        if not cross_id:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Cross ID required'})
+            }
+        
+        body_data = json.loads(event.get('body', '{}'))
+        safe_id = cross_id.replace("'", "''")
+        name = body_data.get('name', '').replace("'", "''")
+        image_url = body_data.get('image_url', '').replace("'", "''")
+        display_order = body_data.get('display_order', 999)
+        
+        cursor.execute(
+            f"""
+            UPDATE crosses 
+            SET name = '{name}', image_url = '{image_url}', display_order = {display_order}, updated_at = NOW()
+            WHERE id = '{safe_id}'
+            RETURNING *
+            """
+        )
+        updated_cross = cursor.fetchone()
+        conn.commit()
+        
+        if not updated_cross:
+            return {
+                'statusCode': 404,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Cross not found'})
+            }
+        
+        return {
+            'statusCode': 200,
+            'headers': headers,
+            'isBase64Encoded': False,
+            'body': json.dumps(dict(updated_cross), default=str)
+        }
+    
+    elif method == 'DELETE':
+        cross_id = params.get('id')
+        if not cross_id:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Cross ID required'})
+            }
+        
+        safe_id = cross_id.replace("'", "''")
+        cursor.execute(f"DELETE FROM crosses WHERE id = '{safe_id}' RETURNING id")
+        deleted = cursor.fetchone()
+        conn.commit()
+        
+        if not deleted:
+            return {
+                'statusCode': 404,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Cross not found'})
+            }
+        
+        return {
+            'statusCode': 200,
+            'headers': headers,
+            'isBase64Encoded': False,
+            'body': json.dumps({'message': 'Cross deleted successfully'})
+        }
+    
+    return {
+        'statusCode': 405,
+        'headers': headers,
+        'isBase64Encoded': False,
+        'body': json.dumps({'error': 'Method not allowed'})
+    }
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     
@@ -39,9 +185,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+        params = event.get('queryStringParameters', {})
+        
+        if params.get('type') == 'crosses':
+            return handle_crosses(conn, cursor, method, event, headers)
         
         if method == 'GET':
-            monument_id = event.get('queryStringParameters', {}).get('id')
+            monument_id = params.get('id')
             
             if monument_id:
                 safe_id = monument_id.replace("'", "''")

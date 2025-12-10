@@ -60,6 +60,9 @@ const Constructor = () => {
   const [catalogProducts, setCatalogProducts] = useState<Array<{id: number, name: string, category_id: number, image_url: string | null}>>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [isLoadingCatalog, setIsLoadingCatalog] = useState(false);
+  
+  const [crosses, setCrosses] = useState<Array<{id: number, name: string, image_url: string}>>([]);
+  const [isLoadingCrosses, setIsLoadingCrosses] = useState(false);
 
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
@@ -101,6 +104,24 @@ const Constructor = () => {
       });
     } finally {
       setIsLoadingCatalog(false);
+    }
+  };
+
+  const loadCrosses = async () => {
+    setIsLoadingCrosses(true);
+    try {
+      const response = await fetch('https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6?type=crosses');
+      if (response.ok) {
+        const data = await response.json();
+        setCrosses(data);
+      } else {
+        setCrosses([]);
+      }
+    } catch (error) {
+      console.error('Error loading crosses:', error);
+      setCrosses([]);
+    } finally {
+      setIsLoadingCrosses(false);
     }
   };
 
@@ -788,6 +809,9 @@ const Constructor = () => {
             loadCatalog={loadCatalog}
             monumentImages={monumentImages}
             fonts={fonts}
+            crosses={crosses}
+            isLoadingCrosses={isLoadingCrosses}
+            loadCrosses={loadCrosses}
           />
 
           <ConstructorCanvas

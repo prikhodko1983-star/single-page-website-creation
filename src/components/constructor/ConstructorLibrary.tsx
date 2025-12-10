@@ -56,6 +56,9 @@ interface ConstructorLibraryProps {
   loadCatalog: () => void;
   monumentImages: Array<{id: string, src: string, name: string}>;
   fonts: Array<{id: string, name: string, style: string, weight: string, example: string, fullStyle: string}>;
+  crosses: Array<{id: number, name: string, image_url: string}>;
+  isLoadingCrosses: boolean;
+  loadCrosses: () => void;
 }
 
 export const ConstructorLibrary = ({
@@ -90,6 +93,9 @@ export const ConstructorLibrary = ({
   loadCatalog,
   monumentImages,
   fonts,
+  crosses,
+  isLoadingCrosses,
+  loadCrosses,
 }: ConstructorLibraryProps) => {
   return (
     <Card className="h-fit">
@@ -98,6 +104,7 @@ export const ConstructorLibrary = ({
         
         <Tabs defaultValue="catalog" className="w-full" onValueChange={(value) => {
           if (value === 'catalog') loadCatalog();
+          if (value === 'elements') loadCrosses();
         }}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="catalog">Каталог</TabsTrigger>
@@ -301,103 +308,30 @@ export const ConstructorLibrary = ({
             
             <div className="space-y-2 p-3 bg-secondary/20 rounded-lg">
               <Label className="font-semibold">Кресты</Label>
-              <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-2">
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/d84cc9c9-aa3d-41ad-bc4c-ecf91a1ffa36.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <img src="https://cdn.poehali.dev/files/d84cc9c9-aa3d-41ad-bc4c-ecf91a1ffa36.png" alt="Классический" className="w-full h-full object-contain" />
-                  <div className="text-xs text-center mt-1 text-muted-foreground">Классический</div>
-                </button>
-                
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-orthodox.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <div className="w-full h-full flex items-center justify-center text-6xl text-foreground">☦</div>
-                  <div className="text-xs text-center mt-1 text-muted-foreground">Православный</div>
-                </button>
-                
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-celtic.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <div className="w-full h-full flex items-center justify-center text-6xl text-foreground">✝</div>
-                  <div className="text-xs text-center mt-1 text-muted-foreground">Кельтский</div>
-                </button>
-                
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-byzantine.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <div className="w-full h-full flex items-center justify-center text-6xl text-foreground">✚</div>
-                  <div className="text-xs text-center mt-1 text-muted-foreground">Византийский</div>
-                </button>
-                
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-latin.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <div className="w-full h-full flex items-center justify-center text-6xl text-foreground">†</div>
-                  <div className="text-xs text-center mt-1 text-muted-foreground">Латинский</div>
-                </button>
-                
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-roses.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <div className="w-full h-full flex items-center justify-center text-5xl text-foreground">✟</div>
-                  <div className="text-xs text-center mt-1 text-muted-foreground">С розами</div>
-                </button>
-                
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-simple.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <div className="w-full h-full flex items-center justify-center text-6xl text-foreground">✙</div>
-                  <div className="text-xs text-center mt-1 text-muted-foreground">Простой</div>
-                </button>
-                
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-jerusalem.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <div className="w-full h-full flex items-center justify-center text-6xl text-foreground">☩</div>
-                  <div className="text-xs text-center mt-1 text-muted-foreground">Иерусалимский</div>
-                </button>
-                
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-maltese.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <div className="w-full h-full flex items-center justify-center text-6xl text-foreground">✠</div>
-                  <div className="text-xs text-center mt-1 text-muted-foreground">Мальтийский</div>
-                </button>
-                
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-patriarchal.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <div className="w-full h-full flex items-center justify-center text-6xl text-foreground">☨</div>
-                  <div className="text-xs text-center mt-1 text-muted-foreground">Патриарший</div>
-                </button>
-                
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-anchor.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <div className="w-full h-full flex items-center justify-center text-6xl text-foreground">⚓</div>
-                  <div className="text-xs text-center mt-1 text-muted-foreground">Крест-якорь</div>
-                </button>
-                
-                <button 
-                  onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-budded.png', 'cross')} 
-                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5"
-                >
-                  <div className="w-full h-full flex items-center justify-center text-6xl text-foreground">✣</div>
-                  <div className="text-xs text-center mt-1 text-muted-foreground">Почкующийся</div>
-                </button>
-              </div>
+              {isLoadingCrosses ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : crosses.length > 0 ? (
+                <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-2">
+                  {crosses.map((cross) => (
+                    <button 
+                      key={cross.id}
+                      onClick={() => addImageElement(cross.image_url, 'cross')} 
+                      className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5 flex flex-col"
+                    >
+                      <div className="flex-1 flex items-center justify-center">
+                        <img src={cross.image_url} alt={cross.name} className="w-full h-full object-contain" />
+                      </div>
+                      <div className="text-xs text-center mt-2 text-muted-foreground">{cross.name}</div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Кресты не найдены
+                </p>
+              )}
             </div>
             
             <Button 

@@ -228,6 +228,12 @@ export default function Admin() {
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('all');
   const [customSize, setCustomSize] = useState<string>('');
 
+  const [crosses, setCrosses] = useState<Array<{id: number, name: string, image_url: string, display_order: number}>>([]);
+  const [crossForm, setCrossForm] = useState({ name: '', image_url: '', display_order: 999 });
+  const [editingCross, setEditingCross] = useState<{id: number, name: string, image_url: string, display_order: number} | null>(null);
+  const [uploadingCross, setUploadingCross] = useState(false);
+  const [crossUploadProgress, setCrossUploadProgress] = useState(0);
+
   const categories_list = ["Вертикальные", "Горизонтальные", "Эксклюзивные", "С крестом"];
   const filterCategories = ["Все", ...categories_list];
 
@@ -246,6 +252,7 @@ export default function Admin() {
     fetchMonuments();
     loadProducts();
     loadCategories();
+    loadCrosses();
     
     const savedGallery = localStorage.getItem('galleryItems');
     if (savedGallery) {
@@ -296,6 +303,89 @@ export default function Admin() {
     } catch (error) {
       console.error('Error loading categories:', error);
       setCategories([]);
+    }
+  };
+
+  const loadCrosses = async () => {
+    try {
+      const response = await fetch(`${API_URL}?type=crosses`);
+      if (response.ok) {
+        const data = await response.json();
+        setCrosses(data);
+      }
+    } catch (error) {
+      console.error('Error loading crosses:', error);
+      setCrosses([]);
+    }
+  };
+
+  const handleCrossSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!crossForm.name || !crossForm.image_url) {
+      toast({
+        title: "Ошибка",
+        description: "Заполните все обязательные поля",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const method = editingCross ? 'PUT' : 'POST';
+      const url = editingCross ? `${API_URL}?type=crosses&id=${editingCross.id}` : `${API_URL}?type=crosses`;
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(crossForm)
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Успех",
+          description: editingCross ? "Крест обновлен" : "Крест добавлен"
+        });
+        loadCrosses();
+        setCrossForm({ name: '', image_url: '', display_order: 999 });
+        setEditingCross(null);
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось сохранить крест",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleCrossEdit = (cross: typeof crosses[0]) => {
+    setEditingCross(cross);
+    setCrossForm({
+      name: cross.name,
+      image_url: cross.image_url,
+      display_order: cross.display_order
+    });
+  };
+
+  const handleCrossDelete = async (id: number) => {
+    if (!confirm('Удалить этот крест?')) return;
+
+    try {
+      const response = await fetch(`${API_URL}?type=crosses&id=${id}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        toast({ title: "Успех", description: "Крест удален" });
+        loadCrosses();
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось удалить крест",
+        variant: "destructive"
+      });
     }
   };
 
@@ -377,12 +467,13 @@ export default function Admin() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'monument' | 'gallery' | 'product') => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'monument' | 'gallery' | 'product' | 'cross') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (target === 'monument') setUploading(true);
     if (target === 'gallery') setUploadingGallery(true);
+    if (target === 'cross') setUploadingCross(true);
 
     try {
       const reader = new FileReader();
@@ -409,6 +500,8 @@ export default function Admin() {
             setGalleryForm({ ...galleryForm, url: data.url });
           } else if (target === 'product') {
             setProductForm({ ...productForm, image_url: data.url });
+          } else if (target === 'cross') {
+            setCrossForm({ ...crossForm, image_url: data.url });
           }
           
           toast({
@@ -419,6 +512,7 @@ export default function Admin() {
         
         if (target === 'monument') setUploading(false);
         if (target === 'gallery') setUploadingGallery(false);
+        if (target === 'cross') setUploadingCross(false);
       };
       
       reader.onerror = () => {
@@ -429,6 +523,7 @@ export default function Admin() {
         });
         if (target === 'monument') setUploading(false);
         if (target === 'gallery') setUploadingGallery(false);
+        if (target === 'cross') setUploadingCross(false);
       };
       
       reader.readAsDataURL(file);
@@ -441,6 +536,7 @@ export default function Admin() {
       });
       if (target === 'monument') setUploading(false);
       if (target === 'gallery') setUploadingGallery(false);
+      if (target === 'cross') setUploadingCross(false);
     }
   };
 
@@ -639,7 +735,7 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8 sticky top-[73px] z-30 bg-background">
+          <TabsList className="grid w-full grid-cols-5 mb-8 sticky top-[73px] z-30 bg-background">
             <TabsTrigger value="overview" className="font-oswald">
               <Icon name="LayoutDashboard" size={16} className="mr-2" />
               Обзор
@@ -651,6 +747,10 @@ export default function Admin() {
             <TabsTrigger value="shop" className="font-oswald">
               <Icon name="ShoppingBag" size={16} className="mr-2" />
               Магазин
+            </TabsTrigger>
+            <TabsTrigger value="crosses" className="font-oswald">
+              <Icon name="Cross" size={16} className="mr-2" />
+              Кресты
             </TabsTrigger>
             <TabsTrigger value="gallery" className="font-oswald">
               <Icon name="Images" size={16} className="mr-2" />
@@ -2004,6 +2104,122 @@ export default function Admin() {
                     </div>
                   </SortableContext>
                 </DndContext>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="crosses" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald">
+                  {editingCross ? 'Редактировать крест' : 'Добавить крест'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleCrossSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="cross-name">Название *</Label>
+                    <Input
+                      id="cross-name"
+                      value={crossForm.name}
+                      onChange={(e) => setCrossForm({ ...crossForm, name: e.target.value })}
+                      placeholder="Классический крест"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Изображение *</Label>
+                    <div className="flex gap-4 items-start">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'cross')}
+                        disabled={uploadingCross}
+                      />
+                      {crossForm.image_url && (
+                        <div className="w-20 h-20 rounded border overflow-hidden bg-secondary">
+                          <img src={crossForm.image_url} alt="Preview" className="w-full h-full object-contain" />
+                        </div>
+                      )}
+                    </div>
+                    {uploadingCross && <Progress value={crossUploadProgress} className="mt-2" />}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="cross-order">Порядок отображения</Label>
+                    <Input
+                      id="cross-order"
+                      type="number"
+                      value={crossForm.display_order}
+                      onChange={(e) => setCrossForm({ ...crossForm, display_order: parseInt(e.target.value) || 999 })}
+                      placeholder="999"
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button type="submit" disabled={uploadingCross}>
+                      <Icon name={editingCross ? "Save" : "Plus"} size={16} className="mr-2" />
+                      {editingCross ? 'Сохранить изменения' : 'Добавить крест'}
+                    </Button>
+                    {editingCross && (
+                      <Button type="button" variant="outline" onClick={() => {
+                        setEditingCross(null);
+                        setCrossForm({ name: '', image_url: '', display_order: 999 });
+                      }}>
+                        Отменить
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald">Кресты в галерее ({crosses.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {crosses.map((cross) => (
+                    <div key={cross.id} className="relative group">
+                      <div className="aspect-square rounded-lg border-2 border-border overflow-hidden bg-secondary">
+                        <img 
+                          src={cross.image_url} 
+                          alt={cross.name} 
+                          className="w-full h-full object-contain p-2"
+                        />
+                      </div>
+                      <div className="mt-2 text-sm font-medium text-center">{cross.name}</div>
+                      <div className="text-xs text-muted-foreground text-center">Порядок: {cross.display_order}</div>
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleCrossEdit(cross)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Icon name="Pencil" size={14} />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleCrossDelete(cross.id)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Icon name="Trash2" size={14} />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {crosses.length === 0 && (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Icon name="Plus" size={48} className="mx-auto mb-4 opacity-20" />
+                    <p>Нет крестов в галерее</p>
+                    <p className="text-sm">Добавьте первый крест используя форму выше</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
