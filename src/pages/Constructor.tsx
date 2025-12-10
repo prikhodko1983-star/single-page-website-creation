@@ -596,7 +596,9 @@ const Constructor = () => {
         backgroundColor: '#000000',
         scale: 2,
         useCORS: true,
+        allowTaint: true,
         logging: false,
+        imageTimeout: 15000,
       });
 
       // Создаём PDF
@@ -951,6 +953,7 @@ const Constructor = () => {
                 alt="Памятник" 
                 className="w-full h-full object-cover"
                 draggable={false}
+                crossOrigin="anonymous"
               />
               
               {elements.map(element => (
@@ -1038,6 +1041,7 @@ const Constructor = () => {
                       alt="Фотография"
                       className="w-full h-full object-cover select-none"
                       draggable={false}
+                      crossOrigin="anonymous"
                     />
                   )}
                   
@@ -1047,6 +1051,7 @@ const Constructor = () => {
                       alt={element.type}
                       className="w-full h-full object-contain select-none"
                       draggable={false}
+                      crossOrigin="anonymous"
                     />
                   )}
                   
