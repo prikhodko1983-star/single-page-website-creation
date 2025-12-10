@@ -711,14 +711,12 @@ const Constructor = () => {
               <h2 className="font-oswald font-bold text-lg mb-4">Библиотека элементов</h2>
               
               <Tabs defaultValue="catalog" className="w-full" onValueChange={(value) => {
-                if (value === 'saved') loadSavedDesigns();
                 if (value === 'catalog') loadCatalog();
               }}>
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="catalog">Каталог</TabsTrigger>
                   <TabsTrigger value="monuments">Шаблоны</TabsTrigger>
                   <TabsTrigger value="elements">Элементы</TabsTrigger>
-                  <TabsTrigger value="saved">Сохр.</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="catalog" className="space-y-3 mt-4">
@@ -932,49 +930,6 @@ const Constructor = () => {
                     <Icon name="Flower" size={18} className="mr-2" />
                     Добавить цветы
                   </Button>
-                </TabsContent>
-                
-                <TabsContent value="saved" className="space-y-3 mt-4">
-                  <Label>Сохраненные дизайны ({savedDesigns.length})</Label>
-                  {savedDesigns.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-8">
-                      Нет сохраненных дизайнов
-                    </p>
-                  ) : (
-                    <div className="space-y-2 max-h-96 overflow-y-auto">
-                      {savedDesigns.map((design, index) => (
-                        <div 
-                          key={index}
-                          className="border border-border rounded-lg p-3 space-y-2"
-                        >
-                          <div className="text-xs text-muted-foreground">
-                            {new Date(design.timestamp).toLocaleString('ru')}
-                          </div>
-                          <div className="text-sm">
-                            Элементов: {design.elements.length}
-                          </div>
-                          <div className="flex gap-2">
-                            <Button 
-                              size="sm"
-                              variant="outline"
-                              className="flex-1"
-                              onClick={() => loadDesign(index)}
-                            >
-                              <Icon name="Download" size={16} className="mr-1" />
-                              Загрузить
-                            </Button>
-                            <Button 
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => deleteDesign(index)}
-                            >
-                              <Icon name="Trash2" size={16} />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </TabsContent>
               </Tabs>
             </CardContent>
