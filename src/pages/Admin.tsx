@@ -229,7 +229,7 @@ export default function Admin() {
   const [customSize, setCustomSize] = useState<string>('');
 
   const [crosses, setCrosses] = useState<Array<{id: number, name: string, image_url: string, display_order: number}>>([]);
-  const [crossForm, setCrossForm] = useState({ name: '', image_url: '', display_order: 999 });
+  const [crossForm, setCrossForm] = useState({ name: '', image_url: '', display_order: 0 });
   const [editingCross, setEditingCross] = useState<{id: number, name: string, image_url: string, display_order: number} | null>(null);
   const [uploadingCross, setUploadingCross] = useState(false);
   const [crossUploadProgress, setCrossUploadProgress] = useState(0);
@@ -335,10 +335,17 @@ export default function Admin() {
       const method = editingCross ? 'PUT' : 'POST';
       const url = editingCross ? `${API_URL}?type=crosses&id=${editingCross.id}` : `${API_URL}?type=crosses`;
 
+      const displayOrder = editingCross 
+        ? crossForm.display_order 
+        : (crosses.length > 0 ? Math.max(...crosses.map(c => c.display_order)) + 1 : 1);
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(crossForm)
+        body: JSON.stringify({
+          ...crossForm,
+          display_order: displayOrder
+        })
       });
 
       if (response.ok) {
@@ -347,7 +354,7 @@ export default function Admin() {
           description: editingCross ? "Крест обновлен" : "Крест добавлен"
         });
         loadCrosses();
-        setCrossForm({ name: '', image_url: '', display_order: 999 });
+        setCrossForm({ name: '', image_url: '', display_order: 0 });
         setEditingCross(null);
       }
     } catch (error) {
@@ -384,6 +391,49 @@ export default function Admin() {
       toast({
         title: "Ошибка",
         description: "Не удалось удалить крест",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleCrossOrderChange = async (cross: typeof crosses[0], direction: 'up' | 'down') => {
+    const currentIndex = crosses.findIndex(c => c.id === cross.id);
+    if (currentIndex === -1) return;
+    
+    if (direction === 'up' && currentIndex === 0) return;
+    if (direction === 'down' && currentIndex === crosses.length - 1) return;
+    
+    const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    const swapCross = crosses[swapIndex];
+    
+    try {
+      await Promise.all([
+        fetch(`${API_URL}?type=crosses&id=${cross.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: cross.name,
+            image_url: cross.image_url,
+            display_order: swapCross.display_order
+          })
+        }),
+        fetch(`${API_URL}?type=crosses&id=${swapCross.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: swapCross.name,
+            image_url: swapCross.image_url,
+            display_order: cross.display_order
+          })
+        })
+      ]);
+      
+      loadCrosses();
+      toast({ title: "Успех", description: "Порядок изменен" });
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось изменить порядок",
         variant: "destructive"
       });
     }
@@ -2144,17 +2194,9 @@ export default function Admin() {
                       )}
                     </div>
                     {uploadingCross && <Progress value={crossUploadProgress} className="mt-2" />}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="cross-order">Порядок отображения</Label>
-                    <Input
-                      id="cross-order"
-                      type="number"
-                      value={crossForm.display_order}
-                      onChange={(e) => setCrossForm({ ...crossForm, display_order: parseInt(e.target.value) || 999 })}
-                      placeholder="999"
-                    />
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Новый крест добавится в конец галереи. Используйте кнопки ↑↓ для изменения порядка.
+                    </p>
                   </div>
 
                   <div className="flex gap-2">
@@ -2165,7 +2207,7 @@ export default function Admin() {
                     {editingCross && (
                       <Button type="button" variant="outline" onClick={() => {
                         setEditingCross(null);
-                        setCrossForm({ name: '', image_url: '', display_order: 999 });
+                        setCrossForm({ name: '', image_url: '', display_order: 0 });
                       }}>
                         Отменить
                       </Button>
@@ -2181,7 +2223,7 @@ export default function Admin() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {crosses.map((cross) => (
+                  {crosses.map((cross, index) => (
                     <div key={cross.id} className="relative group">
                       <div className="aspect-square rounded-lg border-2 border-border overflow-hidden bg-secondary">
                         <img 
@@ -2191,13 +2233,38 @@ export default function Admin() {
                         />
                       </div>
                       <div className="mt-2 text-sm font-medium text-center">{cross.name}</div>
-                      <div className="text-xs text-muted-foreground text-center">Порядок: {cross.display_order}</div>
+                      <div className="text-xs text-muted-foreground text-center">#{index + 1}</div>
+                      
+                      <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleCrossOrderChange(cross, 'up')}
+                          disabled={index === 0}
+                          className="h-8 w-8 p-0"
+                          title="Переместить вверх"
+                        >
+                          <Icon name="ChevronUp" size={14} />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleCrossOrderChange(cross, 'down')}
+                          disabled={index === crosses.length - 1}
+                          className="h-8 w-8 p-0"
+                          title="Переместить вниз"
+                        >
+                          <Icon name="ChevronDown" size={14} />
+                        </Button>
+                      </div>
+                      
                       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                         <Button
                           size="sm"
                           variant="secondary"
                           onClick={() => handleCrossEdit(cross)}
                           className="h-8 w-8 p-0"
+                          title="Редактировать"
                         >
                           <Icon name="Pencil" size={14} />
                         </Button>
@@ -2206,6 +2273,7 @@ export default function Admin() {
                           variant="destructive"
                           onClick={() => handleCrossDelete(cross.id)}
                           className="h-8 w-8 p-0"
+                          title="Удалить"
                         >
                           <Icon name="Trash2" size={14} />
                         </Button>
