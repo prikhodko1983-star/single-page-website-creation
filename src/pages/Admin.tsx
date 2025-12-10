@@ -551,7 +551,12 @@ export default function Admin() {
           } else if (target === 'product') {
             setProductForm({ ...productForm, image_url: data.url });
           } else if (target === 'cross') {
-            setCrossForm({ ...crossForm, image_url: data.url });
+            const fileName = file.name.replace(/\.[^/.]+$/, '');
+            setCrossForm({ 
+              ...crossForm, 
+              image_url: data.url,
+              name: crossForm.name || fileName
+            });
           }
           
           toast({
