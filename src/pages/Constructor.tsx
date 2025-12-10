@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import html2canvas from 'html2canvas';
@@ -25,6 +25,7 @@ interface CanvasElement {
   rotation?: number;
   fontFamily?: string;
   screenMode?: boolean;
+  processedSrc?: string; // Обработанное изображение с Screen mode
 }
 
 const Constructor = () => {
@@ -197,6 +198,47 @@ const Constructor = () => {
     
     setBirthDate('');
     setDeathDate('');
+  };
+
+  // Функция применения Screen blend mode (как в Photoshop)
+  const applyScreenMode = (imageData: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(imageData);
+          return;
+        }
+        
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = pixels.data;
+        
+        // Применяем Screen blend mode: Result = 1 - (1 - Base) * (1 - Blend)
+        // Для черного цвета (0,0,0): Result = 1 - (1-0)*(1-Base) = Base (прозрачный)
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          
+          // Вычисляем яркость пикселя
+          const brightness = (r + g + b) / 3;
+          
+          // Screen mode: чем темнее, тем прозрачнее
+          // Черный (0) -> alpha = 0, Белый (255) -> alpha = 255
+          data[i + 3] = brightness;
+        }
+        
+        ctx.putImageData(pixels, 0, 0);
+        resolve(canvas.toDataURL());
+      };
+      img.src = imageData;
+    });
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -381,8 +423,23 @@ const Constructor = () => {
     });
   };
 
-  const updateElement = (id: string, updates: Partial<CanvasElement>) => {
-    setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
+  const updateElement = async (id: string, updates: Partial<CanvasElement>) => {
+    const element = elements.find(el => el.id === id);
+    if (!element) return;
+    
+    // Если включается Screen mode для фотографии
+    if (updates.screenMode === true && element.type === 'photo' && element.src && !element.processedSrc) {
+      const processed = await applyScreenMode(element.src);
+      setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: processed } : el));
+    } 
+    // Если выключается Screen mode
+    else if (updates.screenMode === false) {
+      setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: undefined } : el));
+    }
+    // Обычное обновление
+    else {
+      setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
+    }
   };
 
   const deleteElement = (id: string) => {
@@ -535,21 +592,6 @@ const Constructor = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* SVG фильтр для удаления черного цвета */}
-      <svg width="0" height="0" style={{ position: 'absolute' }}>
-        <defs>
-          <filter id="remove-black">
-            <feColorMatrix
-              type="matrix"
-              values="1 0 0 0 0
-                      0 1 0 0 0
-                      0 0 1 0 0
-                      -1 -1 -1 3 0"
-            />
-          </filter>
-        </defs>
-      </svg>
-      
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
@@ -886,13 +928,10 @@ const Constructor = () => {
                   
                   {element.type === 'photo' && element.src && (
                     <img 
-                      src={element.src} 
+                      src={element.screenMode && element.processedSrc ? element.processedSrc : element.src} 
                       alt="Фотография"
                       className="w-full h-full object-cover select-none"
                       draggable={false}
-                      style={element.screenMode ? {
-                        filter: 'url(#remove-black) brightness(1.1)'
-                      } : {}}
                     />
                   )}
                   
