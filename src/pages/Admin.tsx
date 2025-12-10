@@ -233,7 +233,7 @@ export default function Admin() {
 
   const API_URL = "https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6";
   const UPLOAD_URL = "https://functions.poehali.dev/96dcc1e1-90f9-4b11-b0c7-2d66559ddcbb";
-  const PRODUCTS_API = "https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d";
+  const PRODUCTS_API = "";
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -274,23 +274,11 @@ export default function Admin() {
   };
 
   const loadProducts = async () => {
-    try {
-      const response = await fetch(PRODUCTS_API);
-      const data = await response.json();
-      setProducts(data);
-    } catch (error) {
-      console.error('Error loading products:', error);
-    }
+    setProducts([]);
   };
 
   const loadCategories = async () => {
-    try {
-      const response = await fetch(`${PRODUCTS_API}?type=categories`);
-      const data = await response.json();
-      setCategories(data);
-    } catch (error) {
-      console.error('Error loading categories:', error);
-    }
+    setCategories([]);
   };
 
   const handleMonumentSubmit = async (e: React.FormEvent) => {
