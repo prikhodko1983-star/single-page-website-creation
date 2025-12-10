@@ -711,41 +711,47 @@ const Constructor = () => {
       
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
-      if (isMobile && navigator.share) {
-        try {
-          const blob = await fetch(imgData).then(r => r.blob());
-          const file = new File([blob], fileName, { type: 'image/jpeg' });
+      if (isMobile) {
+        const newWindow = window.open();
+        if (newWindow) {
+          newWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <style>
+                body { margin: 0; background: #000; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+                img { max-width: 100%; height: auto; display: block; }
+                .info { color: #fff; text-align: center; padding: 20px; font-family: sans-serif; }
+              </style>
+            </head>
+            <body>
+              <div>
+                <img src="${imgData}" alt="Дизайн памятника">
+                <div class="info">Нажмите и удерживайте изображение, затем выберите "Сохранить изображение"</div>
+              </div>
+            </body>
+            </html>
+          `);
+          newWindow.document.close();
           
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              files: [file],
-              title: 'Дизайн памятника',
-              text: 'Макет памятника из конструктора'
-            });
-            
-            toast({
-              title: "Изображение сохранено!",
-              description: "Выберите 'Сохранить в галерею' в меню",
-            });
-            return;
-          }
-        } catch (error: any) {
-          if (error.name === 'AbortError') {
-            return;
-          }
-          console.log('Share API failed, fallback to download:', error);
+          toast({
+            title: "Изображение открыто!",
+            description: "Удерживайте палец на изображении и выберите 'Сохранить'",
+            duration: 5000,
+          });
         }
+      } else {
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = fileName;
+        link.click();
+        
+        toast({
+          title: "Изображение сохранено!",
+          description: "JPG файл скачан на устройство",
+        });
       }
-      
-      const link = document.createElement('a');
-      link.href = imgData;
-      link.download = fileName;
-      link.click();
-      
-      toast({
-        title: "Изображение сохранено!",
-        description: "JPG файл скачан на устройство",
-      });
     } catch (error) {
       console.error('Image generation error:', error);
       toast({
