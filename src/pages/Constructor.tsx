@@ -24,6 +24,7 @@ interface CanvasElement {
   color?: string;
   rotation?: number;
   fontFamily?: string;
+  screenMode?: boolean;
 }
 
 const Constructor = () => {
@@ -34,7 +35,6 @@ const Constructor = () => {
   const [savedDesigns, setSavedDesigns] = useState<Array<{monumentImage: string, elements: CanvasElement[], timestamp: number}>>([]);
   
   const [monumentImage, setMonumentImage] = useState<string>('https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png');
-  const [screenMode, setScreenMode] = useState(false);
   const [elements, setElements] = useState<CanvasElement[]>([]);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -590,21 +590,6 @@ const Constructor = () => {
                       </button>
                     ))}
                   </div>
-                  
-                  <div className="mt-4 p-3 bg-secondary/20 rounded-lg space-y-2">
-                    <Label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={screenMode}
-                        onChange={(e) => setScreenMode(e.target.checked)}
-                        className="w-4 h-4"
-                      />
-                      Режим "Экран" (убрать черный цвет)
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      Делает темные участки прозрачными для лучшего наложения элементов
-                    </p>
-                  </div>
                 </TabsContent>
                 
                 <TabsContent value="elements" className="space-y-3 mt-4">
@@ -809,10 +794,6 @@ const Constructor = () => {
                 alt="Памятник" 
                 className="w-full h-full object-cover"
                 draggable={false}
-                style={screenMode ? {
-                  mixBlendMode: 'screen',
-                  filter: 'brightness(1.1) contrast(1.1)'
-                } : {}}
               />
               
               {elements.map(element => (
@@ -894,6 +875,10 @@ const Constructor = () => {
                       alt="Фотография"
                       className="w-full h-full object-cover select-none"
                       draggable={false}
+                      style={element.screenMode ? {
+                        mixBlendMode: 'screen',
+                        filter: 'brightness(1.1) contrast(1.1)'
+                      } : {}}
                     />
                   )}
                   
@@ -1049,6 +1034,23 @@ const Constructor = () => {
                       className="w-full mt-1"
                     />
                   </div>
+                  
+                  {selectedEl.type === 'photo' && (
+                    <div className="p-3 bg-secondary/20 rounded-lg space-y-2">
+                      <Label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedEl.screenMode || false}
+                          onChange={(e) => updateElement(selectedEl.id, { screenMode: e.target.checked })}
+                          className="w-4 h-4"
+                        />
+                        Режим "Экран"
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Убирает черный цвет с фотографии
+                      </p>
+                    </div>
+                  )}
                   
                   <Button 
                     variant="destructive" 
