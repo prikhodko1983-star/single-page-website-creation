@@ -27,6 +27,7 @@ interface CanvasElement {
   screenMode?: boolean;
   processedSrc?: string; // Обработанное изображение с Screen mode
   lineHeight?: number; // Межстрочное расстояние
+  letterSpacing?: number; // Расстояние между буквами
 }
 
 const Constructor = () => {
@@ -893,11 +894,12 @@ const Constructor = () => {
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                         fontWeight: 'bold',
                         lineHeight: element.lineHeight || 1.2,
+                        letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       }}
                     >
                       {element.content}
                     </div>
-                  )}
+                  ))
                   
                   {element.type === 'epitaph' && (
                     <div 
@@ -907,11 +909,12 @@ const Constructor = () => {
                         color: element.color,
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                         lineHeight: element.lineHeight || 1.4,
+                        letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       }}
                     >
                       {element.content}
                     </div>
-                  )}
+                  ))
                   
                   {element.type === 'fio' && (
                     <div 
@@ -923,11 +926,12 @@ const Constructor = () => {
                         fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                         fontWeight: element.fontFamily?.split('|')[1] || '400',
                         lineHeight: element.lineHeight || 1.3,
+                        letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       }}
                     >
                       {element.content}
                     </div>
-                  )}
+                  ))
                   
                   {element.type === 'dates' && (
                     <div 
@@ -938,7 +942,7 @@ const Constructor = () => {
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                         fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                         fontWeight: element.fontFamily?.split('|')[1] || '400',
-                        letterSpacing: '0.05em',
+                        letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
                       }}
                     >
                       {element.content}
@@ -1070,7 +1074,7 @@ const Constructor = () => {
                       </div>
                       
                       <div>
-                        <Label>Межстрочное расстояние: {selectedEl.lineHeight?.toFixed(1) || '1.2'}</Label>
+                        <Label>Между строками (Фамилия↔Имя): {selectedEl.lineHeight?.toFixed(1) || '1.2'}</Label>
                         <input 
                           type="range" 
                           min="0.8" 
@@ -1083,6 +1087,23 @@ const Constructor = () => {
                         <div className="flex justify-between text-xs text-muted-foreground mt-1">
                           <span>Узко</span>
                           <span>Широко</span>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label>Между буквами: {selectedEl.letterSpacing?.toFixed(1) || '0'}px</Label>
+                        <input 
+                          type="range" 
+                          min="-2" 
+                          max="10" 
+                          step="0.5"
+                          value={selectedEl.letterSpacing || 0}
+                          onChange={(e) => updateElement(selectedEl.id, { letterSpacing: parseFloat(e.target.value) })}
+                          className="w-full mt-1"
+                        />
+                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                          <span>Сжато</span>
+                          <span>Разрежено</span>
                         </div>
                       </div>
                     </>
