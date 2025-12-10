@@ -631,6 +631,7 @@ const Constructor = () => {
       const loadImageWithCORS = (src: string): Promise<HTMLImageElement | null> => {
         return new Promise((resolve) => {
           const supportsCORS = src.includes('cdn.poehali.dev') || 
+                               src.includes('storage.yandexcloud.net') ||
                                src.startsWith('data:') || 
                                src.startsWith(window.location.origin);
           
