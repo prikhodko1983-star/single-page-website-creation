@@ -274,11 +274,21 @@ export default function Admin() {
   };
 
   const loadProducts = async () => {
-    setProducts([]);
+    try {
+      setProducts([]);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      setProducts([]);
+    }
   };
 
   const loadCategories = async () => {
-    setCategories([]);
+    try {
+      setCategories([]);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      setCategories([]);
+    }
   };
 
   const handleMonumentSubmit = async (e: React.FormEvent) => {

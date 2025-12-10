@@ -44,13 +44,24 @@ export default function IndexShopSection() {
   }, [selectedCategory]);
 
   const loadCategories = async () => {
-    setCategories([]);
+    try {
+      setCategories([]);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      setCategories([]);
+    }
   };
 
   const loadProducts = async () => {
-    setLoading(true);
-    setProducts([]);
-    setLoading(false);
+    try {
+      setLoading(true);
+      setProducts([]);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
