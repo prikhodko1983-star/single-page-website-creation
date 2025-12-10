@@ -26,6 +26,7 @@ interface CanvasElement {
   fontFamily?: string;
   screenMode?: boolean;
   processedSrc?: string; // Обработанное изображение с Screen mode
+  lineHeight?: number; // Межстрочное расстояние
 }
 
 const Constructor = () => {
@@ -891,6 +892,7 @@ const Constructor = () => {
                         color: element.color,
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                         fontWeight: 'bold',
+                        lineHeight: element.lineHeight || 1.2,
                       }}
                     >
                       {element.content}
@@ -904,6 +906,7 @@ const Constructor = () => {
                         fontSize: `${element.fontSize}px`, 
                         color: element.color,
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                        lineHeight: element.lineHeight || 1.4,
                       }}
                     >
                       {element.content}
@@ -919,7 +922,7 @@ const Constructor = () => {
                         textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                         fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                         fontWeight: element.fontFamily?.split('|')[1] || '400',
-                        lineHeight: 1.3,
+                        lineHeight: element.lineHeight || 1.3,
                       }}
                     >
                       {element.content}
@@ -1063,6 +1066,23 @@ const Constructor = () => {
                               </div>
                             </button>
                           ))}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label>Межстрочное расстояние: {selectedEl.lineHeight?.toFixed(1) || '1.2'}</Label>
+                        <input 
+                          type="range" 
+                          min="0.8" 
+                          max="2.5" 
+                          step="0.1"
+                          value={selectedEl.lineHeight || 1.2}
+                          onChange={(e) => updateElement(selectedEl.id, { lineHeight: parseFloat(e.target.value) })}
+                          className="w-full mt-1"
+                        />
+                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                          <span>Узко</span>
+                          <span>Широко</span>
                         </div>
                       </div>
                     </>
