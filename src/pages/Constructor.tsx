@@ -709,49 +709,15 @@ const Constructor = () => {
       const imgData = canvasElement.toDataURL('image/jpeg', 0.95);
       const fileName = `monument_design_${Date.now()}.jpg`;
       
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const link = document.createElement('a');
+      link.href = imgData;
+      link.download = fileName;
+      link.click();
       
-      if (isMobile) {
-        const newWindow = window.open();
-        if (newWindow) {
-          newWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta name="viewport" content="width=device-width, initial-scale=1">
-              <style>
-                body { margin: 0; background: #000; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-                img { max-width: 100%; height: auto; display: block; }
-                .info { color: #fff; text-align: center; padding: 20px; font-family: sans-serif; }
-              </style>
-            </head>
-            <body>
-              <div>
-                <img src="${imgData}" alt="Дизайн памятника">
-                <div class="info">Нажмите и удерживайте изображение, затем выберите "Сохранить изображение"</div>
-              </div>
-            </body>
-            </html>
-          `);
-          newWindow.document.close();
-          
-          toast({
-            title: "Изображение открыто!",
-            description: "Удерживайте палец на изображении и выберите 'Сохранить'",
-            duration: 5000,
-          });
-        }
-      } else {
-        const link = document.createElement('a');
-        link.href = imgData;
-        link.download = fileName;
-        link.click();
-        
-        toast({
-          title: "Изображение сохранено!",
-          description: "JPG файл скачан на устройство",
-        });
-      }
+      toast({
+        title: "Изображение сохранено!",
+        description: "JPG файл скачан на устройство",
+      });
     } catch (error) {
       console.error('Image generation error:', error);
       toast({
