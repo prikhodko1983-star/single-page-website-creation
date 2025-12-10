@@ -585,7 +585,7 @@ const Constructor = () => {
     
     try {
       toast({
-        title: "Создание PDF...",
+        title: "Создание изображения...",
         description: "Пожалуйста, подождите",
       });
 
@@ -595,25 +595,21 @@ const Constructor = () => {
       const canvas = await html2canvas(canvasRef.current, {
         backgroundColor: '#000000',
         scale: 2,
-        useCORS: true,
+        useCORS: false,
         allowTaint: true,
         logging: false,
         imageTimeout: 15000,
       });
 
-      // Создаём PDF
+      // Сохраняем как JPG
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const pdf = new jsPDF({
-        orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
-      });
-
-      pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+      const fileName = `monument_design_${Date.now()}.jpg`;
       
-      // Сохраняем PDF
-      const fileName = `monument_design_${Date.now()}.pdf`;
-      pdf.save(fileName);
+      // Создаём ссылку для скачивания
+      const link = document.createElement('a');
+      link.href = imgData;
+      link.download = fileName;
+      link.click();
 
       // Формируем текст сообщения для WhatsApp
       let message = '🪦 *Заявка на расчет памятника*\n\n';
@@ -657,7 +653,7 @@ const Constructor = () => {
       }
       
       message += `\n📊 *Всего элементов:* ${elements.length}\n\n`;
-      message += `📄 PDF макет сохранён на устройстве: ${fileName}\n\n`;
+      message += `📷 Изображение макета сохранено на устройстве: ${fileName}\n\n`;
       message += '💬 Прошу рассчитать стоимость этого дизайна памятника.';
       
       // Открываем WhatsApp
@@ -667,13 +663,13 @@ const Constructor = () => {
       window.open(whatsappUrl, '_blank');
       
       toast({
-        title: "PDF создан!",
-        description: "Файл сохранён, отправьте его в WhatsApp",
+        title: "Изображение сохранено!",
+        description: "JPG файл скачан, отправьте его в WhatsApp",
       });
     } catch (error) {
-      console.error('PDF generation error:', error);
+      console.error('Image generation error:', error);
       toast({
-        title: "Ошибка создания PDF",
+        title: "Ошибка создания изображения",
         description: "Попробуйте ещё раз",
         variant: "destructive",
       });
@@ -1083,8 +1079,8 @@ const Constructor = () => {
                 disabled={elements.length === 0}
                 className="bg-green-600 hover:bg-green-700"
               >
-                <Icon name="FileText" size={18} className="mr-2" />
-                Скачать PDF и отправить
+                <Icon name="Image" size={18} className="mr-2" />
+                Скачать JPG и отправить
               </Button>
             </div>
           </div>
