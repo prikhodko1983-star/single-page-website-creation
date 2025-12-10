@@ -899,7 +899,7 @@ const Constructor = () => {
                     >
                       {element.content}
                     </div>
-                  ))
+                  )}
                   
                   {element.type === 'epitaph' && (
                     <div 
@@ -914,7 +914,7 @@ const Constructor = () => {
                     >
                       {element.content}
                     </div>
-                  ))
+                  )}
                   
                   {element.type === 'fio' && (
                     <div 
@@ -931,7 +931,7 @@ const Constructor = () => {
                     >
                       {element.content}
                     </div>
-                  ))
+                  )}
                   
                   {element.type === 'dates' && (
                     <div 
