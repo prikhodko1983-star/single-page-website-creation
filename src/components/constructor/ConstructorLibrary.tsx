@@ -299,14 +299,53 @@ export const ConstructorLibrary = ({
               Добавить эпитафию
             </Button>
             
-            <Button 
-              onClick={() => addImageElement('https://cdn.poehali.dev/files/cross-icon.png', 'cross')} 
-              variant="outline" 
-              className="w-full justify-start"
-            >
-              <Icon name="Plus" size={18} className="mr-2" />
-              Добавить крест
-            </Button>
+            <div className="space-y-2">
+              <Label>Кресты</Label>
+              <div className="grid grid-cols-3 gap-2">
+                <button 
+                  onClick={() => addImageElement('https://cdn.poehali.dev/files/d84cc9c9-aa3d-41ad-bc4c-ecf91a1ffa36.png', 'cross')} 
+                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-2 bg-secondary/20"
+                  title="Классический крест"
+                >
+                  <img src="https://cdn.poehali.dev/files/d84cc9c9-aa3d-41ad-bc4c-ecf91a1ffa36.png" alt="Крест 1" className="w-full h-full object-contain" />
+                </button>
+                <button 
+                  onClick={() => addImageElement('https://cdn.poehali.dev/files/9b0c4e1f-8d2a-4c3b-b5e6-7f8a9c0d1e2f.png', 'cross')} 
+                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-2 bg-secondary/20"
+                  title="Православный крест"
+                >
+                  <div className="w-full h-full flex items-center justify-center text-4xl">☦</div>
+                </button>
+                <button 
+                  onClick={() => addImageElement('https://cdn.poehali.dev/files/a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6.png', 'cross')} 
+                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-2 bg-secondary/20"
+                  title="Кельтский крест"
+                >
+                  <div className="w-full h-full flex items-center justify-center text-4xl">✝</div>
+                </button>
+                <button 
+                  onClick={() => addImageElement('https://cdn.poehali.dev/files/b2c3d4e5-f6g7-h8i9-j0k1-l2m3n4o5p6q7.png', 'cross')} 
+                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-2 bg-secondary/20"
+                  title="Византийский крест"
+                >
+                  <div className="w-full h-full flex items-center justify-center text-4xl">✚</div>
+                </button>
+                <button 
+                  onClick={() => addImageElement('https://cdn.poehali.dev/files/c3d4e5f6-g7h8-i9j0-k1l2-m3n4o5p6q7r8.png', 'cross')} 
+                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-2 bg-secondary/20"
+                  title="Латинский крест"
+                >
+                  <div className="w-full h-full flex items-center justify-center text-4xl">†</div>
+                </button>
+                <button 
+                  onClick={() => addImageElement('https://cdn.poehali.dev/files/d4e5f6g7-h8i9-j0k1-l2m3-n4o5p6q7r8s9.png', 'cross')} 
+                  className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-2 bg-secondary/20"
+                  title="Крест с розами"
+                >
+                  <div className="w-full h-full flex items-center justify-center text-3xl">✟</div>
+                </button>
+              </div>
+            </div>
             
             <Button 
               onClick={() => addImageElement('https://cdn.poehali.dev/files/flower-icon.png', 'flower')} 
