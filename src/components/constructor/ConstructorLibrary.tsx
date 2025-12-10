@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
+import { useEffect } from "react";
 
 interface CanvasElement {
   id: string;
@@ -97,6 +98,11 @@ export const ConstructorLibrary = ({
   isLoadingCrosses,
   loadCrosses,
 }: ConstructorLibraryProps) => {
+  
+  useEffect(() => {
+    loadCrosses();
+  }, []);
+
   return (
     <Card className="h-fit">
       <CardContent className="p-4">
