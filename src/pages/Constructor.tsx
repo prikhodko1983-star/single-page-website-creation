@@ -589,20 +589,99 @@ const Constructor = () => {
         description: "Пожалуйста, подождите",
       });
 
-      // Создаём скриншот холста
+      // Создаём canvas вручную
       if (!canvasRef.current) return;
       
-      const canvas = await html2canvas(canvasRef.current, {
-        backgroundColor: '#000000',
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        logging: false,
-        imageTimeout: 15000,
+      const canvasElement = document.createElement('canvas');
+      const rect = canvasRef.current.getBoundingClientRect();
+      canvasElement.width = rect.width * 2;
+      canvasElement.height = rect.height * 2;
+      
+      const ctx = canvasElement.getContext('2d');
+      if (!ctx) return;
+      
+      ctx.scale(2, 2);
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, rect.width, rect.height);
+      
+      // Загружаем изображение памятника
+      const monumentImg = new Image();
+      monumentImg.crossOrigin = 'anonymous';
+      
+      await new Promise((resolve, reject) => {
+        monumentImg.onload = resolve;
+        monumentImg.onerror = () => {
+          // Если CORS не работает, пробуем без него
+          const img2 = new Image();
+          img2.onload = () => {
+            ctx.drawImage(img2, 0, 0, rect.width, rect.height);
+            resolve(null);
+          };
+          img2.onerror = reject;
+          img2.src = monumentImage;
+        };
+        monumentImg.src = monumentImage;
       });
-
+      
+      if (monumentImg.complete && monumentImg.naturalHeight !== 0) {
+        ctx.drawImage(monumentImg, 0, 0, rect.width, rect.height);
+      }
+      
+      // Рисуем все элементы поверх
+      for (const element of elements) {
+        ctx.save();
+        
+        const centerX = element.x + element.width / 2;
+        const centerY = element.y + element.height / 2;
+        
+        ctx.translate(centerX, centerY);
+        ctx.rotate((element.rotation || 0) * Math.PI / 180);
+        ctx.translate(-centerX, -centerY);
+        
+        if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
+          const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
+          ctx.font = `${fontWeight} ${element.fontSize}px ${fontFamily}`;
+          ctx.fillStyle = element.color || '#FFFFFF';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0,0,0,0.8)';
+          ctx.shadowBlur = 4;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          
+          const lines = element.content?.split('\n') || [];
+          const lineHeight = (element.fontSize || 24) * (element.lineHeight || 1.2);
+          const startY = element.y + element.height / 2 - (lines.length - 1) * lineHeight / 2;
+          
+          lines.forEach((line, idx) => {
+            ctx.fillText(line, element.x + element.width / 2, startY + idx * lineHeight);
+          });
+        } else if (element.src) {
+          try {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            await new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = () => {
+                // Пропускаем изображения с ошибками
+                resolve(null);
+              };
+              img.src = element.screenMode && element.processedSrc ? element.processedSrc : element.src;
+            });
+            
+            if (img.complete && img.naturalHeight !== 0) {
+              ctx.drawImage(img, element.x, element.y, element.width, element.height);
+            }
+          } catch (e) {
+            console.warn('Failed to load image:', element.src);
+          }
+        }
+        
+        ctx.restore();
+      }
+      
       // Сохраняем как JPG
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const imgData = canvasElement.toDataURL('image/jpeg', 0.95);
       const fileName = `monument_design_${Date.now()}.jpg`;
       
       // Создаём ссылку для скачивания
@@ -749,7 +828,7 @@ const Constructor = () => {
                                         monumentImage === product.image_url ? 'border-primary' : 'border-border hover:border-primary/50'
                                       }`}
                                     >
-                                      <img src={product.image_url!} alt={product.name} className="w-full h-full object-cover" crossOrigin="anonymous" />
+                                      <img src={product.image_url!} alt={product.name} className="w-full h-full object-cover" />
                                       <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center">
                                         {product.name}
                                       </div>
@@ -781,7 +860,7 @@ const Constructor = () => {
                           monumentImage === img.src ? 'border-primary' : 'border-border hover:border-primary/50'
                         }`}
                       >
-                        <img src={img.src} alt={img.name} className="w-full h-full object-cover" crossOrigin="anonymous" />
+                        <img src={img.src} alt={img.name} className="w-full h-full object-cover" />
                         <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 text-center">
                           {img.name}
                         </div>
@@ -949,7 +1028,6 @@ const Constructor = () => {
                 alt="Памятник" 
                 className="w-full h-full object-cover"
                 draggable={false}
-                crossOrigin="anonymous"
               />
               
               {elements.map(element => (
@@ -1037,7 +1115,6 @@ const Constructor = () => {
                       alt="Фотография"
                       className="w-full h-full object-cover select-none"
                       draggable={false}
-                      crossOrigin="anonymous"
                     />
                   )}
                   
@@ -1047,7 +1124,6 @@ const Constructor = () => {
                       alt={element.type}
                       className="w-full h-full object-contain select-none"
                       draggable={false}
-                      crossOrigin="anonymous"
                     />
                   )}
                   
