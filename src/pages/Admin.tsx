@@ -238,7 +238,7 @@ export default function Admin() {
   const filterCategories = ["Все", ...categories_list];
 
   const API_URL = "https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6";
-  const UPLOAD_URL = "https://functions.poehali.dev/96dcc1e1-90f9-4b11-b0c7-2d66559ddcbb";
+  const UPLOAD_URL = "https://functions.poehali.dev/131d63b7-bef6-496a-a392-c04e347cd6aa";
   const PRODUCTS_API = "https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d";
 
   const sensors = useSensors(
