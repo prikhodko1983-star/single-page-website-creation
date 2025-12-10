@@ -710,7 +710,6 @@ const Constructor = () => {
       const fileName = `monument_design_${Date.now()}.jpg`;
       
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      let shareSuccessful = false;
       
       if (isMobile && navigator.share) {
         try {
@@ -723,84 +722,30 @@ const Constructor = () => {
               title: 'Дизайн памятника',
               text: 'Макет памятника из конструктора'
             });
-            shareSuccessful = true;
             
             toast({
-              title: "Изображение отправлено!",
-              description: "Сохраните в галерею или отправьте в WhatsApp",
+              title: "Изображение сохранено!",
+              description: "Выберите 'Сохранить в галерею' в меню",
             });
+            return;
           }
         } catch (error: any) {
-          if (error.name !== 'AbortError') {
-            console.log('Share API failed, fallback to download:', error);
-          } else {
-            shareSuccessful = true;
+          if (error.name === 'AbortError') {
+            return;
           }
+          console.log('Share API failed, fallback to download:', error);
         }
       }
       
-      if (!shareSuccessful) {
-        const link = document.createElement('a');
-        link.href = imgData;
-        link.download = fileName;
-        link.click();
-      }
-
-      let message = '🪦 *Заявка на расчет памятника*\n\n';
-      message += `📅 Дата: ${new Date().toLocaleString('ru')}\n\n`;
+      const link = document.createElement('a');
+      link.href = imgData;
+      link.download = fileName;
+      link.click();
       
-      const monumentName = monumentImages.find(m => m.src === monumentImage)?.name || 'Памятник';
-      message += `🗿 *Основа:* ${monumentName}\n\n`;
-      
-      message += `📝 *Элементы дизайна:*\n`;
-      
-      const textElements = elements.filter(el => el.type === 'fio' || el.type === 'text' || el.type === 'dates' || el.type === 'epitaph');
-      const imageElements = elements.filter(el => el.type === 'photo' || el.type === 'cross' || el.type === 'flower' || el.type === 'image');
-      
-      if (textElements.length > 0) {
-        textElements.forEach((el, idx) => {
-          const typeNames: Record<string, string> = {
-            fio: 'ФИО',
-            text: 'Текст',
-            dates: 'Даты',
-            epitaph: 'Эпитафия'
-          };
-          message += `\n${idx + 1}. ${typeNames[el.type] || el.type}:\n`;
-          if (el.content) {
-            message += `   "${el.content.replace(/\n/g, ' ')}"\n`;
-          }
-          if (el.fontSize) {
-            message += `   Размер: ${el.fontSize}px\n`;
-          }
-        });
-      }
-      
-      if (imageElements.length > 0) {
-        message += `\n📷 Изображения:\n`;
-        const photoCount = imageElements.filter(el => el.type === 'photo').length;
-        const crossCount = imageElements.filter(el => el.type === 'cross').length;
-        const flowerCount = imageElements.filter(el => el.type === 'flower').length;
-        
-        if (photoCount > 0) message += `   • Фотографий: ${photoCount}\n`;
-        if (crossCount > 0) message += `   • Крестов: ${crossCount}\n`;
-        if (flowerCount > 0) message += `   • Цветов: ${flowerCount}\n`;
-      }
-      
-      message += `\n📊 *Всего элементов:* ${elements.length}\n\n`;
-      message += `📷 Изображение макета сохранено на устройстве: ${fileName}\n\n`;
-      message += '💬 Прошу рассчитать стоимость этого дизайна памятника.';
-      
-      const phoneNumber = '79960681168';
-      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-      
-      if (!shareSuccessful) {
-        window.open(whatsappUrl, '_blank');
-        
-        toast({
-          title: "Изображение сохранено!",
-          description: "JPG файл скачан, отправьте его в WhatsApp",
-        });
-      }
+      toast({
+        title: "Изображение сохранено!",
+        description: "JPG файл скачан на устройство",
+      });
     } catch (error) {
       console.error('Image generation error:', error);
       toast({
