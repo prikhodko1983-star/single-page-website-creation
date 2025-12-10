@@ -535,6 +535,21 @@ const Constructor = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {/* SVG фильтр для удаления черного цвета */}
+      <svg width="0" height="0" style={{ position: 'absolute' }}>
+        <defs>
+          <filter id="remove-black">
+            <feColorMatrix
+              type="matrix"
+              values="1 0 0 0 0
+                      0 1 0 0 0
+                      0 0 1 0 0
+                      -1 -1 -1 3 0"
+            />
+          </filter>
+        </defs>
+      </svg>
+      
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
@@ -870,19 +885,15 @@ const Constructor = () => {
                   )}
                   
                   {element.type === 'photo' && element.src && (
-                    <div 
-                      className="w-full h-full"
+                    <img 
+                      src={element.src} 
+                      alt="Фотография"
+                      className="w-full h-full object-cover select-none"
+                      draggable={false}
                       style={element.screenMode ? {
-                        mixBlendMode: 'screen'
+                        filter: 'url(#remove-black) brightness(1.1)'
                       } : {}}
-                    >
-                      <img 
-                        src={element.src} 
-                        alt="Фотография"
-                        className="w-full h-full object-cover select-none"
-                        draggable={false}
-                      />
-                    </div>
+                    />
                   )}
                   
                   {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && (
