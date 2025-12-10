@@ -219,19 +219,28 @@ const Constructor = () => {
         const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = pixels.data;
         
-        // Применяем Screen blend mode: Result = 1 - (1 - Base) * (1 - Blend)
-        // Для черного цвета (0,0,0): Result = 1 - (1-0)*(1-Base) = Base (прозрачный)
+        // Применяем Screen blend mode: убираем темные цвета, оставляем светлые
         for (let i = 0; i < data.length; i += 4) {
           const r = data[i];
           const g = data[i + 1];
           const b = data[i + 2];
           
-          // Вычисляем яркость пикселя
+          // Вычисляем яркость пикселя (0-255)
           const brightness = (r + g + b) / 3;
           
-          // Screen mode: чем темнее, тем прозрачнее
-          // Черный (0) -> alpha = 0, Белый (255) -> alpha = 255
+          // Screen mode: чем темнее - тем прозрачнее
+          // Но белый должен остаться ярким!
+          // Черный (0) -> alpha = 0 (прозрачный)
+          // Белый (255) -> alpha = 255 (непрозрачный)
           data[i + 3] = brightness;
+          
+          // Компенсируем затемнение светлых участков
+          if (brightness > 50) {
+            const boost = 1.3; // Усиление яркости светлых участков
+            data[i] = Math.min(255, r * boost);
+            data[i + 1] = Math.min(255, g * boost);
+            data[i + 2] = Math.min(255, b * boost);
+          }
         }
         
         ctx.putImageData(pixels, 0, 0);
