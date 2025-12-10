@@ -710,34 +710,41 @@ const Constructor = () => {
       const fileName = `monument_design_${Date.now()}.jpg`;
       
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      let shareSuccessful = false;
       
-      if (isMobile && navigator.share && navigator.canShare) {
+      if (isMobile && navigator.share) {
         try {
           const blob = await fetch(imgData).then(r => r.blob());
           const file = new File([blob], fileName, { type: 'image/jpeg' });
           
-          if (navigator.canShare({ files: [file] })) {
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
               files: [file],
               title: 'Дизайн памятника',
               text: 'Макет памятника из конструктора'
             });
+            shareSuccessful = true;
             
             toast({
-              title: "Изображение сохранено!",
-              description: "Выберите 'Сохранить в галерею' или отправьте в WhatsApp",
+              title: "Изображение отправлено!",
+              description: "Сохраните в галерею или отправьте в WhatsApp",
             });
-            return;
           }
-        } catch (error) {
-          console.log('Share API failed, fallback to download:', error);
+        } catch (error: any) {
+          if (error.name !== 'AbortError') {
+            console.log('Share API failed, fallback to download:', error);
+          } else {
+            shareSuccessful = true;
+          }
         }
       }
       
-      const link = document.createElement('a');
-      link.href = imgData;
-      link.download = fileName;
-      link.click();
+      if (!shareSuccessful) {
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = fileName;
+        link.click();
+      }
 
       let message = '🪦 *Заявка на расчет памятника*\n\n';
       message += `📅 Дата: ${new Date().toLocaleString('ru')}\n\n`;
@@ -786,12 +793,14 @@ const Constructor = () => {
       const phoneNumber = '79960681168';
       const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
       
-      window.open(whatsappUrl, '_blank');
-      
-      toast({
-        title: "Изображение сохранено!",
-        description: "JPG файл скачан, отправьте его в WhatsApp",
-      });
+      if (!shareSuccessful) {
+        window.open(whatsappUrl, '_blank');
+        
+        toast({
+          title: "Изображение сохранено!",
+          description: "JPG файл скачан, отправьте его в WhatsApp",
+        });
+      }
     } catch (error) {
       console.error('Image generation error:', error);
       toast({
