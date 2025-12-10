@@ -57,6 +57,11 @@ const Constructor = () => {
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
   const photoInputRef = useRef<HTMLInputElement>(null);
+  
+  const [catalogCategories, setCatalogCategories] = useState<Array<{id: number, name: string}>>([]);
+  const [catalogProducts, setCatalogProducts] = useState<Array<{id: number, name: string, category_id: number, image_url: string | null}>>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [isLoadingCatalog, setIsLoadingCatalog] = useState(false);
 
   // Загружаем сохраненные дизайны при монтировании
   const loadSavedDesigns = () => {
@@ -65,6 +70,53 @@ const Constructor = () => {
       setSavedDesigns(saved);
     } catch (error) {
       console.error('Error loading saved designs:', error);
+    }
+  };
+
+  // Загружаем каталог из базы данных
+  const loadCatalog = async () => {
+    setIsLoadingCatalog(true);
+    try {
+      // Здесь будет запрос к базе данных через бэкенд
+      // Пока используем моковые данные из существующих таблиц
+      const mockData = [
+        {
+          id: 2,
+          name: 'Памятник №2 "Элегант"',
+          category_id: 1,
+          category_name: 'Одиночные памятники',
+          image_url: 'https://storage.yandexcloud.net/sitevek/5474527360758972468.jpg'
+        }
+      ];
+      
+      // Группируем по категориям
+      const uniqueCategories = new Map();
+      mockData.forEach(p => {
+        if (!uniqueCategories.has(p.category_id)) {
+          uniqueCategories.set(p.category_id, {
+            id: p.category_id,
+            name: p.category_name
+          });
+        }
+      });
+      
+      const categories = Array.from(uniqueCategories.values());
+      
+      setCatalogCategories(categories);
+      setCatalogProducts(mockData);
+      
+      if (categories.length > 0) {
+        setSelectedCategory(categories[0].id);
+      }
+    } catch (error) {
+      console.error('Error loading catalog:', error);
+      toast({
+        title: "Ошибка загрузки каталога",
+        description: "Не удалось загрузить памятники из базы данных",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingCatalog(false);
     }
   };
 
@@ -658,14 +710,69 @@ const Constructor = () => {
             <CardContent className="p-4">
               <h2 className="font-oswald font-bold text-lg mb-4">Библиотека элементов</h2>
               
-              <Tabs defaultValue="monuments" className="w-full" onValueChange={(value) => {
+              <Tabs defaultValue="catalog" className="w-full" onValueChange={(value) => {
                 if (value === 'saved') loadSavedDesigns();
+                if (value === 'catalog') loadCatalog();
               }}>
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="monuments">Основа</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="catalog">Каталог</TabsTrigger>
+                  <TabsTrigger value="monuments">Шаблоны</TabsTrigger>
                   <TabsTrigger value="elements">Элементы</TabsTrigger>
                   <TabsTrigger value="saved">Сохр.</TabsTrigger>
                 </TabsList>
+                
+                <TabsContent value="catalog" className="space-y-3 mt-4">
+                  <Label>Памятники из каталога магазина</Label>
+                  
+                  {isLoadingCatalog ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    </div>
+                  ) : (
+                    <>
+                      {catalogCategories.length > 0 && (
+                        <Tabs value={selectedCategory?.toString()} onValueChange={(val) => setSelectedCategory(parseInt(val))} className="w-full">
+                          <TabsList className="w-full flex-wrap h-auto">
+                            {catalogCategories.map(cat => (
+                              <TabsTrigger key={cat.id} value={cat.id.toString()} className="text-xs">
+                                {cat.name}
+                              </TabsTrigger>
+                            ))}
+                          </TabsList>
+                          
+                          {catalogCategories.map(cat => (
+                            <TabsContent key={cat.id} value={cat.id.toString()} className="mt-3">
+                              <div className="grid grid-cols-2 gap-2">
+                                {catalogProducts
+                                  .filter(p => p.category_id === cat.id && p.image_url)
+                                  .map(product => (
+                                    <button
+                                      key={product.id}
+                                      onClick={() => setMonumentImage(product.image_url!)}
+                                      className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
+                                        monumentImage === product.image_url ? 'border-primary' : 'border-border hover:border-primary/50'
+                                      }`}
+                                    >
+                                      <img src={product.image_url!} alt={product.name} className="w-full h-full object-cover" />
+                                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center">
+                                        {product.name}
+                                      </div>
+                                    </button>
+                                  ))}
+                              </div>
+                            </TabsContent>
+                          ))}
+                        </Tabs>
+                      )}
+                      
+                      {catalogProducts.length === 0 && !isLoadingCatalog && (
+                        <p className="text-sm text-muted-foreground text-center py-4">
+                          Каталог пуст
+                        </p>
+                      )}
+                    </>
+                  )}
+                </TabsContent>
                 
                 <TabsContent value="monuments" className="space-y-3 mt-4">
                   <Label>Выберите памятник</Label>
