@@ -810,15 +810,14 @@ const Constructor = () => {
       for (const element of elements) {
         ctx.save();
         
-        // Вычисляем масштаб относительно реальной области изображения памятника
-        const monumentScaleX = monumentDrawWidth / rect.width;
-        const monumentScaleY = monumentDrawHeight / rect.height;
+        // Используем единый масштаб для сохранения пропорций элементов
+        const monumentScale = monumentDrawWidth / rect.width;
         
         // Масштабируем позицию и размер элемента с учетом offset памятника
-        const scaledX = element.x * monumentScaleX + monumentOffsetX;
-        const scaledY = element.y * monumentScaleY + monumentOffsetY;
-        const scaledWidth = element.width * monumentScaleX;
-        const scaledHeight = element.height * monumentScaleY;
+        const scaledX = element.x * monumentScale + monumentOffsetX;
+        const scaledY = element.y * monumentScale + monumentOffsetY;
+        const scaledWidth = element.width * monumentScale;
+        const scaledHeight = element.height * monumentScale;
         
         const centerX = scaledX + scaledWidth / 2;
         const centerY = scaledY + scaledHeight / 2;
@@ -829,15 +828,15 @@ const Constructor = () => {
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
-          const scaledFontSize = (element.fontSize || 24) * monumentScaleX;
+          const scaledFontSize = (element.fontSize || 24) * monumentScale;
           ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 8 * monumentScaleX;
-          ctx.shadowOffsetX = 4 * monumentScaleX;
-          ctx.shadowOffsetY = 4 * monumentScaleY;
+          ctx.shadowBlur = 8 * monumentScale;
+          ctx.shadowOffsetX = 4 * monumentScale;
+          ctx.shadowOffsetY = 4 * monumentScale;
           
           const lines = element.content?.split('\n') || [];
           const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
