@@ -36,17 +36,6 @@ export const ConstructorProperties = ({
   deleteElement,
   fonts,
 }: ConstructorPropertiesProps) => {
-  // Отладка: что приходит в selectedEl
-  if (selectedEl) {
-    console.log('ConstructorProperties rendered with element:', {
-      id: selectedEl.id,
-      type: selectedEl.type,
-      screenMode: selectedEl.screenMode,
-      hasSrc: !!selectedEl.src,
-      hasProcessedSrc: !!selectedEl.processedSrc
-    });
-  }
-  
   return (
     <Card className="h-fit">
       <CardContent className="p-4">
