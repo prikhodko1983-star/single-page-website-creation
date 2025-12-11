@@ -171,15 +171,13 @@ export const ConstructorCanvas = ({
             )}
             
             {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && (
-              <div className="w-full h-full flex items-center justify-center">
-                <img 
-                  src={element.src} 
-                  alt={element.type}
-                  className="w-full h-full object-contain select-none"
-                  style={element.screenMode ? { mixBlendMode: 'screen' } : {}}
-                  draggable={false}
-                />
-              </div>
+              <img 
+                src={element.src} 
+                alt={element.type}
+                className="w-full h-full object-contain select-none p-2"
+                style={element.screenMode ? { mixBlendMode: 'screen' } : {}}
+                draggable={false}
+              />
             )}
             
             {selectedElement === element.id && (
