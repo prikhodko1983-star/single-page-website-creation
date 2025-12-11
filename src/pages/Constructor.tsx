@@ -246,65 +246,87 @@ const Constructor = () => {
     setDeathDate('');
   };
 
-  const applyScreenMode = (imageData: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          resolve(imageData);
-          return;
-        }
+  const applyScreenMode = async (imageData: string): Promise<string> => {
+    // Если это data URL (загруженное фото) - обрабатываем локально
+    if (imageData.startsWith('data:')) {
+      return new Promise((resolve) => {
+        const img = new Image();
         
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
-        
-        try {
-          const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const data = pixels.data;
-          
-          for (let i = 0; i < data.length; i += 4) {
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
-            
-            const rNorm = r / 255;
-            const gNorm = g / 255;
-            const bNorm = b / 255;
-            
-            const luminance = 0.299 * rNorm + 0.587 * gNorm + 0.114 * bNorm;
-            
-            const screenR = 1 - (1 - rNorm) * (1 - 0.5);
-            const screenG = 1 - (1 - gNorm) * (1 - 0.5);
-            const screenB = 1 - (1 - bNorm) * (1 - 0.5);
-            
-            data[i] = screenR * 255;
-            data[i + 1] = screenG * 255;
-            data[i + 2] = screenB * 255;
-            
-            data[i + 3] = Math.pow(luminance, 0.7) * 255;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            resolve(imageData);
+            return;
           }
           
-          ctx.putImageData(pixels, 0, 0);
-          resolve(canvas.toDataURL());
-        } catch (error) {
-          console.error('❌ Ошибка обработки изображения:', error);
-          // Если не удалось обработать (CORS), возвращаем оригинал
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          
+          try {
+            const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = pixels.data;
+            
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i];
+              const g = data[i + 1];
+              const b = data[i + 2];
+              
+              const rNorm = r / 255;
+              const gNorm = g / 255;
+              const bNorm = b / 255;
+              
+              const luminance = 0.299 * rNorm + 0.587 * gNorm + 0.114 * bNorm;
+              
+              const screenR = 1 - (1 - rNorm) * (1 - 0.5);
+              const screenG = 1 - (1 - gNorm) * (1 - 0.5);
+              const screenB = 1 - (1 - bNorm) * (1 - 0.5);
+              
+              data[i] = screenR * 255;
+              data[i + 1] = screenG * 255;
+              data[i + 2] = screenB * 255;
+              
+              data[i + 3] = Math.pow(luminance, 0.7) * 255;
+            }
+            
+            ctx.putImageData(pixels, 0, 0);
+            resolve(canvas.toDataURL());
+          } catch (error) {
+            console.error('❌ Ошибка обработки:', error);
+            resolve(imageData);
+          }
+        };
+        
+        img.onerror = () => {
+          console.error('❌ Не удалось загрузить');
           resolve(imageData);
-        }
-      };
+        };
+        
+        img.src = imageData;
+      });
+    }
+    
+    // Если это URL - используем бэкенд для обработки (избегаем CORS)
+    try {
+      console.log('📡 Отправляем на бэкенд для обработки:', imageData);
+      const response = await fetch('https://functions.poehali.dev/7984fbed-b9d7-47d1-aa0d-cf674fc696d8', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image_url: imageData })
+      });
       
-      img.onerror = () => {
-        console.error('❌ Не удалось загрузить изображение');
-        resolve(imageData);
-      };
+      if (!response.ok) {
+        throw new Error('Backend error');
+      }
       
-      img.src = imageData;
-    });
+      const result = await response.json();
+      console.log('✅ Получили обработанное изображение');
+      return result.processed_image;
+    } catch (error) {
+      console.error('❌ Ошибка обработки через бэкенд:', error);
+      return imageData;
+    }
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -503,29 +525,20 @@ const Constructor = () => {
     const element = elements.find(el => el.id === id);
     if (!element) return;
     
-    console.log('🔧 updateElement вызван:', { id, updates, element });
-    
     // Обработка режима "Экран" для изображений
     if ('screenMode' in updates && (element.type === 'photo' || element.type === 'cross' || element.type === 'flower') && element.src) {
-      console.log('✅ Условие screenMode прошло, element.type:', element.type);
-      
       if (updates.screenMode === true) {
-        console.log('🟢 Включаем режим экран');
         // Включение режима
         if (!element.processedSrc) {
-          console.log('🎨 Создаём обработанную версию...');
           // Нужно создать обработанную версию
           const processed = await applyScreenMode(element.src);
-          console.log('✅ Обработка завершена');
           setElements(elements.map(el => el.id === id ? { ...el, screenMode: true, processedSrc: processed } : el));
         } else {
-          console.log('♻️ Обработанная версия уже есть');
           // Обработанная версия уже есть, просто включаем флаг
           setElements(elements.map(el => el.id === id ? { ...el, screenMode: true } : el));
         }
         return;
       } else if (updates.screenMode === false) {
-        console.log('🔴 Выключаем режим экран');
         // Выключение режима - удалить обработанную версию
         setElements(elements.map(el => el.id === id ? { ...el, screenMode: false, processedSrc: undefined } : el));
         return;

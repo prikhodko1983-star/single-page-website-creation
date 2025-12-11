@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "Test image processing",
+      "method": "POST",
+      "body": {
+        "image_url": "https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/208839fb-bef5-4c49-a411-e27690f9e597.png"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "processed_image": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
