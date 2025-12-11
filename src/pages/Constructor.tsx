@@ -179,7 +179,7 @@ const Constructor = () => {
     setElements([...elements, newElement]);
   };
 
-  const addEpitaphElement = () => {
+  const addEpitaphElement = (customText?: string) => {
     const newElement: CanvasElement = {
       id: Date.now().toString(),
       type: 'epitaph',
@@ -187,7 +187,7 @@ const Constructor = () => {
       y: 200,
       width: 300,
       height: 100,
-      content: 'Вечная память',
+      content: customText || 'Вечная память',
       fontSize: 18,
       color: '#FFFFFF',
       rotation: 0,

@@ -29,7 +29,7 @@ interface ConstructorLibraryProps {
   monumentImage: string;
   setMonumentImage: (src: string) => void;
   addTextElement: () => void;
-  addEpitaphElement: () => void;
+  addEpitaphElement: (customText?: string) => void;
   addImageElement: (src: string, type: 'image' | 'cross' | 'flower') => void;
   addFIOElement: () => void;
   addDatesElement: () => void;
@@ -307,10 +307,35 @@ export const ConstructorLibrary = ({
               Добавить текст
             </Button>
             
-            <Button onClick={addEpitaphElement} variant="outline" className="w-full justify-start">
-              <Icon name="FileText" size={18} className="mr-2" />
-              Добавить эпитафию
-            </Button>
+            <div className="space-y-2 p-3 bg-secondary/20 rounded-lg">
+              <Label className="font-semibold">Готовые эпитафии</Label>
+              <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+                {[
+                  'Помним. Любим. Скорбим.',
+                  'Ты всегда в нашей памяти.',
+                  'Спасибо за все.',
+                  'Вечная память о тебе в сердцах близких.',
+                  'Покойся с миром в Царствии Небесном.',
+                  'Вечная память.',
+                  'Помним, скорбим…',
+                  'Опустела без тебя земля.',
+                  'Любим и помним.',
+                  'Память сильнее смерти.',
+                  'Рождение – не начало, смерть – не конец.',
+                ].map((text, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => addEpitaphElement(text)}
+                    className="w-full text-left p-3 rounded border-2 border-border hover:border-primary transition-all bg-background hover:bg-primary/5"
+                  >
+                    <p className="text-sm italic text-muted-foreground">{text}</p>
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Выберите готовый текст или добавьте свой. После добавления можно отредактировать.
+              </p>
+            </div>
             
             <div className="space-y-2 p-3 bg-secondary/20 rounded-lg">
               <Label className="font-semibold">Кресты</Label>
