@@ -36,6 +36,17 @@ export const ConstructorProperties = ({
   deleteElement,
   fonts,
 }: ConstructorPropertiesProps) => {
+  // Отладка: что приходит в selectedEl
+  if (selectedEl) {
+    console.log('ConstructorProperties rendered with element:', {
+      id: selectedEl.id,
+      type: selectedEl.type,
+      screenMode: selectedEl.screenMode,
+      hasSrc: !!selectedEl.src,
+      hasProcessedSrc: !!selectedEl.processedSrc
+    });
+  }
+  
   return (
     <Card className="h-fit">
       <CardContent className="p-4">
@@ -48,7 +59,7 @@ export const ConstructorProperties = ({
         {selectedEl && (
           <div className="space-y-4">
             <div>
-              <Label>Тип: {selectedEl.type === 'text' ? 'Текст' : selectedEl.type === 'epitaph' ? 'Эпитафия' : selectedEl.type === 'fio' ? 'ФИО' : selectedEl.type === 'dates' ? 'Даты' : selectedEl.type === 'photo' ? 'Фотография' : 'Изображение'}</Label>
+              <Label>Тип: {selectedEl.type === 'text' ? 'Текст' : selectedEl.type === 'epitaph' ? 'Эпитафия' : selectedEl.type === 'fio' ? 'ФИО' : selectedEl.type === 'dates' ? 'Даты' : selectedEl.type === 'photo' ? 'Фотография' : selectedEl.type === 'cross' ? 'Крест' : selectedEl.type === 'flower' ? 'Цветок' : 'Изображение'}</Label>
             </div>
             
             {(selectedEl.type === 'text' || selectedEl.type === 'epitaph' || selectedEl.type === 'fio' || selectedEl.type === 'dates') && (
