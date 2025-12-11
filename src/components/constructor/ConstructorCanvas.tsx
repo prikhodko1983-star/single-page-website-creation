@@ -26,7 +26,6 @@ interface ConstructorCanvasProps {
   monumentImage: string;
   elements: CanvasElement[];
   selectedElement: string | null;
-  setSelectedElement: (id: string | null) => void;
   rotateMode: boolean;
   handleMouseDown: (e: React.MouseEvent, elementId: string) => void;
   handleTouchStart: (e: React.TouchEvent, elementId: string) => void;
@@ -51,7 +50,6 @@ export const ConstructorCanvas = ({
   monumentImage,
   elements,
   selectedElement,
-  setSelectedElement,
   rotateMode,
   handleMouseDown,
   handleTouchStart,
@@ -80,11 +78,6 @@ export const ConstructorCanvas = ({
         onMouseLeave={handleMouseUp}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onClick={(e) => {
-          if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'IMG') {
-            setSelectedElement(null);
-          }
-        }}
       >
         <img 
           src={monumentImage} 
