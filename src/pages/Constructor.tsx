@@ -770,7 +770,27 @@ const Constructor = () => {
       
       const monumentImg = await loadImageWithCORS(monumentImage);
       if (monumentImg) {
-        ctx.drawImage(monumentImg, 0, 0, exportWidth, exportHeight);
+        // Рисуем изображение с сохранением пропорций (как object-contain)
+        const imgRatio = monumentImg.width / monumentImg.height;
+        const canvasRatio = exportWidth / exportHeight;
+        
+        let drawWidth, drawHeight, offsetX, offsetY;
+        
+        if (imgRatio > canvasRatio) {
+          // Изображение шире — вписываем по ширине
+          drawWidth = exportWidth;
+          drawHeight = exportWidth / imgRatio;
+          offsetX = 0;
+          offsetY = (exportHeight - drawHeight) / 2;
+        } else {
+          // Изображение выше — вписываем по высоте
+          drawHeight = exportHeight;
+          drawWidth = exportHeight * imgRatio;
+          offsetX = (exportWidth - drawWidth) / 2;
+          offsetY = 0;
+        }
+        
+        ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
       } else {
         ctx.fillStyle = '#1a1a1a';
         ctx.fillRect(0, 0, exportWidth, exportHeight);
