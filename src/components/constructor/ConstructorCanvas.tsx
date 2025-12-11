@@ -80,7 +80,7 @@ export const ConstructorCanvas = ({
         onMouseLeave={handleMouseUp}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onClick={(e) => {
+        onMouseDown={(e) => {
           if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'IMG') {
             setSelectedElement(null);
           }
