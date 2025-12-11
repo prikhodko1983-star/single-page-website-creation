@@ -91,6 +91,7 @@ export const ConstructorCanvas = ({
               width: element.width,
               height: element.height,
               transform: `rotate(${element.rotation || 0}deg)`,
+              backgroundColor: element.screenMode ? '#000000' : 'transparent',
             }}
             onMouseDown={(e) => handleMouseDown(e, element.id)}
             onTouchStart={(e) => handleTouchStart(e, element.id)}
