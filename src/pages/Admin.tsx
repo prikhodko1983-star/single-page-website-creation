@@ -542,6 +542,7 @@ export default function Admin() {
         });
 
         const data = await response.json();
+        console.log('Upload response:', data);
 
         if (data.url) {
           if (target === 'monument') {
@@ -562,6 +563,12 @@ export default function Admin() {
           toast({
             title: '✅ Успешно',
             description: 'Изображение загружено'
+          });
+        } else {
+          toast({
+            title: '❌ Ошибка',
+            description: data.error || 'Не удалось загрузить изображение',
+            variant: 'destructive'
           });
         }
         
