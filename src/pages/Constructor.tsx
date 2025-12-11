@@ -724,9 +724,12 @@ const Constructor = () => {
 
       if (!canvasRef.current) return;
       
-      // Фиксированный размер для экспорта (3:4 пропорции как у памятников)
-      const exportWidth = 1200;
-      const exportHeight = 1600;
+      // Получаем реальные размеры canvas на экране
+      const rect = canvasRef.current.getBoundingClientRect();
+      
+      // Размеры для экспорта в высоком качестве (умножаем на 3)
+      const exportWidth = Math.round(rect.width * 3);
+      const exportHeight = Math.round(rect.height * 3);
       
       const canvasElement = document.createElement('canvas');
       canvasElement.width = exportWidth;
@@ -735,9 +738,8 @@ const Constructor = () => {
       const ctx = canvasElement.getContext('2d');
       if (!ctx) return;
       
-      // Вычисляем единый масштаб относительно текущего размера canvas
-      const rect = canvasRef.current.getBoundingClientRect();
-      const scale = Math.min(exportWidth / rect.width, exportHeight / rect.height);
+      // Единый масштаб для всех элементов
+      const scale = 3;
       
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, exportWidth, exportHeight);
