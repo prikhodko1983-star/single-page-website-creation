@@ -840,12 +840,17 @@ const Constructor = () => {
     }
     
     try {
+      console.log('🖼️ Начинаем создание PNG...');
+      
       toast({
         title: "Создание изображения...",
         description: "Пожалуйста, подождите",
       });
 
-      if (!canvasRef.current) return;
+      if (!canvasRef.current) {
+        console.error('❌ canvasRef не найден');
+        return;
+      }
       
       // Фиксированный размер экспорта (3:4 пропорции)
       const exportWidth = 1200;
@@ -888,8 +893,11 @@ const Constructor = () => {
         });
       };
       
+      console.log('📥 Загружаем изображение памятника:', monumentImage);
       const monumentImg = await loadImageWithCORS(monumentImage);
+      
       if (!monumentImg) {
+        console.error('❌ Не удалось загрузить изображение памятника');
         ctx.fillStyle = '#1a1a1a';
         ctx.fillRect(0, 0, exportWidth, exportHeight);
         ctx.fillStyle = '#666';
@@ -899,8 +907,16 @@ const Constructor = () => {
         ctx.fillText(monumentName, exportWidth / 2, exportHeight / 2 - 40);
         ctx.font = '32px sans-serif';
         ctx.fillText('(изображение из внешнего источника)', exportWidth / 2, exportHeight / 2 + 40);
+        
+        toast({
+          title: "Ошибка загрузки памятника",
+          description: "Попробуйте выбрать другое изображение",
+          variant: "destructive",
+        });
         return;
       }
+      
+      console.log('✅ Изображение памятника загружено');
       
       // Рассчитываем object-contain для экспорта
       const imgRatio = monumentImg.width / monumentImg.height;
@@ -1034,23 +1050,27 @@ const Constructor = () => {
         ctx.restore();
       }
       
+      console.log('🎨 Конвертируем canvas в PNG...');
       const imgData = canvasElement.toDataURL('image/png');
       const fileName = `monument_design_${Date.now()}.png`;
       
+      console.log('💾 Скачиваем файл:', fileName);
       const link = document.createElement('a');
       link.href = imgData;
       link.download = fileName;
       link.click();
+      
+      console.log('✅ PNG успешно создан и скачан');
       
       toast({
         title: "Изображение сохранено!",
         description: `PNG файл (${exportWidth}x${exportHeight}px) скачан на устройство`,
       });
     } catch (error) {
-      console.error('Image generation error:', error);
+      console.error('❌ Ошибка создания изображения:', error);
       toast({
         title: "Ошибка создания изображения",
-        description: "Попробуйте ещё раз",
+        description: error instanceof Error ? error.message : "Попробуйте ещё раз",
         variant: "destructive",
       });
     }
