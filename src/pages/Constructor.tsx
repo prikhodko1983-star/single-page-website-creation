@@ -40,8 +40,10 @@ const Constructor = () => {
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
+  const [isRotating, setIsRotating] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0, fontSize: 0 });
+  const [rotateStart, setRotateStart] = useState({ x: 0, y: 0, rotation: 0, centerX: 0, centerY: 0 });
   
   const [surname, setSurname] = useState('');
   const [name, setName] = useState('');
@@ -438,7 +440,27 @@ const Constructor = () => {
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!canvasRef.current || !selectedElement) return;
     
-    if (isResizing) {
+    if (isRotating) {
+      const canvasRect = canvasRef.current.getBoundingClientRect();
+      const mouseX = e.clientX - canvasRect.left;
+      const mouseY = e.clientY - canvasRect.top;
+      
+      const deltaX = mouseX - rotateStart.centerX;
+      const deltaY = mouseY - rotateStart.centerY;
+      const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+      
+      const startDeltaX = rotateStart.x - rotateStart.centerX;
+      const startDeltaY = rotateStart.y - rotateStart.centerY;
+      const startAngle = Math.atan2(startDeltaY, startDeltaX) * (180 / Math.PI);
+      
+      const rotation = rotateStart.rotation + (angle - startAngle);
+      
+      setElements(elements.map(el => 
+        el.id === selectedElement 
+          ? { ...el, rotation: Math.round(rotation) }
+          : el
+      ));
+    } else if (isResizing) {
       const deltaX = e.clientX - resizeStart.x;
       const deltaY = e.clientY - resizeStart.y;
       const newWidth = Math.max(50, resizeStart.width + deltaX);
@@ -480,7 +502,27 @@ const Constructor = () => {
     
     const touch = e.touches[0];
     
-    if (isResizing) {
+    if (isRotating) {
+      const canvasRect = canvasRef.current.getBoundingClientRect();
+      const touchX = touch.clientX - canvasRect.left;
+      const touchY = touch.clientY - canvasRect.top;
+      
+      const deltaX = touchX - rotateStart.centerX;
+      const deltaY = touchY - rotateStart.centerY;
+      const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+      
+      const startDeltaX = rotateStart.x - rotateStart.centerX;
+      const startDeltaY = rotateStart.y - rotateStart.centerY;
+      const startAngle = Math.atan2(startDeltaY, startDeltaX) * (180 / Math.PI);
+      
+      const rotation = rotateStart.rotation + (angle - startAngle);
+      
+      setElements(elements.map(el => 
+        el.id === selectedElement 
+          ? { ...el, rotation: Math.round(rotation) }
+          : el
+      ));
+    } else if (isResizing) {
       const deltaX = touch.clientX - resizeStart.x;
       const deltaY = touch.clientY - resizeStart.y;
       const newWidth = Math.max(50, resizeStart.width + deltaX);
@@ -520,11 +562,13 @@ const Constructor = () => {
   const handleMouseUp = () => {
     setIsDragging(false);
     setIsResizing(false);
+    setIsRotating(false);
   };
 
   const handleTouchEnd = () => {
     setIsDragging(false);
     setIsResizing(false);
+    setIsRotating(false);
   };
 
   const handleResizeMouseDown = (e: React.MouseEvent, elementId: string) => {
@@ -557,6 +601,41 @@ const Constructor = () => {
       width: element.width,
       height: element.height,
       fontSize: element.fontSize || 24,
+    });
+  };
+
+  const handleRotateMouseDown = (e: React.MouseEvent, elementId: string) => {
+    e.stopPropagation();
+    const element = elements.find(el => el.id === elementId);
+    if (!element || !canvasRef.current) return;
+    
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    setSelectedElement(elementId);
+    setIsRotating(true);
+    setRotateStart({
+      x: e.clientX - canvasRect.left,
+      y: e.clientY - canvasRect.top,
+      rotation: element.rotation || 0,
+      centerX: element.x + element.width / 2,
+      centerY: element.y + element.height / 2,
+    });
+  };
+
+  const handleRotateTouchStart = (e: React.TouchEvent, elementId: string) => {
+    e.stopPropagation();
+    const element = elements.find(el => el.id === elementId);
+    if (!element || !canvasRef.current) return;
+    
+    const touch = e.touches[0];
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    setSelectedElement(elementId);
+    setIsRotating(true);
+    setRotateStart({
+      x: touch.clientX - canvasRect.left,
+      y: touch.clientY - canvasRect.top,
+      rotation: element.rotation || 0,
+      centerX: element.x + element.width / 2,
+      centerY: element.y + element.height / 2,
     });
   };
 
@@ -1014,6 +1093,8 @@ const Constructor = () => {
             handleTouchEnd={handleTouchEnd}
             handleResizeMouseDown={handleResizeMouseDown}
             handleResizeTouchStart={handleResizeTouchStart}
+            handleRotateMouseDown={handleRotateMouseDown}
+            handleRotateTouchStart={handleRotateTouchStart}
             setElements={setElements}
             saveDesign={saveDesign}
             sendForCalculation={sendForCalculation}

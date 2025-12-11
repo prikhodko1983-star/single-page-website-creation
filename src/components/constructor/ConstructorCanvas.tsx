@@ -35,6 +35,8 @@ interface ConstructorCanvasProps {
   handleTouchEnd: () => void;
   handleResizeMouseDown: (e: React.MouseEvent, elementId: string) => void;
   handleResizeTouchStart: (e: React.TouchEvent, elementId: string) => void;
+  handleRotateMouseDown: (e: React.MouseEvent, elementId: string) => void;
+  handleRotateTouchStart: (e: React.TouchEvent, elementId: string) => void;
   setElements: (elements: CanvasElement[]) => void;
   saveDesign: () => void;
   sendForCalculation: () => void;
@@ -57,6 +59,8 @@ export const ConstructorCanvas = ({
   handleTouchEnd,
   handleResizeMouseDown,
   handleResizeTouchStart,
+  handleRotateMouseDown,
+  handleRotateTouchStart,
   setElements,
   saveDesign,
   sendForCalculation,
@@ -216,6 +220,10 @@ export const ConstructorCanvas = ({
                 className="absolute -bottom-2 -right-2 w-6 h-6 bg-primary rounded-full cursor-nwse-resize hover:scale-110 transition-transform touch-none"
                 onMouseDown={(e) => handleResizeMouseDown(e, element.id)}
                 onTouchStart={(e) => handleResizeTouchStart(e, element.id)}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  handleRotateMouseDown(e as any, element.id);
+                }}
               ></div>
             )}
           </div>
