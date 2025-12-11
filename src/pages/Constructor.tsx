@@ -724,19 +724,28 @@ const Constructor = () => {
         timestamp: Date.now(),
       };
       
+      console.log('💾 Сохраняем дизайн:', designData);
+      
       const saved = JSON.parse(localStorage.getItem('monumentDesigns') || '[]');
       saved.push(designData);
-      localStorage.setItem('monumentDesigns', JSON.stringify(saved));
+      
+      const jsonString = JSON.stringify(saved);
+      console.log(`📦 Размер данных: ${(jsonString.length / 1024).toFixed(2)} KB`);
+      
+      localStorage.setItem('monumentDesigns', jsonString);
       setSavedDesigns(saved);
+      
+      console.log('✅ Дизайн успешно сохранен');
       
       toast({
         title: "Дизайн сохранен",
         description: "Проект сохранен в браузере",
       });
     } catch (error) {
+      console.error('❌ Ошибка сохранения:', error);
       toast({
         title: "Ошибка сохранения",
-        description: "Не удалось сохранить дизайн",
+        description: error instanceof Error ? error.message : "Не удалось сохранить дизайн",
         variant: "destructive",
       });
     }
