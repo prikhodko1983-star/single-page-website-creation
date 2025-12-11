@@ -864,7 +864,47 @@ const Constructor = () => {
           const img = await loadImageWithCORS(imgSrc);
           
           if (img) {
-            ctx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
+            // Для фотографий используем object-cover (заполнение без искажений)
+            // Для крестов и цветов используем object-contain (вписывание без искажений)
+            const useObjectCover = element.type === 'photo';
+            
+            const imgRatio = img.width / img.height;
+            const boxRatio = scaledWidth / scaledHeight;
+            
+            let drawWidth = scaledWidth;
+            let drawHeight = scaledHeight;
+            let drawX = scaledX;
+            let drawY = scaledY;
+            
+            if (useObjectCover) {
+              // object-cover: заполняем весь контейнер, обрезая лишнее
+              if (imgRatio > boxRatio) {
+                drawHeight = scaledHeight;
+                drawWidth = scaledHeight * imgRatio;
+                drawX = scaledX - (drawWidth - scaledWidth) / 2;
+                drawY = scaledY;
+              } else {
+                drawWidth = scaledWidth;
+                drawHeight = scaledWidth / imgRatio;
+                drawX = scaledX;
+                drawY = scaledY - (drawHeight - scaledHeight) / 2;
+              }
+            } else {
+              // object-contain: вписываем полностью, добавляя отступы
+              if (imgRatio > boxRatio) {
+                drawWidth = scaledWidth;
+                drawHeight = scaledWidth / imgRatio;
+                drawX = scaledX;
+                drawY = scaledY + (scaledHeight - drawHeight) / 2;
+              } else {
+                drawHeight = scaledHeight;
+                drawWidth = scaledHeight * imgRatio;
+                drawX = scaledX + (scaledWidth - drawWidth) / 2;
+                drawY = scaledY;
+              }
+            }
+            
+            ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
           }
         }
         
