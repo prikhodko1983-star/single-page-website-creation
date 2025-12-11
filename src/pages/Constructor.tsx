@@ -489,20 +489,22 @@ const Constructor = () => {
     const element = elements.find(el => el.id === id);
     if (!element) return;
     
-    if (updates.screenMode === true && (element.type === 'photo' || element.type === 'cross' || element.type === 'flower') && element.src) {
-      if (!element.processedSrc) {
+    // Обработка режима "Экран" для изображений
+    if ('screenMode' in updates && (element.type === 'photo' || element.type === 'cross' || element.type === 'flower') && element.src) {
+      if (updates.screenMode === true && !element.processedSrc) {
+        // Включение режима - создать обработанную версию
         const processed = await applyScreenMode(element.src);
         setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: processed } : el));
-      } else {
-        setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
+        return;
+      } else if (updates.screenMode === false) {
+        // Выключение режима - удалить обработанную версию
+        setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: undefined } : el));
+        return;
       }
-    } 
-    else if (updates.screenMode === false) {
-      setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: undefined } : el));
     }
-    else {
-      setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
-    }
+    
+    // Все остальные обновления
+    setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
   };
 
   const deleteElement = (id: string) => {
