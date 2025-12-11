@@ -104,12 +104,14 @@ export const TextEditorModal = ({
             
               <div>
                 <Label>Цвет текста</Label>
-                <input
-                  type="color"
-                  value={editingElement.color || '#FFFFFF'}
-                  onChange={(e) => setEditingElement({ ...editingElement, color: e.target.value })}
-                  className="w-full h-12 mt-2 rounded border"
-                />
+                <div className="mt-2">
+                  <input
+                    type="color"
+                    value={editingElement.color || '#FFFFFF'}
+                    onChange={(e) => setEditingElement({ ...editingElement, color: e.target.value })}
+                    className="w-12 h-12 rounded border cursor-pointer"
+                  />
+                </div>
               </div>
             
               <div>
