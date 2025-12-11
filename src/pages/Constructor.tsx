@@ -247,8 +247,10 @@ const Constructor = () => {
   };
 
   const applyScreenMode = (imageData: string): Promise<string> => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -261,34 +263,46 @@ const Constructor = () => {
         canvas.height = img.height;
         ctx.drawImage(img, 0, 0);
         
-        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = pixels.data;
-        
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
+        try {
+          const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = pixels.data;
           
-          const rNorm = r / 255;
-          const gNorm = g / 255;
-          const bNorm = b / 255;
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            const rNorm = r / 255;
+            const gNorm = g / 255;
+            const bNorm = b / 255;
+            
+            const luminance = 0.299 * rNorm + 0.587 * gNorm + 0.114 * bNorm;
+            
+            const screenR = 1 - (1 - rNorm) * (1 - 0.5);
+            const screenG = 1 - (1 - gNorm) * (1 - 0.5);
+            const screenB = 1 - (1 - bNorm) * (1 - 0.5);
+            
+            data[i] = screenR * 255;
+            data[i + 1] = screenG * 255;
+            data[i + 2] = screenB * 255;
+            
+            data[i + 3] = Math.pow(luminance, 0.7) * 255;
+          }
           
-          const luminance = 0.299 * rNorm + 0.587 * gNorm + 0.114 * bNorm;
-          
-          const screenR = 1 - (1 - rNorm) * (1 - 0.5);
-          const screenG = 1 - (1 - gNorm) * (1 - 0.5);
-          const screenB = 1 - (1 - bNorm) * (1 - 0.5);
-          
-          data[i] = screenR * 255;
-          data[i + 1] = screenG * 255;
-          data[i + 2] = screenB * 255;
-          
-          data[i + 3] = Math.pow(luminance, 0.7) * 255;
+          ctx.putImageData(pixels, 0, 0);
+          resolve(canvas.toDataURL());
+        } catch (error) {
+          console.error('❌ Ошибка обработки изображения:', error);
+          // Если не удалось обработать (CORS), возвращаем оригинал
+          resolve(imageData);
         }
-        
-        ctx.putImageData(pixels, 0, 0);
-        resolve(canvas.toDataURL());
       };
+      
+      img.onerror = () => {
+        console.error('❌ Не удалось загрузить изображение');
+        resolve(imageData);
+      };
+      
       img.src = imageData;
     });
   };
