@@ -529,52 +529,61 @@ export default function Admin() {
       const reader = new FileReader();
       
       reader.onload = async () => {
-        const base64String = reader.result as string;
-        const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-        
-        const response = await fetch(UPLOAD_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            image: base64String,
-            extension: extension
-          }),
-        });
+        try {
+          const base64String = reader.result as string;
+          const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+          
+          const response = await fetch(UPLOAD_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              image: base64String,
+              extension: extension
+            }),
+          });
 
-        const data = await response.json();
-        console.log('Upload response:', data);
+          const data = await response.json();
+          console.log('Upload response:', data);
 
-        if (data.url) {
-          if (target === 'monument') {
-            setMonumentForm({ ...monumentForm, image_url: data.url });
-          } else if (target === 'gallery') {
-            setGalleryForm({ ...galleryForm, url: data.url });
-          } else if (target === 'product') {
-            setProductForm({ ...productForm, image_url: data.url });
-          } else if (target === 'cross') {
-            const fileName = file.name.replace(/\.[^/.]+$/, '');
-            setCrossForm({ 
-              ...crossForm, 
-              image_url: data.url,
-              name: crossForm.name || fileName
+          if (data.url) {
+            if (target === 'monument') {
+              setMonumentForm({ ...monumentForm, image_url: data.url });
+            } else if (target === 'gallery') {
+              setGalleryForm({ ...galleryForm, url: data.url });
+            } else if (target === 'product') {
+              setProductForm({ ...productForm, image_url: data.url });
+            } else if (target === 'cross') {
+              const fileName = file.name.replace(/\.[^/.]+$/, '');
+              setCrossForm({ 
+                ...crossForm, 
+                image_url: data.url,
+                name: crossForm.name || fileName
+              });
+            }
+            
+            toast({
+              title: '✅ Успешно',
+              description: 'Изображение загружено'
+            });
+          } else {
+            toast({
+              title: '❌ Ошибка',
+              description: data.error || 'Не удалось загрузить изображение',
+              variant: 'destructive'
             });
           }
-          
-          toast({
-            title: '✅ Успешно',
-            description: 'Изображение загружено'
-          });
-        } else {
+        } catch (error) {
+          console.error('Upload error:', error);
           toast({
             title: '❌ Ошибка',
-            description: data.error || 'Не удалось загрузить изображение',
+            description: 'Не удалось загрузить изображение',
             variant: 'destructive'
           });
+        } finally {
+          if (target === 'monument') setUploading(false);
+          if (target === 'gallery') setUploadingGallery(false);
+          if (target === 'cross') setUploadingCross(false);
         }
-        
-        if (target === 'monument') setUploading(false);
-        if (target === 'gallery') setUploadingGallery(false);
-        if (target === 'cross') setUploadingCross(false);
       };
       
       reader.onerror = () => {
