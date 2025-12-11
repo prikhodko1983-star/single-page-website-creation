@@ -724,17 +724,24 @@ const Constructor = () => {
 
       if (!canvasRef.current) return;
       
+      // Фиксированный размер для экспорта (3:4 пропорции как у памятников)
+      const exportWidth = 1200;
+      const exportHeight = 1600;
+      
       const canvasElement = document.createElement('canvas');
-      const rect = canvasRef.current.getBoundingClientRect();
-      canvasElement.width = rect.width * 2;
-      canvasElement.height = rect.height * 2;
+      canvasElement.width = exportWidth;
+      canvasElement.height = exportHeight;
       
       const ctx = canvasElement.getContext('2d');
       if (!ctx) return;
       
-      ctx.scale(2, 2);
+      // Вычисляем масштаб относительно текущего размера canvas
+      const rect = canvasRef.current.getBoundingClientRect();
+      const scaleX = exportWidth / rect.width;
+      const scaleY = exportHeight / rect.height;
+      
       ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, rect.width, rect.height);
+      ctx.fillRect(0, 0, exportWidth, exportHeight);
       
       const loadImageWithCORS = (src: string): Promise<HTMLImageElement | null> => {
         return new Promise((resolve) => {
@@ -762,24 +769,30 @@ const Constructor = () => {
       
       const monumentImg = await loadImageWithCORS(monumentImage);
       if (monumentImg) {
-        ctx.drawImage(monumentImg, 0, 0, rect.width, rect.height);
+        ctx.drawImage(monumentImg, 0, 0, exportWidth, exportHeight);
       } else {
         ctx.fillStyle = '#1a1a1a';
-        ctx.fillRect(0, 0, rect.width, rect.height);
+        ctx.fillRect(0, 0, exportWidth, exportHeight);
         ctx.fillStyle = '#666';
-        ctx.font = 'bold 24px sans-serif';
+        ctx.font = 'bold 48px sans-serif';
         ctx.textAlign = 'center';
         const monumentName = monumentImages.find(m => m.src === monumentImage)?.name || 'Памятник';
-        ctx.fillText(monumentName, rect.width / 2, rect.height / 2 - 20);
-        ctx.font = '16px sans-serif';
-        ctx.fillText('(изображение из внешнего источника)', rect.width / 2, rect.height / 2 + 20);
+        ctx.fillText(monumentName, exportWidth / 2, exportHeight / 2 - 40);
+        ctx.font = '32px sans-serif';
+        ctx.fillText('(изображение из внешнего источника)', exportWidth / 2, exportHeight / 2 + 40);
       }
       
       for (const element of elements) {
         ctx.save();
         
-        const centerX = element.x + element.width / 2;
-        const centerY = element.y + element.height / 2;
+        // Масштабируем позицию и размер элемента
+        const scaledX = element.x * scaleX;
+        const scaledY = element.y * scaleY;
+        const scaledWidth = element.width * scaleX;
+        const scaledHeight = element.height * scaleY;
+        
+        const centerX = scaledX + scaledWidth / 2;
+        const centerY = scaledY + scaledHeight / 2;
         
         ctx.translate(centerX, centerY);
         ctx.rotate((element.rotation || 0) * Math.PI / 180);
@@ -787,36 +800,37 @@ const Constructor = () => {
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
-          ctx.font = `${fontWeight} ${element.fontSize}px ${fontFamily}`;
+          const scaledFontSize = (element.fontSize || 24) * scaleX;
+          ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 4;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
+          ctx.shadowBlur = 8 * scaleX;
+          ctx.shadowOffsetX = 4 * scaleX;
+          ctx.shadowOffsetY = 4 * scaleY;
           
           const lines = element.content?.split('\n') || [];
-          const lineHeight = (element.fontSize || 24) * (element.lineHeight || 1.2);
-          const startY = element.y + element.height / 2 - (lines.length - 1) * lineHeight / 2;
+          const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
+          const startY = scaledY + scaledHeight / 2 - (lines.length - 1) * lineHeight / 2;
           
           lines.forEach((line, idx) => {
-            ctx.fillText(line, element.x + element.width / 2, startY + idx * lineHeight);
+            ctx.fillText(line, scaledX + scaledWidth / 2, startY + idx * lineHeight);
           });
         } else if (element.src) {
           const imgSrc = element.screenMode && element.processedSrc ? element.processedSrc : element.src;
           const img = await loadImageWithCORS(imgSrc);
           
           if (img) {
-            ctx.drawImage(img, element.x, element.y, element.width, element.height);
+            ctx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
           }
         }
         
         ctx.restore();
       }
       
-      const imgData = canvasElement.toDataURL('image/jpeg', 0.95);
-      const fileName = `monument_design_${Date.now()}.jpg`;
+      const imgData = canvasElement.toDataURL('image/png');
+      const fileName = `monument_design_${Date.now()}.png`;
       
       const link = document.createElement('a');
       link.href = imgData;
@@ -825,7 +839,7 @@ const Constructor = () => {
       
       toast({
         title: "Изображение сохранено!",
-        description: "JPG файл скачан на устройство",
+        description: `PNG файл (${exportWidth}x${exportHeight}px) скачан на устройство`,
       });
     } catch (error) {
       console.error('Image generation error:', error);

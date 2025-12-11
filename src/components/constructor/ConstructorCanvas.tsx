@@ -241,7 +241,7 @@ export const ConstructorCanvas = ({
           className="bg-green-600 hover:bg-green-700"
         >
           <Icon name="Image" size={18} className="mr-2" />
-          Скачать JPG и отправить
+          Скачать PNG (1200x1600)
         </Button>
       </div>
       
