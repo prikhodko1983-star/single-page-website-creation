@@ -91,7 +91,6 @@ export const ConstructorCanvas = ({
               width: element.width,
               height: element.height,
               transform: `rotate(${element.rotation || 0}deg)`,
-              backgroundColor: element.screenMode ? '#000000' : 'transparent',
             }}
             onMouseDown={(e) => handleMouseDown(e, element.id)}
             onTouchStart={(e) => handleTouchStart(e, element.id)}
@@ -171,15 +170,12 @@ export const ConstructorCanvas = ({
             )}
             
             {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && (
-              <div className="w-full h-full flex items-center justify-center">
-                <img 
-                  src={element.src} 
-                  alt={element.type}
-                  className="w-full h-full object-contain select-none"
-                  style={element.screenMode ? { mixBlendMode: 'screen' } : {}}
-                  draggable={false}
-                />
-              </div>
+              <img 
+                src={element.screenMode && element.processedSrc ? element.processedSrc : element.src} 
+                alt={element.type}
+                className="w-full h-full object-contain select-none"
+                draggable={false}
+              />
             )}
             
             {selectedElement === element.id && (

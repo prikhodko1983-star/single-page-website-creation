@@ -175,7 +175,6 @@ const Constructor = () => {
       height: 100,
       src,
       rotation: 0,
-      screenMode: type === 'cross' || type === 'flower',
     };
     setElements([...elements, newElement]);
   };
@@ -490,7 +489,7 @@ const Constructor = () => {
     const element = elements.find(el => el.id === id);
     if (!element) return;
     
-    if (updates.screenMode === true && element.type === 'photo' && element.src && !element.processedSrc) {
+    if (updates.screenMode === true && (element.type === 'photo' || element.type === 'cross' || element.type === 'flower') && element.src && !element.processedSrc) {
       const processed = await applyScreenMode(element.src);
       setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: processed } : el));
     } 
