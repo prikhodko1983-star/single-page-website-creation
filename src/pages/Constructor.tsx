@@ -491,14 +491,29 @@ const Constructor = () => {
     
     // Обработка режима "Экран" для изображений
     if ('screenMode' in updates && (element.type === 'photo' || element.type === 'cross' || element.type === 'flower') && element.src) {
+      console.log('Screen mode update:', {
+        elementType: element.type,
+        screenMode: updates.screenMode,
+        hasProcessedSrc: !!element.processedSrc,
+        src: element.src
+      });
+      
       if (updates.screenMode === true && !element.processedSrc) {
         // Включение режима - создать обработанную версию
+        console.log('Processing image with screen mode...');
         const processed = await applyScreenMode(element.src);
+        console.log('Image processed, updating state');
         setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: processed } : el));
         return;
       } else if (updates.screenMode === false) {
         // Выключение режима - удалить обработанную версию
+        console.log('Disabling screen mode');
         setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: undefined } : el));
+        return;
+      } else if (updates.screenMode === true && element.processedSrc) {
+        // Режим уже включен и обработанная версия есть
+        console.log('Screen mode already enabled, just updating flag');
+        setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
         return;
       }
     }
