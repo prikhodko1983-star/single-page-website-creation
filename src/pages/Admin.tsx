@@ -233,6 +233,7 @@ export default function Admin() {
   const [editingCross, setEditingCross] = useState<{id: number, name: string, image_url: string, display_order: number} | null>(null);
   const [uploadingCross, setUploadingCross] = useState(false);
   const [crossUploadProgress, setCrossUploadProgress] = useState(0);
+  const [screenMode, setScreenMode] = useState(true);
 
   const categories_list = ["Вертикальные", "Горизонтальные", "Эксклюзивные", "С крестом"];
   const filterCategories = ["Все", ...categories_list];
@@ -2240,17 +2241,35 @@ export default function Admin() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="font-oswald">Кресты в галерее ({crosses.length})</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="font-oswald">Кресты в галерее ({crosses.length})</CardTitle>
+                  <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg border border-primary/20">
+                    <input
+                      type="checkbox"
+                      id="screen-mode"
+                      checked={screenMode}
+                      onChange={(e) => setScreenMode(e.target.checked)}
+                      className="w-5 h-5 rounded border-primary/30"
+                    />
+                    <Label htmlFor="screen-mode" className="cursor-pointer font-medium">
+                      Режим "Экран"
+                    </Label>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Убирает черный цвет с фотографии
+                </p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {crosses.map((cross, index) => (
                     <div key={cross.id} className="relative group">
-                      <div className="aspect-square rounded-lg border-2 border-border overflow-hidden bg-secondary">
+                      <div className={`aspect-square rounded-lg border-2 border-border overflow-hidden ${screenMode ? 'bg-black' : 'bg-secondary'}`}>
                         <img 
                           src={cross.image_url} 
                           alt={cross.name} 
                           className="w-full h-full object-contain p-2"
+                          style={screenMode ? { mixBlendMode: 'screen' } : {}}
                         />
                       </div>
                       <div className="mt-2 text-sm font-medium text-center">{cross.name}</div>
