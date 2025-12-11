@@ -489,20 +489,29 @@ const Constructor = () => {
     const element = elements.find(el => el.id === id);
     if (!element) return;
     
+    console.log('🔧 updateElement вызван:', { id, updates, element });
+    
     // Обработка режима "Экран" для изображений
     if ('screenMode' in updates && (element.type === 'photo' || element.type === 'cross' || element.type === 'flower') && element.src) {
+      console.log('✅ Условие screenMode прошло, element.type:', element.type);
+      
       if (updates.screenMode === true) {
+        console.log('🟢 Включаем режим экран');
         // Включение режима
         if (!element.processedSrc) {
+          console.log('🎨 Создаём обработанную версию...');
           // Нужно создать обработанную версию
           const processed = await applyScreenMode(element.src);
+          console.log('✅ Обработка завершена');
           setElements(elements.map(el => el.id === id ? { ...el, screenMode: true, processedSrc: processed } : el));
         } else {
+          console.log('♻️ Обработанная версия уже есть');
           // Обработанная версия уже есть, просто включаем флаг
           setElements(elements.map(el => el.id === id ? { ...el, screenMode: true } : el));
         }
         return;
       } else if (updates.screenMode === false) {
+        console.log('🔴 Выключаем режим экран');
         // Выключение режима - удалить обработанную версию
         setElements(elements.map(el => el.id === id ? { ...el, screenMode: false, processedSrc: undefined } : el));
         return;
