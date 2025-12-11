@@ -26,6 +26,7 @@ interface ConstructorCanvasProps {
   monumentImage: string;
   elements: CanvasElement[];
   selectedElement: string | null;
+  rotateMode: boolean;
   handleMouseDown: (e: React.MouseEvent, elementId: string) => void;
   handleTouchStart: (e: React.TouchEvent, elementId: string) => void;
   handleDoubleClick: (elementId: string) => void;
@@ -35,8 +36,7 @@ interface ConstructorCanvasProps {
   handleTouchEnd: () => void;
   handleResizeMouseDown: (e: React.MouseEvent, elementId: string) => void;
   handleResizeTouchStart: (e: React.TouchEvent, elementId: string) => void;
-  handleRotateMouseDown: (e: React.MouseEvent, elementId: string) => void;
-  handleRotateTouchStart: (e: React.TouchEvent, elementId: string) => void;
+  toggleRotateMode: () => void;
   setElements: (elements: CanvasElement[]) => void;
   saveDesign: () => void;
   sendForCalculation: () => void;
@@ -50,6 +50,7 @@ export const ConstructorCanvas = ({
   monumentImage,
   elements,
   selectedElement,
+  rotateMode,
   handleMouseDown,
   handleTouchStart,
   handleDoubleClick,
@@ -59,8 +60,7 @@ export const ConstructorCanvas = ({
   handleTouchEnd,
   handleResizeMouseDown,
   handleResizeTouchStart,
-  handleRotateMouseDown,
-  handleRotateTouchStart,
+  toggleRotateMode,
   setElements,
   saveDesign,
   sendForCalculation,
@@ -217,14 +217,21 @@ export const ConstructorCanvas = ({
             
             {selectedElement === element.id && (
               <div 
-                className="absolute -bottom-2 -right-2 w-6 h-6 bg-primary rounded-full cursor-nwse-resize hover:scale-110 transition-transform touch-none"
+                className={`absolute -bottom-2 -right-2 w-7 h-7 bg-primary rounded-full hover:scale-110 transition-all touch-none flex items-center justify-center ${
+                  rotateMode ? 'cursor-grab' : 'cursor-nwse-resize'
+                }`}
                 onMouseDown={(e) => handleResizeMouseDown(e, element.id)}
                 onTouchStart={(e) => handleResizeTouchStart(e, element.id)}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  handleRotateMouseDown(e as any, element.id);
+                  toggleRotateMode();
                 }}
-              ></div>
+                title={rotateMode ? 'Режим вращения (двойной клик для масштабирования)' : 'Режим масштабирования (двойной клик для вращения)'}
+              >
+                {rotateMode && (
+                  <Icon name="RotateCw" size={14} className="text-primary-foreground" />
+                )}
+              </div>
             )}
           </div>
         ))}

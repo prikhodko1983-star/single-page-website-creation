@@ -41,6 +41,7 @@ const Constructor = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
+  const [rotateMode, setRotateMode] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0, fontSize: 0 });
   const [rotateStart, setRotateStart] = useState({ x: 0, y: 0, rotation: 0, centerX: 0, centerY: 0 });
@@ -577,14 +578,29 @@ const Constructor = () => {
     if (!element || !canvasRef.current) return;
     
     setSelectedElement(elementId);
-    setIsResizing(true);
-    setResizeStart({
-      x: e.clientX,
-      y: e.clientY,
-      width: element.width,
-      height: element.height,
-      fontSize: element.fontSize || 24,
-    });
+    
+    if (rotateMode) {
+      // Режим вращения
+      const canvasRect = canvasRef.current.getBoundingClientRect();
+      setIsRotating(true);
+      setRotateStart({
+        x: e.clientX - canvasRect.left,
+        y: e.clientY - canvasRect.top,
+        rotation: element.rotation || 0,
+        centerX: element.x + element.width / 2,
+        centerY: element.y + element.height / 2,
+      });
+    } else {
+      // Режим масштабирования
+      setIsResizing(true);
+      setResizeStart({
+        x: e.clientX,
+        y: e.clientY,
+        width: element.width,
+        height: element.height,
+        fontSize: element.fontSize || 24,
+      });
+    }
   };
 
   const handleResizeTouchStart = (e: React.TouchEvent, elementId: string) => {
@@ -594,14 +610,29 @@ const Constructor = () => {
     
     const touch = e.touches[0];
     setSelectedElement(elementId);
-    setIsResizing(true);
-    setResizeStart({
-      x: touch.clientX,
-      y: touch.clientY,
-      width: element.width,
-      height: element.height,
-      fontSize: element.fontSize || 24,
-    });
+    
+    if (rotateMode) {
+      // Режим вращения
+      const canvasRect = canvasRef.current.getBoundingClientRect();
+      setIsRotating(true);
+      setRotateStart({
+        x: touch.clientX - canvasRect.left,
+        y: touch.clientY - canvasRect.top,
+        rotation: element.rotation || 0,
+        centerX: element.x + element.width / 2,
+        centerY: element.y + element.height / 2,
+      });
+    } else {
+      // Режим масштабирования
+      setIsResizing(true);
+      setResizeStart({
+        x: touch.clientX,
+        y: touch.clientY,
+        width: element.width,
+        height: element.height,
+        fontSize: element.fontSize || 24,
+      });
+    }
   };
 
   const handleRotateMouseDown = (e: React.MouseEvent, elementId: string) => {
@@ -637,6 +668,10 @@ const Constructor = () => {
       centerX: element.x + element.width / 2,
       centerY: element.y + element.height / 2,
     });
+  };
+
+  const toggleRotateMode = () => {
+    setRotateMode(!rotateMode);
   };
 
   const updateElement = async (id: string, updates: Partial<CanvasElement>) => {
@@ -1084,6 +1119,7 @@ const Constructor = () => {
             monumentImage={monumentImage}
             elements={elements}
             selectedElement={selectedElement}
+            rotateMode={rotateMode}
             handleMouseDown={handleMouseDown}
             handleTouchStart={handleTouchStart}
             handleDoubleClick={handleDoubleClick}
@@ -1093,8 +1129,7 @@ const Constructor = () => {
             handleTouchEnd={handleTouchEnd}
             handleResizeMouseDown={handleResizeMouseDown}
             handleResizeTouchStart={handleResizeTouchStart}
-            handleRotateMouseDown={handleRotateMouseDown}
-            handleRotateTouchStart={handleRotateTouchStart}
+            toggleRotateMode={toggleRotateMode}
             setElements={setElements}
             saveDesign={saveDesign}
             sendForCalculation={sendForCalculation}
