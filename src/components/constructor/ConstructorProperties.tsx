@@ -185,23 +185,28 @@ export const ConstructorProperties = ({
             
             {(selectedEl.type === 'photo' || selectedEl.type === 'image' || selectedEl.type === 'cross' || selectedEl.type === 'flower') && (
               <div className="p-3 bg-primary/10 rounded-lg border border-primary/20 space-y-2">
-                <Label className="flex items-center gap-2 cursor-pointer">
+                <div 
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={() => {
+                    const newValue = !selectedEl.screenMode;
+                    console.log('Screen mode toggle clicked:', {
+                      elementId: selectedEl.id,
+                      elementType: selectedEl.type,
+                      currentValue: selectedEl.screenMode,
+                      newValue: newValue,
+                      hasSrc: !!selectedEl.src
+                    });
+                    updateElement(selectedEl.id, { screenMode: newValue });
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={selectedEl.screenMode || false}
-                    onChange={(e) => {
-                      console.log('Checkbox clicked:', {
-                        elementId: selectedEl.id,
-                        elementType: selectedEl.type,
-                        newValue: e.target.checked,
-                        hasSrc: !!selectedEl.src
-                      });
-                      updateElement(selectedEl.id, { screenMode: e.target.checked });
-                    }}
-                    className="w-5 h-5 rounded border-primary/30 cursor-pointer"
+                    onChange={() => {}}
+                    className="w-5 h-5 rounded border-primary/30 cursor-pointer pointer-events-none"
                   />
                   <span className="font-medium">Режим "Экран"</span>
-                </Label>
+                </div>
                 <p className="text-xs text-muted-foreground">
                   Убирает черный цвет с фотографии
                 </p>
