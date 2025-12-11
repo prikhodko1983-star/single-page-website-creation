@@ -869,19 +869,42 @@ const Constructor = () => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, exportWidth, exportHeight);
       
-      const loadImageWithCORS = (src: string): Promise<HTMLImageElement | null> => {
-        return new Promise((resolve) => {
-          const supportsCORS = src.includes('cdn.poehali.dev') || 
-                               src.includes('storage.yandexcloud.net') ||
-                               src.startsWith('data:') || 
-                               src.startsWith(window.location.origin);
-          
-          if (!supportsCORS) {
-            console.warn('Source does not support CORS, skipping:', src);
-            resolve(null);
-            return;
+      const loadImageWithCORS = async (src: string): Promise<HTMLImageElement | null> => {
+        // Если это data URL - загружаем напрямую
+        if (src.startsWith('data:')) {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = src;
+          });
+        }
+        
+        // Для URL с /bucket/ используем fetch + blob
+        if (src.includes('/bucket/')) {
+          try {
+            const response = await fetch(src);
+            const blob = await response.blob();
+            const dataUrl = await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.readAsDataURL(blob);
+            });
+            
+            return new Promise((resolve) => {
+              const img = new Image();
+              img.onload = () => resolve(img);
+              img.onerror = () => resolve(null);
+              img.src = dataUrl;
+            });
+          } catch (error) {
+            console.warn('Failed to load via fetch:', src, error);
+            return null;
           }
-          
+        }
+        
+        // Для остальных URL пробуем стандартный способ с CORS
+        return new Promise((resolve) => {
           const img = new Image();
           img.crossOrigin = 'anonymous';
           img.onload = () => resolve(img);
