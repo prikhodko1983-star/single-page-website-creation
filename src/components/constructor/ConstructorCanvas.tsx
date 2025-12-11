@@ -137,7 +137,7 @@ export const ConstructorCanvas = ({
               >
                 {element.content}
               </div>
-            ))
+            )}
             
             {element.type === 'fio' && (
               <div 
