@@ -71,18 +71,35 @@ const Constructor = () => {
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
     try {
-      const mockData = [
-        {
-          id: 2,
-          name: 'Памятник №2 "Элегант"',
-          category_id: 1,
-          category_name: 'Одиночные памятники',
-          image_url: 'https://storage.yandexcloud.net/sitevek/5474527360758972468.jpg'
-        }
-      ];
+      // Загружаем категории
+      const categoriesResponse = await fetch('https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d?type=categories');
+      const categoriesData = await categoriesResponse.json();
       
+      // Загружаем продукты
+      const productsResponse = await fetch('https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d');
+      const productsData = await productsResponse.json();
+      
+      // Фильтруем только продукты с изображениями
+      const productsWithImages = productsData.filter((p: any) => p.image_url);
+      
+      // Создаем карту категорий для быстрого доступа
+      const categoryMap = new Map();
+      categoriesData.forEach((cat: any) => {
+        categoryMap.set(cat.id, cat.name);
+      });
+      
+      // Преобразуем продукты в нужный формат
+      const formattedProducts = productsWithImages.map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        category_id: p.category_id || 0,
+        category_name: categoryMap.get(p.category_id) || 'Без категории',
+        image_url: p.image_url
+      }));
+      
+      // Получаем уникальные категории из продуктов
       const uniqueCategories = new Map();
-      mockData.forEach(p => {
+      formattedProducts.forEach((p: any) => {
         if (!uniqueCategories.has(p.category_id)) {
           uniqueCategories.set(p.category_id, {
             id: p.category_id,
@@ -94,7 +111,7 @@ const Constructor = () => {
       const categories = Array.from(uniqueCategories.values());
       
       setCatalogCategories(categories);
-      setCatalogProducts(mockData);
+      setCatalogProducts(formattedProducts);
       
       if (categories.length > 0) {
         setSelectedCategory(categories[0].id);

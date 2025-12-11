@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { useEffect } from "react";
 
@@ -107,6 +108,7 @@ export const ConstructorLibrary = ({
 }: ConstructorLibraryProps) => {
   
   useEffect(() => {
+    loadCatalog();
     loadCrosses();
     loadFlowers();
   }, []);
@@ -140,43 +142,67 @@ export const ConstructorLibrary = ({
               <>
                 {catalogCategories.length > 0 && (
                   <Tabs value={selectedCategory?.toString()} onValueChange={(val) => setSelectedCategory(parseInt(val))} className="w-full">
-                    <TabsList className="w-full flex-wrap h-auto">
-                      {catalogCategories.map(cat => (
-                        <TabsTrigger key={cat.id} value={cat.id.toString()} className="text-xs">
-                          {cat.name}
-                        </TabsTrigger>
-                      ))}
+                    <TabsList className="w-full flex-wrap h-auto gap-1">
+                      {catalogCategories.map(cat => {
+                        const count = catalogProducts.filter(p => p.category_id === cat.id && p.image_url).length;
+                        return (
+                          <TabsTrigger 
+                            key={cat.id} 
+                            value={cat.id.toString()} 
+                            className="text-xs flex-1 min-w-[100px]"
+                          >
+                            <span className="truncate">{cat.name}</span>
+                            <Badge variant="secondary" className="ml-1 h-4 text-[10px] px-1">
+                              {count}
+                            </Badge>
+                          </TabsTrigger>
+                        );
+                      })}
                     </TabsList>
                     
-                    {catalogCategories.map(cat => (
-                      <TabsContent key={cat.id} value={cat.id.toString()} className="mt-3">
-                        <div className="grid grid-cols-2 gap-2">
-                          {catalogProducts
-                            .filter(p => p.category_id === cat.id && p.image_url)
-                            .map(product => (
-                              <button
-                                key={product.id}
-                                onClick={() => setMonumentImage(product.image_url!)}
-                                className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
-                                  monumentImage === product.image_url ? 'border-primary' : 'border-border hover:border-primary/50'
-                                }`}
-                              >
-                                <img src={product.image_url!} alt={product.name} className="w-full h-full object-cover" />
-                                <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center">
-                                  {product.name}
-                                </div>
-                              </button>
-                            ))}
-                        </div>
-                      </TabsContent>
-                    ))}
+                    {catalogCategories.map(cat => {
+                      const categoryProducts = catalogProducts.filter(p => p.category_id === cat.id && p.image_url);
+                      return (
+                        <TabsContent key={cat.id} value={cat.id.toString()} className="mt-3">
+                          {categoryProducts.length > 0 ? (
+                            <div className="grid grid-cols-2 gap-2">
+                              {categoryProducts.map(product => (
+                                <button
+                                  key={product.id}
+                                  onClick={() => setMonumentImage(product.image_url!)}
+                                  className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
+                                    monumentImage === product.image_url ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
+                                  }`}
+                                >
+                                  <img src={product.image_url!} alt={product.name} className="w-full h-full object-cover" />
+                                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-xs p-2 text-center">
+                                    <div className="font-medium">{product.name}</div>
+                                  </div>
+                                  {monumentImage === product.image_url && (
+                                    <div className="absolute top-2 right-2 bg-primary rounded-full p-1">
+                                      <Icon name="Check" size={12} className="text-primary-foreground" />
+                                    </div>
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-8 text-muted-foreground">
+                              <p className="text-sm">Нет памятников в этой категории</p>
+                            </div>
+                          )}
+                        </TabsContent>
+                      );
+                    })}
                   </Tabs>
                 )}
                 
-                {catalogProducts.length === 0 && !isLoadingCatalog && (
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    Каталог пуст
-                  </p>
+                {catalogCategories.length === 0 && catalogProducts.length === 0 && !isLoadingCatalog && (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Icon name="Package" size={48} className="mx-auto mb-4 opacity-20" />
+                    <p className="text-sm font-medium">Каталог пуст</p>
+                    <p className="text-xs mt-1">Добавьте памятники в магазин через админ-панель</p>
+                  </div>
                 )}
               </>
             )}
