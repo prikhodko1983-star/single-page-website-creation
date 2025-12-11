@@ -23,6 +23,7 @@ interface CanvasElement {
   processedSrc?: string;
   lineHeight?: number;
   letterSpacing?: number;
+  textAlign?: 'left' | 'center' | 'right';
 }
 
 interface ConstructorLibraryProps {

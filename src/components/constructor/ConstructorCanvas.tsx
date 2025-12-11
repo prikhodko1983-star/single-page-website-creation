@@ -18,6 +18,7 @@ interface CanvasElement {
   processedSrc?: string;
   lineHeight?: number;
   letterSpacing?: number;
+  textAlign?: 'left' | 'center' | 'right';
 }
 
 interface ConstructorCanvasProps {
@@ -98,7 +99,7 @@ export const ConstructorCanvas = ({
           >
             {element.type === 'text' && (
               <div 
-                className="w-full h-full flex items-center justify-center text-center select-none overflow-hidden"
+                className="w-full h-full flex items-center select-none overflow-hidden whitespace-pre-line"
                 style={{ 
                   fontSize: `${element.fontSize}px`, 
                   color: element.color,
@@ -107,6 +108,8 @@ export const ConstructorCanvas = ({
                   fontWeight: element.fontFamily?.split('|')[1] || 'bold',
                   lineHeight: element.lineHeight || 1.2,
                   letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                  textAlign: element.textAlign || 'center',
+                  justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
                 }}
               >
                 {element.content}
@@ -115,7 +118,7 @@ export const ConstructorCanvas = ({
             
             {element.type === 'epitaph' && (
               <div 
-                className="w-full h-full flex items-center justify-center text-center select-none italic overflow-hidden"
+                className="w-full h-full flex items-center select-none italic overflow-hidden whitespace-pre-line"
                 style={{ 
                   fontSize: `${element.fontSize}px`, 
                   color: element.color,
@@ -124,6 +127,8 @@ export const ConstructorCanvas = ({
                   fontWeight: element.fontFamily?.split('|')[1] || '400',
                   lineHeight: element.lineHeight || 1.4,
                   letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                  textAlign: element.textAlign || 'center',
+                  justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
                 }}
               >
                 {element.content}
@@ -132,7 +137,7 @@ export const ConstructorCanvas = ({
             
             {element.type === 'fio' && (
               <div 
-                className="w-full h-full flex items-center justify-center text-center select-none whitespace-pre-line overflow-hidden"
+                className="w-full h-full flex items-center select-none whitespace-pre-line overflow-hidden"
                 style={{ 
                   fontSize: `${element.fontSize}px`, 
                   color: element.color,
@@ -141,6 +146,8 @@ export const ConstructorCanvas = ({
                   fontWeight: element.fontFamily?.split('|')[1] || '400',
                   lineHeight: element.lineHeight || 1.3,
                   letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                  textAlign: element.textAlign || 'center',
+                  justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
                 }}
               >
                 {element.content}
@@ -149,7 +156,7 @@ export const ConstructorCanvas = ({
             
             {element.type === 'dates' && (
               <div 
-                className="w-full h-full flex items-center justify-center text-center select-none overflow-hidden whitespace-nowrap"
+                className="w-full h-full flex items-center select-none overflow-hidden whitespace-pre-line"
                 style={{ 
                   fontSize: `${element.fontSize}px`, 
                   color: element.color,
@@ -157,6 +164,8 @@ export const ConstructorCanvas = ({
                   fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                   fontWeight: element.fontFamily?.split('|')[1] || '400',
                   letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
+                  textAlign: element.textAlign || 'center',
+                  justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
                 }}
               >
                 {element.content}

@@ -20,6 +20,7 @@ interface CanvasElement {
   processedSrc?: string;
   lineHeight?: number;
   letterSpacing?: number;
+  textAlign?: 'left' | 'center' | 'right';
 }
 
 interface TextEditorModalProps {
@@ -46,6 +47,7 @@ export const TextEditorModal = ({
       color: editingElement.color,
       lineHeight: editingElement.lineHeight,
       letterSpacing: editingElement.letterSpacing,
+      textAlign: editingElement.textAlign,
     });
     onClose();
     setEditingElement(null);
@@ -133,6 +135,36 @@ export const TextEditorModal = ({
                 onChange={(e) => setEditingElement({ ...editingElement, letterSpacing: parseFloat(e.target.value) })}
                 className="w-full mt-2"
               />
+            </div>
+            
+            <div>
+              <Label>Выравнивание текста</Label>
+              <div className="flex gap-2 mt-2">
+                <Button
+                  variant={editingElement.textAlign === 'left' ? 'default' : 'outline'}
+                  onClick={() => setEditingElement({ ...editingElement, textAlign: 'left' })}
+                  className="flex-1"
+                >
+                  <Icon name="AlignLeft" size={18} className="mr-2" />
+                  По левому краю
+                </Button>
+                <Button
+                  variant={editingElement.textAlign === 'center' || !editingElement.textAlign ? 'default' : 'outline'}
+                  onClick={() => setEditingElement({ ...editingElement, textAlign: 'center' })}
+                  className="flex-1"
+                >
+                  <Icon name="AlignCenter" size={18} className="mr-2" />
+                  По центру
+                </Button>
+                <Button
+                  variant={editingElement.textAlign === 'right' ? 'default' : 'outline'}
+                  onClick={() => setEditingElement({ ...editingElement, textAlign: 'right' })}
+                  className="flex-1"
+                >
+                  <Icon name="AlignRight" size={18} className="mr-2" />
+                  По правому краю
+                </Button>
+              </div>
             </div>
             
             <div className="flex gap-2 pt-4">
