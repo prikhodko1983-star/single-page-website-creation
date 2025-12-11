@@ -735,10 +735,9 @@ const Constructor = () => {
       const ctx = canvasElement.getContext('2d');
       if (!ctx) return;
       
-      // Вычисляем масштаб относительно текущего размера canvas
+      // Вычисляем единый масштаб относительно текущего размера canvas
       const rect = canvasRef.current.getBoundingClientRect();
-      const scaleX = exportWidth / rect.width;
-      const scaleY = exportHeight / rect.height;
+      const scale = Math.min(exportWidth / rect.width, exportHeight / rect.height);
       
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, exportWidth, exportHeight);
@@ -785,11 +784,11 @@ const Constructor = () => {
       for (const element of elements) {
         ctx.save();
         
-        // Масштабируем позицию и размер элемента
-        const scaledX = element.x * scaleX;
-        const scaledY = element.y * scaleY;
-        const scaledWidth = element.width * scaleX;
-        const scaledHeight = element.height * scaleY;
+        // Масштабируем позицию и размер элемента с единым масштабом
+        const scaledX = element.x * scale;
+        const scaledY = element.y * scale;
+        const scaledWidth = element.width * scale;
+        const scaledHeight = element.height * scale;
         
         const centerX = scaledX + scaledWidth / 2;
         const centerY = scaledY + scaledHeight / 2;
@@ -800,15 +799,15 @@ const Constructor = () => {
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
-          const scaledFontSize = (element.fontSize || 24) * scaleX;
+          const scaledFontSize = (element.fontSize || 24) * scale;
           ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 8 * scaleX;
-          ctx.shadowOffsetX = 4 * scaleX;
-          ctx.shadowOffsetY = 4 * scaleY;
+          ctx.shadowBlur = 8 * scale;
+          ctx.shadowOffsetX = 4 * scale;
+          ctx.shadowOffsetY = 4 * scale;
           
           const lines = element.content?.split('\n') || [];
           const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
