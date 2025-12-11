@@ -78,7 +78,7 @@ export const ConstructorCanvas = ({
         <img 
           src={monumentImage} 
           alt="Памятник" 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           draggable={false}
         />
         

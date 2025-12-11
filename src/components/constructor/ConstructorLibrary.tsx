@@ -170,11 +170,11 @@ export const ConstructorLibrary = ({
                                 <button
                                   key={product.id}
                                   onClick={() => setMonumentImage(product.image_url!)}
-                                  className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
+                                  className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all bg-secondary ${
                                     monumentImage === product.image_url ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
                                   }`}
                                 >
-                                  <img src={product.image_url!} alt={product.name} className="w-full h-full object-cover" />
+                                  <img src={product.image_url!} alt={product.name} className="w-full h-full object-contain p-2" />
                                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-xs p-2 text-center">
                                     <div className="font-medium">{product.name}</div>
                                   </div>
@@ -215,14 +215,19 @@ export const ConstructorLibrary = ({
                 <button
                   key={img.id}
                   onClick={() => setMonumentImage(img.src)}
-                  className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
-                    monumentImage === img.src ? 'border-primary' : 'border-border hover:border-primary/50'
+                  className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all bg-secondary ${
+                    monumentImage === img.src ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
                   }`}
                 >
-                  <img src={img.src} alt={img.name} className="w-full h-full object-cover" />
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 text-center">
-                    {img.name}
+                  <img src={img.src} alt={img.name} className="w-full h-full object-contain p-2" />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-xs p-2 text-center">
+                    <div className="font-medium">{img.name}</div>
                   </div>
+                  {monumentImage === img.src && (
+                    <div className="absolute top-2 right-2 bg-primary rounded-full p-1">
+                      <Icon name="Check" size={12} className="text-primary-foreground" />
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
