@@ -103,7 +103,8 @@ export const ConstructorCanvas = ({
                   fontSize: `${element.fontSize}px`, 
                   color: element.color,
                   textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                  fontWeight: 'bold',
+                  fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                  fontWeight: element.fontFamily?.split('|')[1] || 'bold',
                   lineHeight: element.lineHeight || 1.2,
                   letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                 }}
@@ -119,6 +120,8 @@ export const ConstructorCanvas = ({
                   fontSize: `${element.fontSize}px`, 
                   color: element.color,
                   textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                  fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                  fontWeight: element.fontFamily?.split('|')[1] || '400',
                   lineHeight: element.lineHeight || 1.4,
                   letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                 }}
