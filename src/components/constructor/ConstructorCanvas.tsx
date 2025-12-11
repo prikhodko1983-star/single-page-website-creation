@@ -174,6 +174,7 @@ export const ConstructorCanvas = ({
                 src={element.src} 
                 alt={element.type}
                 className="w-full h-full object-contain select-none"
+                style={element.screenMode ? { mixBlendMode: 'screen' } : {}}
                 draggable={false}
               />
             )}
