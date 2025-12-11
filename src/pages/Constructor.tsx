@@ -489,9 +489,13 @@ const Constructor = () => {
     const element = elements.find(el => el.id === id);
     if (!element) return;
     
-    if (updates.screenMode === true && (element.type === 'photo' || element.type === 'cross' || element.type === 'flower') && element.src && !element.processedSrc) {
-      const processed = await applyScreenMode(element.src);
-      setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: processed } : el));
+    if (updates.screenMode === true && (element.type === 'photo' || element.type === 'cross' || element.type === 'flower') && element.src) {
+      if (!element.processedSrc) {
+        const processed = await applyScreenMode(element.src);
+        setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: processed } : el));
+      } else {
+        setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
+      }
     } 
     else if (updates.screenMode === false) {
       setElements(elements.map(el => el.id === id ? { ...el, ...updates, processedSrc: undefined } : el));
