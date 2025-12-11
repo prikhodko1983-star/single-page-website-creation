@@ -183,20 +183,28 @@ export const ConstructorProperties = ({
               </div>
             </div>
             
-            {(selectedEl.type === 'photo' || selectedEl.type === 'image' || selectedEl.type === 'cross' || selectedEl.type === 'flower') && (
+            {(selectedEl.type === 'photo' || selectedEl.type === 'image' || selectedEl.type === 'cross' || selectedEl.type === 'flower') && selectedEl.src && (
               <div className="p-3 bg-primary/10 rounded-lg border border-primary/20 space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex items-center gap-3 cursor-pointer select-none" htmlFor={`screen-mode-${selectedEl.id}`}>
                   <input
+                    id={`screen-mode-${selectedEl.id}`}
                     type="checkbox"
                     checked={selectedEl.screenMode || false}
-                    onChange={(e) => updateElement(selectedEl.id, { screenMode: e.target.checked })}
-                    className="w-5 h-5 rounded border-primary/30 cursor-pointer accent-primary"
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      updateElement(selectedEl.id, { screenMode: e.target.checked });
+                    }}
+                    className="w-5 h-5 rounded border-2 border-primary/30 cursor-pointer accent-primary flex-shrink-0"
                   />
-                  <span className="font-medium">Режим "Экран"</span>
+                  <span className="font-medium flex-1">Режим "Экран"</span>
                 </label>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground pl-8">
                   Убирает черный цвет с фотографии
                 </p>
+                <div className="text-xs text-muted-foreground pl-8 mt-1">
+                  Статус: {selectedEl.screenMode ? '✓ Включен' : '○ Выключен'}
+                  {selectedEl.processedSrc && ' (обработано)'}
+                </div>
               </div>
             )}
             
