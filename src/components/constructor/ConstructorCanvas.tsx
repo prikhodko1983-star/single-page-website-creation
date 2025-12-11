@@ -99,7 +99,7 @@ export const ConstructorCanvas = ({
           >
             {element.type === 'text' && (
               <div 
-                className="w-full h-full flex items-center select-none overflow-hidden whitespace-pre-line"
+                className="w-full h-full flex items-center select-none overflow-hidden"
                 style={{ 
                   fontSize: `${element.fontSize}px`, 
                   color: element.color,
@@ -110,6 +110,8 @@ export const ConstructorCanvas = ({
                   letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                   textAlign: element.textAlign || 'center',
                   justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
                 }}
               >
                 {element.content}
@@ -118,7 +120,7 @@ export const ConstructorCanvas = ({
             
             {element.type === 'epitaph' && (
               <div 
-                className="w-full h-full flex items-center select-none italic overflow-hidden whitespace-pre-line"
+                className="w-full h-full flex items-center select-none italic overflow-hidden"
                 style={{ 
                   fontSize: `${element.fontSize}px`, 
                   color: element.color,
@@ -129,15 +131,17 @@ export const ConstructorCanvas = ({
                   letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                   textAlign: element.textAlign || 'center',
                   justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
                 }}
               >
                 {element.content}
               </div>
-            )}
+            ))
             
             {element.type === 'fio' && (
               <div 
-                className="w-full h-full flex items-center select-none whitespace-pre-line overflow-hidden"
+                className="w-full h-full flex items-center select-none overflow-hidden"
                 style={{ 
                   fontSize: `${element.fontSize}px`, 
                   color: element.color,
@@ -148,6 +152,8 @@ export const ConstructorCanvas = ({
                   letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                   textAlign: element.textAlign || 'center',
                   justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
                 }}
               >
                 {element.content}
@@ -156,7 +162,7 @@ export const ConstructorCanvas = ({
             
             {element.type === 'dates' && (
               <div 
-                className="w-full h-full flex items-center select-none overflow-hidden whitespace-pre-line"
+                className="w-full h-full flex items-center select-none overflow-hidden"
                 style={{ 
                   fontSize: `${element.fontSize}px`, 
                   color: element.color,
@@ -166,6 +172,10 @@ export const ConstructorCanvas = ({
                   letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
                   textAlign: element.textAlign || 'center',
                   justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
                 }}
               >
                 {element.content}
