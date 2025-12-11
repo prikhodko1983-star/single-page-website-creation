@@ -185,21 +185,18 @@ export const ConstructorProperties = ({
             
             {(selectedEl.type === 'photo' || selectedEl.type === 'image' || selectedEl.type === 'cross' || selectedEl.type === 'flower') && (
               <div className="p-3 bg-primary/10 rounded-lg border border-primary/20 space-y-2">
-                <Label className="font-medium">Режим "Экран"</Label>
-                <p className="text-xs text-muted-foreground mb-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedEl.screenMode || false}
+                    onChange={(e) => updateElement(selectedEl.id, { screenMode: e.target.checked })}
+                    className="w-5 h-5 rounded border-primary/30 cursor-pointer accent-primary"
+                  />
+                  <span className="font-medium">Режим "Экран"</span>
+                </label>
+                <p className="text-xs text-muted-foreground">
                   Убирает черный цвет с фотографии
                 </p>
-                <Button
-                  onClick={() => {
-                    const newValue = !selectedEl.screenMode;
-                    updateElement(selectedEl.id, { screenMode: newValue });
-                  }}
-                  variant={selectedEl.screenMode ? "default" : "outline"}
-                  className="w-full"
-                >
-                  <Icon name={selectedEl.screenMode ? "Check" : "X"} size={18} className="mr-2" />
-                  {selectedEl.screenMode ? 'Включен' : 'Выключен'}
-                </Button>
               </div>
             )}
             
