@@ -726,13 +726,14 @@ const Constructor = () => {
       
       const canvasElement = document.createElement('canvas');
       const rect = canvasRef.current.getBoundingClientRect();
-      canvasElement.width = rect.width * 2;
-      canvasElement.height = rect.height * 2;
+      const scale = 4;
+      canvasElement.width = rect.width * scale;
+      canvasElement.height = rect.height * scale;
       
       const ctx = canvasElement.getContext('2d');
       if (!ctx) return;
       
-      ctx.scale(2, 2);
+      ctx.scale(scale, scale);
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, rect.width, rect.height);
       
@@ -815,8 +816,8 @@ const Constructor = () => {
         ctx.restore();
       }
       
-      const imgData = canvasElement.toDataURL('image/jpeg', 0.95);
-      const fileName = `monument_design_${Date.now()}.jpg`;
+      const imgData = canvasElement.toDataURL('image/png');
+      const fileName = `monument_design_${Date.now()}.png`;
       
       const link = document.createElement('a');
       link.href = imgData;
@@ -825,7 +826,7 @@ const Constructor = () => {
       
       toast({
         title: "Изображение сохранено!",
-        description: "JPG файл скачан на устройство",
+        description: "PNG файл высокого качества скачан на устройство",
       });
     } catch (error) {
       console.error('Image generation error:', error);
