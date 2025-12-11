@@ -175,6 +175,7 @@ const Constructor = () => {
       height: 100,
       src,
       rotation: 0,
+      screenMode: type === 'cross' || type === 'flower',
     };
     setElements([...elements, newElement]);
   };
