@@ -60,8 +60,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if ',' in image_base64:
             image_base64 = image_base64.split(',')[1]
         
-        s3_access_key = os.environ.get('S3_ACCESS_KEY')
-        s3_secret_key = os.environ.get('S3_SECRET_KEY')
+        s3_access_key = os.environ.get('AWS_ACCESS_KEY_ID')
+        s3_secret_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
         
         print(f"S3 keys available: {bool(s3_access_key and s3_secret_key)}")
         
@@ -73,14 +73,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             s3_client = boto3.client(
                 's3',
-                endpoint_url='https://storage.yandexcloud.net',
+                endpoint_url='https://bucket.poehali.dev',
                 aws_access_key_id=s3_access_key,
-                aws_secret_access_key=s3_secret_key,
-                config=Config(signature_version='s3v4'),
-                region_name='ru-central1'
+                aws_secret_access_key=s3_secret_key
             )
             
-            bucket_name = 'poehali-cdn'
+            bucket_name = 'files'
             
             content_type_map = {
                 'jpg': 'image/jpeg',
@@ -92,13 +90,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             s3_client.put_object(
                 Bucket=bucket_name,
-                Key=f'files/{file_name}',
+                Key=file_name,
                 Body=image_data,
-                ContentType=content_type_map.get(file_extension, 'image/jpeg'),
-                ACL='public-read'
+                ContentType=content_type_map.get(file_extension, 'image/jpeg')
             )
             
-            image_url = f'https://cdn.poehali.dev/files/{file_name}'
+            image_url = f'https://cdn.poehali.dev/projects/{s3_access_key}/bucket/{file_name}'
         else:
             file_id = str(uuid.uuid4())
             content_type_map = {
