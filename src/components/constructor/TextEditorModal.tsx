@@ -188,7 +188,7 @@ export const TextEditorModal = ({
               <Label className="mb-2 block">Предпросмотр</Label>
               <div className="relative aspect-[3/4] bg-secondary rounded-lg overflow-hidden border-2 border-border">
                 <div 
-                  className="absolute inset-0 flex items-center whitespace-pre-line p-4"
+                  className="absolute inset-0 flex items-center p-4"
                   style={{
                     fontSize: `${editingElement.fontSize}px`,
                     color: editingElement.color || '#FFFFFF',
@@ -199,6 +199,8 @@ export const TextEditorModal = ({
                     textAlign: editingElement.textAlign || 'center',
                     justifyContent: editingElement.textAlign === 'left' ? 'flex-start' : editingElement.textAlign === 'right' ? 'flex-end' : 'center',
                     textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                    whiteSpace: 'pre-wrap',
+                    wordWrap: 'break-word',
                   }}
                 >
                   {editingElement.content || 'Введите текст...'}
