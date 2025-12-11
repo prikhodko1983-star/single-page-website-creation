@@ -184,27 +184,21 @@ export const ConstructorProperties = ({
             </div>
             
             {(selectedEl.type === 'photo' || selectedEl.type === 'image' || selectedEl.type === 'cross' || selectedEl.type === 'flower') && selectedEl.src && (
-              <div className="p-3 bg-primary/10 rounded-lg border border-primary/20 space-y-2">
-                <label className="flex items-center gap-3 cursor-pointer select-none" htmlFor={`screen-mode-${selectedEl.id}`}>
-                  <input
-                    id={`screen-mode-${selectedEl.id}`}
-                    type="checkbox"
-                    checked={selectedEl.screenMode || false}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      updateElement(selectedEl.id, { screenMode: e.target.checked });
-                    }}
-                    className="w-5 h-5 rounded border-2 border-primary/30 cursor-pointer accent-primary flex-shrink-0"
-                  />
-                  <span className="font-medium flex-1">Режим "Экран"</span>
-                </label>
-                <p className="text-xs text-muted-foreground pl-8">
+              <div className="space-y-2">
+                <Label>Режим "Экран"</Label>
+                <Button
+                  onClick={() => {
+                    updateElement(selectedEl.id, { screenMode: !selectedEl.screenMode });
+                  }}
+                  variant={selectedEl.screenMode ? "default" : "outline"}
+                  className="w-full"
+                >
+                  <Icon name={selectedEl.screenMode ? "Check" : "Circle"} size={18} className="mr-2" />
+                  {selectedEl.screenMode ? 'Включен' : 'Выключен'}
+                </Button>
+                <p className="text-xs text-muted-foreground">
                   Убирает черный цвет с фотографии
                 </p>
-                <div className="text-xs text-muted-foreground pl-8 mt-1">
-                  Статус: {selectedEl.screenMode ? '✓ Включен' : '○ Выключен'}
-                  {selectedEl.processedSrc && ' (обработано)'}
-                </div>
               </div>
             )}
             
