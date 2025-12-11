@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Icon from "@/components/ui/icon";
+import { useState } from "react";
 
 interface CanvasElement {
   id: string;
@@ -25,7 +26,7 @@ interface CanvasElement {
 
 interface ConstructorPropertiesProps {
   selectedEl: CanvasElement | undefined;
-  updateElement: (id: string, updates: Partial<CanvasElement>) => void;
+  updateElement: (id: string, updates: Partial<CanvasElement>) => Promise<void>;
   deleteElement: (id: string) => void;
   fonts: Array<{id: string, name: string, style: string, weight: string, example: string, fullStyle: string}>;
 }
@@ -36,6 +37,8 @@ export const ConstructorProperties = ({
   deleteElement,
   fonts,
 }: ConstructorPropertiesProps) => {
+  const [isProcessing, setIsProcessing] = useState(false);
+  
   return (
     <Card className="h-fit">
       <CardContent className="p-4">
@@ -187,14 +190,26 @@ export const ConstructorProperties = ({
               <div className="space-y-2">
                 <Label>Режим "Экран"</Label>
                 <Button
-                  onClick={() => {
-                    updateElement(selectedEl.id, { screenMode: !selectedEl.screenMode });
+                  onClick={async () => {
+                    setIsProcessing(true);
+                    await updateElement(selectedEl.id, { screenMode: !selectedEl.screenMode });
+                    setIsProcessing(false);
                   }}
                   variant={selectedEl.screenMode ? "default" : "outline"}
                   className="w-full"
+                  disabled={isProcessing}
                 >
-                  <Icon name={selectedEl.screenMode ? "Check" : "Circle"} size={18} className="mr-2" />
-                  {selectedEl.screenMode ? 'Включен' : 'Выключен'}
+                  {isProcessing ? (
+                    <>
+                      <Icon name="Loader2" size={18} className="mr-2 animate-spin" />
+                      Обработка...
+                    </>
+                  ) : (
+                    <>
+                      <Icon name={selectedEl.screenMode ? "Check" : "Circle"} size={18} className="mr-2" />
+                      {selectedEl.screenMode ? 'Включен' : 'Выключен'}
+                    </>
+                  )}
                 </Button>
                 <p className="text-xs text-muted-foreground">
                   Убирает черный цвет с фотографии
