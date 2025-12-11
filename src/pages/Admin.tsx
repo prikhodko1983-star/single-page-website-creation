@@ -2209,13 +2209,16 @@ export default function Admin() {
                         disabled={uploadingCross}
                       />
                       {crossForm.image_url && (
-                        <div className="w-20 h-20 rounded border overflow-hidden bg-secondary">
-                          <img src={crossForm.image_url} alt="Preview" className="w-full h-full object-contain" />
+                        <div className="w-20 h-20 rounded border overflow-hidden" style={{ mixBlendMode: 'screen' }}>
+                          <img src={crossForm.image_url} alt="Preview" className="w-full h-full object-contain" style={{ mixBlendMode: 'screen' }} />
                         </div>
                       )}
                     </div>
                     {uploadingCross && <Progress value={crossUploadProgress} className="mt-2" />}
                     <p className="text-xs text-muted-foreground mt-2">
+                      🖼️ Режим "Экран" убирает черный цвет с фотографии
+                    </p>
+                    <p className="text-xs text-muted-foreground">
                       Новый крест добавится в конец галереи. Используйте кнопки ↑↓ для изменения порядка.
                     </p>
                   </div>
@@ -2246,11 +2249,12 @@ export default function Admin() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {crosses.map((cross, index) => (
                     <div key={cross.id} className="relative group">
-                      <div className="aspect-square rounded-lg border-2 border-border overflow-hidden bg-secondary">
+                      <div className="aspect-square rounded-lg border-2 border-border overflow-hidden bg-black">
                         <img 
                           src={cross.image_url} 
                           alt={cross.name} 
                           className="w-full h-full object-contain p-2"
+                          style={{ mixBlendMode: 'screen' }}
                         />
                       </div>
                       <div className="mt-2 text-sm font-medium text-center">{cross.name}</div>
