@@ -738,9 +738,6 @@ const Constructor = () => {
       // Получаем реальные размеры canvas на экране
       const rect = canvasRef.current.getBoundingClientRect();
       
-      // Используем единый масштаб для сохранения пропорций
-      const scale = exportWidth / rect.width;
-      
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, exportWidth, exportHeight);
       
@@ -768,34 +765,8 @@ const Constructor = () => {
         });
       };
       
-      // Переменные для offset изображения памятника (для object-contain логики)
-      let monumentOffsetX = 0;
-      let monumentOffsetY = 0;
-      let monumentDrawWidth = exportWidth;
-      let monumentDrawHeight = exportHeight;
-      
       const monumentImg = await loadImageWithCORS(monumentImage);
-      if (monumentImg) {
-        // Рисуем с сохранением пропорций (object-contain)
-        const imgRatio = monumentImg.width / monumentImg.height;
-        const canvasRatio = exportWidth / exportHeight;
-        
-        if (imgRatio > canvasRatio) {
-          // Изображение шире — вписываем по ширине
-          monumentDrawWidth = exportWidth;
-          monumentDrawHeight = exportWidth / imgRatio;
-          monumentOffsetX = 0;
-          monumentOffsetY = (exportHeight - monumentDrawHeight) / 2;
-        } else {
-          // Изображение выше — вписываем по высоте
-          monumentDrawHeight = exportHeight;
-          monumentDrawWidth = exportHeight * imgRatio;
-          monumentOffsetX = (exportWidth - monumentDrawWidth) / 2;
-          monumentOffsetY = 0;
-        }
-        
-        ctx.drawImage(monumentImg, monumentOffsetX, monumentOffsetY, monumentDrawWidth, monumentDrawHeight);
-      } else {
+      if (!monumentImg) {
         ctx.fillStyle = '#1a1a1a';
         ctx.fillRect(0, 0, exportWidth, exportHeight);
         ctx.fillStyle = '#666';
@@ -805,17 +776,60 @@ const Constructor = () => {
         ctx.fillText(monumentName, exportWidth / 2, exportHeight / 2 - 40);
         ctx.font = '32px sans-serif';
         ctx.fillText('(изображение из внешнего источника)', exportWidth / 2, exportHeight / 2 + 40);
+        return;
       }
+      
+      // Рассчитываем object-contain для экспорта
+      const imgRatio = monumentImg.width / monumentImg.height;
+      const canvasRatio = exportWidth / exportHeight;
+      
+      let monumentDrawWidth = exportWidth;
+      let monumentDrawHeight = exportHeight;
+      let monumentOffsetX = 0;
+      let monumentOffsetY = 0;
+      
+      if (imgRatio > canvasRatio) {
+        monumentDrawWidth = exportWidth;
+        monumentDrawHeight = exportWidth / imgRatio;
+        monumentOffsetX = 0;
+        monumentOffsetY = (exportHeight - monumentDrawHeight) / 2;
+      } else {
+        monumentDrawHeight = exportHeight;
+        monumentDrawWidth = exportHeight * imgRatio;
+        monumentOffsetX = (exportWidth - monumentDrawWidth) / 2;
+        monumentOffsetY = 0;
+      }
+      
+      // Рассчитываем object-contain для экрана (чтобы понять реальные размеры)
+      const screenRatio = rect.width / rect.height;
+      let screenMonumentWidth = rect.width;
+      let screenMonumentHeight = rect.height;
+      let screenMonumentOffsetX = 0;
+      let screenMonumentOffsetY = 0;
+      
+      if (imgRatio > screenRatio) {
+        screenMonumentWidth = rect.width;
+        screenMonumentHeight = rect.width / imgRatio;
+        screenMonumentOffsetX = 0;
+        screenMonumentOffsetY = (rect.height - screenMonumentHeight) / 2;
+      } else {
+        screenMonumentHeight = rect.height;
+        screenMonumentWidth = rect.height * imgRatio;
+        screenMonumentOffsetX = (rect.width - screenMonumentWidth) / 2;
+        screenMonumentOffsetY = 0;
+      }
+      
+      ctx.drawImage(monumentImg, monumentOffsetX, monumentOffsetY, monumentDrawWidth, monumentDrawHeight);
+      
+      // Единый масштаб от реальных размеров памятника на экране
+      const monumentScale = monumentDrawWidth / screenMonumentWidth;
       
       for (const element of elements) {
         ctx.save();
         
-        // Используем единый масштаб для сохранения пропорций элементов
-        const monumentScale = monumentDrawWidth / rect.width;
-        
-        // Масштабируем позицию и размер элемента с учетом offset памятника
-        const scaledX = element.x * monumentScale + monumentOffsetX;
-        const scaledY = element.y * monumentScale + monumentOffsetY;
+        // Масштабируем позицию с учетом offset на экране и на экспорте
+        const scaledX = (element.x - screenMonumentOffsetX) * monumentScale + monumentOffsetX;
+        const scaledY = (element.y - screenMonumentOffsetY) * monumentScale + monumentOffsetY;
         const scaledWidth = element.width * monumentScale;
         const scaledHeight = element.height * monumentScale;
         
