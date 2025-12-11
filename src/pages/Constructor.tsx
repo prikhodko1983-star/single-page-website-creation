@@ -768,10 +768,33 @@ const Constructor = () => {
         });
       };
       
+      // Переменные для offset изображения памятника (для object-contain логики)
+      let monumentOffsetX = 0;
+      let monumentOffsetY = 0;
+      let monumentDrawWidth = exportWidth;
+      let monumentDrawHeight = exportHeight;
+      
       const monumentImg = await loadImageWithCORS(monumentImage);
       if (monumentImg) {
-        // Растягиваем изображение на весь canvas (как на экране с aspect-[3/4])
-        ctx.drawImage(monumentImg, 0, 0, exportWidth, exportHeight);
+        // Рисуем с сохранением пропорций (object-contain)
+        const imgRatio = monumentImg.width / monumentImg.height;
+        const canvasRatio = exportWidth / exportHeight;
+        
+        if (imgRatio > canvasRatio) {
+          // Изображение шире — вписываем по ширине
+          monumentDrawWidth = exportWidth;
+          monumentDrawHeight = exportWidth / imgRatio;
+          monumentOffsetX = 0;
+          monumentOffsetY = (exportHeight - monumentDrawHeight) / 2;
+        } else {
+          // Изображение выше — вписываем по высоте
+          monumentDrawHeight = exportHeight;
+          monumentDrawWidth = exportHeight * imgRatio;
+          monumentOffsetX = (exportWidth - monumentDrawWidth) / 2;
+          monumentOffsetY = 0;
+        }
+        
+        ctx.drawImage(monumentImg, monumentOffsetX, monumentOffsetY, monumentDrawWidth, monumentDrawHeight);
       } else {
         ctx.fillStyle = '#1a1a1a';
         ctx.fillRect(0, 0, exportWidth, exportHeight);
@@ -787,11 +810,15 @@ const Constructor = () => {
       for (const element of elements) {
         ctx.save();
         
-        // Масштабируем позицию и размер элемента с единым масштабом
-        const scaledX = element.x * scale;
-        const scaledY = element.y * scale;
-        const scaledWidth = element.width * scale;
-        const scaledHeight = element.height * scale;
+        // Вычисляем масштаб относительно реальной области изображения памятника
+        const monumentScaleX = monumentDrawWidth / rect.width;
+        const monumentScaleY = monumentDrawHeight / rect.height;
+        
+        // Масштабируем позицию и размер элемента с учетом offset памятника
+        const scaledX = element.x * monumentScaleX + monumentOffsetX;
+        const scaledY = element.y * monumentScaleY + monumentOffsetY;
+        const scaledWidth = element.width * monumentScaleX;
+        const scaledHeight = element.height * monumentScaleY;
         
         const centerX = scaledX + scaledWidth / 2;
         const centerY = scaledY + scaledHeight / 2;
@@ -802,15 +829,15 @@ const Constructor = () => {
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
-          const scaledFontSize = (element.fontSize || 24) * scale;
+          const scaledFontSize = (element.fontSize || 24) * monumentScaleX;
           ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 8 * scale;
-          ctx.shadowOffsetX = 4 * scale;
-          ctx.shadowOffsetY = 4 * scale;
+          ctx.shadowBlur = 8 * monumentScaleX;
+          ctx.shadowOffsetX = 4 * monumentScaleX;
+          ctx.shadowOffsetY = 4 * monumentScaleY;
           
           const lines = element.content?.split('\n') || [];
           const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
