@@ -99,84 +99,97 @@ export const ConstructorCanvas = ({
           >
             {element.type === 'text' && (
               <div 
-                className="w-full h-full flex items-center select-none overflow-hidden"
-                style={{ 
-                  fontSize: `${element.fontSize}px`, 
-                  color: element.color,
-                  textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                  fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                  fontWeight: element.fontFamily?.split('|')[1] || 'bold',
-                  lineHeight: element.lineHeight || 1.2,
-                  letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
-                  textAlign: element.textAlign || 'center',
-                  justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
-                  whiteSpace: 'pre-wrap',
-                  wordWrap: 'break-word',
-                }}
+                className="w-full h-full flex items-center justify-center select-none overflow-hidden p-1"
               >
-                {element.content}
+                <div
+                  style={{ 
+                    fontSize: `${element.fontSize}px`, 
+                    color: element.color,
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                    fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                    fontWeight: element.fontFamily?.split('|')[1] || 'bold',
+                    lineHeight: element.lineHeight || 1.2,
+                    letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                    textAlign: element.textAlign || 'center',
+                    whiteSpace: 'pre-wrap',
+                    wordWrap: 'break-word',
+                    width: '100%',
+                  }}
+                >
+                  {element.content}
+                </div>
               </div>
             )}
             
             {element.type === 'epitaph' && (
               <div 
-                className="w-full h-full flex items-center select-none italic overflow-hidden"
-                style={{ 
-                  fontSize: `${element.fontSize}px`, 
-                  color: element.color,
-                  textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                  fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                  fontWeight: element.fontFamily?.split('|')[1] || '400',
-                  lineHeight: element.lineHeight || 1.4,
-                  letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
-                  textAlign: element.textAlign || 'center',
-                  justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
-                  whiteSpace: 'pre-wrap',
-                  wordWrap: 'break-word',
-                }}
+                className="w-full h-full flex items-center justify-center select-none overflow-hidden p-1"
               >
-                {element.content}
+                <div
+                  className="italic"
+                  style={{ 
+                    fontSize: `${element.fontSize}px`, 
+                    color: element.color,
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                    fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                    fontWeight: element.fontFamily?.split('|')[1] || '400',
+                    lineHeight: element.lineHeight || 1.4,
+                    letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                    textAlign: element.textAlign || 'center',
+                    whiteSpace: 'pre-wrap',
+                    wordWrap: 'break-word',
+                    width: '100%',
+                  }}
+                >
+                  {element.content}
+                </div>
               </div>
             )}
             
             {element.type === 'fio' && (
               <div 
-                className="w-full h-full flex items-center select-none overflow-hidden"
-                style={{ 
-                  fontSize: `${element.fontSize}px`, 
-                  color: element.color,
-                  textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                  fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                  fontWeight: element.fontFamily?.split('|')[1] || '400',
-                  lineHeight: element.lineHeight || 1.3,
-                  letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
-                  textAlign: element.textAlign || 'center',
-                  justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
-                  whiteSpace: 'pre-wrap',
-                  wordWrap: 'break-word',
-                }}
+                className="w-full h-full flex items-center justify-center select-none overflow-hidden p-1"
               >
-                {element.content}
+                <div
+                  style={{ 
+                    fontSize: `${element.fontSize}px`, 
+                    color: element.color,
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                    fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                    fontWeight: element.fontFamily?.split('|')[1] || '400',
+                    lineHeight: element.lineHeight || 1.3,
+                    letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                    textAlign: element.textAlign || 'center',
+                    whiteSpace: 'pre-wrap',
+                    wordWrap: 'break-word',
+                    width: '100%',
+                  }}
+                >
+                  {element.content}
+                </div>
               </div>
             )}
             
             {element.type === 'dates' && (
               <div 
-                className="w-full h-full flex items-center select-none overflow-hidden"
-                style={{ 
-                  fontSize: `${element.fontSize}px`, 
-                  color: element.color,
-                  textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                  fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                  fontWeight: element.fontFamily?.split('|')[1] || '400',
-                  letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
-                  textAlign: element.textAlign || 'center',
-                  justifyContent: element.textAlign === 'left' ? 'flex-start' : element.textAlign === 'right' ? 'flex-end' : 'center',
-                  whiteSpace: 'pre-wrap',
-                  wordWrap: 'break-word',
-                }}
+                className="w-full h-full flex items-center justify-center select-none overflow-hidden p-1"
               >
-                {element.content}
+                <div
+                  style={{ 
+                    fontSize: `${element.fontSize}px`, 
+                    color: element.color,
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                    fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                    fontWeight: element.fontFamily?.split('|')[1] || '400',
+                    letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
+                    textAlign: element.textAlign || 'center',
+                    whiteSpace: 'pre-wrap',
+                    wordWrap: 'break-word',
+                    width: '100%',
+                  }}
+                >
+                  {element.content}
+                </div>
               </div>
             )}
             
