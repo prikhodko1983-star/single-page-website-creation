@@ -161,6 +161,152 @@ def handle_crosses(conn, cursor, method: str, event: Dict[str, Any], headers: Di
         'body': json.dumps({'error': 'Method not allowed'})
     }
 
+def handle_flowers(conn, cursor, method: str, event: Dict[str, Any], headers: Dict[str, str]) -> Dict[str, Any]:
+    '''Обработка запросов для цветов'''
+    params = event.get('queryStringParameters', {})
+    
+    if method == 'GET':
+        flower_id = params.get('id')
+        if flower_id:
+            safe_id = flower_id.replace("'", "''")
+            cursor.execute(f"SELECT * FROM t_p78642605_single_page_website_.flowers WHERE id = '{safe_id}'")
+            flower = cursor.fetchone()
+            
+            if not flower:
+                return {
+                    'statusCode': 404,
+                    'headers': headers,
+                    'isBase64Encoded': False,
+                    'body': json.dumps({'error': 'Flower not found'})
+                }
+            
+            return {
+                'statusCode': 200,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps(dict(flower), default=str)
+            }
+        else:
+            cursor.execute("SELECT * FROM t_p78642605_single_page_website_.flowers WHERE is_active = true ORDER BY display_order, name")
+            flowers = cursor.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps([dict(f) for f in flowers], default=str)
+            }
+    
+    elif method == 'POST':
+        body_data = json.loads(event.get('body', '{}'))
+        name = body_data.get('name', '').replace("'", "''")
+        image_url = body_data.get('image_url', '').replace("'", "''")
+        display_order = body_data.get('display_order', 999)
+        
+        if not name or not image_url:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Name and image_url are required'})
+            }
+        
+        cursor.execute(
+            f"""
+            INSERT INTO t_p78642605_single_page_website_.flowers (name, image_url, display_order, is_active)
+            VALUES ('{name}', '{image_url}', {display_order}, true)
+            RETURNING *
+            """
+        )
+        new_flower = cursor.fetchone()
+        conn.commit()
+        
+        return {
+            'statusCode': 201,
+            'headers': headers,
+            'isBase64Encoded': False,
+            'body': json.dumps(dict(new_flower), default=str)
+        }
+    
+    elif method == 'PUT':
+        flower_id = params.get('id')
+        if not flower_id:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Flower ID required'})
+            }
+        
+        body_data = json.loads(event.get('body', '{}'))
+        safe_id = flower_id.replace("'", "''")
+        name = body_data.get('name', '').replace("'", "''")
+        image_url = body_data.get('image_url', '').replace("'", "''")
+        display_order = body_data.get('display_order', 999)
+        
+        cursor.execute(
+            f"""
+            UPDATE t_p78642605_single_page_website_.flowers 
+            SET name = '{name}', image_url = '{image_url}', display_order = {display_order}, updated_at = NOW()
+            WHERE id = '{safe_id}'
+            RETURNING *
+            """
+        )
+        updated_flower = cursor.fetchone()
+        conn.commit()
+        
+        if not updated_flower:
+            return {
+                'statusCode': 404,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Flower not found'})
+            }
+        
+        return {
+            'statusCode': 200,
+            'headers': headers,
+            'isBase64Encoded': False,
+            'body': json.dumps(dict(updated_flower), default=str)
+        }
+    
+    elif method == 'DELETE':
+        flower_id = params.get('id')
+        if not flower_id:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Flower ID required'})
+            }
+        
+        safe_id = flower_id.replace("'", "''")
+        cursor.execute(f"DELETE FROM t_p78642605_single_page_website_.flowers WHERE id = '{safe_id}' RETURNING id")
+        deleted = cursor.fetchone()
+        conn.commit()
+        
+        if not deleted:
+            return {
+                'statusCode': 404,
+                'headers': headers,
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Flower not found'})
+            }
+        
+        return {
+            'statusCode': 200,
+            'headers': headers,
+            'isBase64Encoded': False,
+            'body': json.dumps({'message': 'Flower deleted successfully'})
+        }
+    
+    return {
+        'statusCode': 405,
+        'headers': headers,
+        'isBase64Encoded': False,
+        'body': json.dumps({'error': 'Method not allowed'})
+    }
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     
@@ -189,6 +335,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         if params.get('type') == 'crosses':
             return handle_crosses(conn, cursor, method, event, headers)
+        
+        if params.get('type') == 'flowers':
+            return handle_flowers(conn, cursor, method, event, headers)
         
         if method == 'GET':
             monument_id = params.get('id')

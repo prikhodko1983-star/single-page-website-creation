@@ -234,6 +234,12 @@ export default function Admin() {
   const [uploadingCross, setUploadingCross] = useState(false);
   const [crossUploadProgress, setCrossUploadProgress] = useState(0);
   const [screenMode, setScreenMode] = useState(true);
+  
+  const [flowers, setFlowers] = useState<Array<{id: number, name: string, image_url: string, display_order: number}>>([]);
+  const [flowerForm, setFlowerForm] = useState({ name: '', image_url: '', display_order: 0 });
+  const [editingFlower, setEditingFlower] = useState<{id: number, name: string, image_url: string, display_order: number} | null>(null);
+  const [uploadingFlower, setUploadingFlower] = useState(false);
+  const [flowerUploadProgress, setFlowerUploadProgress] = useState(0);
 
   const categories_list = ["Вертикальные", "Горизонтальные", "Эксклюзивные", "С крестом"];
   const filterCategories = ["Все", ...categories_list];
@@ -254,6 +260,7 @@ export default function Admin() {
     loadProducts();
     loadCategories();
     loadCrosses();
+    loadFlowers();
     
     const savedGallery = localStorage.getItem('galleryItems');
     if (savedGallery) {
@@ -440,6 +447,139 @@ export default function Admin() {
     }
   };
 
+  const loadFlowers = async () => {
+    try {
+      const response = await fetch(`${API_URL}?type=flowers`);
+      if (response.ok) {
+        const data = await response.json();
+        setFlowers(data);
+      }
+    } catch (error) {
+      console.error('Error loading flowers:', error);
+      setFlowers([]);
+    }
+  };
+
+  const handleFlowerSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!flowerForm.name || !flowerForm.image_url) {
+      toast({
+        title: "Ошибка",
+        description: "Заполните все обязательные поля",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const method = editingFlower ? 'PUT' : 'POST';
+      const url = editingFlower ? `${API_URL}?type=flowers&id=${editingFlower.id}` : `${API_URL}?type=flowers`;
+
+      const displayOrder = editingFlower 
+        ? flowerForm.display_order 
+        : (flowers.length > 0 ? Math.max(...flowers.map(f => f.display_order)) + 1 : 1);
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...flowerForm,
+          display_order: displayOrder
+        })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Успех",
+          description: editingFlower ? "Цветок обновлен" : "Цветок добавлен"
+        });
+        loadFlowers();
+        setFlowerForm({ name: '', image_url: '', display_order: 0 });
+        setEditingFlower(null);
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось сохранить цветок",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleFlowerEdit = (flower: typeof flowers[0]) => {
+    setEditingFlower(flower);
+    setFlowerForm({
+      name: flower.name,
+      image_url: flower.image_url,
+      display_order: flower.display_order
+    });
+  };
+
+  const handleFlowerDelete = async (id: number) => {
+    if (!confirm('Удалить этот цветок?')) return;
+
+    try {
+      const response = await fetch(`${API_URL}?type=flowers&id=${id}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        toast({ title: "Успех", description: "Цветок удален" });
+        loadFlowers();
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось удалить цветок",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleFlowerOrderChange = async (flower: typeof flowers[0], direction: 'up' | 'down') => {
+    const currentIndex = flowers.findIndex(f => f.id === flower.id);
+    if (currentIndex === -1) return;
+    
+    if (direction === 'up' && currentIndex === 0) return;
+    if (direction === 'down' && currentIndex === flowers.length - 1) return;
+    
+    const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    const swapFlower = flowers[swapIndex];
+    
+    try {
+      await Promise.all([
+        fetch(`${API_URL}?type=flowers&id=${flower.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: flower.name,
+            image_url: flower.image_url,
+            display_order: swapFlower.display_order
+          })
+        }),
+        fetch(`${API_URL}?type=flowers&id=${swapFlower.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: swapFlower.name,
+            image_url: swapFlower.image_url,
+            display_order: flower.display_order
+          })
+        })
+      ]);
+      
+      loadFlowers();
+      toast({ title: "Успех", description: "Порядок изменен" });
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось изменить порядок",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleMonumentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -518,13 +658,14 @@ export default function Admin() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'monument' | 'gallery' | 'product' | 'cross') => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'monument' | 'gallery' | 'product' | 'cross' | 'flower') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (target === 'monument') setUploading(true);
     if (target === 'gallery') setUploadingGallery(true);
     if (target === 'cross') setUploadingCross(true);
+    if (target === 'flower') setUploadingFlower(true);
 
     try {
       const reader = new FileReader();
@@ -560,6 +701,13 @@ export default function Admin() {
                 image_url: data.url,
                 name: crossForm.name || fileName
               });
+            } else if (target === 'flower') {
+              const fileName = file.name.replace(/\.[^/.]+$/, '');
+              setFlowerForm({ 
+                ...flowerForm, 
+                image_url: data.url,
+                name: flowerForm.name || fileName
+              });
             }
             
             toast({
@@ -584,6 +732,7 @@ export default function Admin() {
           if (target === 'monument') setUploading(false);
           if (target === 'gallery') setUploadingGallery(false);
           if (target === 'cross') setUploadingCross(false);
+          if (target === 'flower') setUploadingFlower(false);
         }
       };
       
@@ -596,6 +745,7 @@ export default function Admin() {
         if (target === 'monument') setUploading(false);
         if (target === 'gallery') setUploadingGallery(false);
         if (target === 'cross') setUploadingCross(false);
+        if (target === 'flower') setUploadingFlower(false);
       };
       
       reader.readAsDataURL(file);
@@ -609,6 +759,7 @@ export default function Admin() {
       if (target === 'monument') setUploading(false);
       if (target === 'gallery') setUploadingGallery(false);
       if (target === 'cross') setUploadingCross(false);
+      if (target === 'flower') setUploadingFlower(false);
     }
   };
 
@@ -823,6 +974,10 @@ export default function Admin() {
             <TabsTrigger value="crosses" className="font-oswald">
               <Icon name="Cross" size={16} className="mr-2" />
               Кресты
+            </TabsTrigger>
+            <TabsTrigger value="flowers" className="font-oswald">
+              <Icon name="Flower2" size={16} className="mr-2" />
+              Цветы
             </TabsTrigger>
             <TabsTrigger value="gallery" className="font-oswald">
               <Icon name="Images" size={16} className="mr-2" />
@@ -2326,6 +2481,158 @@ export default function Admin() {
                     <Icon name="Plus" size={48} className="mx-auto mb-4 opacity-20" />
                     <p>Нет крестов в галерее</p>
                     <p className="text-sm">Добавьте первый крест используя форму выше</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="flowers" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald">
+                  {editingFlower ? 'Редактировать цветок' : 'Добавить цветок'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleFlowerSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="flower-name">Название *</Label>
+                    <Input
+                      id="flower-name"
+                      value={flowerForm.name}
+                      onChange={(e) => setFlowerForm({ ...flowerForm, name: e.target.value })}
+                      placeholder="Роза красная"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Изображение *</Label>
+                    <div className="flex gap-4 items-start">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'flower')}
+                        disabled={uploadingFlower}
+                      />
+                      {flowerForm.image_url && (
+                        <div className="w-20 h-20 rounded border overflow-hidden bg-secondary">
+                          <img src={flowerForm.image_url} alt="Preview" className="w-full h-full object-contain" />
+                        </div>
+                      )}
+                    </div>
+                    {uploadingFlower && <Progress value={flowerUploadProgress} className="mt-2" />}
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Новый цветок добавится в конец галереи. Используйте кнопки ↑↓ для изменения порядка.
+                    </p>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button type="submit" disabled={uploadingFlower}>
+                      <Icon name={editingFlower ? "Save" : "Plus"} size={16} className="mr-2" />
+                      {editingFlower ? 'Сохранить изменения' : 'Добавить цветок'}
+                    </Button>
+                    {editingFlower && (
+                      <Button type="button" variant="outline" onClick={() => {
+                        setEditingFlower(null);
+                        setFlowerForm({ name: '', image_url: '', display_order: 0 });
+                      }}>
+                        Отменить
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="font-oswald">Цветы в галерее ({flowers.length})</CardTitle>
+                  <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg border border-primary/20">
+                    <input
+                      type="checkbox"
+                      id="flower-screen-mode"
+                      checked={screenMode}
+                      onChange={(e) => setScreenMode(e.target.checked)}
+                      className="w-5 h-5 rounded border-primary/30"
+                    />
+                    <Label htmlFor="flower-screen-mode" className="cursor-pointer font-medium">
+                      Режим "Экран"
+                    </Label>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Убирает черный цвет с фотографии
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {flowers.map((flower, index) => (
+                    <div key={flower.id} className="relative group">
+                      <div className={`aspect-square rounded-lg border-2 border-border overflow-hidden ${screenMode ? 'bg-black' : 'bg-secondary'}`}>
+                        <img 
+                          src={flower.image_url} 
+                          alt={flower.name} 
+                          className="w-full h-full object-contain p-2"
+                          style={screenMode ? { mixBlendMode: 'screen' } : {}}
+                        />
+                      </div>
+                      <div className="mt-2 text-sm font-medium text-center">{flower.name}</div>
+                      <div className="text-xs text-muted-foreground text-center">#{index + 1}</div>
+                      
+                      <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleFlowerOrderChange(flower, 'up')}
+                          disabled={index === 0}
+                          className="h-8 w-8 p-0"
+                          title="Переместить вверх"
+                        >
+                          <Icon name="ChevronUp" size={14} />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleFlowerOrderChange(flower, 'down')}
+                          disabled={index === flowers.length - 1}
+                          className="h-8 w-8 p-0"
+                          title="Переместить вниз"
+                        >
+                          <Icon name="ChevronDown" size={14} />
+                        </Button>
+                      </div>
+                      
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleFlowerEdit(flower)}
+                          className="h-8 w-8 p-0"
+                          title="Редактировать"
+                        >
+                          <Icon name="Pencil" size={14} />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleFlowerDelete(flower.id)}
+                          className="h-8 w-8 p-0"
+                          title="Удалить"
+                        >
+                          <Icon name="Trash2" size={14} />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {flowers.length === 0 && (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Icon name="Plus" size={48} className="mx-auto mb-4 opacity-20" />
+                    <p>Нет цветов в галерее</p>
+                    <p className="text-sm">Добавьте первый цветок используя форму выше</p>
                   </div>
                 )}
               </CardContent>

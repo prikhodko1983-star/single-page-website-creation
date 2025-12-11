@@ -64,6 +64,9 @@ const Constructor = () => {
   
   const [crosses, setCrosses] = useState<Array<{id: number, name: string, image_url: string}>>([]);
   const [isLoadingCrosses, setIsLoadingCrosses] = useState(false);
+  
+  const [flowers, setFlowers] = useState<Array<{id: number, name: string, image_url: string}>>([]);
+  const [isLoadingFlowers, setIsLoadingFlowers] = useState(false);
 
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
@@ -123,6 +126,24 @@ const Constructor = () => {
       setCrosses([]);
     } finally {
       setIsLoadingCrosses(false);
+    }
+  };
+
+  const loadFlowers = async () => {
+    setIsLoadingFlowers(true);
+    try {
+      const response = await fetch('https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6?type=flowers');
+      if (response.ok) {
+        const data = await response.json();
+        setFlowers(data);
+      } else {
+        setFlowers([]);
+      }
+    } catch (error) {
+      console.error('Error loading flowers:', error);
+      setFlowers([]);
+    } finally {
+      setIsLoadingFlowers(false);
     }
   };
 
@@ -861,6 +882,9 @@ const Constructor = () => {
             crosses={crosses}
             isLoadingCrosses={isLoadingCrosses}
             loadCrosses={loadCrosses}
+            flowers={flowers}
+            isLoadingFlowers={isLoadingFlowers}
+            loadFlowers={loadFlowers}
           />
 
           <ConstructorCanvas

@@ -61,6 +61,9 @@ interface ConstructorLibraryProps {
   crosses: Array<{id: number, name: string, image_url: string}>;
   isLoadingCrosses: boolean;
   loadCrosses: () => void;
+  flowers: Array<{id: number, name: string, image_url: string}>;
+  isLoadingFlowers: boolean;
+  loadFlowers: () => void;
 }
 
 export const ConstructorLibrary = ({
@@ -98,10 +101,14 @@ export const ConstructorLibrary = ({
   crosses,
   isLoadingCrosses,
   loadCrosses,
+  flowers,
+  isLoadingFlowers,
+  loadFlowers,
 }: ConstructorLibraryProps) => {
   
   useEffect(() => {
     loadCrosses();
+    loadFlowers();
   }, []);
 
   return (
@@ -111,7 +118,10 @@ export const ConstructorLibrary = ({
         
         <Tabs defaultValue="catalog" className="w-full" onValueChange={(value) => {
           if (value === 'catalog') loadCatalog();
-          if (value === 'elements') loadCrosses();
+          if (value === 'elements') {
+            loadCrosses();
+            loadFlowers();
+          }
         }}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="catalog">Каталог</TabsTrigger>
@@ -366,14 +376,33 @@ export const ConstructorLibrary = ({
               )}
             </div>
             
-            <Button 
-              onClick={() => addImageElement('https://cdn.poehali.dev/files/flower-icon.png', 'flower')} 
-              variant="outline" 
-              className="w-full justify-start"
-            >
-              <Icon name="Flower" size={18} className="mr-2" />
-              Добавить цветы
-            </Button>
+            <div className="space-y-2 p-3 bg-secondary/20 rounded-lg">
+              <Label className="font-semibold">Цветы</Label>
+              {isLoadingFlowers ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : flowers.length > 0 ? (
+                <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-2">
+                  {flowers.map((flower) => (
+                    <button 
+                      key={flower.id}
+                      onClick={() => addImageElement(flower.image_url, 'flower')} 
+                      className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5 flex flex-col"
+                    >
+                      <div className="flex-1 flex items-center justify-center">
+                        <img src={flower.image_url} alt={flower.name} className="w-full h-full object-contain" />
+                      </div>
+                      <div className="text-xs text-center mt-2 text-muted-foreground">{flower.name}</div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Цветы не найдены
+                </p>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
       </CardContent>
