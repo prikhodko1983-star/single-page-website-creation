@@ -724,12 +724,9 @@ const Constructor = () => {
 
       if (!canvasRef.current) return;
       
-      // Получаем реальные размеры canvas на экране
-      const rect = canvasRef.current.getBoundingClientRect();
-      
-      // Размеры для экспорта в высоком качестве (умножаем на 3)
-      const exportWidth = Math.round(rect.width * 3);
-      const exportHeight = Math.round(rect.height * 3);
+      // Фиксированный размер экспорта (3:4 пропорции)
+      const exportWidth = 1200;
+      const exportHeight = 1600;
       
       const canvasElement = document.createElement('canvas');
       canvasElement.width = exportWidth;
@@ -738,8 +735,12 @@ const Constructor = () => {
       const ctx = canvasElement.getContext('2d');
       if (!ctx) return;
       
-      // Единый масштаб для всех элементов
-      const scale = 3;
+      // Получаем реальные размеры canvas на экране
+      const rect = canvasRef.current.getBoundingClientRect();
+      
+      // Вычисляем масштаб от экранного размера к экспортному
+      const scaleX = exportWidth / rect.width;
+      const scaleY = exportHeight / rect.height;
       
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, exportWidth, exportHeight);
@@ -770,27 +771,8 @@ const Constructor = () => {
       
       const monumentImg = await loadImageWithCORS(monumentImage);
       if (monumentImg) {
-        // Рисуем изображение с сохранением пропорций (как object-contain)
-        const imgRatio = monumentImg.width / monumentImg.height;
-        const canvasRatio = exportWidth / exportHeight;
-        
-        let drawWidth, drawHeight, offsetX, offsetY;
-        
-        if (imgRatio > canvasRatio) {
-          // Изображение шире — вписываем по ширине
-          drawWidth = exportWidth;
-          drawHeight = exportWidth / imgRatio;
-          offsetX = 0;
-          offsetY = (exportHeight - drawHeight) / 2;
-        } else {
-          // Изображение выше — вписываем по высоте
-          drawHeight = exportHeight;
-          drawWidth = exportHeight * imgRatio;
-          offsetX = (exportWidth - drawWidth) / 2;
-          offsetY = 0;
-        }
-        
-        ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
+        // Растягиваем изображение на весь canvas (как на экране с aspect-[3/4])
+        ctx.drawImage(monumentImg, 0, 0, exportWidth, exportHeight);
       } else {
         ctx.fillStyle = '#1a1a1a';
         ctx.fillRect(0, 0, exportWidth, exportHeight);
@@ -806,11 +788,11 @@ const Constructor = () => {
       for (const element of elements) {
         ctx.save();
         
-        // Масштабируем позицию и размер элемента с единым масштабом
-        const scaledX = element.x * scale;
-        const scaledY = element.y * scale;
-        const scaledWidth = element.width * scale;
-        const scaledHeight = element.height * scale;
+        // Масштабируем позицию и размер элемента
+        const scaledX = element.x * scaleX;
+        const scaledY = element.y * scaleY;
+        const scaledWidth = element.width * scaleX;
+        const scaledHeight = element.height * scaleY;
         
         const centerX = scaledX + scaledWidth / 2;
         const centerY = scaledY + scaledHeight / 2;
@@ -821,15 +803,15 @@ const Constructor = () => {
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
-          const scaledFontSize = (element.fontSize || 24) * scale;
+          const scaledFontSize = (element.fontSize || 24) * scaleX;
           ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 8 * scale;
-          ctx.shadowOffsetX = 4 * scale;
-          ctx.shadowOffsetY = 4 * scale;
+          ctx.shadowBlur = 8 * scaleX;
+          ctx.shadowOffsetX = 4 * scaleX;
+          ctx.shadowOffsetY = 4 * scaleY;
           
           const lines = element.content?.split('\n') || [];
           const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
