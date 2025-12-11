@@ -1119,6 +1119,7 @@ const Constructor = () => {
             monumentImage={monumentImage}
             elements={elements}
             selectedElement={selectedElement}
+            setSelectedElement={setSelectedElement}
             rotateMode={rotateMode}
             handleMouseDown={handleMouseDown}
             handleTouchStart={handleTouchStart}
