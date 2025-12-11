@@ -189,8 +189,16 @@ export const ConstructorProperties = ({
                   <input
                     type="checkbox"
                     checked={selectedEl.screenMode || false}
-                    onChange={(e) => updateElement(selectedEl.id, { screenMode: e.target.checked })}
-                    className="w-5 h-5 rounded border-primary/30"
+                    onChange={(e) => {
+                      console.log('Checkbox clicked:', {
+                        elementId: selectedEl.id,
+                        elementType: selectedEl.type,
+                        newValue: e.target.checked,
+                        hasSrc: !!selectedEl.src
+                      });
+                      updateElement(selectedEl.id, { screenMode: e.target.checked });
+                    }}
+                    className="w-5 h-5 rounded border-primary/30 cursor-pointer"
                   />
                   <span className="font-medium">Режим "Экран"</span>
                 </Label>
