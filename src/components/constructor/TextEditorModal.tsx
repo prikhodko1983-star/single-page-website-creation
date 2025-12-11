@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Icon from "@/components/ui/icon";
-import { useState, useRef } from "react";
 
 interface CanvasElement {
   id: string;
@@ -40,31 +39,7 @@ export const TextEditorModal = ({
   setEditingElement,
   onApply,
 }: TextEditorModalProps) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [selectionStart, setSelectionStart] = useState(0);
-  const [selectionEnd, setSelectionEnd] = useState(0);
-  const [selectedFontSize, setSelectedFontSize] = useState(24);
-  
   if (!isOpen || !editingElement) return null;
-
-  const handleTextSelect = () => {
-    if (textareaRef.current) {
-      setSelectionStart(textareaRef.current.selectionStart);
-      setSelectionEnd(textareaRef.current.selectionEnd);
-    }
-  };
-
-  const applyFontSizeToSelection = () => {
-    if (!textareaRef.current || selectionStart === selectionEnd) return;
-    
-    const text = editingElement.content || '';
-    const before = text.substring(0, selectionStart);
-    const selected = text.substring(selectionStart, selectionEnd);
-    const after = text.substring(selectionEnd);
-    
-    const formatted = `${before}<span style="font-size:${selectedFontSize}px">${selected}</span>${after}`;
-    setEditingElement({ ...editingElement, content: formatted });
-  };
 
   const handleApply = () => {
     onApply({
@@ -104,10 +79,8 @@ export const TextEditorModal = ({
               <div>
                 <Label>Текст</Label>
                 <textarea
-                  ref={textareaRef}
                   value={editingElement.content || ''}
                   onChange={(e) => setEditingElement({ ...editingElement, content: e.target.value })}
-                  onSelect={handleTextSelect}
                   className="w-full min-h-32 p-3 mt-2 rounded border bg-background text-foreground"
                   placeholder="Введите текст..."
                   style={{
@@ -116,29 +89,6 @@ export const TextEditorModal = ({
                     fontSize: '16px',
                   }}
                 />
-                {selectionStart !== selectionEnd && (
-                  <div className="mt-2 p-3 bg-primary/10 rounded border border-primary/30">
-                    <Label className="text-xs mb-2 block">Форматирование выделенного текста</Label>
-                    <div className="flex gap-2 items-center">
-                      <Input
-                        type="number"
-                        min="12"
-                        max="120"
-                        value={selectedFontSize}
-                        onChange={(e) => setSelectedFontSize(parseInt(e.target.value) || 24)}
-                        className="w-20"
-                      />
-                      <span className="text-sm text-muted-foreground">px</span>
-                      <Button
-                        size="sm"
-                        onClick={applyFontSizeToSelection}
-                      >
-                        <Icon name="Type" size={16} className="mr-1" />
-                        Применить
-                      </Button>
-                    </div>
-                  </div>
-                )}
               </div>
             
               <div>
@@ -264,8 +214,9 @@ export const TextEditorModal = ({
                     whiteSpace: 'pre-wrap',
                     wordWrap: 'break-word',
                   }}
-                  dangerouslySetInnerHTML={{ __html: editingElement.content || 'Введите текст...' }}
-                />
+                >
+                  {editingElement.content || 'Введите текст...'}
+                </div>
               </div>
               <p className="text-xs text-muted-foreground mt-2 text-center">
                 Все изменения видны в реальном времени

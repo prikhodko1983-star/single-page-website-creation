@@ -113,8 +113,9 @@ export const ConstructorCanvas = ({
                   whiteSpace: 'pre-wrap',
                   wordWrap: 'break-word',
                 }}
-                dangerouslySetInnerHTML={{ __html: element.content || '' }}
-              />
+              >
+                {element.content}
+              </div>
             )}
             
             {element.type === 'epitaph' && (
@@ -133,8 +134,9 @@ export const ConstructorCanvas = ({
                   whiteSpace: 'pre-wrap',
                   wordWrap: 'break-word',
                 }}
-                dangerouslySetInnerHTML={{ __html: element.content || '' }}
-              />
+              >
+                {element.content}
+              </div>
             )}
             
             {element.type === 'fio' && (
@@ -153,8 +155,9 @@ export const ConstructorCanvas = ({
                   whiteSpace: 'pre-wrap',
                   wordWrap: 'break-word',
                 }}
-                dangerouslySetInnerHTML={{ __html: element.content || '' }}
-              />
+              >
+                {element.content}
+              </div>
             )}
             
             {element.type === 'dates' && (
@@ -172,8 +175,9 @@ export const ConstructorCanvas = ({
                   whiteSpace: 'pre-wrap',
                   wordWrap: 'break-word',
                 }}
-                dangerouslySetInnerHTML={{ __html: element.content || '' }}
-              />
+              >
+                {element.content}
+              </div>
             )}
             
             {element.type === 'photo' && element.src && (
