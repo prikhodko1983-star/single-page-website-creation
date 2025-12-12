@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "Test background removal",
+      "method": "POST",
+      "body": {
+        "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "image": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

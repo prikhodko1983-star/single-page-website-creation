@@ -372,13 +372,54 @@ const Constructor = () => {
     }
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const removeBackground = async (imageData: string): Promise<string> => {
+    try {
+      const response = await fetch('https://functions.poehali.dev/e188f769-feb3-47f3-bf0c-377ea207e3c7', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: imageData,
+          threshold: 240
+        }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to remove background');
+      
+      const data = await response.json();
+      return data.image;
+    } catch (error) {
+      console.error('❌ Ошибка удаления фона:', error);
+      toast({
+        title: "Ошибка удаления фона",
+        description: "Не удалось обработать изображение",
+        variant: "destructive",
+      });
+      return imageData;
+    }
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
+    const shouldRemoveBg = confirm('Удалить фон с изображения?\n\nНажмите "OK" чтобы удалить светлый фон\nНажмите "Отмена" чтобы оставить как есть');
+    
     const reader = new FileReader();
-    reader.onload = (event) => {
-      const photoUrl = event.target?.result as string;
+    reader.onload = async (event) => {
+      let photoUrl = event.target?.result as string;
+      
+      if (shouldRemoveBg) {
+        toast({
+          title: "Обработка изображения...",
+          description: "Удаляем фон, подождите",
+        });
+        photoUrl = await removeBackground(photoUrl);
+        toast({
+          title: "Готово!",
+          description: "Фон успешно удален",
+        });
+      }
+      
       const newElement: CanvasElement = {
         id: Date.now().toString(),
         type: 'photo',
@@ -390,6 +431,7 @@ const Constructor = () => {
         rotation: 0,
       };
       setElements([...elements, newElement]);
+      setSelectedElement(newElement.id);
     };
     reader.readAsDataURL(file);
     
