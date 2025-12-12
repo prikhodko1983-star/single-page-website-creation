@@ -74,7 +74,7 @@ export const ConstructorCanvas = ({
     <div className="flex flex-col items-center">
       <div 
         ref={canvasRef}
-        className="relative w-full max-w-2xl aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl border-4 border-border touch-none select-none"
+        className="relative w-full max-w-xl aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl border-4 border-border touch-none select-none"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
