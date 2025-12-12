@@ -19,6 +19,7 @@ interface CanvasElement {
   lineHeight?: number;
   letterSpacing?: number;
   textAlign?: 'left' | 'center' | 'right';
+  flipHorizontal?: boolean;
 }
 
 interface ConstructorCanvasProps {
@@ -218,6 +219,9 @@ export const ConstructorCanvas = ({
                 src={element.screenMode && element.processedSrc ? element.processedSrc : element.src} 
                 alt={element.type}
                 className="w-full h-full object-contain select-none"
+                style={{
+                  transform: element.flipHorizontal ? 'scaleX(-1)' : 'none'
+                }}
                 draggable={false}
               />
             )}

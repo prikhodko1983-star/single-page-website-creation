@@ -26,6 +26,7 @@ interface CanvasElement {
   lineHeight?: number;
   letterSpacing?: number;
   textAlign?: 'left' | 'center' | 'right';
+  flipHorizontal?: boolean;
 }
 
 const Constructor = () => {

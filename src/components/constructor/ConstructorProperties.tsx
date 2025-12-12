@@ -23,6 +23,7 @@ interface CanvasElement {
   lineHeight?: number;
   letterSpacing?: number;
   textAlign?: 'left' | 'center' | 'right';
+  flipHorizontal?: boolean;
 }
 
 interface ConstructorPropertiesProps {
@@ -186,6 +187,20 @@ export const ConstructorProperties = ({
                 <span>Вправо →</span>
               </div>
             </div>
+            
+            {(selectedEl.type === 'image' || selectedEl.type === 'cross' || selectedEl.type === 'flower') && (
+              <div>
+                <Label>Отзеркалить по горизонтали</Label>
+                <Button
+                  onClick={() => updateElement(selectedEl.id, { flipHorizontal: !selectedEl.flipHorizontal })}
+                  variant={selectedEl.flipHorizontal ? "default" : "outline"}
+                  className="w-full mt-2"
+                >
+                  <Icon name={selectedEl.flipHorizontal ? "Check" : "FlipHorizontal"} size={18} className="mr-2" />
+                  {selectedEl.flipHorizontal ? 'Отзеркалено' : 'Отзеркалить'}
+                </Button>
+              </div>
+            )}
             
             {(selectedEl.type === 'photo' || selectedEl.type === 'image' || selectedEl.type === 'cross' || selectedEl.type === 'flower') && selectedEl.src && (
               <div className="space-y-2">
