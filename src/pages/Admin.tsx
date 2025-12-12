@@ -1626,14 +1626,14 @@ export default function Admin() {
                         ID категорий
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
+                    <DialogContent className="max-w-xl max-h-[85vh] flex flex-col">
                       <DialogHeader>
                         <DialogTitle>Справочник ID категорий</DialogTitle>
                         <DialogDescription>
                           Используйте эти ID при заполнении Excel файла в колонке "ID категории"
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                      <div className="space-y-2 max-h-[400px] overflow-y-auto flex-1">
                         {categories.length === 0 ? (
                           <p className="text-sm text-muted-foreground">Категории не созданы. Создайте категории перед импортом товаров.</p>
                         ) : (
@@ -1708,7 +1708,7 @@ export default function Admin() {
                       </Button>
                     </DialogTrigger>
                   <DialogContent 
-                    className="max-w-2xl max-h-[90vh] overflow-y-auto"
+                    className="max-w-xl max-h-[85vh] overflow-y-auto"
                     style={{ touchAction: 'pan-y' } as React.CSSProperties}
                   >
                     <DialogHeader>
