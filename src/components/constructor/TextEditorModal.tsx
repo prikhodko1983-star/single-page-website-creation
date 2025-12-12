@@ -61,8 +61,8 @@ export const TextEditorModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-4xl max-h-[90vh] overflow-auto">
-        <CardContent className="p-6">
+      <Card className="w-full max-w-3xl max-h-[85vh] overflow-auto">
+        <CardContent className="p-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Редактор текста</h2>
             <Button
