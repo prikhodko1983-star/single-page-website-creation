@@ -193,6 +193,7 @@ export const ConstructorCanvas = ({
                     textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                     fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                     fontWeight: element.fontFamily?.split('|')[1] || '400',
+                    lineHeight: element.lineHeight || 1.2,
                     letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
                     textAlign: element.textAlign || 'center',
                     whiteSpace: 'pre-wrap',
