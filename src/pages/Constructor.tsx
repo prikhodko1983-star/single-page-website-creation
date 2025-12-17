@@ -168,17 +168,7 @@ const Constructor = () => {
     }
   };
 
-  const monumentImages = [
-    { id: '1', src: 'https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png', name: 'Вертикальный' },
-    { id: '2', src: 'https://cdn.poehali.dev/files/c80c1bd4-c413-425a-a1fc-91dbb36a8de4.jpg', name: 'Горизонтальный' },
-    { id: '3', src: 'https://cdn.poehali.dev/files/a6e29eb2-0f18-47ca-917e-adac360db4c3.jpeg', name: 'Эксклюзивный' },
-    { id: '4', src: 'https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/files/a953008d-a55f-41f3-9716-0889bec7b486.jpg', name: 'Классический' },
-    { id: '5', src: 'https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/files/b4dcbf74-8910-472b-8c57-60782a8ed308.jpg', name: 'Крест' },
-    { id: '6', src: 'https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/files/70b4ec4a-540e-4deb-b2c1-f10b74841657.jpg', name: 'Волна' },
-    { id: '7', src: 'https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/files/48622168-6eae-44fe-adfe-3369b16806a9.jpg', name: 'Арка' },
-    { id: '8', src: 'https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/files/c7ecf157-0f48-4a5c-a003-6d1abba97aa6.jpg', name: 'Двойной' },
-    { id: '9', src: 'https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/files/408d6af0-9259-4a19-a531-558ae5297497.jpg', name: 'Книга' },
-  ];
+
 
   const fonts = [
     { id: 'font1', name: '№ 1/1а', style: 'Playfair Display', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Playfair Display|400' },
