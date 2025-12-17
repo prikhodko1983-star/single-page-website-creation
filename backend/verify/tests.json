@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Verify without token",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "Token required"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

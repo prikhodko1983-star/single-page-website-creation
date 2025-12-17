@@ -138,7 +138,7 @@ export default function IndexShopSection() {
                     )}
                     {product.is_featured && (
                       <Badge className="absolute top-3 right-3 bg-primary">
-                        Хит продаж
+                        Хит
                       </Badge>
                     )}
                     {!product.in_stock && (
