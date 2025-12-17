@@ -1,9 +1,8 @@
 {
+  "image-categories": "https://functions.poehali.dev/dee0114f-9dc3-4783-87b7-346a133d7c73",
   "change-admin-password": "https://functions.poehali.dev/cf510a11-9eb6-49d2-905f-18c803ab5aa0",
   "verify-token": "https://functions.poehali.dev/8ac57caf-53fd-4068-b6ca-7c89b2e92e0c",
   "auth": "https://functions.poehali.dev/64953dd9-0671-4262-8b63-ebef8dcb5c54",
-  "verify": "https://functions.poehali.dev/a54c611e-fa51-44a1-ad22-6ee3fc896d77",
-  "remove-background": "https://functions.poehali.dev/e188f769-feb3-47f3-bf0c-377ea207e3c7",
   "process-image": "https://functions.poehali.dev/7984fbed-b9d7-47d1-aa0d-cf674fc696d8",
   "upload-image": "https://functions.poehali.dev/131d63b7-bef6-496a-a392-c04e347cd6aa",
   "products": "https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d",

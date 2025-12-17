@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface CanvasElement {
   id: string;
@@ -104,12 +104,48 @@ export const ConstructorLibrary = ({
   isLoadingFlowers,
   loadFlowers,
 }: ConstructorLibraryProps) => {
-  
+  const [imageCategories, setImageCategories] = useState<Array<{id: number, name: string, slug: string}>>([]);
+  const [categoryImages, setCategoryImages] = useState<Array<{id: number, category_id: number, name: string, image_url: string, category_name: string}>>([]);
+  const [selectedImageCategory, setSelectedImageCategory] = useState<number | null>(null);
+  const [isLoadingImages, setIsLoadingImages] = useState(false);
+
   useEffect(() => {
     loadCatalog();
     loadCrosses();
     loadFlowers();
+    loadImageCategories();
   }, []);
+
+  const loadImageCategories = async () => {
+    try {
+      const response = await fetch('https://functions.poehali.dev/dee0114f-9dc3-4783-87b7-346a133d7c73?type=categories');
+      if (response.ok) {
+        const data = await response.json();
+        setImageCategories(data);
+        if (data.length > 0) {
+          setSelectedImageCategory(data[0].id);
+          loadCategoryImages(data[0].id);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading image categories:', error);
+    }
+  };
+
+  const loadCategoryImages = async (categoryId: number) => {
+    setIsLoadingImages(true);
+    try {
+      const response = await fetch(`https://functions.poehali.dev/dee0114f-9dc3-4783-87b7-346a133d7c73?type=images&category_id=${categoryId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setCategoryImages(data);
+      }
+    } catch (error) {
+      console.error('Error loading category images:', error);
+    } finally {
+      setIsLoadingImages(false);
+    }
+  };
 
   return (
     <Card>
@@ -123,8 +159,9 @@ export const ConstructorLibrary = ({
             loadFlowers();
           }
         }}>
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="catalog">Каталог</TabsTrigger>
+            <TabsTrigger value="images">Изображения</TabsTrigger>
             <TabsTrigger value="elements">Элементы</TabsTrigger>
           </TabsList>
           
@@ -205,6 +242,79 @@ export const ConstructorLibrary = ({
             )}
           </TabsContent>
           
+          <TabsContent value="images" className="space-y-3 mt-4">
+            <Label>Изображения по категориям</Label>
+            
+            {isLoadingImages ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              <>
+                {imageCategories.length > 0 && (
+                  <Tabs value={selectedImageCategory?.toString()} onValueChange={(val) => {
+                    const catId = parseInt(val);
+                    setSelectedImageCategory(catId);
+                    loadCategoryImages(catId);
+                  }} className="w-full">
+                    <TabsList className="w-full flex-wrap h-auto gap-1">
+                      {imageCategories.map(cat => {
+                        const count = categoryImages.filter(img => img.category_id === cat.id).length;
+                        return (
+                          <TabsTrigger 
+                            key={cat.id} 
+                            value={cat.id.toString()} 
+                            className="text-xs flex-1 min-w-[80px]"
+                          >
+                            <span className="truncate">{cat.name}</span>
+                            <Badge variant="secondary" className="ml-1 h-4 text-[10px] px-1">
+                              {count}
+                            </Badge>
+                          </TabsTrigger>
+                        );
+                      })}
+                    </TabsList>
+                    
+                    {imageCategories.map(cat => {
+                      const images = categoryImages.filter(img => img.category_id === cat.id);
+                      return (
+                        <TabsContent key={cat.id} value={cat.id.toString()} className="mt-3">
+                          {images.length > 0 ? (
+                            <div className="grid grid-cols-3 gap-2">
+                              {images.map(image => (
+                                <button
+                                  key={image.id}
+                                  onClick={() => addImageElement(image.image_url, 'image')}
+                                  className="relative aspect-square rounded-lg overflow-hidden border-2 border-border hover:border-primary/50 transition-all bg-secondary"
+                                >
+                                  <img src={image.image_url} alt={image.name} className="w-full h-full object-contain p-1" />
+                                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-[10px] p-1 text-center">
+                                    <div className="font-medium truncate">{image.name}</div>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-8 text-muted-foreground">
+                              <p className="text-sm">Нет изображений в этой категории</p>
+                            </div>
+                          )}
+                        </TabsContent>
+                      );
+                    })}
+                  </Tabs>
+                )}
+                
+                {imageCategories.length === 0 && (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Icon name="Image" size={48} className="mx-auto mb-4 opacity-20" />
+                    <p className="text-sm font-medium">Нет категорий</p>
+                    <p className="text-xs mt-1">Добавьте категории изображений через админ-панель</p>
+                  </div>
+                )}
+              </>
+            )}
+          </TabsContent>
           
           <TabsContent value="elements" className="space-y-3 mt-4">
             <div className="space-y-3 p-3 bg-secondary/20 rounded-lg">

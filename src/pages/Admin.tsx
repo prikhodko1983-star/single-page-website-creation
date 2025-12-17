@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
+import { ImageCategoriesManager } from '@/components/admin/ImageCategoriesManager';
 
 const useAuth = () => {
   const navigate = useNavigate();
@@ -1134,7 +1135,7 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8 sticky top-[73px] z-30 bg-background">
+          <TabsList className="grid w-full grid-cols-6 mb-8 sticky top-[73px] z-30 bg-background">
             <TabsTrigger value="overview" className="font-oswald">
               <Icon name="LayoutDashboard" size={16} className="mr-2" />
               Обзор
@@ -1154,6 +1155,10 @@ export default function Admin() {
             <TabsTrigger value="gallery" className="font-oswald">
               <Icon name="Images" size={16} className="mr-2" />
               Галерея работ
+            </TabsTrigger>
+            <TabsTrigger value="images" className="font-oswald">
+              <Icon name="Image" size={16} className="mr-2" />
+              Изображения
             </TabsTrigger>
           </TabsList>
 
@@ -2654,6 +2659,10 @@ export default function Admin() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="images">
+            <ImageCategoriesManager />
           </TabsContent>
         </Tabs>
       </div>

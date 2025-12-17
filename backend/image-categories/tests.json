@@ -1,0 +1,18 @@
+{
+  "tests": [
+    {
+      "name": "Get all categories",
+      "method": "GET",
+      "path": "/?type=categories",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get images by category",
+      "method": "GET",
+      "path": "/?type=images&category_id=1",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    }
+  ]
+}
