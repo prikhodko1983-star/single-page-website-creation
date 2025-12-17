@@ -3,6 +3,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 import requests
+import numpy as np
 
 def handler(event, context):
     '''
@@ -53,39 +54,38 @@ def handler(event, context):
         # Открываем изображение
         img = Image.open(BytesIO(response.content))
         
+        # Уменьшаем размер для ускорения обработки
+        max_size = 1200
+        if img.width > max_size or img.height > max_size:
+            img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+        
         # Конвертируем в RGBA если нужно
         if img.mode != 'RGBA':
             img = img.convert('RGBA')
         
-        # Получаем данные пикселей
-        pixels = img.load()
-        width, height = img.size
+        # Конвертируем в numpy array для быстрой обработки
+        img_array = np.array(img, dtype=np.float32) / 255.0
         
-        # Обрабатываем каждый пиксель
-        for y in range(height):
-            for x in range(width):
-                r, g, b, a = pixels[x, y]
-                
-                # Нормализуем
-                r_norm = r / 255.0
-                g_norm = g / 255.0
-                b_norm = b / 255.0
-                
-                # Вычисляем яркость
-                luminance = 0.299 * r_norm + 0.587 * g_norm + 0.114 * b_norm
-                
-                # Применяем screen blend mode
-                screen_r = 1 - (1 - r_norm) * (1 - 0.5)
-                screen_g = 1 - (1 - g_norm) * (1 - 0.5)
-                screen_b = 1 - (1 - b_norm) * (1 - 0.5)
-                
-                # Устанавливаем новые значения
-                new_r = int(screen_r * 255)
-                new_g = int(screen_g * 255)
-                new_b = int(screen_b * 255)
-                new_a = int(pow(luminance, 0.7) * 255)
-                
-                pixels[x, y] = (new_r, new_g, new_b, new_a)
+        # Разделяем каналы
+        r, g, b, a = img_array[:, :, 0], img_array[:, :, 1], img_array[:, :, 2], img_array[:, :, 3]
+        
+        # Вычисляем яркость
+        luminance = 0.299 * r + 0.587 * g + 0.114 * b
+        
+        # Применяем screen blend mode (векторная операция)
+        screen_r = 1 - (1 - r) * 0.5
+        screen_g = 1 - (1 - g) * 0.5
+        screen_b = 1 - (1 - b) * 0.5
+        
+        # Новый альфа-канал на основе яркости
+        new_a = np.power(luminance, 0.7)
+        
+        # Собираем обратно
+        result = np.stack([screen_r, screen_g, screen_b, new_a], axis=2)
+        result = (result * 255).astype(np.uint8)
+        
+        # Создаем новое изображение
+        img = Image.fromarray(result, 'RGBA')
         
         # Сохраняем в буфер
         buffer = BytesIO()
