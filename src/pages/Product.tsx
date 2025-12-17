@@ -257,7 +257,7 @@ export default function Product() {
                       image_url: product.image_url,
                     });
                     toast({
-                      title: 'Добавлено в корзину',
+                      title: 'Добавлено в избранное',
                       description: product.name,
                     });
                   }}
