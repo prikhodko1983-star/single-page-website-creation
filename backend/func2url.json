@@ -1,4 +1,5 @@
 {
+  "change-admin-password": "https://functions.poehali.dev/cf510a11-9eb6-49d2-905f-18c803ab5aa0",
   "verify-token": "https://functions.poehali.dev/8ac57caf-53fd-4068-b6ca-7c89b2e92e0c",
   "auth": "https://functions.poehali.dev/64953dd9-0671-4262-8b63-ebef8dcb5c54",
   "verify": "https://functions.poehali.dev/a54c611e-fa51-44a1-ad22-6ee3fc896d77",

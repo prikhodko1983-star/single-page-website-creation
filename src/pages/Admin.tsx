@@ -1021,6 +1021,108 @@ export default function Admin() {
                 <Icon name="Home" size={16} className="mr-2" />
                 На сайт
               </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Icon name="Key" size={16} className="mr-2" />
+                    Сменить пароль
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Смена логина и пароля</DialogTitle>
+                    <DialogDescription>
+                      Измените данные для входа в админ-панель
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.currentTarget);
+                    const currentUsername = formData.get('current_username') as string;
+                    const currentPassword = formData.get('current_password') as string;
+                    const newUsername = formData.get('new_username') as string;
+                    const newPassword = formData.get('new_password') as string;
+                    
+                    if (!currentUsername || !currentPassword) {
+                      toast({
+                        title: 'Ошибка',
+                        description: 'Введите текущие данные',
+                        variant: 'destructive'
+                      });
+                      return;
+                    }
+                    
+                    if (!newUsername && !newPassword) {
+                      toast({
+                        title: 'Ошибка',
+                        description: 'Введите новый логин или пароль',
+                        variant: 'destructive'
+                      });
+                      return;
+                    }
+                    
+                    try {
+                      const response = await fetch('https://functions.poehali.dev/cf510a11-9eb6-49d2-905f-18c803ab5aa0', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          current_username: currentUsername,
+                          current_password: currentPassword,
+                          new_username: newUsername || undefined,
+                          new_password: newPassword || undefined
+                        })
+                      });
+                      
+                      const data = await response.json();
+                      
+                      if (response.ok) {
+                        toast({
+                          title: '✅ Успешно',
+                          description: 'Данные обновлены. Войдите заново.'
+                        });
+                        setTimeout(() => {
+                          logout();
+                        }, 2000);
+                      } else {
+                        toast({
+                          title: 'Ошибка',
+                          description: data.error || 'Не удалось изменить данные',
+                          variant: 'destructive'
+                        });
+                      }
+                    } catch (error) {
+                      toast({
+                        title: 'Ошибка',
+                        description: 'Не удалось подключиться к серверу',
+                        variant: 'destructive'
+                      });
+                    }
+                  }} className="space-y-4">
+                    <div>
+                      <Label htmlFor="current_username">Текущий логин</Label>
+                      <Input id="current_username" name="current_username" required />
+                    </div>
+                    <div>
+                      <Label htmlFor="current_password">Текущий пароль</Label>
+                      <Input id="current_password" name="current_password" type="password" required />
+                    </div>
+                    <div className="border-t pt-4">
+                      <div className="mb-4">
+                        <Label htmlFor="new_username">Новый логин (необязательно)</Label>
+                        <Input id="new_username" name="new_username" placeholder="Оставьте пустым, чтобы не менять" />
+                      </div>
+                      <div>
+                        <Label htmlFor="new_password">Новый пароль (необязательно)</Label>
+                        <Input id="new_password" name="new_password" type="password" placeholder="Минимум 8 символов" />
+                      </div>
+                    </div>
+                    <Button type="submit" className="w-full">
+                      <Icon name="Save" size={16} className="mr-2" />
+                      Сохранить изменения
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
               <Button variant="outline" onClick={logout}>
                 <Icon name="LogOut" size={16} className="mr-2" />
                 Выйти
