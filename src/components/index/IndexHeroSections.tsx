@@ -224,14 +224,14 @@ export default function IndexHeroSections({
                   <Button 
                     size="sm"
                     variant="outline"
-                    className="bg-transparent hover:bg-zinc-100 text-zinc-900 border-2 border-zinc-900 font-oswald text-xs lg:text-base px-3 lg:px-8 w-full"
+                    className="bg-transparent hover:bg-zinc-100 text-zinc-900 border-2 border-zinc-900 font-oswald text-xs lg:text-base px-3 lg:px-8"
                     onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Посмотреть все памятники
                   </Button>
                   <Button 
                     size="sm"
-                    className="bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-xs lg:text-base px-3 lg:px-8 w-full"
+                    className="bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-xs lg:text-base px-3 lg:px-8"
                     onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Выбрать с менеджером
