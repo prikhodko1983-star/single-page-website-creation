@@ -220,7 +220,7 @@ export default function IndexHeroSections({
                   Премиум памятники из гранита со скидкой до 25%
                 </h2>
 
-                <div className="flex flex-col gap-2 lg:gap-4 my-0 py-0 px-[282px] mx-[22px]">
+                <div className="flex flex-col gap-2 lg:gap-4">
                   <Button 
                     size="sm"
                     variant="outline"
