@@ -185,6 +185,13 @@ export default function Product() {
                 )}
               </div>
 
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p className="text-sm text-amber-900">
+                  <Icon name="Info" size={16} className="inline mr-1" />
+                  Указанная цена не является фиксированной и носит информационный характер. Итоговая стоимость согласовывается индивидуально до начала работ.
+                </p>
+              </div>
+
               <div className="prose prose-slate max-w-none">
                 <p className="text-muted-foreground text-lg">{product.description}</p>
               </div>
