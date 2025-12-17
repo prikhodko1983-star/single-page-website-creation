@@ -676,7 +676,7 @@ const Constructor = () => {
     if (!element) return;
     
     // Обработка режима "Экран" для изображений
-    if ('screenMode' in updates && (element.type === 'photo' || element.type === 'cross' || element.type === 'flower') && element.src) {
+    if ('screenMode' in updates && (element.type === 'photo' || element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src) {
       if (updates.screenMode === true) {
         // Включение режима
         if (!element.processedSrc) {
