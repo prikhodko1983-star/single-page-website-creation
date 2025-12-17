@@ -245,6 +245,17 @@ export default function Product() {
               </div>
 
               <div className="space-y-3">
+                {product.image_url && (
+                  <Link to={`/constructor?monument=${encodeURIComponent(product.image_url)}`}>
+                    <Button 
+                      size="lg" 
+                      className="w-full font-oswald text-lg h-14"
+                    >
+                      <Icon name="Pencil" size={20} className="mr-2" />
+                      Редактировать в конструкторе
+                    </Button>
+                  </Link>
+                )}
                 <Button 
                   size="lg" 
                   className="w-full font-oswald text-lg h-14"
