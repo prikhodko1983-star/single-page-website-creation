@@ -42,7 +42,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     # Парсинг тела запроса
-    body_data = json.loads(event.get('body', '{}'))
+    body_str = event.get('body', '{}')
+    if not body_str or body_str.strip() == '':
+        body_str = '{}'
+    body_data = json.loads(body_str)
     username: str = body_data.get('username', '')
     password: str = body_data.get('password', '')
     
@@ -67,6 +70,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         result = cursor.fetchone()
         
         if not result:
+            cursor.close()
+            conn.close()
             return {
                 'statusCode': 401,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -76,8 +81,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         user_id, password_hash = result
         
-        # Проверка пароля
-        if not bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8')):
+        # Проверка пароля - password_hash может быть строкой или bytes из БД
+        if isinstance(password_hash, str):
+            stored_hash = password_hash.encode('utf-8')
+        else:
+            stored_hash = password_hash
+        
+        password_check = bcrypt.checkpw(password.encode('utf-8'), stored_hash)
+        
+        if not password_check:
+            cursor.close()
+            conn.close()
             return {
                 'statusCode': 401,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},

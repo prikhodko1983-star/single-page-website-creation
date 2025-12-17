@@ -9,6 +9,25 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
+
+const useAuth = () => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
+  
+  const logout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_username');
+    navigate('/login');
+  };
+  
+  return { logout, username: localStorage.getItem('auth_username') };
+};
 import * as XLSX from 'xlsx';
 import {
   Dialog,
@@ -158,6 +177,8 @@ export default function Admin() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const [monuments, setMonuments] = useState<Monument[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -256,25 +277,72 @@ export default function Admin() {
   );
 
   useEffect(() => {
-    fetchMonuments();
-    loadProducts();
-    loadCategories();
-    loadCrosses();
-    loadFlowers();
-    
-    const savedGallery = localStorage.getItem('galleryItems');
-    if (savedGallery) {
-      try {
-        setGalleryItems(JSON.parse(savedGallery));
-      } catch (e) {
-        console.error('Error loading gallery items:', e);
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchMonuments();
+      loadProducts();
+      loadCategories();
+      loadCrosses();
+      loadFlowers();
+      
+      const savedGallery = localStorage.getItem('galleryItems');
+      if (savedGallery) {
+        try {
+          setGalleryItems(JSON.parse(savedGallery));
+        } catch (e) {
+          console.error('Error loading gallery items:', e);
+        }
       }
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     localStorage.setItem('galleryItems', JSON.stringify(galleryItems));
   }, [galleryItems]);
+
+  const checkAuth = async () => {
+    const token = localStorage.getItem('admin_token');
+    
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/a54c611e-fa51-44a1-ad22-6ee3fc896d77', {
+        method: 'GET',
+        headers: {
+          'X-Auth-Token': token,
+        },
+      });
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+      } else {
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem('admin_username');
+        navigate('/login');
+      }
+    } catch (error) {
+      navigate('/login');
+    } finally {
+      setIsCheckingAuth(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_username');
+    toast({
+      title: 'Выход выполнен',
+      description: 'Вы успешно вышли из админ-панели',
+      duration: 2000,
+    });
+    navigate('/login');
+  };
 
   const fetchMonuments = async () => {
     try {
@@ -888,10 +956,14 @@ export default function Admin() {
             : PRODUCTS_API;
           
           const method = existingProduct ? 'PUT' : 'POST';
+          const token = localStorage.getItem('admin_token');
 
           const response = await fetch(url, {
             method: method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-Auth-Token': token || ''
+            },
             body: JSON.stringify(productData)
           });
 
@@ -939,6 +1011,19 @@ export default function Admin() {
     inStock: products.filter(p => p.in_stock).length
   };
 
+  // Проверка аутентификации
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <div className="bg-background pb-20">
       <div className="w-full border-b bg-background sticky top-0 z-40">
@@ -948,10 +1033,16 @@ export default function Admin() {
               <h1 className="font-oswald font-bold text-2xl">Панель администратора</h1>
               <p className="text-sm text-muted-foreground">Управление сайтом</p>
             </div>
-            <Button variant="outline" onClick={() => navigate('/')}>
-              <Icon name="Home" size={16} className="mr-2" />
-              На сайт
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => navigate('/')}>
+                <Icon name="Home" size={16} className="mr-2" />
+                На сайт
+              </Button>
+              <Button variant="outline" onClick={handleLogout}>
+                <Icon name="LogOut" size={16} className="mr-2" />
+                Выйти
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -1339,13 +1430,17 @@ export default function Admin() {
                             }
 
                             try {
+                              const token = localStorage.getItem('admin_token');
                               const url = editingCategory 
                                 ? `${PRODUCTS_API}?type=categories&id=${editingCategory.id}`
                                 : `${PRODUCTS_API}?type=categories`;
                               
                               const response = await fetch(url, {
                                 method: editingCategory ? 'PUT' : 'POST',
-                                headers: { 'Content-Type': 'application/json' },
+                                headers: { 
+                                  'Content-Type': 'application/json',
+                                  'X-Auth-Token': token || ''
+                                },
                                 body: JSON.stringify(categoryForm)
                               });
 
@@ -1424,8 +1519,12 @@ export default function Admin() {
                                           if (!confirm(`Удалить категорию "${category.name}"?`)) return;
                                           
                                           try {
+                                            const token = localStorage.getItem('admin_token');
                                             const response = await fetch(`${PRODUCTS_API}?type=categories&id=${category.id}`, {
-                                              method: 'DELETE'
+                                              method: 'DELETE',
+                                              headers: {
+                                                'X-Auth-Token': token || ''
+                                              }
                                             });
                                             
                                             if (response.ok) {
@@ -1932,13 +2031,17 @@ export default function Admin() {
                           }
 
                           try {
+                            const token = localStorage.getItem('admin_token');
                             const url = editingProduct 
                               ? `${PRODUCTS_API}?id=${editingProduct.id}`
                               : PRODUCTS_API;
                             
                             const response = await fetch(url, {
                               method: editingProduct ? 'PUT' : 'POST',
-                              headers: { 'Content-Type': 'application/json' },
+                              headers: { 
+                                'Content-Type': 'application/json',
+                                'X-Auth-Token': token || ''
+                              },
                               body: JSON.stringify(productForm)
                             });
 
@@ -2192,8 +2295,12 @@ export default function Admin() {
                                   if (!confirm(`Удалить товар "${product.name}"?`)) return;
                                   
                                   try {
+                                    const token = localStorage.getItem('admin_token');
                                     const response = await fetch(`${PRODUCTS_API}?id=${product.id}`, {
-                                      method: 'DELETE'
+                                      method: 'DELETE',
+                                      headers: {
+                                        'X-Auth-Token': token || ''
+                                      }
                                     });
                                     
                                     if (response.ok) {
