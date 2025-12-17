@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -232,6 +233,15 @@ export default function IndexContactFooter({
           <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
             <p>© 2024 Гранитные памятники. Все права защищены.</p>
             <p className="mt-2">Опыт и профессионализм — более 16 лет</p>
+            <div className="mt-3">
+              <Link 
+                to="/legal" 
+                className="text-primary hover:underline inline-flex items-center gap-1"
+              >
+                <Icon name="FileText" size={14} />
+                Правовая информация и условия оказания услуг
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
