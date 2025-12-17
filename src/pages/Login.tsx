@@ -124,12 +124,7 @@ export default function Login() {
           </CardContent>
         </Card>
 
-        <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg">
-          <p className="text-sm text-amber-900 dark:text-amber-100">
-            <Icon name="Info" size={16} className="inline mr-1" />
-            Данные для входа: admin / admin123
-          </p>
-        </div>
+
       </div>
     </div>
   );

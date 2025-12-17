@@ -100,11 +100,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         # Генерация JWT токена
-        jwt_secret = os.environ.get('JWT_SECRET', 'fallback_secret_change_me')
+        jwt_secret = os.environ.get('JWT_SECRET')
+        if not jwt_secret:
+            raise ValueError('JWT_SECRET not configured')
+        
         payload = {
             'user_id': user_id,
             'username': username,
-            'exp': datetime.utcnow() + timedelta(days=7)  # Токен на 7 дней
+            'exp': datetime.utcnow() + timedelta(hours=24)
         }
         token = jwt.encode(payload, jwt_secret, algorithm='HS256')
         

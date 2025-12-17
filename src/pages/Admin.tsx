@@ -12,12 +12,42 @@ import Icon from '@/components/ui/icon';
 
 const useAuth = () => {
   const navigate = useNavigate();
+  const [isVerifying, setIsVerifying] = useState(true);
   
   useEffect(() => {
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-      navigate('/login');
-    }
+    const verifyToken = async () => {
+      const token = localStorage.getItem('auth_token');
+      
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      
+      try {
+        const response = await fetch('https://functions.poehali.dev/8ac57caf-53fd-4068-b6ca-7c89b2e92e0c', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': token
+          }
+        });
+        
+        if (!response.ok) {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_username');
+          navigate('/login');
+          return;
+        }
+        
+        setIsVerifying(false);
+      } catch (error) {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_username');
+        navigate('/login');
+      }
+    };
+    
+    verifyToken();
   }, [navigate]);
   
   const logout = () => {
@@ -26,7 +56,7 @@ const useAuth = () => {
     navigate('/login');
   };
   
-  return { logout, username: localStorage.getItem('auth_username') };
+  return { logout, username: localStorage.getItem('auth_username'), isVerifying };
 };
 import * as XLSX from 'xlsx';
 import {
@@ -176,7 +206,6 @@ const SortableGalleryItem = ({ item, index, onEdit, onDelete }: {
 export default function Admin() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { logout, username } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
   const [monuments, setMonuments] = useState<Monument[]>([]);
@@ -965,7 +994,19 @@ export default function Admin() {
     inStock: products.filter(p => p.in_stock).length
   };
 
-  // Проверка аутентификации
+  const { logout, username, isVerifying } = useAuth();
+  
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Icon name="Loader2" size={48} className="animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Проверка доступа...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-background pb-20">
       <div className="w-full border-b bg-background sticky top-0 z-40">

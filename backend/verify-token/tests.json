@@ -1,0 +1,27 @@
+{
+  "tests": [
+    {
+      "name": "Verify without token",
+      "method": "POST",
+      "path": "/",
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "Token required"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Verify with invalid token",
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "X-Auth-Token": "invalid_token_here"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "Invalid token"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
