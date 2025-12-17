@@ -220,18 +220,18 @@ export default function IndexHeroSections({
                   Премиум памятники из гранита со скидкой до 25%
                 </h2>
 
-                <div className="flex flex-col gap-2 lg:gap-4">
+                <div className="flex flex-col gap-2 lg:gap-4 items-start">
                   <Button 
                     size="sm"
                     variant="outline"
-                    className="bg-transparent hover:bg-zinc-100 text-zinc-900 border-2 border-zinc-900 font-oswald text-xs lg:text-base px-3 lg:px-8"
+                    className="bg-transparent hover:bg-zinc-100 text-zinc-900 border-2 border-zinc-900 font-oswald text-xs lg:text-base px-4 lg:px-6 h-8 lg:h-10"
                     onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Посмотреть все памятники
                   </Button>
                   <Button 
                     size="sm"
-                    className="bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-xs lg:text-base px-3 lg:px-8"
+                    className="bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-xs lg:text-base px-4 lg:px-6 h-8 lg:h-10"
                     onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Выбрать с менеджером
