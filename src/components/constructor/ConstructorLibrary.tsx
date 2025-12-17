@@ -57,7 +57,6 @@ interface ConstructorLibraryProps {
   setSelectedCategory: (id: number) => void;
   isLoadingCatalog: boolean;
   loadCatalog: () => void;
-  monumentImages: Array<{id: string, src: string, name: string}>;
   fonts: Array<{id: string, name: string, style: string, weight: string, example: string, fullStyle: string}>;
   crosses: Array<{id: number, name: string, image_url: string}>;
   isLoadingCrosses: boolean;
@@ -97,7 +96,6 @@ export const ConstructorLibrary = ({
   setSelectedCategory,
   isLoadingCatalog,
   loadCatalog,
-  monumentImages,
   fonts,
   crosses,
   isLoadingCrosses,

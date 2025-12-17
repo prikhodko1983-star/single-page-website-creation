@@ -1147,7 +1147,6 @@ const Constructor = () => {
             setSelectedCategory={setSelectedCategory}
             isLoadingCatalog={isLoadingCatalog}
             loadCatalog={loadCatalog}
-            monumentImages={monumentImages}
             fonts={fonts}
             crosses={crosses}
             isLoadingCrosses={isLoadingCrosses}
