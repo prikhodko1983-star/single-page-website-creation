@@ -219,6 +219,15 @@ export default function Catalog() {
           <p className="text-muted-foreground">
             © 2024 Гранит Мастер. Все права защищены.
           </p>
+          <div className="mt-3">
+            <Link 
+              to="/legal" 
+              className="text-primary hover:underline inline-flex items-center gap-1 text-sm"
+            >
+              <Icon name="FileText" size={14} />
+              Правовая информация и условия оказания услуг
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
