@@ -1134,14 +1134,10 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8 sticky top-[73px] z-30 bg-background">
+          <TabsList className="grid w-full grid-cols-4 mb-8 sticky top-[73px] z-30 bg-background">
             <TabsTrigger value="overview" className="font-oswald">
               <Icon name="LayoutDashboard" size={16} className="mr-2" />
               Обзор
-            </TabsTrigger>
-            <TabsTrigger value="catalog" className="font-oswald">
-              <Icon name="Image" size={16} className="mr-2" />
-              Каталог примеров
             </TabsTrigger>
             <TabsTrigger value="shop" className="font-oswald">
               <Icon name="ShoppingBag" size={16} className="mr-2" />
@@ -1162,18 +1158,7 @@ export default function Admin() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Примеры памятников</CardTitle>
-                  <Icon name="Image" className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.monuments}</div>
-                  <p className="text-xs text-muted-foreground">В каталоге примеров</p>
-                </CardContent>
-              </Card>
-
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Товары в магазине</CardTitle>
@@ -1214,16 +1199,6 @@ export default function Admin() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button variant="outline" className="h-20 justify-start" onClick={() => setActiveTab('catalog')}>
-                    <div className="flex items-center gap-4">
-                      <Icon name="Image" size={24} className="text-primary" />
-                      <div className="text-left">
-                        <div className="font-semibold">Каталог примеров</div>
-                        <div className="text-sm text-muted-foreground">Памятники для вдохновения</div>
-                      </div>
-                    </div>
-                  </Button>
-
                   <Button variant="outline" className="h-20 justify-start" onClick={() => setActiveTab('shop')}>
                     <div className="flex items-center gap-4">
                       <Icon name="ShoppingBag" size={24} className="text-primary" />
@@ -1253,156 +1228,6 @@ export default function Admin() {
                       </div>
                     </div>
                   </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="catalog" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-oswald">
-                  {editingMonument ? 'Редактировать памятник' : 'Добавить памятник в каталог примеров'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleMonumentSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="title">Название *</Label>
-                      <Input
-                        id="title"
-                        value={monumentForm.title}
-                        onChange={(e) => setMonumentForm({ ...monumentForm, title: e.target.value })}
-                        placeholder="Например: Вертикальный памятник №1"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="category">Категория</Label>
-                      <Select
-                        value={monumentForm.category}
-                        onValueChange={(value) => setMonumentForm({ ...monumentForm, category: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories_list.map(cat => (
-                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="price">Цена *</Label>
-                      <Input
-                        id="price"
-                        value={monumentForm.price}
-                        onChange={(e) => setMonumentForm({ ...monumentForm, price: e.target.value })}
-                        placeholder="от 25 000 ₽"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="size">Размер *</Label>
-                      <Input
-                        id="size"
-                        value={monumentForm.size}
-                        onChange={(e) => setMonumentForm({ ...monumentForm, size: e.target.value })}
-                        placeholder="120x60x8 см"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="description">Описание</Label>
-                    <Textarea
-                      id="description"
-                      value={monumentForm.description || ''}
-                      onChange={(e) => setMonumentForm({ ...monumentForm, description: e.target.value })}
-                      placeholder="Дополнительная информация о памятнике"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Изображение *</Label>
-                    <div className="flex gap-4 items-start">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload(e, 'monument')}
-                        disabled={uploading}
-                      />
-                      {monumentForm.image_url && (
-                        <img src={monumentForm.image_url} alt="Preview" className="w-20 h-20 object-cover rounded border" />
-                      )}
-                    </div>
-                    {uploading && <Progress value={uploadProgress} className="mt-2" />}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button type="submit" disabled={uploading}>
-                      <Icon name={editingMonument ? "Save" : "Plus"} size={16} className="mr-2" />
-                      {editingMonument ? 'Сохранить изменения' : 'Добавить памятник'}
-                    </Button>
-                    {editingMonument && (
-                      <Button type="button" variant="outline" onClick={() => {
-                        setEditingMonument(null);
-                        setMonumentForm({ title: "", image_url: "", price: "", size: "", category: "Вертикальные", description: "" });
-                      }}>
-                        Отменить
-                      </Button>
-                    )}
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="font-oswald">Памятники в каталоге ({filteredMonuments.length})</CardTitle>
-                  <Select value={filterCategory} onValueChange={setFilterCategory}>
-                    <SelectTrigger className="w-[200px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {filterCategories.map(cat => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredMonuments.map((monument) => (
-                    <Card key={monument.id} className="overflow-hidden">
-                      <div className="aspect-[3/4] bg-secondary relative">
-                        <img src={monument.image_url} alt={monument.title} className="w-full h-full object-contain" />
-                        {monument.category && (
-                          <Badge className="absolute top-2 right-2">{monument.category}</Badge>
-                        )}
-                      </div>
-                      <CardContent className="p-4">
-                        <h3 className="font-oswald font-semibold text-lg mb-1">{monument.title}</h3>
-                        <p className="text-sm text-muted-foreground mb-2">{monument.size}</p>
-                        <p className="font-oswald text-xl text-primary mb-3">{monument.price}</p>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline" onClick={() => handleEdit(monument)} className="flex-1">
-                            <Icon name="Edit" size={14} className="mr-1" />
-                            Изменить
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={() => monument.id && handleDelete(monument.id)}>
-                            <Icon name="Trash2" size={14} />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
                 </div>
               </CardContent>
             </Card>
