@@ -28,16 +28,16 @@ export function CartSheet() {
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-lg">
         <SheetHeader>
-          <SheetTitle className="font-oswald">Корзина</SheetTitle>
+          <SheetTitle className="font-oswald">Избранное</SheetTitle>
           <SheetDescription>
-            {items.length === 0 ? 'Ваша корзина пуста' : `Товаров в корзине: ${getTotalItems()}`}
+            {items.length === 0 ? 'Избранное пусто' : `Памятников в избранном: ${getTotalItems()}`}
           </SheetDescription>
         </SheetHeader>
         
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12">
             <Icon name="Heart" size={64} className="text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4">Корзина пуста</p>
+            <p className="text-muted-foreground mb-4">Избранное пусто</p>
             <Link to="/catalog">
               <Button>Перейти в каталог</Button>
             </Link>
