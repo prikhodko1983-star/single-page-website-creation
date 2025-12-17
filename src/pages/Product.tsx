@@ -135,7 +135,7 @@ export default function Product() {
                     )}
                     {product.is_featured && (
                       <Badge className="absolute top-4 right-4 bg-primary text-lg px-4 py-2">
-                        Хит продаж
+                        Хит
                       </Badge>
                     )}
                   </div>
