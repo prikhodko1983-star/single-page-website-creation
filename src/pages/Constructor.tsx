@@ -3,7 +3,7 @@ import Icon from "@/components/ui/icon";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-
+import { ConstructorLibrary } from "@/components/constructor/ConstructorLibrary";
 import { ConstructorCanvas } from "@/components/constructor/ConstructorCanvas";
 import { ConstructorProperties } from "@/components/constructor/ConstructorProperties";
 import { TextEditorModal } from "@/components/constructor/TextEditorModal";
@@ -1127,6 +1127,46 @@ const Constructor = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-[320px,1fr,320px] gap-6">
+          <ConstructorLibrary
+            monumentImage={monumentImage}
+            setMonumentImage={setMonumentImage}
+            addTextElement={addTextElement}
+            addEpitaphElement={addEpitaphElement}
+            addImageElement={addImageElement}
+            addFIOElement={addFIOElement}
+            addDatesElement={addDatesElement}
+            handlePhotoUpload={handlePhotoUpload}
+            photoInputRef={photoInputRef}
+            surname={surname}
+            setSurname={setSurname}
+            name={name}
+            setName={setName}
+            patronymic={patronymic}
+            setPatronymic={setPatronymic}
+            selectedFont={selectedFont}
+            setSelectedFont={setSelectedFont}
+            birthDate={birthDate}
+            setBirthDate={setBirthDate}
+            deathDate={deathDate}
+            setDeathDate={setDeathDate}
+            selectedDateFont={selectedDateFont}
+            setSelectedDateFont={setSelectedDateFont}
+            catalogCategories={catalogCategories}
+            catalogProducts={catalogProducts}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            isLoadingCatalog={isLoadingCatalog}
+            loadCatalog={loadCatalog}
+            monumentImages={monumentImages}
+            fonts={fonts}
+            crosses={crosses}
+            isLoadingCrosses={isLoadingCrosses}
+            loadCrosses={loadCrosses}
+            flowers={flowers}
+            isLoadingFlowers={isLoadingFlowers}
+            loadFlowers={loadFlowers}
+          />
+
           <ConstructorCanvas
             canvasRef={canvasRef}
             monumentImage={monumentImage}
