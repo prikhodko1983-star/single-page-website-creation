@@ -190,11 +190,20 @@ export default function Catalog() {
                         </span>
                       )}
                     </div>
-                    <Link to={`/product/${product.slug}`}>
-                      <Button className="w-full font-oswald">
-                        Подробнее
-                      </Button>
-                    </Link>
+                    <div className="flex gap-2">
+                      <Link to={`/product/${product.slug}`} className="flex-1">
+                        <Button className="w-full font-oswald">
+                          Подробнее
+                        </Button>
+                      </Link>
+                      {product.image_url && (
+                        <Link to={`/constructor?monument=${encodeURIComponent(product.image_url)}`}>
+                          <Button variant="outline" size="icon" title="Редактировать в конструкторе">
+                            <Icon name="Pencil" size={18} />
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               ))}

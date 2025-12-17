@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ConstructorLibrary } from "@/components/constructor/ConstructorLibrary";
 import { ConstructorCanvas } from "@/components/constructor/ConstructorCanvas";
@@ -33,6 +33,7 @@ const Constructor = () => {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
   const [savedDesigns, setSavedDesigns] = useState<Array<{monumentImage: string, elements: CanvasElement[], timestamp: number}>>([]);
   
@@ -168,7 +169,12 @@ const Constructor = () => {
     }
   };
 
-
+  useEffect(() => {
+    const monumentParam = searchParams.get('monument');
+    if (monumentParam) {
+      setMonumentImage(decodeURIComponent(monumentParam));
+    }
+  }, [searchParams]);
 
   const fonts = [
     { id: 'font1', name: '№ 1/1а', style: 'Playfair Display', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Playfair Display|400' },
