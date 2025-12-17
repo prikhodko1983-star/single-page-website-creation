@@ -259,6 +259,7 @@ export default function Product() {
                     toast({
                       title: 'Добавлено в избранное',
                       description: product.name,
+                      duration: 2000,
                     });
                   }}
                   disabled={!product.in_stock}
