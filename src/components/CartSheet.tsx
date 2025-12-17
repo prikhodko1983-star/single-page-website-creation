@@ -18,7 +18,7 @@ export function CartSheet() {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="icon" className="relative">
-          <Icon name="ShoppingCart" size={20} />
+          <Icon name="Heart" size={20} />
           {getTotalItems() > 0 && (
             <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
               {getTotalItems()}
@@ -36,7 +36,7 @@ export function CartSheet() {
         
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <Icon name="ShoppingCart" size={64} className="text-muted-foreground mb-4" />
+            <Icon name="Heart" size={64} className="text-muted-foreground mb-4" />
             <p className="text-muted-foreground mb-4">Корзина пуста</p>
             <Link to="/catalog">
               <Button>Перейти в каталог</Button>

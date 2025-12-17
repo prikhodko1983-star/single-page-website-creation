@@ -263,8 +263,8 @@ export default function Product() {
                   }}
                   disabled={!product.in_stock}
                 >
-                  <Icon name="ShoppingCart" size={20} className="mr-2" />
-                  {product.in_stock ? 'Добавить в корзину' : 'Товар недоступен'}
+                  <Icon name="Heart" size={20} className="mr-2" />
+                  {product.in_stock ? 'Добавить в избранное' : 'Товар недоступен'}
                 </Button>
                 <Button 
                   size="lg" 
