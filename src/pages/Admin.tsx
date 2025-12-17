@@ -176,9 +176,8 @@ const SortableGalleryItem = ({ item, index, onEdit, onDelete }: {
 export default function Admin() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { logout, username } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const [monuments, setMonuments] = useState<Monument[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -277,72 +276,27 @@ export default function Admin() {
   );
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchMonuments();
-      loadProducts();
-      loadCategories();
-      loadCrosses();
-      loadFlowers();
-      
-      const savedGallery = localStorage.getItem('galleryItems');
-      if (savedGallery) {
-        try {
-          setGalleryItems(JSON.parse(savedGallery));
-        } catch (e) {
-          console.error('Error loading gallery items:', e);
-        }
+    fetchMonuments();
+    loadProducts();
+    loadCategories();
+    loadCrosses();
+    loadFlowers();
+    
+    const savedGallery = localStorage.getItem('galleryItems');
+    if (savedGallery) {
+      try {
+        setGalleryItems(JSON.parse(savedGallery));
+      } catch (e) {
+        console.error('Error loading gallery items:', e);
       }
     }
-  }, [isAuthenticated]);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('galleryItems', JSON.stringify(galleryItems));
   }, [galleryItems]);
 
-  const checkAuth = async () => {
-    const token = localStorage.getItem('admin_token');
-    
-    if (!token) {
-      navigate('/login');
-      return;
-    }
 
-    try {
-      const response = await fetch('https://functions.poehali.dev/a54c611e-fa51-44a1-ad22-6ee3fc896d77', {
-        method: 'GET',
-        headers: {
-          'X-Auth-Token': token,
-        },
-      });
-
-      if (response.ok) {
-        setIsAuthenticated(true);
-      } else {
-        localStorage.removeItem('admin_token');
-        localStorage.removeItem('admin_username');
-        navigate('/login');
-      }
-    } catch (error) {
-      navigate('/login');
-    } finally {
-      setIsCheckingAuth(false);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_username');
-    toast({
-      title: 'Выход выполнен',
-      description: 'Вы успешно вышли из админ-панели',
-      duration: 2000,
-    });
-    navigate('/login');
-  };
 
   const fetchMonuments = async () => {
     try {
@@ -1012,18 +966,6 @@ export default function Admin() {
   };
 
   // Проверка аутентификации
-  if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null;
-  }
-
   return (
     <div className="bg-background pb-20">
       <div className="w-full border-b bg-background sticky top-0 z-40">
@@ -1038,7 +980,7 @@ export default function Admin() {
                 <Icon name="Home" size={16} className="mr-2" />
                 На сайт
               </Button>
-              <Button variant="outline" onClick={handleLogout}>
+              <Button variant="outline" onClick={logout}>
                 <Icon name="LogOut" size={16} className="mr-2" />
                 Выйти
               </Button>
