@@ -185,13 +185,6 @@ export default function Product() {
                 )}
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <p className="text-sm text-amber-900">
-                  <Icon name="Info" size={16} className="inline mr-1" />
-                  Указанная цена не является фиксированной и носит информационный характер. Итоговая стоимость согласовывается индивидуально до начала работ.
-                </p>
-              </div>
-
               <div className="prose prose-slate max-w-none">
                 <p className="text-muted-foreground text-lg">{product.description}</p>
               </div>
@@ -229,6 +222,28 @@ export default function Product() {
                 </CardContent>
               </Card>
 
+              <div className="bg-secondary p-4 rounded-lg space-y-2">
+                <div className="flex items-start gap-3">
+                  <Icon name="CheckCircle" size={20} className="text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Бесплатная консультация дизайнера</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Icon name="CheckCircle" size={20} className="text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Гарантия качества 10 лет</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Icon name="CheckCircle" size={20} className="text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Доставка и установка</span>
+                </div>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p className="text-sm text-amber-900">
+                  <Icon name="Info" size={16} className="inline mr-1" />
+                  Указанная цена не является фиксированной и носит информационный характер. Итоговая стоимость согласовывается индивидуально до начала работ.
+                </p>
+              </div>
+
               <div className="space-y-3">
                 <Button 
                   size="lg" 
@@ -260,21 +275,6 @@ export default function Product() {
                   <Icon name="Phone" size={20} className="mr-2" />
                   Получить консультацию
                 </Button>
-              </div>
-
-              <div className="bg-secondary p-4 rounded-lg space-y-2">
-                <div className="flex items-start gap-3">
-                  <Icon name="CheckCircle" size={20} className="text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-sm">Бесплатная консультация дизайнера</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Icon name="CheckCircle" size={20} className="text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-sm">Гарантия качества 10 лет</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Icon name="CheckCircle" size={20} className="text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-sm">Доставка и установка</span>
-                </div>
               </div>
             </div>
           </div>
