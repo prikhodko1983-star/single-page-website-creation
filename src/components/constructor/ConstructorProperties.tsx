@@ -42,7 +42,7 @@ export const ConstructorProperties = ({
   const [isProcessing, setIsProcessing] = useState(false);
   
   return (
-    <Card className="h-fit">
+    <Card>
       <CardContent className="p-4">
         <h2 className="font-oswald font-bold text-lg mb-4">Свойства элемента</h2>
         
