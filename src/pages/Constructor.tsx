@@ -1116,8 +1116,9 @@ const Constructor = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-[320px,1fr,320px] gap-6">
-          <ConstructorLibrary
+        <div className="grid lg:grid-cols-[320px,1fr,320px] gap-6 items-start">
+          <div className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
+            <ConstructorLibrary
             monumentImage={monumentImage}
             setMonumentImage={setMonumentImage}
             addTextElement={addTextElement}
@@ -1154,7 +1155,8 @@ const Constructor = () => {
             flowers={flowers}
             isLoadingFlowers={isLoadingFlowers}
             loadFlowers={loadFlowers}
-          />
+            />
+          </div>
 
           <ConstructorCanvas
             canvasRef={canvasRef}

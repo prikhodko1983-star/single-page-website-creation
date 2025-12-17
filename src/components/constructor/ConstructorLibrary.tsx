@@ -112,7 +112,7 @@ export const ConstructorLibrary = ({
   }, []);
 
   return (
-    <Card className="h-fit">
+    <Card>
       <CardContent className="p-4">
         <h2 className="font-oswald font-bold text-lg mb-4">Библиотека элементов</h2>
         
