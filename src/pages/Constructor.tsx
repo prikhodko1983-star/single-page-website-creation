@@ -58,6 +58,7 @@ const Constructor = () => {
   
   const [isTextEditorOpen, setIsTextEditorOpen] = useState(false);
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
+  const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
   const photoInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
@@ -402,6 +403,25 @@ const Constructor = () => {
       setEditingElement(element);
       setIsTextEditorOpen(true);
     }
+  };
+
+  const handleSingleClick = (elementId: string) => {
+    if (selectedElement === elementId && !isDragging && !isResizing) {
+      const element = elements.find(el => el.id === elementId);
+      if (element && ['text', 'epitaph', 'fio', 'dates'].includes(element.type)) {
+        setInlineEditingId(elementId);
+      }
+    }
+  };
+
+  const handleInlineTextChange = (elementId: string, newContent: string) => {
+    setElements(elements.map(el => 
+      el.id === elementId ? { ...el, content: newContent } : el
+    ));
+  };
+
+  const handleInlineEditBlur = () => {
+    setInlineEditingId(null);
   };
 
   const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
@@ -1174,6 +1194,7 @@ const Constructor = () => {
             handleMouseDown={handleMouseDown}
             handleTouchStart={handleTouchStart}
             handleDoubleClick={handleDoubleClick}
+            handleSingleClick={handleSingleClick}
             handleMouseMove={handleMouseMove}
             handleMouseUp={handleMouseUp}
             handleTouchMove={handleTouchMove}
@@ -1187,6 +1208,9 @@ const Constructor = () => {
             exportDesign={exportDesign}
             importDesign={importDesign}
             importInputRef={importInputRef}
+            inlineEditingId={inlineEditingId}
+            handleInlineTextChange={handleInlineTextChange}
+            handleInlineEditBlur={handleInlineEditBlur}
           />
 
           <div className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">

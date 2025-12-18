@@ -32,6 +32,7 @@ interface ConstructorCanvasProps {
   handleMouseDown: (e: React.MouseEvent, elementId: string) => void;
   handleTouchStart: (e: React.TouchEvent, elementId: string) => void;
   handleDoubleClick: (elementId: string) => void;
+  handleSingleClick: (elementId: string) => void;
   handleMouseMove: (e: React.MouseEvent) => void;
   handleMouseUp: () => void;
   handleTouchMove: (e: React.TouchEvent) => void;
@@ -45,6 +46,9 @@ interface ConstructorCanvasProps {
   exportDesign: () => void;
   importDesign: (e: React.ChangeEvent<HTMLInputElement>) => void;
   importInputRef: React.RefObject<HTMLInputElement>;
+  inlineEditingId: string | null;
+  handleInlineTextChange: (elementId: string, newContent: string) => void;
+  handleInlineEditBlur: () => void;
 }
 
 export const ConstructorCanvas = ({
@@ -57,6 +61,7 @@ export const ConstructorCanvas = ({
   handleMouseDown,
   handleTouchStart,
   handleDoubleClick,
+  handleSingleClick,
   handleMouseMove,
   handleMouseUp,
   handleTouchMove,
@@ -70,6 +75,9 @@ export const ConstructorCanvas = ({
   exportDesign,
   importDesign,
   importInputRef,
+  inlineEditingId,
+  handleInlineTextChange,
+  handleInlineEditBlur,
 }: ConstructorCanvasProps) => {
   return (
     <div className="flex flex-col items-center">
@@ -107,102 +115,194 @@ export const ConstructorCanvas = ({
             }}
             onMouseDown={(e) => handleMouseDown(e, element.id)}
             onTouchStart={(e) => handleTouchStart(e, element.id)}
+            onClick={() => handleSingleClick(element.id)}
             onDoubleClick={() => handleDoubleClick(element.id)}
           >
             {element.type === 'text' && (
               <div 
-                className="w-full h-full flex items-center justify-center select-none overflow-hidden p-1"
+                className="w-full h-full flex items-center justify-center overflow-hidden p-1"
               >
-                <div
-                  style={{ 
-                    fontSize: `${element.fontSize}px`, 
-                    color: element.color,
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                    fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                    fontWeight: element.fontFamily?.split('|')[1] || 'bold',
-                    lineHeight: element.lineHeight || 1.2,
-                    letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
-                    textAlign: element.textAlign || 'center',
-                    whiteSpace: 'pre-wrap',
-                    wordWrap: 'break-word',
-                    width: '100%',
-                  }}
-                >
-                  {element.content}
-                </div>
+                {inlineEditingId === element.id ? (
+                  <textarea
+                    autoFocus
+                    value={element.content || ''}
+                    onChange={(e) => handleInlineTextChange(element.id, e.target.value)}
+                    onBlur={handleInlineEditBlur}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="w-full h-full resize-none bg-transparent border-none outline-none"
+                    style={{
+                      fontSize: `${element.fontSize}px`,
+                      color: element.color,
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                      fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                      fontWeight: element.fontFamily?.split('|')[1] || 'bold',
+                      lineHeight: element.lineHeight || 1.2,
+                      letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                      textAlign: element.textAlign || 'center',
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="select-none"
+                    style={{ 
+                      fontSize: `${element.fontSize}px`, 
+                      color: element.color,
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                      fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                      fontWeight: element.fontFamily?.split('|')[1] || 'bold',
+                      lineHeight: element.lineHeight || 1.2,
+                      letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                      textAlign: element.textAlign || 'center',
+                      whiteSpace: 'pre-wrap',
+                      wordWrap: 'break-word',
+                      width: '100%',
+                    }}
+                  >
+                    {element.content}
+                  </div>
+                )}
               </div>
             )}
             
             {element.type === 'epitaph' && (
               <div 
-                className="w-full h-full flex items-center justify-center select-none overflow-hidden p-1"
+                className="w-full h-full flex items-center justify-center overflow-hidden p-1"
               >
-                <div
-                  className="italic"
-                  style={{ 
-                    fontSize: `${element.fontSize}px`, 
-                    color: element.color,
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                    fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                    fontWeight: element.fontFamily?.split('|')[1] || '400',
-                    lineHeight: element.lineHeight || 1.4,
-                    letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
-                    textAlign: element.textAlign || 'center',
-                    whiteSpace: 'pre-wrap',
-                    wordWrap: 'break-word',
-                    width: '100%',
-                  }}
-                >
-                  {element.content}
-                </div>
+                {inlineEditingId === element.id ? (
+                  <textarea
+                    autoFocus
+                    value={element.content || ''}
+                    onChange={(e) => handleInlineTextChange(element.id, e.target.value)}
+                    onBlur={handleInlineEditBlur}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="w-full h-full resize-none bg-transparent border-none outline-none italic"
+                    style={{
+                      fontSize: `${element.fontSize}px`,
+                      color: element.color,
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                      fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                      fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      lineHeight: element.lineHeight || 1.4,
+                      letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                      textAlign: element.textAlign || 'center',
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="select-none italic"
+                    style={{ 
+                      fontSize: `${element.fontSize}px`, 
+                      color: element.color,
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                      fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                      fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      lineHeight: element.lineHeight || 1.4,
+                      letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                      textAlign: element.textAlign || 'center',
+                      whiteSpace: 'pre-wrap',
+                      wordWrap: 'break-word',
+                      width: '100%',
+                    }}
+                  >
+                    {element.content}
+                  </div>
+                )}
               </div>
             )}
             
             {element.type === 'fio' && (
               <div 
-                className="w-full h-full flex items-center justify-center select-none overflow-hidden p-1"
+                className="w-full h-full flex items-center justify-center overflow-hidden p-1"
               >
-                <div
-                  style={{ 
-                    fontSize: `${element.fontSize}px`, 
-                    color: element.color,
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                    fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                    fontWeight: element.fontFamily?.split('|')[1] || '400',
-                    lineHeight: element.lineHeight || 1.3,
-                    letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
-                    textAlign: element.textAlign || 'center',
-                    whiteSpace: 'pre-wrap',
-                    wordWrap: 'break-word',
-                    width: '100%',
-                  }}
-                >
-                  {element.content}
-                </div>
+                {inlineEditingId === element.id ? (
+                  <textarea
+                    autoFocus
+                    value={element.content || ''}
+                    onChange={(e) => handleInlineTextChange(element.id, e.target.value)}
+                    onBlur={handleInlineEditBlur}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="w-full h-full resize-none bg-transparent border-none outline-none"
+                    style={{
+                      fontSize: `${element.fontSize}px`,
+                      color: element.color,
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                      fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                      fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      lineHeight: element.lineHeight || 1.3,
+                      letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                      textAlign: element.textAlign || 'center',
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="select-none"
+                    style={{ 
+                      fontSize: `${element.fontSize}px`, 
+                      color: element.color,
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                      fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                      fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      lineHeight: element.lineHeight || 1.3,
+                      letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
+                      textAlign: element.textAlign || 'center',
+                      whiteSpace: 'pre-wrap',
+                      wordWrap: 'break-word',
+                      width: '100%',
+                    }}
+                  >
+                    {element.content}
+                  </div>
+                )}
               </div>
             )}
             
             {element.type === 'dates' && (
               <div 
-                className="w-full h-full flex items-center justify-center select-none overflow-hidden p-1"
+                className="w-full h-full flex items-center justify-center overflow-hidden p-1"
               >
-                <div
-                  style={{ 
-                    fontSize: `${element.fontSize}px`, 
-                    color: element.color,
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                    fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                    fontWeight: element.fontFamily?.split('|')[1] || '400',
-                    lineHeight: element.lineHeight || 1.2,
-                    letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
-                    textAlign: element.textAlign || 'center',
-                    whiteSpace: 'pre-wrap',
-                    wordWrap: 'break-word',
-                    width: '100%',
-                  }}
-                >
-                  {element.content}
-                </div>
+                {inlineEditingId === element.id ? (
+                  <textarea
+                    autoFocus
+                    value={element.content || ''}
+                    onChange={(e) => handleInlineTextChange(element.id, e.target.value)}
+                    onBlur={handleInlineEditBlur}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="w-full h-full resize-none bg-transparent border-none outline-none"
+                    style={{
+                      fontSize: `${element.fontSize}px`,
+                      color: element.color,
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                      fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                      fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      lineHeight: element.lineHeight || 1.2,
+                      letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
+                      textAlign: element.textAlign || 'center',
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="select-none"
+                    style={{ 
+                      fontSize: `${element.fontSize}px`, 
+                      color: element.color,
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                      fontFamily: element.fontFamily?.split('|')[0] || 'serif',
+                      fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      lineHeight: element.lineHeight || 1.2,
+                      letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
+                      textAlign: element.textAlign || 'center',
+                      whiteSpace: 'pre-wrap',
+                      wordWrap: 'break-word',
+                      width: '100%',
+                    }}
+                  >
+                    {element.content}
+                  </div>
+                )}
               </div>
             )}
             
