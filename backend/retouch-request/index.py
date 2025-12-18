@@ -68,7 +68,7 @@ def parse_multipart_bytes(body_bytes: bytes, boundary: str) -> Tuple[Dict[str, s
     
     return fields, photo_data, filename
 
-def send_to_telegram(token: str, chat_id: str, name: str, phone: str, comment: str, photo_data: bytes, filename: str) -> bool:
+def send_to_telegram(token: str, chat_id: str, name: str, phone: str, comment: str, photo_data: bytes, filename: str, topic_id: str = None) -> bool:
     """
     Отправляет заявку в Telegram.
     
@@ -80,6 +80,7 @@ def send_to_telegram(token: str, chat_id: str, name: str, phone: str, comment: s
         comment: комментарий
         photo_data: данные фото в bytes
         filename: имя файла
+        topic_id: ID темы (топика) для отправки сообщения
         
     Returns:
         True если успешно отправлено
@@ -102,6 +103,13 @@ def send_to_telegram(token: str, chat_id: str, name: str, phone: str, comment: s
     body.append(b'Content-Disposition: form-data; name="chat_id"\r\n\r\n')
     body.append(chat_id.encode())
     body.append(b'\r\n')
+    
+    # Добавляем message_thread_id если указан topic_id
+    if topic_id:
+        body.append(f'--{boundary}\r\n'.encode())
+        body.append(b'Content-Disposition: form-data; name="message_thread_id"\r\n\r\n')
+        body.append(topic_id.encode())
+        body.append(b'\r\n')
     
     # Добавляем caption
     body.append(f'--{boundary}\r\n'.encode())
@@ -171,9 +179,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     try:
-        # Получаем токен и chat_id из переменных окружения
+        # Получаем токен, chat_id и topic_id из переменных окружения
         telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN', '8230420684:AAEL95wk4Np-dLdEtCqJEJA8wGZATeiUsEI')
         telegram_chat_id = os.environ.get('TELEGRAM_CHAT_ID', '8230420684')
+        telegram_topic_id = os.environ.get('TELEGRAM_TOPIC_ID', '')
         
         # Получаем Content-Type
         headers = event.get('headers', {})
@@ -240,7 +249,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             phone,
             comment,
             photo_data,
-            filename
+            filename,
+            telegram_topic_id if telegram_topic_id else None
         )
         
         if success:
