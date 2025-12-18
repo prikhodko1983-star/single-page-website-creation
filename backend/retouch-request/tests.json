@@ -7,12 +7,12 @@
       "expectedStatus": 200
     },
     {
-      "name": "POST request basic",
+      "name": "POST without fields returns 400",
       "method": "POST",
       "path": "/",
-      "expectedStatus": 200,
+      "expectedStatus": 400,
       "expectedBody": {
-        "success": true
+        "success": false
       },
       "bodyMatcher": "partial"
     }
