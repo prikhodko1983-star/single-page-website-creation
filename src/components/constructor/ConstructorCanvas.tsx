@@ -47,7 +47,7 @@ interface ConstructorCanvasProps {
   importDesign: (e: React.ChangeEvent<HTMLInputElement>) => void;
   importInputRef: React.RefObject<HTMLInputElement>;
   inlineEditingId: string | null;
-  handleInlineTextChange: (elementId: string, newContent: string) => void;
+  handleInlineTextChange: (elementId: string, newContent: string, textareaElement?: HTMLTextAreaElement) => void;
   handleInlineEditBlur: () => void;
 }
 
@@ -126,11 +126,11 @@ export const ConstructorCanvas = ({
                   <textarea
                     autoFocus
                     value={element.content || ''}
-                    onChange={(e) => handleInlineTextChange(element.id, e.target.value)}
+                    onChange={(e) => handleInlineTextChange(element.id, e.target.value, e.target)}
                     onBlur={handleInlineEditBlur}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className="w-full h-full resize-none bg-transparent border-none outline-none"
+                    className="w-full h-full resize-none bg-transparent border-none outline-none overflow-hidden"
                     style={{
                       fontSize: `${element.fontSize}px`,
                       color: element.color,
@@ -173,11 +173,11 @@ export const ConstructorCanvas = ({
                   <textarea
                     autoFocus
                     value={element.content || ''}
-                    onChange={(e) => handleInlineTextChange(element.id, e.target.value)}
+                    onChange={(e) => handleInlineTextChange(element.id, e.target.value, e.target)}
                     onBlur={handleInlineEditBlur}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className="w-full h-full resize-none bg-transparent border-none outline-none italic"
+                    className="w-full h-full resize-none bg-transparent border-none outline-none italic overflow-hidden"
                     style={{
                       fontSize: `${element.fontSize}px`,
                       color: element.color,
@@ -220,11 +220,11 @@ export const ConstructorCanvas = ({
                   <textarea
                     autoFocus
                     value={element.content || ''}
-                    onChange={(e) => handleInlineTextChange(element.id, e.target.value)}
+                    onChange={(e) => handleInlineTextChange(element.id, e.target.value, e.target)}
                     onBlur={handleInlineEditBlur}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className="w-full h-full resize-none bg-transparent border-none outline-none"
+                    className="w-full h-full resize-none bg-transparent border-none outline-none overflow-hidden"
                     style={{
                       fontSize: `${element.fontSize}px`,
                       color: element.color,
@@ -267,11 +267,11 @@ export const ConstructorCanvas = ({
                   <textarea
                     autoFocus
                     value={element.content || ''}
-                    onChange={(e) => handleInlineTextChange(element.id, e.target.value)}
+                    onChange={(e) => handleInlineTextChange(element.id, e.target.value, e.target)}
                     onBlur={handleInlineEditBlur}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className="w-full h-full resize-none bg-transparent border-none outline-none"
+                    className="w-full h-full resize-none bg-transparent border-none outline-none overflow-hidden"
                     style={{
                       fontSize: `${element.fontSize}px`,
                       color: element.color,
