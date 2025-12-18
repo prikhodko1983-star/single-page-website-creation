@@ -215,6 +215,7 @@ const Constructor = () => {
       height: 100,
       src,
       rotation: 0,
+      screenMode: true,
     };
     setElements([...elements, newElement]);
   };
