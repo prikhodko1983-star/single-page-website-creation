@@ -126,7 +126,7 @@ const RetouchForm = () => {
         });
       }, 200);
 
-      const response = await fetch("https://functions.poehali.dev/8fc1d3aa-d848-4664-99c3-7ad60233aa64", {
+      const response = await fetch("https://functions.poehali.dev/839640cf-1008-4c5d-8be3-81a7d9db548e", {
         method: "POST",
         body: formDataToSend
       });
