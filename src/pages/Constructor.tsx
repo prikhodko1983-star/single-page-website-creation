@@ -205,7 +205,8 @@ const Constructor = () => {
     setElements([...elements, newElement]);
   };
 
-  const addImageElement = (src: string, type: 'image' | 'cross' | 'flower') => {
+  const addImageElement = async (src: string, type: 'image' | 'cross' | 'flower') => {
+    const processedSrc = await applyScreenMode(src);
     const newElement: CanvasElement = {
       id: Date.now().toString(),
       type,
@@ -216,6 +217,7 @@ const Constructor = () => {
       src,
       rotation: 0,
       screenMode: true,
+      processedSrc,
     };
     setElements([...elements, newElement]);
   };
