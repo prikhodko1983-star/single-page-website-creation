@@ -197,29 +197,39 @@ export const TextEditorModal = ({
             </div>
             
             <div className="lg:sticky lg:top-0">
-              <Label className="mb-2 block">Предпросмотр</Label>
+              <Label className="mb-2 block">Предпросмотр (точное отображение)</Label>
               <div className="relative aspect-[3/4] bg-secondary rounded-lg overflow-hidden border-2 border-border">
                 <div 
-                  className="absolute inset-0 flex items-center p-4"
+                  className="absolute flex items-center p-1"
                   style={{
-                    fontSize: `${editingElement.fontSize}px`,
-                    color: editingElement.color || '#FFFFFF',
-                    fontFamily: editingElement.fontFamily?.split('|')[0] || 'serif',
-                    fontWeight: editingElement.fontFamily?.split('|')[1] || '400',
-                    lineHeight: editingElement.lineHeight || 1.2,
-                    letterSpacing: editingElement.letterSpacing ? `${editingElement.letterSpacing}px` : 'normal',
-                    textAlign: editingElement.textAlign || 'center',
-                    justifyContent: editingElement.textAlign === 'left' ? 'flex-start' : editingElement.textAlign === 'right' ? 'flex-end' : 'center',
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                    whiteSpace: 'pre-wrap',
-                    wordWrap: 'break-word',
+                    left: `${(editingElement.x / 512) * 100}%`,
+                    top: `${(editingElement.y / 683) * 100}%`,
+                    width: `${(editingElement.width / 512) * 100}%`,
+                    height: `${(editingElement.height / 683) * 100}%`,
+                    transform: `rotate(${editingElement.rotation || 0}deg)`,
                   }}
                 >
-                  {editingElement.content || 'Введите текст...'}
+                  <div
+                    style={{
+                      fontSize: `${editingElement.fontSize}px`,
+                      color: editingElement.color || '#FFFFFF',
+                      fontFamily: editingElement.fontFamily?.split('|')[0] || 'serif',
+                      fontWeight: editingElement.fontFamily?.split('|')[1] || '400',
+                      lineHeight: editingElement.lineHeight || 1.2,
+                      letterSpacing: editingElement.letterSpacing ? `${editingElement.letterSpacing}px` : 'normal',
+                      textAlign: editingElement.textAlign || 'center',
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                      whiteSpace: 'pre-wrap',
+                      wordWrap: 'break-word',
+                      width: '100%',
+                    }}
+                  >
+                    {editingElement.content || 'Введите текст...'}
+                  </div>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                Все изменения видны в реальном времени
+                Превью показывает точное отображение как на макете
               </p>
             </div>
           </div>
