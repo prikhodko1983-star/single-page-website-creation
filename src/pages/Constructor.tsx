@@ -385,7 +385,7 @@ const Constructor = () => {
         height: 200,
         src: photoUrl,
         rotation: 0,
-        screenMode: false,
+        screenMode: true,
       };
       setElements([...elements, newElement]);
     };
