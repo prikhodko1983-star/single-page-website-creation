@@ -7,72 +7,66 @@ import json
 import base64
 import os
 import urllib.request
-import urllib.parse
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
-def parse_multipart(body: str, content_type: str) -> Dict[str, Any]:
+def parse_multipart_bytes(body_bytes: bytes, boundary: str) -> Tuple[Dict[str, str], bytes, str]:
     """
-    Парсит multipart/form-data.
+    Парсит multipart/form-data из bytes.
     
     Args:
-        body: тело запроса
-        content_type: заголовок Content-Type
+        body_bytes: тело запроса в bytes
+        boundary: граница между частями
         
     Returns:
-        словарь с полями формы и файлом
+        кортеж (поля формы, данные файла, имя файла)
     """
-    boundary = content_type.split('boundary=')[-1].strip()
-    parts = body.split(f'--{boundary}')
+    boundary_bytes = f'--{boundary}'.encode()
+    parts = body_bytes.split(boundary_bytes)
     
-    result = {'fields': {}, 'file': None}
+    fields = {}
+    photo_data = None
+    filename = ''
     
     for part in parts:
-        if not part.strip() or part.strip() == '--':
+        if not part.strip() or part.strip() == b'--':
             continue
-            
-        lines = part.split('\r\n')
         
-        # Ищем Content-Disposition
-        disposition_line = None
-        for line in lines:
-            if 'Content-Disposition' in line:
-                disposition_line = line
-                break
+        # Ищем разделитель заголовков и данных
+        header_end = part.find(b'\r\n\r\n')
+        if header_end == -1:
+            continue
         
-        if not disposition_line:
+        headers = part[:header_end].decode('utf-8', errors='ignore')
+        data = part[header_end + 4:]
+        
+        # Убираем trailing \r\n
+        if data.endswith(b'\r\n'):
+            data = data[:-2]
+        
+        # Проверяем Content-Disposition
+        if 'Content-Disposition' not in headers:
             continue
         
         # Извлекаем имя поля
-        name_start = disposition_line.find('name="')
+        name_start = headers.find('name="')
         if name_start == -1:
             continue
         name_start += 6
-        name_end = disposition_line.find('"', name_start)
-        field_name = disposition_line[name_start:name_end]
+        name_end = headers.find('"', name_start)
+        field_name = headers[name_start:name_end]
         
         # Проверяем, это файл или обычное поле
-        if 'filename=' in disposition_line:
+        if 'filename=' in headers:
             # Это файл
-            filename_start = disposition_line.find('filename="') + 10
-            filename_end = disposition_line.find('"', filename_start)
-            filename = disposition_line[filename_start:filename_end]
-            
-            # Находим пустую строку (разделитель заголовков и данных)
-            data_start = part.find('\r\n\r\n') + 4
-            data = part[data_start:].rstrip('\r\n')
-            
-            result['file'] = {
-                'name': field_name,
-                'filename': filename,
-                'data': data
-            }
+            filename_start = headers.find('filename="') + 10
+            filename_end = headers.find('"', filename_start)
+            filename = headers[filename_start:filename_end]
+            photo_data = data
         else:
-            # Обычное поле
-            data_start = part.find('\r\n\r\n') + 4
-            value = part[data_start:].strip()
-            result['fields'][field_name] = value
+            # Обычное текстовое поле
+            fields[field_name] = data.decode('utf-8', errors='ignore')
     
-    return result
+    return fields, photo_data, filename
 
 def send_to_telegram(token: str, chat_id: str, name: str, phone: str, comment: str, photo_data: bytes, filename: str) -> bool:
     """
@@ -84,7 +78,7 @@ def send_to_telegram(token: str, chat_id: str, name: str, phone: str, comment: s
         name: имя клиента
         phone: телефон клиента
         comment: комментарий
-        photo_data: данные фото
+        photo_data: данные фото в bytes
         filename: имя файла
         
     Returns:
@@ -104,27 +98,27 @@ def send_to_telegram(token: str, chat_id: str, name: str, phone: str, comment: s
     body = []
     
     # Добавляем chat_id
-    body.append(f'--{boundary}'.encode())
+    body.append(f'--{boundary}\r\n'.encode())
     body.append(b'Content-Disposition: form-data; name="chat_id"\r\n\r\n')
     body.append(chat_id.encode())
     body.append(b'\r\n')
     
     # Добавляем caption
-    body.append(f'--{boundary}'.encode())
+    body.append(f'--{boundary}\r\n'.encode())
     body.append(b'Content-Disposition: form-data; name="caption"\r\n\r\n')
     body.append(message.encode('utf-8'))
     body.append(b'\r\n')
     
     # Добавляем фото
-    body.append(f'--{boundary}'.encode())
+    body.append(f'--{boundary}\r\n'.encode())
     body.append(f'Content-Disposition: form-data; name="photo"; filename="{filename}"\r\n'.encode())
     body.append(b'Content-Type: image/jpeg\r\n\r\n')
     body.append(photo_data)
     body.append(b'\r\n')
     
-    body.append(f'--{boundary}--'.encode())
+    body.append(f'--{boundary}--\r\n'.encode())
     
-    body_bytes = b'\r\n'.join(body)
+    body_bytes = b''.join(body)
     
     headers = {
         'Content-Type': f'multipart/form-data; boundary={boundary}',
@@ -178,37 +172,43 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     try:
         # Получаем токен и chat_id из переменных окружения
-        telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN')
-        telegram_chat_id = os.environ.get('TELEGRAM_CHAT_ID')
-        
-        if not telegram_token or not telegram_chat_id:
-            return {
-                'statusCode': 500,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({
-                    'success': False,
-                    'error': 'Telegram не настроен'
-                }),
-                'isBase64Encoded': False
-            }
+        telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN', '8230420684:AAEL95wk4Np-dLdEtCqJEJA8wGZATeiUsEI')
+        telegram_chat_id = os.environ.get('TELEGRAM_CHAT_ID', '8230420684')
         
         # Получаем Content-Type
         headers = event.get('headers', {})
         content_type = headers.get('content-type') or headers.get('Content-Type', '')
         
-        # Парсим multipart/form-data
+        # Извлекаем boundary
+        if 'boundary=' not in content_type:
+            return {
+                'statusCode': 400,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'success': False,
+                    'error': 'Invalid Content-Type'
+                }),
+                'isBase64Encoded': False
+            }
+        
+        boundary = content_type.split('boundary=')[-1].strip()
+        
+        # Получаем body как bytes
         body = event.get('body', '')
         is_base64 = event.get('isBase64Encoded', False)
         
         if is_base64:
-            body = base64.b64decode(body).decode('utf-8')
+            body_bytes = base64.b64decode(body)
+        else:
+            body_bytes = body.encode('latin-1')
         
-        parsed = parse_multipart(body, content_type)
+        # Парсим multipart/form-data
+        fields, photo_data, filename = parse_multipart_bytes(body_bytes, boundary)
         
         # Извлекаем данные
-        name = parsed['fields'].get('name', '')
-        phone = parsed['fields'].get('phone', '')
-        comment = parsed['fields'].get('comment', '')
+        name = fields.get('name', '').strip()
+        phone = fields.get('phone', '').strip()
+        comment = fields.get('comment', '').strip()
         
         if not name or not phone:
             return {
@@ -221,7 +221,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        if not parsed['file']:
+        if not photo_data:
             return {
                 'statusCode': 400,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -233,9 +233,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         # Отправляем в Telegram
-        photo_data = parsed['file']['data'].encode('latin-1')
-        filename = parsed['file']['filename']
-        
         success = send_to_telegram(
             telegram_token,
             telegram_chat_id,
@@ -269,6 +266,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
     except Exception as e:
         print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
         return {
             'statusCode': 500,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
