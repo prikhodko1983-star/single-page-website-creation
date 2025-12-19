@@ -214,7 +214,7 @@ export const ConstructorCanvas = ({
             
             {element.type === 'fio' && (
               <div 
-                className="w-full h-full flex items-center justify-center overflow-hidden p-1"
+                className="w-full h-full flex items-center justify-center"
               >
                 {inlineEditingId === element.id ? (
                   <textarea
@@ -261,7 +261,7 @@ export const ConstructorCanvas = ({
             
             {element.type === 'dates' && (
               <div 
-                className="w-full h-full flex items-center justify-center overflow-hidden p-1"
+                className="w-full h-full flex items-center justify-center"
               >
                 {inlineEditingId === element.id ? (
                   <textarea
