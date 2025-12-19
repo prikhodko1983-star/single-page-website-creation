@@ -20,6 +20,7 @@ interface CanvasElement {
   letterSpacing?: number;
   textAlign?: 'left' | 'center' | 'right';
   flipHorizontal?: boolean;
+  autoSize?: boolean;
 }
 
 interface ConstructorCanvasProps {
@@ -109,9 +110,11 @@ export const ConstructorCanvas = ({
             style={{
               left: element.x,
               top: element.y,
-              width: element.width,
-              height: element.height,
+              width: element.autoSize ? 'auto' : element.width,
+              height: element.autoSize ? 'auto' : element.height,
               transform: `rotate(${element.rotation || 0}deg)`,
+              minWidth: element.autoSize ? '50px' : undefined,
+              minHeight: element.autoSize ? '30px' : undefined,
             }}
             onMouseDown={(e) => handleMouseDown(e, element.id)}
             onTouchStart={(e) => handleTouchStart(e, element.id)}

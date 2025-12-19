@@ -25,6 +25,7 @@ interface CanvasElement {
   lineHeight?: number;
   letterSpacing?: number;
   textAlign?: 'left' | 'center' | 'right';
+  autoSize?: boolean;
 }
 
 interface ConstructorLibraryProps {

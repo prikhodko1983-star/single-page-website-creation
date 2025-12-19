@@ -27,6 +27,7 @@ interface CanvasElement {
   letterSpacing?: number;
   textAlign?: 'left' | 'center' | 'right';
   flipHorizontal?: boolean;
+  autoSize?: boolean;
 }
 
 const Constructor = () => {
@@ -252,13 +253,14 @@ const Constructor = () => {
       type: 'fio',
       x: 100,
       y: 100,
-      width: 300,
-      height: 120,
+      width: 200,
+      height: 90,
       content: fioText,
       fontSize: 28,
       color: '#FFFFFF',
       rotation: 0,
       fontFamily: selectedFontData?.fullStyle || 'serif',
+      autoSize: true,
     };
     setElements([...elements, newElement]);
     
