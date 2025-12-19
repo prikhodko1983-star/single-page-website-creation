@@ -110,10 +110,11 @@ export const ConstructorCanvas = ({
             style={{
               left: element.x,
               top: element.y,
-              width: element.autoSize ? 'max-content' : element.width,
-              height: element.autoSize ? 'max-content' : element.height,
+              width: element.autoSize ? 'auto' : element.width,
+              height: element.autoSize ? 'auto' : element.height,
               transform: `rotate(${element.rotation || 0}deg)`,
-              maxWidth: element.autoSize ? '400px' : undefined,
+              minWidth: element.autoSize ? '50px' : undefined,
+              minHeight: element.autoSize ? '30px' : undefined,
             }}
             onMouseDown={(e) => handleMouseDown(e, element.id)}
             onTouchStart={(e) => handleTouchStart(e, element.id)}
@@ -216,7 +217,7 @@ export const ConstructorCanvas = ({
             
             {element.type === 'fio' && (
               <div 
-                style={{ width: '100%', height: '100%' }}
+                className="w-full h-full flex items-center justify-center"
               >
                 {inlineEditingId === element.id ? (
                   <textarea
@@ -226,7 +227,7 @@ export const ConstructorCanvas = ({
                     onBlur={handleInlineEditBlur}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className="resize-none bg-transparent border-none outline-none overflow-hidden"
+                    className="w-full h-full resize-none bg-transparent border-none outline-none overflow-hidden"
                     style={{
                       fontSize: `${element.fontSize}px`,
                       color: element.color,
@@ -236,8 +237,6 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.3,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
-                      width: 'auto',
-                      minWidth: '100px',
                     }}
                   />
                 ) : (
@@ -253,7 +252,8 @@ export const ConstructorCanvas = ({
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
                       whiteSpace: 'pre-wrap',
-                      display: 'inline-block',
+                      overflow: 'visible',
+                      width: '100%',
                     }}
                   >
                     {element.content}
@@ -264,7 +264,7 @@ export const ConstructorCanvas = ({
             
             {element.type === 'dates' && (
               <div 
-                style={{ width: '100%', height: '100%' }}
+                className="w-full h-full flex items-center justify-center"
               >
                 {inlineEditingId === element.id ? (
                   <textarea
@@ -274,7 +274,7 @@ export const ConstructorCanvas = ({
                     onBlur={handleInlineEditBlur}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className="resize-none bg-transparent border-none outline-none overflow-hidden"
+                    className="w-full h-full resize-none bg-transparent border-none outline-none overflow-hidden"
                     style={{
                       fontSize: `${element.fontSize}px`,
                       color: element.color,
@@ -284,8 +284,6 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.2,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
                       textAlign: element.textAlign || 'center',
-                      width: 'auto',
-                      minWidth: '100px',
                     }}
                   />
                 ) : (
@@ -301,7 +299,8 @@ export const ConstructorCanvas = ({
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
                       textAlign: element.textAlign || 'center',
                       whiteSpace: 'pre-wrap',
-                      display: 'inline-block',
+                      overflow: 'visible',
+                      width: '100%',
                     }}
                   >
                     {element.content}

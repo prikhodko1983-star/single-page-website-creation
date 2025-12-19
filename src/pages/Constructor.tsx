@@ -416,7 +416,7 @@ const Constructor = () => {
   const handleSingleClick = (elementId: string) => {
     if (selectedElement === elementId && !isDragging && !isResizing) {
       const element = elements.find(el => el.id === elementId);
-      if (element && ['text', 'epitaph', 'fio', 'dates'].includes(element.type) && !element.autoSize) {
+      if (element && ['text', 'epitaph', 'fio', 'dates'].includes(element.type)) {
         setInlineEditingId(elementId);
       }
     }
