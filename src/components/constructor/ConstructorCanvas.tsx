@@ -154,8 +154,8 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.2,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
-                      whiteSpace: 'pre-wrap',
-                      wordWrap: 'break-word',
+                      whiteSpace: 'nowrap',
+                      overflow: 'visible',
                       width: '100%',
                     }}
                   >
@@ -201,8 +201,8 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.4,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
-                      whiteSpace: 'pre-wrap',
-                      wordWrap: 'break-word',
+                      whiteSpace: 'nowrap',
+                      overflow: 'visible',
                       width: '100%',
                     }}
                   >
@@ -248,8 +248,8 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.3,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
-                      whiteSpace: 'pre-wrap',
-                      wordWrap: 'break-word',
+                      whiteSpace: 'nowrap',
+                      overflow: 'visible',
                       width: '100%',
                     }}
                   >
@@ -295,8 +295,8 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.2,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
                       textAlign: element.textAlign || 'center',
-                      whiteSpace: 'pre-wrap',
-                      wordWrap: 'break-word',
+                      whiteSpace: 'nowrap',
+                      overflow: 'visible',
                       width: '100%',
                     }}
                   >
