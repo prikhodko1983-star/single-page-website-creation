@@ -94,15 +94,14 @@ export const TextEditorModal = ({
             </Button>
           </div>
           
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <Label className="text-base font-semibold mb-3 block">Редактор текста</Label>
-              <div className="relative bg-black/90 rounded-lg border-2 border-border p-4 min-h-[400px]">
+              <div className="relative bg-black/90 rounded-lg border-2 border-border p-3 sm:p-4 min-h-[200px] sm:min-h-[280px]">
                 <textarea
                   autoFocus
                   value={editingElement.content || ''}
                   onChange={(e) => setEditingElement({ ...editingElement, content: e.target.value })}
-                  className="w-full h-full min-h-[370px] resize-none bg-transparent border-none outline-none"
+                  className="w-full h-full min-h-[170px] sm:min-h-[250px] resize-none bg-transparent border-none outline-none"
                   placeholder="Введите текст..."
                   style={{
                     fontSize: `${editingElement.fontSize || 24}px`,
@@ -121,11 +120,11 @@ export const TextEditorModal = ({
               </div>
             </div>
             
-            <div className="space-y-5 sm:space-y-6 pb-4">
+            <div className="space-y-4 pb-4">
             
               <div>
-                <Label className="text-base font-semibold">Размер шрифта: <span className="text-primary">{editingElement.fontSize || 24}px</span></Label>
-                <div className="flex gap-3 items-center mt-3">
+                <Label className="text-sm sm:text-base font-semibold">Размер шрифта: <span className="text-primary">{editingElement.fontSize || 24}px</span></Label>
+                <div className="flex gap-2 items-center mt-2">
                   <input
                     type="range"
                     min="12"
@@ -140,25 +139,25 @@ export const TextEditorModal = ({
                     max="120"
                     value={editingElement.fontSize || 24}
                     onChange={(e) => setEditingElement({ ...editingElement, fontSize: parseInt(e.target.value) || 24 })}
-                    className="w-20 text-center text-lg font-semibold"
+                    className="w-16 sm:w-20 text-center text-base sm:text-lg font-semibold"
                   />
                 </div>
               </div>
             
               <div>
-                <Label className="text-base font-semibold">Цвет текста</Label>
-                <div className="mt-3">
+                <Label className="text-sm sm:text-base font-semibold">Цвет текста</Label>
+                <div className="mt-2">
                   <input
                     type="color"
                     value={editingElement.color || '#FFFFFF'}
                     onChange={(e) => setEditingElement({ ...editingElement, color: e.target.value })}
-                    className="w-full h-14 rounded-lg border-2 cursor-pointer"
+                    className="w-full h-10 sm:h-12 rounded-lg border-2 cursor-pointer"
                   />
                 </div>
               </div>
             
               <div>
-                <Label className="text-base font-semibold">Между строк: <span className="text-primary">{editingElement.lineHeight?.toFixed(1) || '1.2'}</span></Label>
+                <Label className="text-sm sm:text-base font-semibold">Между строк: <span className="text-primary">{editingElement.lineHeight?.toFixed(1) || '1.2'}</span></Label>
                 <input
                   type="range"
                   min="0.8"
@@ -166,12 +165,12 @@ export const TextEditorModal = ({
                   step="0.1"
                   value={editingElement.lineHeight || 1.2}
                   onChange={(e) => setEditingElement({ ...editingElement, lineHeight: parseFloat(e.target.value) })}
-                  className="w-full mt-3 h-2"
+                  className="w-full mt-2 h-2"
                 />
               </div>
             
               <div>
-                <Label className="text-base font-semibold">Между букв: <span className="text-primary">{editingElement.letterSpacing?.toFixed(1) || '0'}px</span></Label>
+                <Label className="text-sm sm:text-base font-semibold">Между букв: <span className="text-primary">{editingElement.letterSpacing?.toFixed(1) || '0'}px</span></Label>
                 <input
                   type="range"
                   min="-2"
@@ -179,49 +178,49 @@ export const TextEditorModal = ({
                   step="0.5"
                   value={editingElement.letterSpacing || 0}
                   onChange={(e) => setEditingElement({ ...editingElement, letterSpacing: parseFloat(e.target.value) })}
-                  className="w-full mt-3 h-2"
+                  className="w-full mt-2 h-2"
                 />
               </div>
             
               <div>
-                <Label className="text-base font-semibold">Выравнивание</Label>
-                <div className="flex gap-2 mt-3">
+                <Label className="text-sm sm:text-base font-semibold">Выравнивание</Label>
+                <div className="flex gap-2 mt-2">
                   <Button
                     variant={editingElement.textAlign === 'left' ? 'default' : 'outline'}
                     onClick={() => setEditingElement({ ...editingElement, textAlign: 'left' })}
-                    className="flex-1 h-12"
+                    className="flex-1 h-10 sm:h-12"
                   >
-                    <Icon name="AlignLeft" size={20} />
+                    <Icon name="AlignLeft" size={18} />
                   </Button>
                   <Button
                     variant={editingElement.textAlign === 'center' || !editingElement.textAlign ? 'default' : 'outline'}
                     onClick={() => setEditingElement({ ...editingElement, textAlign: 'center' })}
-                    className="flex-1 h-12"
+                    className="flex-1 h-10 sm:h-12"
                   >
-                    <Icon name="AlignCenter" size={20} />
+                    <Icon name="AlignCenter" size={18} />
                   </Button>
                   <Button
                     variant={editingElement.textAlign === 'right' ? 'default' : 'outline'}
                     onClick={() => setEditingElement({ ...editingElement, textAlign: 'right' })}
-                    className="flex-1 h-12"
+                    className="flex-1 h-10 sm:h-12"
                   >
-                    <Icon name="AlignRight" size={20} />
+                    <Icon name="AlignRight" size={18} />
                   </Button>
                 </div>
               </div>
               
-              <div className="flex gap-3 pt-6 pb-2">
+              <div className="flex gap-2 pt-4 pb-2">
                 <Button
-                  className="flex-1 h-14 text-lg font-semibold"
+                  className="flex-1 h-12 sm:h-14 text-base sm:text-lg font-semibold"
                   onClick={handleApply}
                 >
-                  <Icon name="Check" size={22} className="mr-2" />
+                  <Icon name="Check" size={20} className="mr-2" />
                   Применить
                 </Button>
                 <Button
                   variant="outline"
                   onClick={handleCancel}
-                  className="h-14 px-6 text-lg"
+                  className="h-12 sm:h-14 px-4 sm:px-6 text-base sm:text-lg"
                 >
                   Отмена
                 </Button>
