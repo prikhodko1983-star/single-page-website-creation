@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Icon from "@/components/ui/icon";
+import { useEffect, useCallback } from "react";
 
 interface CanvasElement {
   id: string;
@@ -40,9 +41,19 @@ export const TextEditorModal = ({
   setEditingElement,
   onApply,
 }: TextEditorModalProps) => {
-  if (!isOpen || !editingElement) return null;
+  // Блокировка скролла body при открытии модального окна
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [isOpen]);
 
-  const handleApply = () => {
+  // Мемоизированные обработчики для избежания лишних рендеров
+  const handleApply = useCallback(() => {
+    if (!editingElement) return;
     onApply({
       content: editingElement.content,
       fontSize: editingElement.fontSize,
@@ -53,17 +64,24 @@ export const TextEditorModal = ({
     });
     onClose();
     setEditingElement(null);
-  };
+  }, [editingElement, onApply, onClose, setEditingElement]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     onClose();
     setEditingElement(null);
-  };
+  }, [onClose, setEditingElement]);
+
+  if (!isOpen || !editingElement) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <Card className="w-full max-w-3xl my-auto">
-        <CardContent className="p-3 sm:p-4 max-h-[90vh] overflow-y-auto">
+        <CardContent className="p-3 sm:p-4 max-h-[90vh] overflow-y-auto overscroll-contain">
           <div className="flex justify-between items-center mb-4 sm:mb-6 sticky top-0 bg-card z-10 -mx-3 sm:-mx-4 px-3 sm:px-4 pb-3 border-b">
             <h2 className="text-lg sm:text-xl font-bold">Редактор текста</h2>
             <Button
@@ -84,7 +102,7 @@ export const TextEditorModal = ({
                   autoFocus
                   value={editingElement.content || ''}
                   onChange={(e) => setEditingElement({ ...editingElement, content: e.target.value })}
-                  className="w-full min-h-40 p-4 mt-2 rounded-lg border-2 bg-background text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full min-h-40 p-4 mt-2 rounded-lg border-2 bg-background text-foreground focus:border-primary focus:outline-none"
                   placeholder="Введите текст..."
                   style={{
                     fontFamily: editingElement.fontFamily?.split('|')[0] || 'inherit',

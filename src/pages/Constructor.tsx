@@ -1316,11 +1316,13 @@ const Constructor = () => {
         }}
       />
 
-      <MobileToolbar
-        selectedEl={selectedEl}
-        updateElement={updateElement}
-        fonts={fonts}
-      />
+      {!isTextEditorOpen && (
+        <MobileToolbar
+          selectedEl={selectedEl}
+          updateElement={updateElement}
+          fonts={fonts}
+        />
+      )}
     </div>
   );
 };
