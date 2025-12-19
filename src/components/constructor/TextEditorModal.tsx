@@ -198,19 +198,16 @@ export const TextEditorModal = ({
             </div>
             
             <div className="lg:sticky lg:top-0">
-              <Label className="mb-2 block">Предпросмотр (точное отображение)</Label>
-              <div className="relative aspect-[3/4] bg-secondary rounded-lg overflow-hidden border-2 border-border">
+              <Label className="mb-2 block">Предпросмотр</Label>
+              <div className="relative aspect-[3/4] bg-secondary rounded-lg overflow-hidden border-2 border-border flex items-center justify-center p-4">
                 <div 
-                  className="absolute flex items-center p-1"
+                  className="w-full flex items-center justify-center"
                   style={{
-                    left: `${(editingElement.x / 512) * 100}%`,
-                    top: `${(editingElement.y / 683) * 100}%`,
-                    width: `${(editingElement.width / 512) * 100}%`,
-                    height: `${(editingElement.height / 683) * 100}%`,
                     transform: `rotate(${editingElement.rotation || 0}deg)`,
                   }}
                 >
                   <div
+                    className="max-w-full"
                     style={{
                       fontSize: `${editingElement.fontSize}px`,
                       color: editingElement.color || '#FFFFFF',
@@ -221,8 +218,7 @@ export const TextEditorModal = ({
                       textAlign: editingElement.textAlign || 'center',
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       whiteSpace: 'pre-wrap',
-                      wordWrap: 'break-word',
-                      width: '100%',
+                      wordBreak: 'break-word',
                     }}
                   >
                     {editingElement.content || 'Введите текст...'}
@@ -230,7 +226,7 @@ export const TextEditorModal = ({
                 </div>
               </div>
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                Превью показывает точное отображение как на макете
+                Предпросмотр показывает текст с текущими настройками. Размер рамки подстроится автоматически.
               </p>
             </div>
           </div>
