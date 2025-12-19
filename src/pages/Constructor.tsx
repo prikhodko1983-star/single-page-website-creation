@@ -63,6 +63,8 @@ const Constructor = () => {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   
+  const [touchRotateStart, setTouchRotateStart] = useState<{ angle: number; rotation: number } | null>(null);
+  
   const [catalogCategories, setCatalogCategories] = useState<Array<{id: number, name: string}>>([]);
   const [catalogProducts, setCatalogProducts] = useState<Array<{id: number, name: string, category_id: number, image_url: string | null}>>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -458,11 +460,21 @@ const Constructor = () => {
   const handleTouchStart = (e: React.TouchEvent, elementId: string) => {
     e.stopPropagation();
     setSelectedElement(elementId);
-    setIsDragging(true);
     
     const element = elements.find(el => el.id === elementId);
     if (!element) return;
     
+    // Два пальца = вращение
+    if (e.touches.length === 2) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const angle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX) * (180 / Math.PI);
+      setTouchRotateStart({ angle, rotation: element.rotation || 0 });
+      return;
+    }
+    
+    // Один палец = перетаскивание
+    setIsDragging(true);
     const touch = e.touches[0];
     const rect = (e.target as HTMLElement).getBoundingClientRect();
     setDragOffset({
@@ -535,6 +547,22 @@ const Constructor = () => {
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!canvasRef.current || !selectedElement) return;
     
+    // Вращение двумя пальцами
+    if (e.touches.length === 2 && touchRotateStart) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const currentAngle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX) * (180 / Math.PI);
+      const angleDiff = currentAngle - touchRotateStart.angle;
+      const newRotation = touchRotateStart.rotation + angleDiff;
+      
+      setElements(elements.map(el => 
+        el.id === selectedElement 
+          ? { ...el, rotation: Math.round(newRotation) }
+          : el
+      ));
+      return;
+    }
+    
     const touch = e.touches[0];
     
     if (isRotating) {
@@ -605,6 +633,7 @@ const Constructor = () => {
     setIsDragging(false);
     setIsResizing(false);
     setIsRotating(false);
+    setTouchRotateStart(null);
   };
 
   const handleResizeMouseDown = (e: React.MouseEvent, elementId: string) => {
