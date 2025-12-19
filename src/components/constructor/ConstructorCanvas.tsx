@@ -158,7 +158,8 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.2,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
-                      whiteSpace: 'nowrap',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
                       overflow: 'visible',
                       width: '100%',
                     }}
@@ -206,7 +207,8 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.4,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
-                      whiteSpace: 'nowrap',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
                       overflow: 'visible',
                       width: '100%',
                     }}
