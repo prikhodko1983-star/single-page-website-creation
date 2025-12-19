@@ -110,11 +110,10 @@ export const ConstructorCanvas = ({
             style={{
               left: element.x,
               top: element.y,
-              width: element.autoSize ? 'auto' : element.width,
-              height: element.autoSize ? 'auto' : element.height,
+              width: element.autoSize ? 'max-content' : element.width,
+              height: element.autoSize ? 'max-content' : element.height,
               transform: `rotate(${element.rotation || 0}deg)`,
-              minWidth: element.autoSize ? '50px' : undefined,
-              minHeight: element.autoSize ? '30px' : undefined,
+              maxWidth: element.autoSize ? '400px' : undefined,
             }}
             onMouseDown={(e) => handleMouseDown(e, element.id)}
             onTouchStart={(e) => handleTouchStart(e, element.id)}
@@ -217,7 +216,6 @@ export const ConstructorCanvas = ({
             
             {element.type === 'fio' && (
               <div 
-                className="flex items-center justify-center"
                 style={{ width: '100%', height: '100%' }}
               >
                 {inlineEditingId === element.id ? (
@@ -266,7 +264,6 @@ export const ConstructorCanvas = ({
             
             {element.type === 'dates' && (
               <div 
-                className="flex items-center justify-center"
                 style={{ width: '100%', height: '100%' }}
               >
                 {inlineEditingId === element.id ? (
