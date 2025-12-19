@@ -1310,30 +1310,8 @@ const Constructor = () => {
         setEditingElement={setEditingElement}
         onApply={(updates) => {
           if (editingElement) {
-            // Создаем временный элемент для измерения размеров текста
-            const measureEl = document.createElement('div');
-            measureEl.style.position = 'absolute';
-            measureEl.style.visibility = 'hidden';
-            measureEl.style.whiteSpace = 'pre-wrap';
-            measureEl.style.fontSize = `${updates.fontSize || editingElement.fontSize}px`;
-            measureEl.style.fontFamily = editingElement.fontFamily?.split('|')[0] || 'serif';
-            measureEl.style.fontWeight = editingElement.fontFamily?.split('|')[1] || '400';
-            measureEl.style.lineHeight = `${updates.lineHeight || editingElement.lineHeight || 1.2}`;
-            measureEl.style.letterSpacing = updates.letterSpacing ? `${updates.letterSpacing}px` : 'normal';
-            measureEl.style.padding = '4px';
-            measureEl.textContent = updates.content || editingElement.content || '';
-            
-            document.body.appendChild(measureEl);
-            const textWidth = Math.ceil(measureEl.offsetWidth);
-            const textHeight = Math.ceil(measureEl.offsetHeight);
-            document.body.removeChild(measureEl);
-            
-            // Обновляем элемент с новыми размерами
-            updateElement(editingElement.id, {
-              ...updates,
-              width: Math.max(100, Math.min(500, textWidth)),
-              height: Math.max(40, Math.min(400, textHeight)),
-            });
+            // Просто применяем изменения без изменения размеров рамки
+            updateElement(editingElement.id, updates);
           }
         }}
       />
