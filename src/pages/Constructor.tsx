@@ -64,6 +64,7 @@ const Constructor = () => {
   const importInputRef = useRef<HTMLInputElement>(null);
   
   const [touchRotateStart, setTouchRotateStart] = useState<{ angle: number; rotation: number } | null>(null);
+  const [touchPinchStart, setTouchPinchStart] = useState<{ distance: number; width: number; height: number; fontSize: number } | null>(null);
   
   const [catalogCategories, setCatalogCategories] = useState<Array<{id: number, name: string}>>([]);
   const [catalogProducts, setCatalogProducts] = useState<Array<{id: number, name: string, category_id: number, image_url: string | null}>>([]);
@@ -464,12 +465,27 @@ const Constructor = () => {
     const element = elements.find(el => el.id === elementId);
     if (!element) return;
     
-    // Два пальца = вращение
+    // Два пальца = вращение + масштабирование
     if (e.touches.length === 2) {
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
+      
+      // Угол для вращения
       const angle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX) * (180 / Math.PI);
       setTouchRotateStart({ angle, rotation: element.rotation || 0 });
+      
+      // Расстояние для масштабирования
+      const distance = Math.sqrt(
+        Math.pow(touch2.clientX - touch1.clientX, 2) + 
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+      );
+      setTouchPinchStart({ 
+        distance, 
+        width: element.width, 
+        height: element.height,
+        fontSize: element.fontSize || 24
+      });
+      
       return;
     }
     
@@ -547,19 +563,41 @@ const Constructor = () => {
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!canvasRef.current || !selectedElement) return;
     
-    // Вращение двумя пальцами
-    if (e.touches.length === 2 && touchRotateStart) {
+    // Вращение + масштабирование двумя пальцами
+    if (e.touches.length === 2 && touchRotateStart && touchPinchStart) {
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
+      
+      // Вращение
       const currentAngle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX) * (180 / Math.PI);
       const angleDiff = currentAngle - touchRotateStart.angle;
       const newRotation = touchRotateStart.rotation + angleDiff;
       
-      setElements(elements.map(el => 
-        el.id === selectedElement 
-          ? { ...el, rotation: Math.round(newRotation) }
-          : el
-      ));
+      // Масштабирование (щипок)
+      const currentDistance = Math.sqrt(
+        Math.pow(touch2.clientX - touch1.clientX, 2) + 
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+      );
+      const scale = currentDistance / touchPinchStart.distance;
+      const newWidth = Math.max(50, touchPinchStart.width * scale);
+      const newHeight = Math.max(30, touchPinchStart.height * scale);
+      
+      const element = elements.find(el => el.id === selectedElement);
+      if (element && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
+        const newFontSize = Math.max(8, Math.min(72, touchPinchStart.fontSize * scale));
+        setElements(elements.map(el => 
+          el.id === selectedElement 
+            ? { ...el, rotation: Math.round(newRotation), width: newWidth, height: newHeight, fontSize: newFontSize }
+            : el
+        ));
+      } else {
+        setElements(elements.map(el => 
+          el.id === selectedElement 
+            ? { ...el, rotation: Math.round(newRotation), width: newWidth, height: newHeight }
+            : el
+        ));
+      }
+      
       return;
     }
     
@@ -634,6 +672,7 @@ const Constructor = () => {
     setIsResizing(false);
     setIsRotating(false);
     setTouchRotateStart(null);
+    setTouchPinchStart(null);
   };
 
   const handleResizeMouseDown = (e: React.MouseEvent, elementId: string) => {
