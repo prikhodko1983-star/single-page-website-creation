@@ -35,14 +35,38 @@ export const MobileToolbar = ({
   updateElement,
   fonts,
 }: MobileToolbarProps) => {
-  const [activePanel, setActivePanel] = useState<'fonts' | 'size' | 'color' | 'align' | null>(null);
+  const [activePanel, setActivePanel] = useState<'fonts' | 'size' | 'color' | 'align' | 'rotate' | null>(null);
+  const [rotationInput, setRotationInput] = useState<string>('');
 
   if (!selectedEl || !['text', 'epitaph', 'fio', 'dates'].includes(selectedEl.type)) {
     return null;
   }
 
-  const togglePanel = (panel: 'fonts' | 'size' | 'color' | 'align') => {
+  const togglePanel = (panel: 'fonts' | 'size' | 'color' | 'align' | 'rotate') => {
+    if (panel === 'rotate' && activePanel !== 'rotate') {
+      setRotationInput((selectedEl.rotation || 0).toString());
+    }
     setActivePanel(activePanel === panel ? null : panel);
+  };
+
+  const handleRotationInputChange = (value: string) => {
+    setRotationInput(value);
+    const numValue = parseInt(value);
+    if (!isNaN(numValue)) {
+      const clampedValue = Math.max(-180, Math.min(180, numValue));
+      updateElement(selectedEl.id, { rotation: clampedValue });
+    }
+  };
+
+  const handleRotationInputBlur = () => {
+    const numValue = parseInt(rotationInput);
+    if (isNaN(numValue)) {
+      setRotationInput((selectedEl.rotation || 0).toString());
+    } else {
+      const clampedValue = Math.max(-180, Math.min(180, numValue));
+      setRotationInput(clampedValue.toString());
+      updateElement(selectedEl.id, { rotation: clampedValue });
+    }
   };
 
   return (
@@ -180,6 +204,42 @@ export const MobileToolbar = ({
         </div>
       )}
 
+      {activePanel === 'rotate' && (
+        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-4 z-40">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-sm">Поворот: {selectedEl.rotation || 0}°</h3>
+            <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={16} />
+            </Button>
+          </div>
+          <input
+            type="range"
+            min="-180"
+            max="180"
+            value={selectedEl.rotation || 0}
+            onChange={(e) => {
+              const value = parseInt(e.target.value);
+              updateElement(selectedEl.id, { rotation: value });
+              setRotationInput(value.toString());
+            }}
+            className="w-full mb-3"
+          />
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min="-180"
+              max="180"
+              value={rotationInput}
+              onChange={(e) => handleRotationInputChange(e.target.value)}
+              onBlur={handleRotationInputBlur}
+              className="flex-1 h-10 px-3 rounded border border-border bg-background text-center"
+              placeholder="Угол"
+            />
+            <span className="text-sm text-muted-foreground">градусов</span>
+          </div>
+        </div>
+      )}
+
       {/* Нижняя панель инструментов */}
       <div className="fixed inset-x-0 bottom-0 bg-background border-t border-border p-2 z-50 md:hidden">
         <div className="flex items-center justify-around gap-1">
@@ -221,6 +281,16 @@ export const MobileToolbar = ({
           >
             <Icon name="AlignCenter" size={20} />
             <span className="text-[10px]">Выравн.</span>
+          </button>
+
+          <button
+            onClick={() => togglePanel('rotate')}
+            className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+              activePanel === 'rotate' ? 'bg-primary/10 text-primary' : 'hover:bg-secondary'
+            }`}
+          >
+            <Icon name="RotateCw" size={20} />
+            <span className="text-[10px]">Поворот</span>
           </button>
         </div>
       </div>
