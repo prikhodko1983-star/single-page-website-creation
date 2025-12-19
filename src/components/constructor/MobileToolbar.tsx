@@ -86,7 +86,6 @@ export const MobileToolbar = ({
                 key={font.id}
                 onClick={() => {
                   updateElement(selectedEl.id, { fontFamily: font.fullStyle });
-                  setActivePanel(null);
                 }}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   selectedEl.fontFamily === font.fullStyle
