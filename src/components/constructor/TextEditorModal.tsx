@@ -219,16 +219,15 @@ export const TextEditorModal = ({
             </div>
             
             <div className="hidden lg:block lg:sticky lg:top-0">
-              <Label className="mb-2 block">Предпросмотр</Label>
-              <div className="relative aspect-[3/4] bg-secondary rounded-lg overflow-hidden border-2 border-border flex items-center justify-center p-4">
+              <Label className="mb-2 block text-base font-semibold">Предпросмотр</Label>
+              <div className="relative aspect-[3/4] bg-black/90 rounded-lg overflow-auto border-2 border-border p-6">
                 <div 
-                  className="w-full flex items-center justify-center"
+                  className="w-full h-full flex items-center justify-center"
                   style={{
                     transform: `rotate(${editingElement.rotation || 0}deg)`,
                   }}
                 >
                   <div
-                    className="max-w-full"
                     style={{
                       fontSize: `${editingElement.fontSize}px`,
                       color: editingElement.color || '#FFFFFF',
@@ -240,6 +239,8 @@ export const TextEditorModal = ({
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       whiteSpace: 'pre-wrap',
                       wordBreak: 'break-word',
+                      width: '100%',
+                      padding: '8px',
                     }}
                   >
                     {editingElement.content || 'Введите текст...'}
@@ -247,7 +248,7 @@ export const TextEditorModal = ({
                 </div>
               </div>
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                Предпросмотр показывает текст с текущими настройками.
+                Точный предпросмотр со всеми настройками
               </p>
             </div>
           </div>
