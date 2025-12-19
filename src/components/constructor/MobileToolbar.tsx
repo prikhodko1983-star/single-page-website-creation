@@ -73,11 +73,11 @@ export const MobileToolbar = ({
     <>
       {/* Выдвижные панели */}
       {activePanel === 'fonts' && (
-        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-4 z-40 max-h-64 overflow-y-auto">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-sm">Выберите шрифт</h3>
+        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-3 z-40 max-h-56 overflow-y-auto">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-xs">Выберите шрифт</h3>
             <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={16} />
+              <Icon name="X" size={14} />
             </Button>
           </div>
           <div className="grid grid-cols-2 gap-2">
@@ -87,13 +87,13 @@ export const MobileToolbar = ({
                 onClick={() => {
                   updateElement(selectedEl.id, { fontFamily: font.fullStyle });
                 }}
-                className={`p-3 rounded-lg border-2 transition-all ${
+                className={`p-2 rounded-lg border-2 transition-all ${
                   selectedEl.fontFamily === font.fullStyle
                     ? 'border-primary bg-primary/10'
                     : 'border-border hover:border-primary/50'
                 }`}
               >
-                <div className="text-xs text-muted-foreground mb-1">{font.name}</div>
+                <div className="text-[10px] text-muted-foreground mb-0.5">{font.name}</div>
                 <div
                   className="text-sm truncate"
                   style={{
@@ -110,11 +110,11 @@ export const MobileToolbar = ({
       )}
 
       {activePanel === 'size' && (
-        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-4 z-40">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-sm">Размер текста: {selectedEl.fontSize}px</h3>
+        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-3 z-40">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-xs">Размер текста: {selectedEl.fontSize}px</h3>
             <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={16} />
+              <Icon name="X" size={14} />
             </Button>
           </div>
           <input
@@ -129,14 +129,14 @@ export const MobileToolbar = ({
       )}
 
       {activePanel === 'color' && (
-        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-4 z-40">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-sm">Цвет текста</h3>
+        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-3 z-40">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-xs">Цвет текста</h3>
             <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={16} />
+              <Icon name="X" size={14} />
             </Button>
           </div>
-          <div className="grid grid-cols-6 gap-2">
+          <div className="grid grid-cols-6 gap-1.5">
             {['#FFFFFF', '#000000', '#FFD700', '#C0C0C0', '#8B4513', '#4A4A4A'].map(color => (
               <button
                 key={color}
@@ -155,17 +155,17 @@ export const MobileToolbar = ({
             type="color"
             value={selectedEl.color || '#FFFFFF'}
             onChange={(e) => updateElement(selectedEl.id, { color: e.target.value })}
-            className="w-full h-12 mt-3 rounded border"
+            className="w-full h-10 mt-2 rounded border"
           />
         </div>
       )}
 
       {activePanel === 'align' && (
-        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-4 z-40">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-sm">Выравнивание</h3>
+        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-3 z-40">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-xs">Выравнивание</h3>
             <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={16} />
+              <Icon name="X" size={14} />
             </Button>
           </div>
           <div className="flex gap-2">
@@ -175,9 +175,9 @@ export const MobileToolbar = ({
                 updateElement(selectedEl.id, { textAlign: 'left' });
                 setActivePanel(null);
               }}
-              className="flex-1"
+              className="flex-1 h-10"
             >
-              <Icon name="AlignLeft" size={18} />
+              <Icon name="AlignLeft" size={16} />
             </Button>
             <Button
               variant={selectedEl.textAlign === 'center' || !selectedEl.textAlign ? 'default' : 'outline'}
@@ -185,9 +185,9 @@ export const MobileToolbar = ({
                 updateElement(selectedEl.id, { textAlign: 'center' });
                 setActivePanel(null);
               }}
-              className="flex-1"
+              className="flex-1 h-10"
             >
-              <Icon name="AlignCenter" size={18} />
+              <Icon name="AlignCenter" size={16} />
             </Button>
             <Button
               variant={selectedEl.textAlign === 'right' ? 'default' : 'outline'}
@@ -195,20 +195,20 @@ export const MobileToolbar = ({
                 updateElement(selectedEl.id, { textAlign: 'right' });
                 setActivePanel(null);
               }}
-              className="flex-1"
+              className="flex-1 h-10"
             >
-              <Icon name="AlignRight" size={18} />
+              <Icon name="AlignRight" size={16} />
             </Button>
           </div>
         </div>
       )}
 
       {activePanel === 'rotate' && (
-        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-4 z-40">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-sm">Поворот: {selectedEl.rotation || 0}°</h3>
+        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-3 z-40">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-xs">Поворот: {selectedEl.rotation || 0}°</h3>
             <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={16} />
+              <Icon name="X" size={14} />
             </Button>
           </div>
           <input
@@ -221,7 +221,7 @@ export const MobileToolbar = ({
               updateElement(selectedEl.id, { rotation: value });
               setRotationInput(value.toString());
             }}
-            className="w-full mb-3"
+            className="w-full mb-2"
           />
           <div className="flex items-center gap-2">
             <input
@@ -231,40 +231,40 @@ export const MobileToolbar = ({
               value={rotationInput}
               onChange={(e) => handleRotationInputChange(e.target.value)}
               onBlur={handleRotationInputBlur}
-              className="flex-1 h-10 px-3 rounded border border-border bg-background text-center"
+              className="flex-1 h-8 px-2 rounded border border-border bg-background text-center text-sm"
               placeholder="Угол"
             />
-            <span className="text-sm text-muted-foreground">градусов</span>
+            <span className="text-xs text-muted-foreground">град</span>
           </div>
         </div>
       )}
 
       {/* Нижняя панель инструментов */}
-      <div className="fixed inset-x-0 bottom-0 bg-background border-t border-border p-2 z-50 md:hidden">
+      <div className="fixed inset-x-0 bottom-0 bg-background border-t border-border p-1.5 z-50 md:hidden">
         <div className="flex items-center justify-around gap-1">
           <button
             onClick={() => togglePanel('fonts')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors ${
               activePanel === 'fonts' ? 'bg-primary/10 text-primary' : 'hover:bg-secondary'
             }`}
           >
-            <Icon name="Type" size={20} />
+            <Icon name="Type" size={18} />
             <span className="text-[10px]">Шрифт</span>
           </button>
 
           <button
             onClick={() => togglePanel('size')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors ${
               activePanel === 'size' ? 'bg-primary/10 text-primary' : 'hover:bg-secondary'
             }`}
           >
-            <span className="text-lg font-bold">Aa</span>
+            <span className="text-base font-bold">Aa</span>
             <span className="text-[10px]">Размер</span>
           </button>
 
           <button
             onClick={() => togglePanel('color')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors ${
               activePanel === 'color' ? 'bg-primary/10 text-primary' : 'hover:bg-secondary'
             }`}
           >
@@ -274,21 +274,21 @@ export const MobileToolbar = ({
 
           <button
             onClick={() => togglePanel('align')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors ${
               activePanel === 'align' ? 'bg-primary/10 text-primary' : 'hover:bg-secondary'
             }`}
           >
-            <Icon name="AlignCenter" size={20} />
+            <Icon name="AlignCenter" size={18} />
             <span className="text-[10px]">Выравн.</span>
           </button>
 
           <button
             onClick={() => togglePanel('rotate')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors ${
               activePanel === 'rotate' ? 'bg-primary/10 text-primary' : 'hover:bg-secondary'
             }`}
           >
-            <Icon name="RotateCw" size={20} />
+            <Icon name="RotateCw" size={18} />
             <span className="text-[10px]">Поворот</span>
           </button>
         </div>
