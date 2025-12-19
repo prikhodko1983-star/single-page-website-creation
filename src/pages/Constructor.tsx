@@ -544,12 +544,19 @@ const Constructor = () => {
       const newX = e.clientX - canvasRect.left - dragOffset.x;
       const newY = e.clientY - canvasRect.top - dragOffset.y;
       
-      setElements(elements.map(el => 
-        el.id === selectedElement 
-          ? { ...el, x: Math.max(0, Math.min(newX, canvasRect.width - el.width)), 
-                    y: Math.max(0, Math.min(newY, canvasRect.height - el.height)) }
-          : el
-      ));
+      setElements(elements.map(el => {
+        if (el.id === selectedElement) {
+          // Для элементов с autoSize не ограничиваем по ширине
+          const maxX = el.autoSize ? canvasRect.width : canvasRect.width - el.width;
+          const maxY = el.autoSize ? canvasRect.height : canvasRect.height - el.height;
+          return { 
+            ...el, 
+            x: Math.max(0, Math.min(newX, maxX)), 
+            y: Math.max(0, Math.min(newY, maxY)) 
+          };
+        }
+        return el;
+      }));
     }
   };
 
@@ -645,12 +652,19 @@ const Constructor = () => {
       const newX = touch.clientX - canvasRect.left - dragOffset.x;
       const newY = touch.clientY - canvasRect.top - dragOffset.y;
       
-      setElements(elements.map(el => 
-        el.id === selectedElement 
-          ? { ...el, x: Math.max(0, Math.min(newX, canvasRect.width - el.width)), 
-                    y: Math.max(0, Math.min(newY, canvasRect.height - el.height)) }
-          : el
-      ));
+      setElements(elements.map(el => {
+        if (el.id === selectedElement) {
+          // Для элементов с autoSize не ограничиваем по ширине
+          const maxX = el.autoSize ? canvasRect.width : canvasRect.width - el.width;
+          const maxY = el.autoSize ? canvasRect.height : canvasRect.height - el.height;
+          return { 
+            ...el, 
+            x: Math.max(0, Math.min(newX, maxX)), 
+            y: Math.max(0, Math.min(newY, maxY)) 
+          };
+        }
+        return el;
+      }));
     }
   };
 
