@@ -61,10 +61,10 @@ export const TextEditorModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-3xl max-h-[85vh] overflow-auto">
-        <CardContent className="p-4">
-          <div className="flex justify-between items-center mb-4">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <Card className="w-full max-w-3xl my-auto">
+        <CardContent className="p-4 max-h-[85vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4 sticky top-0 bg-background z-10 pb-2">
             <h2 className="text-xl font-bold">Редактор текста</h2>
             <Button
               variant="ghost"
@@ -76,7 +76,7 @@ export const TextEditorModal = ({
           </div>
           
           <div className="grid lg:grid-cols-2 gap-6">
-            <div className="space-y-4">
+            <div className="space-y-4 pb-4">
               <div>
                 <Label>Текст</Label>
                 <textarea
@@ -197,7 +197,7 @@ export const TextEditorModal = ({
               </div>
             </div>
             
-            <div className="lg:sticky lg:top-0">
+            <div className="hidden lg:block lg:sticky lg:top-0">
               <Label className="mb-2 block">Предпросмотр</Label>
               <div className="relative aspect-[3/4] bg-secondary rounded-lg overflow-hidden border-2 border-border flex items-center justify-center p-4">
                 <div 
@@ -226,7 +226,7 @@ export const TextEditorModal = ({
                 </div>
               </div>
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                Предпросмотр показывает текст с текущими настройками. Размер рамки подстроится автоматически.
+                Предпросмотр показывает текст с текущими настройками.
               </p>
             </div>
           </div>
