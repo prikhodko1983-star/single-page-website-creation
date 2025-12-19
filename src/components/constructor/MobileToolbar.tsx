@@ -57,29 +57,31 @@ export const MobileToolbar = ({
             </Button>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            {fonts.slice(0, 5).map((font, index) => {
-              const labels = ['Journal', 'Modern', 'Classic', 'Signature', 'Editor'];
-              return (
-                <button
-                  key={font.id}
-                  onClick={() => {
-                    updateElement(selectedEl.id, { fontFamily: font.fullStyle });
-                    setActivePanel(null);
-                  }}
-                  className={`p-3 rounded-lg border-2 transition-all text-center ${
-                    selectedEl.fontFamily === font.fullStyle
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border hover:border-primary/50'
-                  }`}
+            {fonts.map((font) => (
+              <button
+                key={font.id}
+                onClick={() => {
+                  updateElement(selectedEl.id, { fontFamily: font.fullStyle });
+                  setActivePanel(null);
+                }}
+                className={`p-3 rounded-lg border-2 transition-all ${
+                  selectedEl.fontFamily === font.fullStyle
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border hover:border-primary/50'
+                }`}
+              >
+                <div className="text-xs text-muted-foreground mb-1">{font.name}</div>
+                <div
+                  className="text-sm truncate"
                   style={{
                     fontFamily: font.style,
                     fontWeight: font.weight,
                   }}
                 >
-                  {labels[index] || font.name}
-                </button>
-              );
-            })}
+                  {font.example}
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       )}
