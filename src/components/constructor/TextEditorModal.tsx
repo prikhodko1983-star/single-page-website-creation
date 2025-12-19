@@ -94,24 +94,34 @@ export const TextEditorModal = ({
             </Button>
           </div>
           
-          <div className="grid lg:grid-cols-2 gap-6">
-            <div className="space-y-5 sm:space-y-6 pb-4">
-              <div>
-                <Label className="text-base font-semibold">Текст</Label>
+          <div className="space-y-6">
+            <div>
+              <Label className="text-base font-semibold mb-3 block">Редактор текста</Label>
+              <div className="relative bg-black/90 rounded-lg border-2 border-border p-4 min-h-[400px]">
                 <textarea
                   autoFocus
                   value={editingElement.content || ''}
                   onChange={(e) => setEditingElement({ ...editingElement, content: e.target.value })}
-                  className="w-full min-h-40 p-4 mt-2 rounded-lg border-2 bg-background text-foreground focus:border-primary focus:outline-none"
+                  className="w-full h-full min-h-[370px] resize-none bg-transparent border-none outline-none"
                   placeholder="Введите текст..."
                   style={{
-                    fontFamily: editingElement.fontFamily?.split('|')[0] || 'inherit',
+                    fontSize: `${editingElement.fontSize || 24}px`,
+                    color: editingElement.color || '#FFFFFF',
+                    fontFamily: editingElement.fontFamily?.split('|')[0] || 'serif',
                     fontWeight: editingElement.fontFamily?.split('|')[1] || '400',
-                    fontSize: '16px',
+                    lineHeight: editingElement.lineHeight || 1.2,
+                    letterSpacing: editingElement.letterSpacing ? `${editingElement.letterSpacing}px` : 'normal',
+                    textAlign: editingElement.textAlign || 'center',
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
                     touchAction: 'manipulation',
                   }}
                 />
               </div>
+            </div>
+            
+            <div className="space-y-5 sm:space-y-6 pb-4">
             
               <div>
                 <Label className="text-base font-semibold">Размер шрифта: <span className="text-primary">{editingElement.fontSize || 24}px</span></Label>
@@ -216,40 +226,6 @@ export const TextEditorModal = ({
                   Отмена
                 </Button>
               </div>
-            </div>
-            
-            <div className="hidden lg:block lg:sticky lg:top-0">
-              <Label className="mb-2 block text-base font-semibold">Предпросмотр</Label>
-              <div className="relative aspect-[3/4] bg-black/90 rounded-lg overflow-auto border-2 border-border p-6">
-                <div 
-                  className="w-full h-full flex items-center justify-center"
-                  style={{
-                    transform: `rotate(${editingElement.rotation || 0}deg)`,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: `${editingElement.fontSize}px`,
-                      color: editingElement.color || '#FFFFFF',
-                      fontFamily: editingElement.fontFamily?.split('|')[0] || 'serif',
-                      fontWeight: editingElement.fontFamily?.split('|')[1] || '400',
-                      lineHeight: editingElement.lineHeight || 1.2,
-                      letterSpacing: editingElement.letterSpacing ? `${editingElement.letterSpacing}px` : 'normal',
-                      textAlign: editingElement.textAlign || 'center',
-                      textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                      whiteSpace: 'pre-wrap',
-                      wordBreak: 'break-word',
-                      width: '100%',
-                      padding: '8px',
-                    }}
-                  >
-                    {editingElement.content || 'Введите текст...'}
-                  </div>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                Точный предпросмотр со всеми настройками
-              </p>
             </div>
           </div>
 
