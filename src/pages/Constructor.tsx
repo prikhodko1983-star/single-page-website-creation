@@ -7,6 +7,7 @@ import { ConstructorLibrary } from "@/components/constructor/ConstructorLibrary"
 import { ConstructorCanvas } from "@/components/constructor/ConstructorCanvas";
 import { ConstructorProperties } from "@/components/constructor/ConstructorProperties";
 import { TextEditorModal } from "@/components/constructor/TextEditorModal";
+import { MobileToolbar } from "@/components/constructor/MobileToolbar";
 
 interface CanvasElement {
   id: string;
@@ -1232,7 +1233,7 @@ const Constructor = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
         <div className="grid lg:grid-cols-[320px,1fr,320px] gap-6 items-start">
           <div className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
             <ConstructorLibrary
@@ -1348,6 +1349,12 @@ const Constructor = () => {
             });
           }
         }}
+      />
+
+      <MobileToolbar
+        selectedEl={selectedEl}
+        updateElement={updateElement}
+        fonts={fonts}
       />
     </div>
   );
