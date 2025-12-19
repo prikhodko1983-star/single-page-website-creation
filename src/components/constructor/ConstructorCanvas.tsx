@@ -352,18 +352,24 @@ export const ConstructorCanvas = ({
         ))}
       </div>
       
-      <div className="mt-4 flex flex-col sm:flex-row gap-2">
-        <Button variant="outline" onClick={() => setElements([])}>
-          <Icon name="Trash2" size={18} className="mr-2" />
-          Очистить всё
+      <div className="mt-4 flex gap-2">
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => setElements([])}
+          className="flex-1 sm:flex-none"
+        >
+          <Icon name="Trash2" size={16} className="mr-2" />
+          Очистить
         </Button>
         <Button 
+          size="sm"
           onClick={sendForCalculation}
           disabled={elements.length === 0}
-          className="bg-green-600 hover:bg-green-700"
+          className="flex-1 sm:flex-none"
         >
-          <Icon name="Image" size={18} className="mr-2" />
-          Скачать PNG (1200x1600)
+          <Icon name="Download" size={16} className="mr-2" />
+          Скачать
         </Button>
       </div>
       
