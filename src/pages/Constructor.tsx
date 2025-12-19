@@ -425,6 +425,9 @@ const Constructor = () => {
   const handleInlineTextChange = (elementId: string, newContent: string, textareaElement?: HTMLTextAreaElement) => {
     setElements(elements.map(el => {
       if (el.id === elementId) {
+        if (el.autoSize) {
+          return { ...el, content: newContent };
+        }
         if (textareaElement && canvasRef.current) {
           const canvasRect = canvasRef.current.getBoundingClientRect();
           const scrollHeight = textareaElement.scrollHeight;
