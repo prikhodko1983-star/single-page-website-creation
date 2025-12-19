@@ -133,7 +133,7 @@ export const ConstructorCanvas = ({
                     onBlur={handleInlineEditBlur}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className="w-full h-full resize-none bg-transparent border-none outline-none overflow-hidden"
+                    className="w-full h-full resize-none bg-transparent border-none outline-none"
                     style={{
                       fontSize: `${element.fontSize}px`,
                       color: element.color,
@@ -143,6 +143,7 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.2,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
+                      overflow: 'auto',
                     }}
                   />
                 ) : (
@@ -180,7 +181,7 @@ export const ConstructorCanvas = ({
                     onBlur={handleInlineEditBlur}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className="w-full h-full resize-none bg-transparent border-none outline-none italic overflow-hidden"
+                    className="w-full h-full resize-none bg-transparent border-none outline-none italic"
                     style={{
                       fontSize: `${element.fontSize}px`,
                       color: element.color,
@@ -190,6 +191,7 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.4,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
+                      overflow: 'auto',
                     }}
                   />
                 ) : (
