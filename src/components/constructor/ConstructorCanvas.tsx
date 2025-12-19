@@ -217,7 +217,8 @@ export const ConstructorCanvas = ({
             
             {element.type === 'fio' && (
               <div 
-                className="w-full h-full flex items-center justify-center"
+                className="flex items-center justify-center"
+                style={{ width: '100%', height: '100%' }}
               >
                 {inlineEditingId === element.id ? (
                   <textarea
@@ -227,7 +228,7 @@ export const ConstructorCanvas = ({
                     onBlur={handleInlineEditBlur}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className="w-full h-full resize-none bg-transparent border-none outline-none overflow-hidden"
+                    className="resize-none bg-transparent border-none outline-none overflow-hidden"
                     style={{
                       fontSize: `${element.fontSize}px`,
                       color: element.color,
@@ -237,6 +238,8 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.3,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
+                      width: 'auto',
+                      minWidth: '100px',
                     }}
                   />
                 ) : (
@@ -252,8 +255,7 @@ export const ConstructorCanvas = ({
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
                       whiteSpace: 'pre-wrap',
-                      overflow: 'visible',
-                      width: '100%',
+                      display: 'inline-block',
                     }}
                   >
                     {element.content}
@@ -264,7 +266,8 @@ export const ConstructorCanvas = ({
             
             {element.type === 'dates' && (
               <div 
-                className="w-full h-full flex items-center justify-center"
+                className="flex items-center justify-center"
+                style={{ width: '100%', height: '100%' }}
               >
                 {inlineEditingId === element.id ? (
                   <textarea
@@ -274,7 +277,7 @@ export const ConstructorCanvas = ({
                     onBlur={handleInlineEditBlur}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className="w-full h-full resize-none bg-transparent border-none outline-none overflow-hidden"
+                    className="resize-none bg-transparent border-none outline-none overflow-hidden"
                     style={{
                       fontSize: `${element.fontSize}px`,
                       color: element.color,
@@ -284,6 +287,8 @@ export const ConstructorCanvas = ({
                       lineHeight: element.lineHeight || 1.2,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
                       textAlign: element.textAlign || 'center',
+                      width: 'auto',
+                      minWidth: '100px',
                     }}
                   />
                 ) : (
@@ -299,8 +304,7 @@ export const ConstructorCanvas = ({
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
                       textAlign: element.textAlign || 'center',
                       whiteSpace: 'pre-wrap',
-                      overflow: 'visible',
-                      width: '100%',
+                      display: 'inline-block',
                     }}
                   >
                     {element.content}
