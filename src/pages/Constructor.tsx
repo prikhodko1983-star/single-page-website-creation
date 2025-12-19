@@ -502,8 +502,9 @@ const Constructor = () => {
       
       const element = elements.find(el => el.id === selectedElement);
       if (element && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
-        const scaleRatio = Math.max(newWidth / resizeStart.width, newHeight / resizeStart.height);
-        const newFontSize = Math.max(12, Math.min(72, Math.round(resizeStart.fontSize * scaleRatio)));
+        // Используем минимальное соотношение, чтобы текст всегда помещался
+        const scaleRatio = Math.min(newWidth / resizeStart.width, newHeight / resizeStart.height);
+        const newFontSize = Math.max(8, Math.min(72, Math.round(resizeStart.fontSize * scaleRatio)));
         
         setElements(elements.map(el => 
           el.id === selectedElement 
@@ -564,8 +565,9 @@ const Constructor = () => {
       
       const element = elements.find(el => el.id === selectedElement);
       if (element && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
-        const scaleRatio = Math.max(newWidth / resizeStart.width, newHeight / resizeStart.height);
-        const newFontSize = Math.max(12, Math.min(72, Math.round(resizeStart.fontSize * scaleRatio)));
+        // Используем минимальное соотношение, чтобы текст всегда помещался
+        const scaleRatio = Math.min(newWidth / resizeStart.width, newHeight / resizeStart.height);
+        const newFontSize = Math.max(8, Math.min(72, Math.round(resizeStart.fontSize * scaleRatio)));
         
         setElements(elements.map(el => 
           el.id === selectedElement 
