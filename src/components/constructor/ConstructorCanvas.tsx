@@ -358,14 +358,6 @@ export const ConstructorCanvas = ({
           Очистить всё
         </Button>
         <Button 
-          variant="outline" 
-          onClick={saveDesign}
-          disabled={elements.length === 0}
-        >
-          <Icon name="Save" size={18} className="mr-2" />
-          Сохранить дизайн
-        </Button>
-        <Button 
           onClick={sendForCalculation}
           disabled={elements.length === 0}
           className="bg-green-600 hover:bg-green-700"
