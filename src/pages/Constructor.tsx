@@ -861,7 +861,7 @@ const Constructor = () => {
     }
   };
 
-  const exportDesign = () => {
+  const exportDesign = async () => {
     if (elements.length === 0) {
       toast({
         title: "Пустой дизайн",
@@ -872,6 +872,14 @@ const Constructor = () => {
     }
     
     try {
+      toast({
+        title: "Создание файлов...",
+        description: "Генерируем превью и JSON",
+      });
+
+      // Создаем PNG превью
+      const previewDataUrl = await createPreviewImage();
+      
       const designData = {
         monumentImage,
         elements,
@@ -879,22 +887,34 @@ const Constructor = () => {
         version: '1.0',
       };
       
+      // Экспорт JSON
       const jsonString = JSON.stringify(designData, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
+      const jsonBlob = new Blob([jsonString], { type: 'application/json' });
+      const jsonUrl = URL.createObjectURL(jsonBlob);
       
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `monument_design_${Date.now()}.json`;
-      link.click();
+      const timestamp = Date.now();
       
-      URL.revokeObjectURL(url);
+      // Скачиваем JSON
+      const jsonLink = document.createElement('a');
+      jsonLink.href = jsonUrl;
+      jsonLink.download = `monument_design_${timestamp}.json`;
+      jsonLink.click();
+      URL.revokeObjectURL(jsonUrl);
+      
+      // Скачиваем PNG с тем же именем
+      if (previewDataUrl) {
+        const pngLink = document.createElement('a');
+        pngLink.href = previewDataUrl;
+        pngLink.download = `monument_design_${timestamp}.png`;
+        pngLink.click();
+      }
       
       toast({
         title: "Шаблон экспортирован",
-        description: "JSON файл скачан на устройство",
+        description: "JSON и PNG превью скачаны",
       });
     } catch (error) {
+      console.error('Export error:', error);
       toast({
         title: "Ошибка экспорта",
         description: "Не удалось экспортировать шаблон",
@@ -939,6 +959,164 @@ const Constructor = () => {
     }
   };
 
+  const createPreviewImage = async (): Promise<string | null> => {
+    if (!canvasRef.current) return null;
+    
+    try {
+      // Превью размер (меньше, чем финальный экспорт)
+      const previewWidth = 600;
+      const previewHeight = 800;
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = previewWidth;
+      canvas.height = previewHeight;
+      
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      
+      const rect = canvasRef.current.getBoundingClientRect();
+      
+      // Черный фон
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, previewWidth, previewHeight);
+      
+      // Загружаем изображение памятника
+      const monumentImg = await loadImageWithCORS(monumentImage);
+      
+      if (monumentImg) {
+        // Рассчитываем object-contain
+        const imgRatio = monumentImg.width / monumentImg.height;
+        const canvasRatio = previewWidth / previewHeight;
+        
+        let drawWidth = previewWidth;
+        let drawHeight = previewHeight;
+        let offsetX = 0;
+        let offsetY = 0;
+        
+        if (imgRatio > canvasRatio) {
+          drawWidth = previewWidth;
+          drawHeight = previewWidth / imgRatio;
+          offsetY = (previewHeight - drawHeight) / 2;
+        } else {
+          drawHeight = previewHeight;
+          drawWidth = previewHeight * imgRatio;
+          offsetX = (previewWidth - drawWidth) / 2;
+        }
+        
+        ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
+        
+        // Рассчитываем масштаб для элементов
+        const screenRatio = rect.width / rect.height;
+        let screenMonumentWidth = rect.width;
+        let screenMonumentHeight = rect.height;
+        let screenOffsetX = 0;
+        let screenOffsetY = 0;
+        
+        if (imgRatio > screenRatio) {
+          screenMonumentWidth = rect.width;
+          screenMonumentHeight = rect.width / imgRatio;
+          screenOffsetY = (rect.height - screenMonumentHeight) / 2;
+        } else {
+          screenMonumentHeight = rect.height;
+          screenMonumentWidth = rect.height * imgRatio;
+          screenOffsetX = (rect.width - screenMonumentWidth) / 2;
+        }
+        
+        const scale = drawWidth / screenMonumentWidth;
+        
+        // Рисуем элементы
+        for (const element of elements) {
+          ctx.save();
+          
+          const scaledX = (element.x - screenOffsetX) * scale + offsetX;
+          const scaledY = (element.y - screenOffsetY) * scale + offsetY;
+          const scaledWidth = element.width * scale;
+          const scaledHeight = element.height * scale;
+          
+          const centerX = scaledX + scaledWidth / 2;
+          const centerY = scaledY + scaledHeight / 2;
+          
+          ctx.translate(centerX, centerY);
+          ctx.rotate((element.rotation || 0) * Math.PI / 180);
+          ctx.translate(-centerX, -centerY);
+          
+          if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
+            const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
+            const scaledFontSize = (element.fontSize || 24) * scale;
+            ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
+            ctx.fillStyle = element.color || '#FFFFFF';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowBlur = 4 * scale;
+            ctx.fillText(element.content || '', centerX, centerY);
+          } else if (element.type === 'image' || element.type === 'cross' || element.type === 'flower' || element.type === 'photo') {
+            const imgSrc = (element.screenMode && element.processedSrc) ? element.processedSrc : element.src;
+            if (imgSrc) {
+              const img = await loadImageWithCORS(imgSrc);
+              if (img) {
+                if (element.flipHorizontal) {
+                  ctx.translate(scaledX + scaledWidth, scaledY);
+                  ctx.scale(-1, 1);
+                  ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+                } else {
+                  ctx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
+                }
+              }
+            }
+          }
+          
+          ctx.restore();
+        }
+      }
+      
+      return canvas.toDataURL('image/png');
+    } catch (error) {
+      console.error('Preview creation error:', error);
+      return null;
+    }
+  };
+
+  const loadImageWithCORS = async (src: string): Promise<HTMLImageElement | null> => {
+    if (src.startsWith('data:')) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    }
+    
+    if (src.includes('/bucket/')) {
+      try {
+        const response = await fetch(src);
+        const blob = await response.blob();
+        const dataUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+        
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => resolve(null);
+          img.src = dataUrl;
+        });
+      } catch (error) {
+        return null;
+      }
+    }
+    
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+  };
+
   const sendForCalculation = async () => {
     if (elements.length === 0) {
       toast({
@@ -979,53 +1157,6 @@ const Constructor = () => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, exportWidth, exportHeight);
       
-      const loadImageWithCORS = async (src: string): Promise<HTMLImageElement | null> => {
-        // Если это data URL - загружаем напрямую
-        if (src.startsWith('data:')) {
-          return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => resolve(img);
-            img.onerror = () => resolve(null);
-            img.src = src;
-          });
-        }
-        
-        // Для URL с /bucket/ используем fetch + blob
-        if (src.includes('/bucket/')) {
-          try {
-            const response = await fetch(src);
-            const blob = await response.blob();
-            const dataUrl = await new Promise<string>((resolve) => {
-              const reader = new FileReader();
-              reader.onloadend = () => resolve(reader.result as string);
-              reader.readAsDataURL(blob);
-            });
-            
-            return new Promise((resolve) => {
-              const img = new Image();
-              img.onload = () => resolve(img);
-              img.onerror = () => resolve(null);
-              img.src = dataUrl;
-            });
-          } catch (error) {
-            console.warn('Failed to load via fetch:', src, error);
-            return null;
-          }
-        }
-        
-        // Для остальных URL пробуем стандартный способ с CORS
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.onload = () => resolve(img);
-          img.onerror = () => {
-            console.warn('Failed to load image:', src);
-            resolve(null);
-          };
-          img.src = src;
-        });
-      };
-      
       console.log('📥 Загружаем изображение памятника:', monumentImage);
       const monumentImg = await loadImageWithCORS(monumentImage);
       
@@ -1036,10 +1167,9 @@ const Constructor = () => {
         ctx.fillStyle = '#666';
         ctx.font = 'bold 48px sans-serif';
         ctx.textAlign = 'center';
-        const monumentName = monumentImages.find(m => m.src === monumentImage)?.name || 'Памятник';
-        ctx.fillText(monumentName, exportWidth / 2, exportHeight / 2 - 40);
+        ctx.fillText('Памятник', exportWidth / 2, exportHeight / 2 - 40);
         ctx.font = '32px sans-serif';
-        ctx.fillText('(изображение из внешнего источника)', exportWidth / 2, exportHeight / 2 + 40);
+        ctx.fillText('(изображение недоступно)', exportWidth / 2, exportHeight / 2 + 40);
         
         toast({
           title: "Ошибка загрузки памятника",
