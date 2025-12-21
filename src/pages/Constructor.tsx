@@ -1352,28 +1352,62 @@ const Constructor = () => {
           const scaledWidth = element.width * scale;
           const scaledHeight = element.height * scale;
           
-          const centerX = scaledX + scaledWidth / 2;
-          const centerY = scaledY + scaledHeight / 2;
-          
-          ctx.translate(centerX, centerY);
-          ctx.rotate((element.rotation || 0) * Math.PI / 180);
-          ctx.translate(-centerX, -centerY);
+          // Применяем вращение относительно центра элемента
+          if (element.rotation) {
+            const centerX = scaledX + scaledWidth / 2;
+            const centerY = scaledY + scaledHeight / 2;
+            ctx.translate(centerX, centerY);
+            ctx.rotate((element.rotation || 0) * Math.PI / 180);
+            ctx.translate(-centerX, -centerY);
+          }
           
           if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
             const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
             const scaledFontSize = (element.fontSize || 24) * scale;
             ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
             ctx.fillStyle = element.color || '#FFFFFF';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+            
+            // Поддержка выравнивания текста
+            const textAlign = element.textAlign || 'center';
+            ctx.textAlign = textAlign;
+            ctx.textBaseline = 'top';
+            
+            // Тень для читаемости
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
             ctx.shadowBlur = 4 * scale;
-            ctx.fillText(element.content || '', centerX, centerY);
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            
+            // Поддержка многострочного текста
+            const content = element.content || '';
+            const lines = content.split('\n');
+            const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
+            
+            // Вычисляем X координату в зависимости от выравнивания
+            let textX = scaledX;
+            if (textAlign === 'center') {
+              textX = scaledX + scaledWidth / 2;
+            } else if (textAlign === 'right') {
+              textX = scaledX + scaledWidth;
+            }
+            
+            // Рисуем каждую строку
+            lines.forEach((line, index) => {
+              const textY = scaledY + index * lineHeight;
+              ctx.fillText(line, textX, textY);
+            });
+            
+            // Сбрасываем тень
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            
           } else if (element.type === 'image' || element.type === 'cross' || element.type === 'flower' || element.type === 'photo') {
             const imgSrc = (element.screenMode && element.processedSrc) ? element.processedSrc : element.src;
             if (imgSrc) {
               const img = await loadImageWithCORS(imgSrc);
               if (img) {
+                ctx.save();
+                
                 if (element.flipHorizontal) {
                   ctx.translate(scaledX + scaledWidth, scaledY);
                   ctx.scale(-1, 1);
@@ -1381,6 +1415,8 @@ const Constructor = () => {
                 } else {
                   ctx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
                 }
+                
+                ctx.restore();
               }
             }
           }
@@ -1566,20 +1602,40 @@ const Constructor = () => {
           const scaledFontSize = (element.fontSize || 24) * monumentScale;
           ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
+          
+          // Поддержка выравнивания текста
+          const textAlign = element.textAlign || 'center';
+          ctx.textAlign = textAlign;
+          ctx.textBaseline = 'top';
+          
+          // Тень для читаемости
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
           ctx.shadowBlur = 8 * monumentScale;
-          ctx.shadowOffsetX = 4 * monumentScale;
-          ctx.shadowOffsetY = 4 * monumentScale;
+          ctx.shadowOffsetX = 2 * monumentScale;
+          ctx.shadowOffsetY = 2 * monumentScale;
           
           const lines = element.content?.split('\n') || [];
           const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
-          const startY = scaledY + scaledHeight / 2 - (lines.length - 1) * lineHeight / 2;
           
+          // Вычисляем X координату в зависимости от выравнивания
+          let textX = scaledX;
+          if (textAlign === 'center') {
+            textX = scaledX + scaledWidth / 2;
+          } else if (textAlign === 'right') {
+            textX = scaledX + scaledWidth;
+          }
+          
+          // Рисуем каждую строку
           lines.forEach((line, idx) => {
-            ctx.fillText(line, scaledX + scaledWidth / 2, startY + idx * lineHeight);
+            ctx.fillText(line, textX, scaledY + idx * lineHeight);
           });
+          
+          // Сбрасываем тень
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+          
         } else if (element.src) {
           const imgSrc = element.screenMode && element.processedSrc ? element.processedSrc : element.src;
           const img = await loadImageWithCORS(imgSrc);
@@ -1625,7 +1681,16 @@ const Constructor = () => {
               }
             }
             
-            ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+            // Применяем отзеркаливание если нужно
+            if (element.flipHorizontal) {
+              ctx.save();
+              ctx.translate(drawX + drawWidth, drawY);
+              ctx.scale(-1, 1);
+              ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
+              ctx.restore();
+            } else {
+              ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+            }
           }
         }
         
