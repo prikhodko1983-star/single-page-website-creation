@@ -861,6 +861,223 @@ const Constructor = () => {
     }
   };
 
+  const exportDesignAsPNG = async () => {
+    if (elements.length === 0) {
+      toast({
+        title: "Пустой дизайн",
+        description: "Добавьте элементы на памятник",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      console.log('📦 Начинаем экспорт в PNG с метаданными (ComfyUI style)');
+      
+      toast({
+        title: "Создание PNG...",
+        description: "Встраиваем данные в изображение",
+      });
+      
+      const designData = {
+        monumentImage,
+        elements,
+        timestamp: Date.now(),
+        version: '1.0',
+      };
+      
+      // Создаем превью изображение
+      const previewDataUrl = await createPreviewImage();
+      
+      if (!previewDataUrl) {
+        throw new Error('Не удалось создать превью');
+      }
+      
+      // Конвертируем base64 в binary
+      const base64Data = previewDataUrl.split(',')[1];
+      const binaryData = atob(base64Data);
+      const uint8Array = new Uint8Array(binaryData.length);
+      for (let i = 0; i < binaryData.length; i++) {
+        uint8Array[i] = binaryData.charCodeAt(i);
+      }
+      
+      // Добавляем текстовый chunk с JSON данными (tEXt chunk для PNG)
+      const jsonString = JSON.stringify(designData);
+      const keyword = 'workflow'; // Как в ComfyUI
+      
+      // Создаем новый PNG с встроенными метаданными
+      const pngWithMetadata = addPNGTextChunk(uint8Array, keyword, jsonString);
+      
+      const blob = new Blob([pngWithMetadata], { type: 'image/png' });
+      const url = URL.createObjectURL(blob);
+      
+      const timestamp = Date.now();
+      const fileName = `monument_${timestamp}.png`;
+      
+      console.log('💾 Скачиваем PNG с метаданными:', fileName);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      
+      try {
+        link.click();
+        console.log('✅ PNG: click() вызван');
+      } catch (clickError) {
+        console.error('❌ Ошибка click():', clickError);
+        const event = new MouseEvent('click', {
+          view: window,
+          bubbles: true,
+          cancelable: true
+        });
+        link.dispatchEvent(event);
+        console.log('✅ PNG: dispatchEvent() вызван');
+      }
+      
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 1000);
+      
+      toast({
+        title: "PNG с метаданными готов",
+        description: "Данные встроены в изображение",
+      });
+      
+      console.log('🎉 Экспорт в PNG завершен');
+    } catch (error) {
+      console.error('❌ Export error:', error);
+      toast({
+        title: "Ошибка экспорта PNG",
+        description: String(error),
+        variant: "destructive",
+      });
+    }
+  };
+
+  const addPNGTextChunk = (pngData: Uint8Array, keyword: string, text: string): Uint8Array => {
+    // PNG signature: 8 байт
+    const signature = pngData.slice(0, 8);
+    
+    // Находим IEND chunk (конец файла)
+    let iendPos = -1;
+    for (let i = 8; i < pngData.length - 4; i++) {
+      if (pngData[i] === 0x49 && pngData[i+1] === 0x45 && 
+          pngData[i+2] === 0x4E && pngData[i+3] === 0x44) {
+        iendPos = i - 4; // Позиция начала length для IEND
+        break;
+      }
+    }
+    
+    if (iendPos === -1) {
+      console.warn('IEND chunk не найден, возвращаем оригинал');
+      return pngData;
+    }
+    
+    // Создаем tEXt chunk
+    const keywordBytes = new TextEncoder().encode(keyword);
+    const textBytes = new TextEncoder().encode(text);
+    const chunkData = new Uint8Array(keywordBytes.length + 1 + textBytes.length);
+    chunkData.set(keywordBytes, 0);
+    chunkData[keywordBytes.length] = 0; // null separator
+    chunkData.set(textBytes, keywordBytes.length + 1);
+    
+    // Длина данных (без учета type и CRC)
+    const length = chunkData.length;
+    const lengthBytes = new Uint8Array(4);
+    new DataView(lengthBytes.buffer).setUint32(0, length, false);
+    
+    // Type: tEXt
+    const typeBytes = new Uint8Array([0x74, 0x45, 0x58, 0x74]); // "tEXt"
+    
+    // Вычисляем CRC32
+    const crcData = new Uint8Array(typeBytes.length + chunkData.length);
+    crcData.set(typeBytes, 0);
+    crcData.set(chunkData, typeBytes.length);
+    const crc = calculateCRC32(crcData);
+    const crcBytes = new Uint8Array(4);
+    new DataView(crcBytes.buffer).setUint32(0, crc, false);
+    
+    // Собираем новый PNG
+    const newPNG = new Uint8Array(
+      pngData.length + lengthBytes.length + typeBytes.length + chunkData.length + crcBytes.length
+    );
+    
+    newPNG.set(pngData.slice(0, iendPos), 0); // Все до IEND
+    let offset = iendPos;
+    newPNG.set(lengthBytes, offset); offset += lengthBytes.length;
+    newPNG.set(typeBytes, offset); offset += typeBytes.length;
+    newPNG.set(chunkData, offset); offset += chunkData.length;
+    newPNG.set(crcBytes, offset); offset += crcBytes.length;
+    newPNG.set(pngData.slice(iendPos), offset); // IEND chunk
+    
+    console.log('✅ tEXt chunk добавлен, новый размер:', newPNG.length);
+    return newPNG;
+  };
+
+  const calculateCRC32 = (data: Uint8Array): number => {
+    let crc = 0xFFFFFFFF;
+    for (let i = 0; i < data.length; i++) {
+      crc ^= data[i];
+      for (let j = 0; j < 8; j++) {
+        crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+      }
+    }
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+  };
+
+  const extractPNGTextChunk = (pngData: Uint8Array, keyword: string): string | null => {
+    // PNG signature: 8 байт
+    let pos = 8;
+    
+    while (pos < pngData.length) {
+      // Читаем длину chunk
+      if (pos + 4 > pngData.length) break;
+      const length = new DataView(pngData.buffer, pngData.byteOffset + pos).getUint32(0, false);
+      pos += 4;
+      
+      // Читаем тип chunk
+      if (pos + 4 > pngData.length) break;
+      const type = String.fromCharCode(pngData[pos], pngData[pos+1], pngData[pos+2], pngData[pos+3]);
+      pos += 4;
+      
+      // Если это IEND, останавливаемся
+      if (type === 'IEND') break;
+      
+      // Если это tEXt chunk
+      if (type === 'tEXt' && pos + length <= pngData.length) {
+        const chunkData = pngData.slice(pos, pos + length);
+        
+        // Ищем null separator
+        let separatorPos = -1;
+        for (let i = 0; i < chunkData.length; i++) {
+          if (chunkData[i] === 0) {
+            separatorPos = i;
+            break;
+          }
+        }
+        
+        if (separatorPos !== -1) {
+          const chunkKeyword = new TextDecoder().decode(chunkData.slice(0, separatorPos));
+          
+          if (chunkKeyword === keyword) {
+            const text = new TextDecoder().decode(chunkData.slice(separatorPos + 1));
+            console.log(`✅ Найден tEXt chunk "${keyword}", размер:`, text.length);
+            return text;
+          }
+        }
+      }
+      
+      // Пропускаем данные chunk и CRC (4 байта)
+      pos += length + 4;
+    }
+    
+    console.warn(`tEXt chunk "${keyword}" не найден`);
+    return null;
+  };
+
   const exportDesign = async () => {
     if (elements.length === 0) {
       toast({
@@ -947,12 +1164,66 @@ const Constructor = () => {
     
     console.log('📁 Загружаем файл:', file.name, file.type, file.size);
     
-    // Проверяем расширение файла
     const fileName = file.name.toLowerCase();
+    
+    // Поддержка PNG с метаданными (как ComfyUI)
+    if (fileName.endsWith('.png')) {
+      console.log('🖼️ Обнаружен PNG, ищем метаданные...');
+      
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const arrayBuffer = event.target?.result as ArrayBuffer;
+          const uint8Array = new Uint8Array(arrayBuffer);
+          
+          // Извлекаем tEXt chunk с keyword "workflow"
+          const jsonData = extractPNGTextChunk(uint8Array, 'workflow');
+          
+          if (!jsonData) {
+            toast({
+              title: "Метаданные не найдены",
+              description: "Это обычное изображение без workflow данных",
+              variant: "destructive",
+            });
+            return;
+          }
+          
+          const parsedData = JSON.parse(jsonData);
+          
+          if (!parsedData.monumentImage || !parsedData.elements) {
+            throw new Error('Неверный формат данных');
+          }
+          
+          console.log('✅ Workflow данные извлечены из PNG, элементов:', parsedData.elements.length);
+          
+          setMonumentImage(parsedData.monumentImage);
+          setElements(parsedData.elements);
+          setSelectedElement(null);
+          
+          toast({
+            title: "Workflow загружен из PNG",
+            description: `Восстановлено ${parsedData.elements.length} элементов`,
+          });
+        } catch (error) {
+          console.error('❌ Ошибка чтения PNG метаданных:', error);
+          toast({
+            title: "Ошибка чтения PNG",
+            description: "Не удалось извлечь workflow данные",
+            variant: "destructive",
+          });
+        }
+      };
+      
+      reader.readAsArrayBuffer(file);
+      if (e.target) e.target.value = '';
+      return;
+    }
+    
+    // JSON файлы
     if (!fileName.endsWith('.json')) {
       toast({
         title: "Неверный формат",
-        description: "Пожалуйста, выберите JSON файл",
+        description: "Выберите JSON или PNG файл",
         variant: "destructive",
       });
       if (e.target) e.target.value = '';
@@ -1477,6 +1748,7 @@ const Constructor = () => {
             saveDesign={saveDesign}
             sendForCalculation={sendForCalculation}
             exportDesign={exportDesign}
+            exportDesignAsPNG={exportDesignAsPNG}
             importDesign={importDesign}
             importInputRef={importInputRef}
             inlineEditingId={inlineEditingId}

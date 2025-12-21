@@ -45,6 +45,7 @@ interface ConstructorCanvasProps {
   saveDesign: () => void;
   sendForCalculation: () => void;
   exportDesign: () => void;
+  exportDesignAsPNG: () => void;
   importDesign: (e: React.ChangeEvent<HTMLInputElement>) => void;
   importInputRef: React.RefObject<HTMLInputElement>;
   inlineEditingId: string | null;
@@ -74,6 +75,7 @@ export const ConstructorCanvas = ({
   saveDesign,
   sendForCalculation,
   exportDesign,
+  exportDesignAsPNG,
   importDesign,
   importInputRef,
   inlineEditingId,
@@ -382,7 +384,7 @@ export const ConstructorCanvas = ({
           <input
             ref={importInputRef}
             type="file"
-            accept=".json,application/json"
+            accept=".json,.png,application/json,image/png"
             onChange={importDesign}
             className="hidden"
             id="import-design"
@@ -393,8 +395,17 @@ export const ConstructorCanvas = ({
             disabled={elements.length === 0}
             className="flex-1"
           >
-            <Icon name="Download" size={18} className="mr-2" />
-            Экспортировать
+            <Icon name="FileJson" size={18} className="mr-2" />
+            JSON
+          </Button>
+          <Button 
+            variant="secondary" 
+            onClick={exportDesignAsPNG}
+            disabled={elements.length === 0}
+            className="flex-1"
+          >
+            <Icon name="Image" size={18} className="mr-2" />
+            PNG
           </Button>
           <label 
             htmlFor="import-design"
@@ -414,7 +425,7 @@ export const ConstructorCanvas = ({
           </label>
         </div>
         <p className="text-xs text-muted-foreground text-center px-2">
-          💡 На iPhone: нажмите "Загрузить" → выберите JSON файл из "Файлы" или "Загрузки"
+          💡 PNG workflow (как ComfyUI) — все данные в одном файле
         </p>
       </div>
     </div>
