@@ -872,13 +872,7 @@ const Constructor = () => {
     }
     
     try {
-      toast({
-        title: "Создание файлов...",
-        description: "Генерируем превью и JSON",
-      });
-
-      // Создаем PNG превью
-      const previewDataUrl = await createPreviewImage();
+      console.log('📦 Начинаем экспорт дизайна');
       
       const designData = {
         monumentImage,
@@ -889,35 +883,59 @@ const Constructor = () => {
       
       // Экспорт JSON
       const jsonString = JSON.stringify(designData, null, 2);
+      console.log('📄 JSON создан, размер:', jsonString.length);
+      
       const jsonBlob = new Blob([jsonString], { type: 'application/json' });
       const jsonUrl = URL.createObjectURL(jsonBlob);
       
       const timestamp = Date.now();
+      const fileName = `monument_${timestamp}`;
       
-      // Скачиваем JSON
+      console.log('💾 Попытка скачать JSON файл:', `${fileName}.json`);
+      
+      // Создаем ссылку для скачивания JSON
       const jsonLink = document.createElement('a');
       jsonLink.href = jsonUrl;
-      jsonLink.download = `monument_design_${timestamp}.json`;
-      jsonLink.click();
-      URL.revokeObjectURL(jsonUrl);
+      jsonLink.download = `${fileName}.json`;
+      jsonLink.style.display = 'none';
       
-      // Скачиваем PNG с тем же именем
-      if (previewDataUrl) {
-        const pngLink = document.createElement('a');
-        pngLink.href = previewDataUrl;
-        pngLink.download = `monument_design_${timestamp}.png`;
-        pngLink.click();
+      // Добавляем в DOM
+      document.body.appendChild(jsonLink);
+      
+      // Пробуем вызвать клик
+      try {
+        jsonLink.click();
+        console.log('✅ JSON: click() вызван');
+      } catch (clickError) {
+        console.error('❌ Ошибка click():', clickError);
+        // Альтернативный метод для iOS
+        const event = new MouseEvent('click', {
+          view: window,
+          bubbles: true,
+          cancelable: true
+        });
+        jsonLink.dispatchEvent(event);
+        console.log('✅ JSON: dispatchEvent() вызван');
       }
       
+      // Убираем из DOM через секунду
+      setTimeout(() => {
+        document.body.removeChild(jsonLink);
+        URL.revokeObjectURL(jsonUrl);
+        console.log('🧹 JSON: элемент удален из DOM');
+      }, 1000);
+      
       toast({
-        title: "Шаблон экспортирован",
-        description: "JSON и PNG превью скачаны",
+        title: "Файл готов к загрузке",
+        description: `${fileName}.json`,
       });
+      
+      console.log('🎉 Экспорт завершен');
     } catch (error) {
-      console.error('Export error:', error);
+      console.error('❌ Export error:', error);
       toast({
         title: "Ошибка экспорта",
-        description: "Не удалось экспортировать шаблон",
+        description: String(error),
         variant: "destructive",
       });
     }
