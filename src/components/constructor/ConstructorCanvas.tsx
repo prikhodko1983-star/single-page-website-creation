@@ -377,30 +377,45 @@ export const ConstructorCanvas = ({
         </Button>
       </div>
       
-      <div className="mt-4 flex flex-col sm:flex-row gap-2">
-        <input
-          ref={importInputRef}
-          type="file"
-          accept=".json,application/json"
-          onChange={importDesign}
-          className="hidden"
-          id="import-design"
-        />
-        <Button 
-          variant="secondary" 
-          onClick={exportDesign}
-          disabled={elements.length === 0}
-        >
-          <Icon name="Download" size={18} className="mr-2" />
-          Экспортировать шаблон
-        </Button>
-        <Button 
-          variant="secondary" 
-          onClick={() => importInputRef.current?.click()}
-        >
-          <Icon name="Upload" size={18} className="mr-2" />
-          Загрузить шаблон
-        </Button>
+      <div className="mt-4 w-full max-w-lg space-y-2">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".json,application/json"
+            onChange={importDesign}
+            className="hidden"
+            id="import-design"
+          />
+          <Button 
+            variant="secondary" 
+            onClick={exportDesign}
+            disabled={elements.length === 0}
+            className="flex-1"
+          >
+            <Icon name="Download" size={18} className="mr-2" />
+            Экспортировать
+          </Button>
+          <label 
+            htmlFor="import-design"
+            className="flex-1"
+          >
+            <Button 
+              variant="secondary" 
+              className="w-full"
+              type="button"
+              asChild
+            >
+              <span>
+                <Icon name="Upload" size={18} className="mr-2" />
+                Загрузить
+              </span>
+            </Button>
+          </label>
+        </div>
+        <p className="text-xs text-muted-foreground text-center px-2">
+          💡 На iPhone: нажмите "Загрузить" → выберите JSON файл из "Файлы" или "Загрузки"
+        </p>
       </div>
     </div>
   );

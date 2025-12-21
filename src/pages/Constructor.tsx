@@ -927,14 +927,33 @@ const Constructor = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     
+    console.log('📁 Загружаем файл:', file.name, file.type, file.size);
+    
+    // Проверяем расширение файла
+    const fileName = file.name.toLowerCase();
+    if (!fileName.endsWith('.json')) {
+      toast({
+        title: "Неверный формат",
+        description: "Пожалуйста, выберите JSON файл",
+        variant: "destructive",
+      });
+      if (e.target) e.target.value = '';
+      return;
+    }
+    
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
-        const jsonData = JSON.parse(event.target?.result as string);
+        const result = event.target?.result as string;
+        console.log('📄 Содержимое файла загружено, размер:', result.length);
+        
+        const jsonData = JSON.parse(result);
         
         if (!jsonData.monumentImage || !jsonData.elements) {
           throw new Error('Неверный формат файла');
         }
+        
+        console.log('✅ JSON валиден, элементов:', jsonData.elements.length);
         
         setMonumentImage(jsonData.monumentImage);
         setElements(jsonData.elements);
@@ -942,16 +961,27 @@ const Constructor = () => {
         
         toast({
           title: "Шаблон загружен",
-          description: "Дизайн восстановлен из файла",
+          description: `Восстановлено ${jsonData.elements.length} элементов`,
         });
       } catch (error) {
+        console.error('❌ Ошибка парсинга JSON:', error);
         toast({
           title: "Ошибка импорта",
-          description: "Не удалось загрузить шаблон. Проверьте файл",
+          description: "Не удалось прочитать файл. Проверьте формат",
           variant: "destructive",
         });
       }
     };
+    
+    reader.onerror = () => {
+      console.error('❌ Ошибка чтения файла');
+      toast({
+        title: "Ошибка чтения",
+        description: "Не удалось прочитать файл",
+        variant: "destructive",
+      });
+    };
+    
     reader.readAsText(file);
     
     if (e.target) {
