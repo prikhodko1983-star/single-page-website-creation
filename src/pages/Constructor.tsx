@@ -1381,10 +1381,22 @@ const Constructor = () => {
               ctx.translate(-centerX, -centerY);
             }
             
-            // Поддержка многострочного текста
+            // Поддержка многострочного текста с автопереносом
             const content = element.content || '';
-            const lines = content.split('\n');
             const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
+            
+            // Обрабатываем многострочный текст с переносами
+            const paragraphs = content.split('\n');
+            const allLines: string[] = [];
+            
+            paragraphs.forEach(paragraph => {
+              if (paragraph.trim() === '') {
+                allLines.push('');
+              } else {
+                const wrappedLines = wrapText(ctx, paragraph, scaledWidth);
+                allLines.push(...wrappedLines);
+              }
+            });
             
             // Вычисляем X координату в зависимости от выравнивания
             let textX = scaledX;
@@ -1395,7 +1407,7 @@ const Constructor = () => {
             }
             
             // Рисуем каждую строку
-            lines.forEach((line, index) => {
+            allLines.forEach((line, index) => {
               const textY = scaledY + index * lineHeight;
               ctx.fillText(line, textX, textY);
             });
@@ -1440,6 +1452,31 @@ const Constructor = () => {
       console.error('Preview creation error:', error);
       return null;
     }
+  };
+
+  const wrapText = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] => {
+    const words = text.split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
+    
+    for (let i = 0; i < words.length; i++) {
+      const testLine = currentLine ? currentLine + ' ' + words[i] : words[i];
+      const metrics = ctx.measureText(testLine);
+      const testWidth = metrics.width;
+      
+      if (testWidth > maxWidth && currentLine !== '') {
+        lines.push(currentLine);
+        currentLine = words[i];
+      } else {
+        currentLine = testLine;
+      }
+    }
+    
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+    
+    return lines;
   };
 
   const loadFonts = async (elements: CanvasElement[]): Promise<void> => {
@@ -1644,7 +1681,6 @@ const Constructor = () => {
           ctx.shadowOffsetX = 2 * monumentScale;
           ctx.shadowOffsetY = 2 * monumentScale;
           
-          const lines = element.content?.split('\n') || [];
           const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
           
           // Применяем вращение если есть
@@ -1656,6 +1692,19 @@ const Constructor = () => {
             ctx.translate(-centerX, -centerY);
           }
           
+          // Обрабатываем многострочный текст с переносами
+          const paragraphs = element.content?.split('\n') || [];
+          const allLines: string[] = [];
+          
+          paragraphs.forEach(paragraph => {
+            if (paragraph.trim() === '') {
+              allLines.push('');
+            } else {
+              const wrappedLines = wrapText(ctx, paragraph, scaledWidth);
+              allLines.push(...wrappedLines);
+            }
+          });
+          
           // Вычисляем X координату в зависимости от выравнивания
           let textX = scaledX;
           if (textAlign === 'center') {
@@ -1665,7 +1714,7 @@ const Constructor = () => {
           }
           
           // Рисуем каждую строку
-          lines.forEach((line, idx) => {
+          allLines.forEach((line, idx) => {
             ctx.fillText(line, textX, scaledY + idx * lineHeight);
           });
           
