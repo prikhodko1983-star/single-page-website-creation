@@ -1388,6 +1388,21 @@ const Constructor = () => {
               }
             });
             
+            // Измеряем ширину строк ДО вращения
+            const textAlign = element.textAlign || 'center';
+            const linePositions = allLines.map(line => {
+              const lineWidth = ctx.measureText(line).width;
+              let lineX = scaledX;
+              
+              if (textAlign === 'center') {
+                lineX = scaledX + (scaledWidth - lineWidth) / 2;
+              } else if (textAlign === 'right') {
+                lineX = scaledX + scaledWidth - lineWidth;
+              }
+              
+              return { x: lineX, width: lineWidth };
+            });
+            
             // Применяем вращение если есть
             if (element.rotation) {
               const centerX = scaledX + scaledWidth / 2;
@@ -1397,24 +1412,13 @@ const Constructor = () => {
               ctx.translate(-centerX, -centerY);
             }
             
-            // Рисуем строки БЕЗ ctx.textAlign (вручную рассчитываем X)
-            const textAlign = element.textAlign || 'center';
+            // Рисуем строки с предварительно рассчитанными координатами
             ctx.textBaseline = 'top';
             
             allLines.forEach((line, index) => {
               const lineY = scaledY + index * lineHeight;
-              
-              if (textAlign === 'center') {
-                const lineWidth = ctx.measureText(line).width;
-                const lineX = scaledX + (scaledWidth - lineWidth) / 2;
-                ctx.fillText(line, lineX, lineY);
-              } else if (textAlign === 'right') {
-                const lineWidth = ctx.measureText(line).width;
-                const lineX = scaledX + scaledWidth - lineWidth;
-                ctx.fillText(line, lineX, lineY);
-              } else {
-                ctx.fillText(line, scaledX, lineY);
-              }
+              const lineX = linePositions[index].x;
+              ctx.fillText(line, lineX, lineY);
             });
             
             // Сбрасываем тень
@@ -1744,6 +1748,21 @@ const Constructor = () => {
             }
           });
           
+          // Измеряем ширину строк ДО вращения
+          const textAlign = element.textAlign || 'center';
+          const linePositions = allLines.map(line => {
+            const lineWidth = ctx.measureText(line).width;
+            let lineX = scaledX;
+            
+            if (textAlign === 'center') {
+              lineX = scaledX + (scaledWidth - lineWidth) / 2;
+            } else if (textAlign === 'right') {
+              lineX = scaledX + scaledWidth - lineWidth;
+            }
+            
+            return { x: lineX, width: lineWidth };
+          });
+          
           // Применяем вращение если есть
           if (element.rotation) {
             const centerX = scaledX + scaledWidth / 2;
@@ -1753,24 +1772,13 @@ const Constructor = () => {
             ctx.translate(-centerX, -centerY);
           }
           
-          // Рисуем строки БЕЗ ctx.textAlign (вручную рассчитываем X)
-          const textAlign = element.textAlign || 'center';
+          // Рисуем строки с предварительно рассчитанными координатами
           ctx.textBaseline = 'top';
           
           allLines.forEach((line, idx) => {
             const lineY = scaledY + idx * lineHeight;
-            
-            if (textAlign === 'center') {
-              const lineWidth = ctx.measureText(line).width;
-              const lineX = scaledX + (scaledWidth - lineWidth) / 2;
-              ctx.fillText(line, lineX, lineY);
-            } else if (textAlign === 'right') {
-              const lineWidth = ctx.measureText(line).width;
-              const lineX = scaledX + scaledWidth - lineWidth;
-              ctx.fillText(line, lineX, lineY);
-            } else {
-              ctx.fillText(line, scaledX, lineY);
-            }
+            const lineX = linePositions[idx].x;
+            ctx.fillText(line, lineX, lineY);
           });
           
           // Сбрасываем тень
@@ -1999,13 +2007,17 @@ const Constructor = () => {
       
       <TextEditorModal
         isOpen={isTextEditorOpen}
-        onClose={() => setIsTextEditorOpen(false)}
+        onClose={() => {
+          setIsTextEditorOpen(false);
+          setEditingElement(null);
+        }}
         editingElement={editingElement}
         setEditingElement={setEditingElement}
         onApply={(updates) => {
           if (editingElement) {
-            // Просто применяем изменения без изменения размеров рамки
             updateElement(editingElement.id, updates);
+            setIsTextEditorOpen(false);
+            setEditingElement(null);
           }
         }}
       />

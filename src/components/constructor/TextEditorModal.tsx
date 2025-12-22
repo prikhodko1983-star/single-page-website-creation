@@ -64,9 +64,7 @@ export const TextEditorModal = ({
       textAlign: editingElement.textAlign,
       italic: editingElement.italic,
     });
-    onClose();
-    setEditingElement(null);
-  }, [editingElement, onApply, onClose, setEditingElement]);
+  }, [editingElement, onApply]);
 
   const handleCancel = useCallback(() => {
     onClose();
