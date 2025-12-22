@@ -1383,7 +1383,11 @@ const Constructor = () => {
             
             // Поддержка многострочного текста с автопереносом
             const content = element.content || '';
-            const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
+            const lh = element.lineHeight || 1.2;
+            const lineHeight = scaledFontSize * lh;
+            
+            // Компенсация leading (CSS добавляет отступ сверху = (lineHeight - 1) / 2 * fontSize)
+            const leadingOffset = ((lh - 1) / 2) * scaledFontSize;
             
             // Обрабатываем многострочный текст с переносами
             const paragraphs = content.split('\n');
@@ -1406,9 +1410,9 @@ const Constructor = () => {
               textX = scaledX + scaledWidth;
             }
             
-            // Рисуем каждую строку
+            // Рисуем каждую строку с учетом leading offset
             allLines.forEach((line, index) => {
-              const textY = scaledY + index * lineHeight;
+              const textY = scaledY + leadingOffset + index * lineHeight;
               ctx.fillText(line, textX, textY);
             });
             
@@ -1681,7 +1685,11 @@ const Constructor = () => {
           ctx.shadowOffsetX = 2 * monumentScale;
           ctx.shadowOffsetY = 2 * monumentScale;
           
-          const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
+          const lh = element.lineHeight || 1.2;
+          const lineHeight = scaledFontSize * lh;
+          
+          // Компенсация leading (CSS добавляет отступ сверху = (lineHeight - 1) / 2 * fontSize)
+          const leadingOffset = ((lh - 1) / 2) * scaledFontSize;
           
           // Применяем вращение если есть
           if (element.rotation) {
@@ -1713,9 +1721,9 @@ const Constructor = () => {
             textX = scaledX + scaledWidth;
           }
           
-          // Рисуем каждую строку
+          // Рисуем каждую строку с учетом leading offset
           allLines.forEach((line, idx) => {
-            ctx.fillText(line, textX, scaledY + idx * lineHeight);
+            ctx.fillText(line, textX, scaledY + leadingOffset + idx * lineHeight);
           });
           
           // Сбрасываем тень
