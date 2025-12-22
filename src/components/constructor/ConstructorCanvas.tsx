@@ -87,7 +87,8 @@ export const ConstructorCanvas = ({
     <div className="flex flex-col items-center">
       <div 
         ref={canvasRef}
-        className="relative w-full max-w-lg aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none"
+        className="relative w-[600px] h-[800px] max-w-full bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none"
+        style={{ aspectRatio: '3/4' }}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
