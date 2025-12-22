@@ -1635,7 +1635,7 @@ const Constructor = () => {
       
       ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
       
-      // Вычисляем object-contain для памятника НА ЭКРАНЕ
+      // Рассчитываем масштаб для элементов (ТОЧНО как в createPreviewImage)
       const screenRatio = rect.width / rect.height;
       let screenMonumentWidth = rect.width;
       let screenMonumentHeight = rect.height;
@@ -1652,27 +1652,14 @@ const Constructor = () => {
         screenOffsetX = (rect.width - screenMonumentWidth) / 2;
       }
       
-      // Масштаб: от реального размера памятника на экране к размеру в экспорте
       const scale = drawWidth / screenMonumentWidth;
       
-      console.log('🔍 Экспорт DEBUG:');
-      console.log('Canvas на экране:', rect.width, 'x', rect.height);
-      console.log('Памятник на экране:', screenMonumentWidth, 'x', screenMonumentHeight, 'offset:', screenOffsetX, screenOffsetY);
-      console.log('Экспорт canvas:', exportWidth, 'x', exportHeight);
-      console.log('Памятник в экспорте:', drawWidth, 'x', drawHeight, 'offset:', offsetX, offsetY);
-      console.log('Масштаб:', scale);
-      console.log('Соотношения - imgRatio:', imgRatio, 'screenRatio:', screenRatio, 'canvasRatio:', canvasRatio);
-      
+      // Рисуем элементы
       for (const element of elements) {
         ctx.save();
         
-        // Элементы позиционированы относительно canvas, вычитаем экранные отступы
-        const relX = element.x - screenOffsetX;
-        const relY = element.y - screenOffsetY;
-        
-        // Масштабируем и добавляем отступы экспорта
-        const scaledX = relX * scale + offsetX;
-        const scaledY = relY * scale + offsetY;
+        const scaledX = (element.x - screenOffsetX) * scale + offsetX;
+        const scaledY = (element.y - screenOffsetY) * scale + offsetY;
         const scaledWidth = element.width * scale;
         const scaledHeight = element.height * scale;
         
@@ -1741,38 +1728,10 @@ const Constructor = () => {
           ctx.shadowOffsetY = 0;
           
         } else if (element.type === 'image' || element.type === 'cross' || element.type === 'flower' || element.type === 'photo') {
-          const imgSrc = element.screenMode && element.processedSrc ? element.processedSrc : element.src;
+          const imgSrc = (element.screenMode && element.processedSrc) ? element.processedSrc : element.src;
           if (imgSrc) {
             const img = await loadImageWithCORS(imgSrc);
             if (img) {
-              // Фото использует object-cover (как на экране), остальное - просто рисуем
-              const useObjectCover = element.type === 'photo';
-              
-              let drawX = scaledX;
-              let drawY = scaledY;
-              let drawW = scaledWidth;
-              let drawH = scaledHeight;
-              
-              if (useObjectCover) {
-                // object-cover: заполняем контейнер, обрезая лишнее (как CSS)
-                const imgRatio = img.width / img.height;
-                const boxRatio = scaledWidth / scaledHeight;
-                
-                if (imgRatio > boxRatio) {
-                  // Изображение шире - обрезаем по бокам
-                  drawW = scaledHeight * imgRatio;
-                  drawH = scaledHeight;
-                  drawX = scaledX - (drawW - scaledWidth) / 2;
-                  drawY = scaledY;
-                } else {
-                  // Изображение выше - обрезаем сверху/снизу
-                  drawW = scaledWidth;
-                  drawH = scaledWidth / imgRatio;
-                  drawX = scaledX;
-                  drawY = scaledY - (drawH - scaledHeight) / 2;
-                }
-              }
-              
               // Применяем вращение если есть
               if (element.rotation) {
                 const centerX = scaledX + scaledWidth / 2;
@@ -1782,13 +1741,12 @@ const Constructor = () => {
                 ctx.translate(-centerX, -centerY);
               }
               
-              // Применяем отзеркаливание если нужно
               if (element.flipHorizontal) {
-                ctx.translate(drawX + drawW, drawY);
+                ctx.translate(scaledX + scaledWidth, scaledY);
                 ctx.scale(-1, 1);
-                ctx.drawImage(img, 0, 0, drawW, drawH);
+                ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
               } else {
-                ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                ctx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
               }
             }
           }
