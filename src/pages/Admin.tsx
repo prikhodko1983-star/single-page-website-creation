@@ -1050,22 +1050,53 @@ export default function Admin() {
                   <SheetHeader>
                     <SheetTitle className="font-oswald">Меню</SheetTitle>
                     <SheetDescription>
-                      Настройки администратора
+                      Навигация и настройки
                     </SheetDescription>
                   </SheetHeader>
                   <div className="flex flex-col gap-3 mt-6">
-                    <Button variant="outline" onClick={() => navigate('/')} className="w-full justify-start">
-                      <Icon name="Home" size={18} className="mr-2" />
-                      На сайт
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="w-full justify-start">
-                      <Icon name="Key" size={18} className="mr-2" />
-                      Сменить пароль
-                    </Button>
-                    <Button variant="destructive" onClick={logout} className="w-full justify-start">
-                      <Icon name="LogOut" size={18} className="mr-2" />
-                      Выйти
-                    </Button>
+                    <div className="border-b pb-3 mb-3">
+                      <p className="text-xs font-medium text-muted-foreground mb-2 px-2">Разделы</p>
+                      <Button variant={activeTab === 'overview' ? 'default' : 'ghost'} onClick={() => setActiveTab('overview')} className="w-full justify-start">
+                        <Icon name="LayoutDashboard" size={18} className="mr-2" />
+                        Обзор
+                      </Button>
+                      <Button variant={activeTab === 'shop' ? 'default' : 'ghost'} onClick={() => setActiveTab('shop')} className="w-full justify-start">
+                        <Icon name="ShoppingBag" size={18} className="mr-2" />
+                        Магазин
+                      </Button>
+                      <Button variant={activeTab === 'crosses' ? 'default' : 'ghost'} onClick={() => setActiveTab('crosses')} className="w-full justify-start">
+                        <Icon name="Cross" size={18} className="mr-2" />
+                        Кресты
+                      </Button>
+                      <Button variant={activeTab === 'flowers' ? 'default' : 'ghost'} onClick={() => setActiveTab('flowers')} className="w-full justify-start">
+                        <Icon name="Flower2" size={18} className="mr-2" />
+                        Цветы
+                      </Button>
+                      <Button variant={activeTab === 'gallery' ? 'default' : 'ghost'} onClick={() => setActiveTab('gallery')} className="w-full justify-start">
+                        <Icon name="Images" size={18} className="mr-2" />
+                        Галерея работ
+                      </Button>
+                      <Button variant={activeTab === 'images' ? 'default' : 'ghost'} onClick={() => setActiveTab('images')} className="w-full justify-start">
+                        <Icon name="Image" size={18} className="mr-2" />
+                        Изображения
+                      </Button>
+                    </div>
+                    
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-2 px-2">Настройки</p>
+                      <Button variant="outline" onClick={() => navigate('/')} className="w-full justify-start">
+                        <Icon name="Home" size={18} className="mr-2" />
+                        На сайт
+                      </Button>
+                      <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="w-full justify-start">
+                        <Icon name="Key" size={18} className="mr-2" />
+                        Сменить пароль
+                      </Button>
+                      <Button variant="destructive" onClick={logout} className="w-full justify-start">
+                        <Icon name="LogOut" size={18} className="mr-2" />
+                        Выйти
+                      </Button>
+                    </div>
                   </div>
                 </SheetContent>
               </Sheet>
@@ -1174,7 +1205,7 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6 mb-8 sticky top-[73px] z-30 bg-background">
+          <TabsList className="hidden sm:grid w-full grid-cols-6 mb-8 sticky top-[73px] z-30 bg-background">
             <TabsTrigger value="overview" className="font-oswald">
               <Icon name="LayoutDashboard" size={16} className="mr-2" />
               Обзор
