@@ -29,6 +29,7 @@ interface CanvasElement {
   textAlign?: 'left' | 'center' | 'right';
   flipHorizontal?: boolean;
   autoSize?: boolean;
+  italic?: boolean;
 }
 
 const Constructor = () => {
@@ -1358,7 +1359,8 @@ const Constructor = () => {
           if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
             const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
             const scaledFontSize = (element.fontSize || 24) * scale;
-            ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
+            const fontStyle = element.italic ? 'italic' : 'normal';
+            ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${fontFamily}`;
             ctx.fillStyle = element.color || '#FFFFFF';
             
             // Поддержка выравнивания текста
@@ -1717,7 +1719,8 @@ const Constructor = () => {
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
           const scaledFontSize = (element.fontSize || 24) * scale;
-          ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
+          const fontStyle = element.italic ? 'italic' : 'normal';
+          ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           
           // Поддержка выравнивания текста

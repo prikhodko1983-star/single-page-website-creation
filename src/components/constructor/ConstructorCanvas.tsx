@@ -21,6 +21,7 @@ interface CanvasElement {
   textAlign?: 'left' | 'center' | 'right';
   flipHorizontal?: boolean;
   autoSize?: boolean;
+  italic?: boolean;
 }
 
 interface ConstructorCanvasProps {
@@ -142,6 +143,7 @@ export const ConstructorCanvas = ({
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || 'bold',
+                      fontStyle: element.italic ? 'italic' : 'normal',
                       lineHeight: element.lineHeight || 1.2,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
@@ -157,6 +159,7 @@ export const ConstructorCanvas = ({
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || 'bold',
+                      fontStyle: element.italic ? 'italic' : 'normal',
                       lineHeight: element.lineHeight || 1.2,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
@@ -194,6 +197,7 @@ export const ConstructorCanvas = ({
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      fontStyle: element.italic ? 'italic' : 'normal',
                       lineHeight: element.lineHeight || 1.4,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
@@ -209,6 +213,7 @@ export const ConstructorCanvas = ({
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      fontStyle: element.italic ? 'italic' : 'normal',
                       lineHeight: element.lineHeight || 1.4,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
@@ -246,6 +251,7 @@ export const ConstructorCanvas = ({
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      fontStyle: element.italic ? 'italic' : 'normal',
                       lineHeight: element.lineHeight || 1.3,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
@@ -260,6 +266,7 @@ export const ConstructorCanvas = ({
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      fontStyle: element.italic ? 'italic' : 'normal',
                       lineHeight: element.lineHeight || 1.3,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
@@ -296,6 +303,7 @@ export const ConstructorCanvas = ({
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      fontStyle: element.italic ? 'italic' : 'normal',
                       lineHeight: element.lineHeight || 1.2,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
                       textAlign: element.textAlign || 'center',
@@ -310,6 +318,7 @@ export const ConstructorCanvas = ({
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      fontStyle: element.italic ? 'italic' : 'normal',
                       lineHeight: element.lineHeight || 1.2,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : '0.05em',
                       textAlign: element.textAlign || 'center',

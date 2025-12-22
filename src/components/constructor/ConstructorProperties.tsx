@@ -25,6 +25,7 @@ interface CanvasElement {
   textAlign?: 'left' | 'center' | 'right';
   flipHorizontal?: boolean;
   autoSize?: boolean;
+  italic?: boolean;
 }
 
 interface ConstructorPropertiesProps {
@@ -145,6 +146,18 @@ export const ConstructorProperties = ({
                     <span>Сжато</span>
                     <span>Разрежено</span>
                   </div>
+                </div>
+                
+                <div>
+                  <Label>Курсив</Label>
+                  <Button
+                    onClick={() => updateElement(selectedEl.id, { italic: !selectedEl.italic })}
+                    variant={selectedEl.italic ? "default" : "outline"}
+                    className="w-full mt-2"
+                  >
+                    <Icon name={selectedEl.italic ? "Check" : "Italic"} size={18} className="mr-2" />
+                    {selectedEl.italic ? 'Включен' : 'Выключен'}
+                  </Button>
                 </div>
               </>
             )}

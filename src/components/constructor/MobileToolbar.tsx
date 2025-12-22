@@ -22,6 +22,7 @@ interface CanvasElement {
   textAlign?: 'left' | 'center' | 'right';
   flipHorizontal?: boolean;
   autoSize?: boolean;
+  italic?: boolean;
 }
 
 interface MobileToolbarProps {

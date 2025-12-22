@@ -24,6 +24,7 @@ interface CanvasElement {
   letterSpacing?: number;
   textAlign?: 'left' | 'center' | 'right';
   autoSize?: boolean;
+  italic?: boolean;
 }
 
 interface TextEditorModalProps {
@@ -61,6 +62,7 @@ export const TextEditorModal = ({
       lineHeight: editingElement.lineHeight,
       letterSpacing: editingElement.letterSpacing,
       textAlign: editingElement.textAlign,
+      italic: editingElement.italic,
     });
     onClose();
     setEditingElement(null);
@@ -108,6 +110,7 @@ export const TextEditorModal = ({
                     color: editingElement.color || '#FFFFFF',
                     fontFamily: editingElement.fontFamily?.split('|')[0] || 'serif',
                     fontWeight: editingElement.fontFamily?.split('|')[1] || '400',
+                    fontStyle: editingElement.italic ? 'italic' : 'normal',
                     lineHeight: editingElement.lineHeight || 1.2,
                     letterSpacing: editingElement.letterSpacing ? `${editingElement.letterSpacing}px` : 'normal',
                     textAlign: editingElement.textAlign || 'center',
@@ -180,6 +183,18 @@ export const TextEditorModal = ({
                   onChange={(e) => setEditingElement({ ...editingElement, letterSpacing: parseFloat(e.target.value) })}
                   className="w-full mt-2 h-2"
                 />
+              </div>
+            
+              <div>
+                <Label className="text-sm sm:text-base font-semibold">Курсив</Label>
+                <Button
+                  variant={editingElement.italic ? "default" : "outline"}
+                  onClick={() => setEditingElement({ ...editingElement, italic: !editingElement.italic })}
+                  className="w-full mt-2 h-10 sm:h-12 font-italic"
+                >
+                  <Icon name={editingElement.italic ? "Check" : "Italic"} size={18} className="mr-2" />
+                  {editingElement.italic ? 'Включен' : 'Выключен'}
+                </Button>
               </div>
             
               <div>
