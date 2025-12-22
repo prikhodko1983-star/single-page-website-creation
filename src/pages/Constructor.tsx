@@ -1744,25 +1744,16 @@ const Constructor = () => {
       for (const element of elements) {
         ctx.save();
         
-        console.log(`🎯 Element ${element.type} координаты:`, {
-          'original_x': element.x,
-          'original_y': element.y,
-          'canvas_screen': `${rect.width}x${rect.height}`,
-          'canvas_export': `${exportWidth}x${exportHeight}`
-        });
-        
         // Трансформация: (экранКоорд - экранOffset) * scale + экспортOffset
         const scaledX = Math.round((element.x - screenOffsetX) * scale + offsetX);
         const scaledY = Math.round((element.y - screenOffsetY) * scale + offsetY);
         const scaledWidth = Math.round(element.width * scale);
         const scaledHeight = Math.round(element.height * scale);
         
-        console.log(`   → scaled:`, {
-          'scaledX': scaledX,
-          'scaledY': scaledY,
-          'formula_x': `(${element.x} - ${screenOffsetX}) * ${scale.toFixed(3)} + ${offsetX} = ${scaledX}`,
-          'formula_y': `(${element.y} - ${screenOffsetY}) * ${scale.toFixed(3)} + ${offsetY} = ${scaledY}`
-        });
+        // Показываем данные первого элемента для диагностики
+        if (element === elements[0]) {
+          alert(`Диагностика координат:\n\nCanvas на экране: ${rect.width.toFixed(0)}x${rect.height.toFixed(0)}\nCanvas экспорт: ${exportWidth}x${exportHeight}\n\nЭлемент "${element.type}":\nНа экране: x=${element.x.toFixed(0)}, y=${element.y.toFixed(0)}\nВ экспорте: x=${scaledX}, y=${scaledY}\n\nМасштаб: ${scale.toFixed(3)}\nОфсеты экран: ${screenOffsetX}, ${screenOffsetY}\nОфсеты экспорт: ${offsetX}, ${offsetY}`);
+        }
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
