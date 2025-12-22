@@ -1366,7 +1366,7 @@ const Constructor = () => {
             // Поддержка выравнивания текста
             const textAlign = element.textAlign || 'center';
             ctx.textAlign = textAlign;
-            ctx.textBaseline = 'top';
+            ctx.textBaseline = 'alphabetic';
             
             // Тень для читаемости
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
@@ -1409,9 +1409,11 @@ const Constructor = () => {
               textX = scaledX + scaledWidth;
             }
             
-            // Рисуем каждую строку (без leading offset для точного совпадения с CSS)
+            // Рисуем каждую строку с alphabetic baseline (как в браузере)
             allLines.forEach((line, index) => {
-              ctx.fillText(line, textX, scaledY + index * lineHeight);
+              // Для alphabetic baseline добавляем высоту шрифта к Y-координате первой строки
+              const baseY = scaledY + scaledFontSize * 0.8; // 0.8 - коэффициент для baseline
+              ctx.fillText(line, textX, baseY + index * lineHeight);
             });
             
             // Сбрасываем тень
@@ -1722,7 +1724,7 @@ const Constructor = () => {
           // Поддержка выравнивания текста
           const textAlign = element.textAlign || 'center';
           ctx.textAlign = textAlign;
-          ctx.textBaseline = 'top';
+          ctx.textBaseline = 'alphabetic';
           
           // Тень для читаемости
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
@@ -1763,9 +1765,11 @@ const Constructor = () => {
             textX = scaledX + scaledWidth;
           }
           
-          // Рисуем каждую строку (без leading offset для точного совпадения с CSS)
+          // Рисуем каждую строку с alphabetic baseline (как в браузере)
           allLines.forEach((line, idx) => {
-            ctx.fillText(line, textX, scaledY + idx * lineHeight);
+            // Для alphabetic baseline добавляем высоту шрифта к Y-координате первой строки
+            const baseY = scaledY + scaledFontSize * 0.8; // 0.8 - коэффициент для baseline
+            ctx.fillText(line, textX, baseY + idx * lineHeight);
           });
           
           // Сбрасываем тень
