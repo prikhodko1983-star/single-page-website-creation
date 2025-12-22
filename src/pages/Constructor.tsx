@@ -263,6 +263,7 @@ const Constructor = () => {
       rotation: 0,
       fontFamily: selectedFontData?.fullStyle || 'serif',
       autoSize: true,
+      lineHeight: 1.05,
     };
     setElements([...elements, newElement]);
     
@@ -1377,7 +1378,13 @@ const Constructor = () => {
             
             // Поддержка многострочного текста с автопереносом
             const content = element.content || '';
-            const lh = element.lineHeight || 1.2;
+            
+            // Разные дефолтные lineHeight для разных типов
+            let defaultLineHeight = 1.2;
+            if (element.type === 'fio') defaultLineHeight = 1.05;
+            else if (element.type === 'epitaph') defaultLineHeight = 1.4;
+            
+            const lh = element.lineHeight || defaultLineHeight;
             const lineHeight = scaledFontSize * lh;
             
             // Обрабатываем многострочный текст с переносами
@@ -1740,7 +1747,12 @@ const Constructor = () => {
           ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           
-          const lh = element.lineHeight || 1.2;
+          // Разные дефолтные lineHeight для разных типов
+          let defaultLineHeight = 1.2;
+          if (element.type === 'fio') defaultLineHeight = 1.05;
+          else if (element.type === 'epitaph') defaultLineHeight = 1.4;
+          
+          const lh = element.lineHeight || defaultLineHeight;
           const lineHeight = scaledFontSize * lh;
           
           // Обрабатываем многострочный текст с переносами

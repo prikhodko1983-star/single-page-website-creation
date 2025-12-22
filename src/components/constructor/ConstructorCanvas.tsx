@@ -252,7 +252,7 @@ export const ConstructorCanvas = ({
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || '400',
                       fontStyle: element.italic ? 'italic' : 'normal',
-                      lineHeight: element.lineHeight || 1.3,
+                      lineHeight: element.lineHeight || 1.05,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
                     }}
@@ -267,7 +267,7 @@ export const ConstructorCanvas = ({
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || '400',
                       fontStyle: element.italic ? 'italic' : 'normal',
-                      lineHeight: element.lineHeight || 1.3,
+                      lineHeight: element.lineHeight || 1.05,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
                       whiteSpace: 'pre-wrap',
