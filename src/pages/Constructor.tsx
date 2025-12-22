@@ -1712,11 +1712,29 @@ const Constructor = () => {
       
       ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
       
-      // Масштаб: прямое соотношение размеров canvas (экран → экспорт)
-      const scale = exportWidth / rect.width;
+      // Рассчитываем позицию памятника на экране (object-contain)
+      const screenRatio = rect.width / rect.height;
+      let screenDrawWidth = rect.width;
+      let screenDrawHeight = rect.height;
+      let screenOffsetX = 0;
+      let screenOffsetY = 0;
+      
+      if (imgRatio > screenRatio) {
+        screenDrawWidth = rect.width;
+        screenDrawHeight = rect.width / imgRatio;
+        screenOffsetY = (rect.height - screenDrawHeight) / 2;
+      } else {
+        screenDrawHeight = rect.height;
+        screenDrawWidth = rect.height * imgRatio;
+        screenOffsetX = (rect.width - screenDrawWidth) / 2;
+      }
+      
+      // Масштаб: от экранного памятника к экспортному
+      const scale = drawWidth / screenDrawWidth;
       
       console.log('🔍 Параметры (экспорт):', {
         screen: `${rect.width.toFixed(0)}x${rect.height.toFixed(0)}`,
+        screenMonument: `${screenDrawWidth.toFixed(0)}x${screenDrawHeight.toFixed(0)} offset(${screenOffsetX.toFixed(0)},${screenOffsetY.toFixed(0)})`,
         export: `${exportWidth}x${exportHeight}`,
         exportMonument: `${drawWidth.toFixed(0)}x${drawHeight.toFixed(0)} offset(${offsetX.toFixed(0)},${offsetY.toFixed(0)})`,
         scale: scale.toFixed(3)
@@ -1726,9 +1744,9 @@ const Constructor = () => {
       for (const element of elements) {
         ctx.save();
         
-        // Координаты элементов уже в системе canvas, просто масштабируем
-        const scaledX = element.x * scale;
-        const scaledY = element.y * scale;
+        // Трансформация: (экранКоорд - экранOffset) * scale + экспортOffset
+        const scaledX = (element.x - screenOffsetX) * scale + offsetX;
+        const scaledY = (element.y - screenOffsetY) * scale + offsetY;
         const scaledWidth = element.width * scale;
         const scaledHeight = element.height * scale;
         
