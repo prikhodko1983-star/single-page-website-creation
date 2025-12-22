@@ -1359,10 +1359,10 @@ const Constructor = () => {
         
         const scaledX = (element.x - screenOffsetX) * scale;
         const scaledY = (element.y - screenOffsetY) * scale;
-          const scaledWidth = element.width * scale;
-          const scaledHeight = element.height * scale;
-          
-          if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
+        const scaledWidth = element.width * scale;
+        const scaledHeight = element.height * scale;
+        
+        if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
             const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
             const scaledFontSize = (element.fontSize || 24) * scale;
             const fontStyle = element.italic ? 'italic' : 'normal';
@@ -1443,84 +1443,83 @@ const Constructor = () => {
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
             
-          } else if (element.type === 'image' || element.type === 'cross' || element.type === 'flower' || element.type === 'photo') {
-            const imgSrc = (element.screenMode && element.processedSrc) ? element.processedSrc : element.src;
-            if (imgSrc) {
-              const img = await loadImageWithCORS(imgSrc);
-              if (img) {
-                // Применяем вращение если есть
-                if (element.rotation) {
-                  const centerX = scaledX + scaledWidth / 2;
-                  const centerY = scaledY + scaledHeight / 2;
-                  ctx.translate(centerX, centerY);
-                  ctx.rotate(element.rotation * Math.PI / 180);
-                  ctx.translate(-centerX, -centerY);
+        } else if (element.type === 'image' || element.type === 'cross' || element.type === 'flower' || element.type === 'photo') {
+          const imgSrc = (element.screenMode && element.processedSrc) ? element.processedSrc : element.src;
+          if (imgSrc) {
+            const img = await loadImageWithCORS(imgSrc);
+            if (img) {
+              // Применяем вращение если есть
+              if (element.rotation) {
+                const centerX = scaledX + scaledWidth / 2;
+                const centerY = scaledY + scaledHeight / 2;
+                ctx.translate(centerX, centerY);
+                ctx.rotate(element.rotation * Math.PI / 180);
+                ctx.translate(-centerX, -centerY);
+              }
+              
+              // Для НЕ-фото применяем object-contain
+              if (element.type === 'photo') {
+                // Фото: object-cover (заполняем, обрезаем)
+                const imgRatio = img.width / img.height;
+                const boxRatio = scaledWidth / scaledHeight;
+                
+                let drawW = scaledWidth;
+                let drawH = scaledHeight;
+                let drawX = scaledX;
+                let drawY = scaledY;
+                
+                if (imgRatio > boxRatio) {
+                  drawW = scaledHeight * imgRatio;
+                  drawX = scaledX - (drawW - scaledWidth) / 2;
+                } else {
+                  drawH = scaledWidth / imgRatio;
+                  drawY = scaledY - (drawH - scaledHeight) / 2;
                 }
                 
-                // Для НЕ-фото применяем object-contain
-                if (element.type === 'photo') {
-                  // Фото: object-cover (заполняем, обрезаем)
-                  const imgRatio = img.width / img.height;
-                  const boxRatio = scaledWidth / scaledHeight;
-                  
-                  let drawW = scaledWidth;
-                  let drawH = scaledHeight;
-                  let drawX = scaledX;
-                  let drawY = scaledY;
-                  
-                  if (imgRatio > boxRatio) {
-                    drawW = scaledHeight * imgRatio;
-                    drawX = scaledX - (drawW - scaledWidth) / 2;
-                  } else {
-                    drawH = scaledWidth / imgRatio;
-                    drawY = scaledY - (drawH - scaledHeight) / 2;
-                  }
-                  
-                  ctx.save();
-                  ctx.rect(scaledX, scaledY, scaledWidth, scaledHeight);
-                  ctx.clip();
-                  
-                  if (element.flipHorizontal) {
-                    ctx.translate(drawX + drawW, drawY);
-                    ctx.scale(-1, 1);
-                    ctx.drawImage(img, 0, 0, drawW, drawH);
-                  } else {
-                    ctx.drawImage(img, drawX, drawY, drawW, drawH);
-                  }
-                  
-                  ctx.restore();
+                ctx.save();
+                ctx.rect(scaledX, scaledY, scaledWidth, scaledHeight);
+                ctx.clip();
+                
+                if (element.flipHorizontal) {
+                  ctx.translate(drawX + drawW, drawY);
+                  ctx.scale(-1, 1);
+                  ctx.drawImage(img, 0, 0, drawW, drawH);
                 } else {
-                  // Крест, цветы, изображения: object-contain (вписываем, сохраняем пропорции)
-                  const imgRatio = img.width / img.height;
-                  const boxRatio = scaledWidth / scaledHeight;
-                  
-                  let drawW = scaledWidth;
-                  let drawH = scaledHeight;
-                  let drawX = scaledX;
-                  let drawY = scaledY;
-                  
-                  if (imgRatio > boxRatio) {
-                    drawH = scaledWidth / imgRatio;
-                    drawY = scaledY + (scaledHeight - drawH) / 2;
-                  } else {
-                    drawW = scaledHeight * imgRatio;
-                    drawX = scaledX + (scaledWidth - drawW) / 2;
-                  }
-                  
-                  if (element.flipHorizontal) {
-                    ctx.translate(drawX + drawW, drawY);
-                    ctx.scale(-1, 1);
-                    ctx.drawImage(img, 0, 0, drawW, drawH);
-                  } else {
-                    ctx.drawImage(img, drawX, drawY, drawW, drawH);
-                  }
+                  ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                }
+                
+                ctx.restore();
+              } else {
+                // Крест, цветы, изображения: object-contain (вписываем, сохраняем пропорции)
+                const imgRatio = img.width / img.height;
+                const boxRatio = scaledWidth / scaledHeight;
+                
+                let drawW = scaledWidth;
+                let drawH = scaledHeight;
+                let drawX = scaledX;
+                let drawY = scaledY;
+                
+                if (imgRatio > boxRatio) {
+                  drawH = scaledWidth / imgRatio;
+                  drawY = scaledY + (scaledHeight - drawH) / 2;
+                } else {
+                  drawW = scaledHeight * imgRatio;
+                  drawX = scaledX + (scaledWidth - drawW) / 2;
+                }
+                
+                if (element.flipHorizontal) {
+                  ctx.translate(drawX + drawW, drawY);
+                  ctx.scale(-1, 1);
+                  ctx.drawImage(img, 0, 0, drawW, drawH);
+                } else {
+                  ctx.drawImage(img, drawX, drawY, drawW, drawH);
                 }
               }
             }
           }
-          
-          ctx.restore();
         }
+        
+        ctx.restore();
       }
       
       return canvas.toDataURL('image/png');
