@@ -1329,42 +1329,39 @@ const Constructor = () => {
         
         ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
         
-        // Рассчитываем масштаб для элементов
+        // Рассчитываем позицию памятника на экране (object-contain)
         const screenRatio = rect.width / rect.height;
-        let screenMonumentWidth = rect.width;
-        let screenMonumentHeight = rect.height;
+        let screenDrawWidth = rect.width;
+        let screenDrawHeight = rect.height;
         let screenOffsetX = 0;
         let screenOffsetY = 0;
         
         if (imgRatio > screenRatio) {
-          screenMonumentWidth = rect.width;
-          screenMonumentHeight = rect.width / imgRatio;
-          screenOffsetY = (rect.height - screenMonumentHeight) / 2;
+          screenDrawWidth = rect.width;
+          screenDrawHeight = rect.width / imgRatio;
+          screenOffsetY = (rect.height - screenDrawHeight) / 2;
         } else {
-          screenMonumentHeight = rect.height;
-          screenMonumentWidth = rect.height * imgRatio;
-          screenOffsetX = (rect.width - screenMonumentWidth) / 2;
+          screenDrawHeight = rect.height;
+          screenDrawWidth = rect.height * imgRatio;
+          screenOffsetX = (rect.width - screenDrawWidth) / 2;
         }
         
-        const scale = drawWidth / screenMonumentWidth;
+        // Масштаб: от экранного памятника к экспортному
+        const scale = drawWidth / screenDrawWidth;
         
-        console.log('🔍 Параметры масштабирования (превью):', {
-          'rect (screen canvas)': `${rect.width.toFixed(2)}x${rect.height.toFixed(2)}`,
-          'previewCanvas': `${previewWidth}x${previewHeight}`,
-          'monumentImg': `${monumentImg.width}x${monumentImg.height}`,
-          'imgRatio': imgRatio.toFixed(3),
-          'screenRatio': screenRatio.toFixed(3),
-          'screenMonument': `${screenMonumentWidth.toFixed(2)}x${screenMonumentHeight.toFixed(2)}`,
-          'screenOffset': `${screenOffsetX.toFixed(2)}, ${screenOffsetY.toFixed(2)}`,
-          'previewMonument': `${drawWidth.toFixed(2)}x${drawHeight.toFixed(2)}`,
-          'previewOffset': `${offsetX.toFixed(2)}, ${offsetY.toFixed(2)}`,
-          'scale': scale.toFixed(3)
+        console.log('🔍 Параметры (превью):', {
+          screen: `${rect.width.toFixed(0)}x${rect.height.toFixed(0)}`,
+          screenMonument: `${screenDrawWidth.toFixed(0)}x${screenDrawHeight.toFixed(0)} offset(${screenOffsetX.toFixed(0)},${screenOffsetY.toFixed(0)})`,
+          export: `${previewWidth}x${previewHeight}`,
+          exportMonument: `${drawWidth.toFixed(0)}x${drawHeight.toFixed(0)} offset(${offsetX.toFixed(0)},${offsetY.toFixed(0)})`,
+          scale: scale.toFixed(3)
         });
         
         // Рисуем элементы
         for (const element of elements) {
           ctx.save();
           
+          // Координаты: (экран - screenOffset) * scale + exportOffset
           const scaledX = (element.x - screenOffsetX) * scale + offsetX;
           const scaledY = (element.y - screenOffsetY) * scale + offsetY;
           const scaledWidth = element.width * scale;
@@ -1734,17 +1731,12 @@ const Constructor = () => {
       
       const scale = drawWidth / screenMonumentWidth;
       
-      console.log('🔍 Параметры масштабирования:', {
-        'rect (screen canvas)': `${rect.width.toFixed(2)}x${rect.height.toFixed(2)}`,
-        'exportCanvas': `${exportWidth}x${exportHeight}`,
-        'monumentImg': `${monumentImg.width}x${monumentImg.height}`,
-        'imgRatio': imgRatio.toFixed(3),
-        'screenRatio': screenRatio.toFixed(3),
-        'screenMonument': `${screenMonumentWidth.toFixed(2)}x${screenMonumentHeight.toFixed(2)}`,
-        'screenOffset': `${screenOffsetX.toFixed(2)}, ${screenOffsetY.toFixed(2)}`,
-        'exportMonument': `${drawWidth.toFixed(2)}x${drawHeight.toFixed(2)}`,
-        'exportOffset': `${offsetX.toFixed(2)}, ${offsetY.toFixed(2)}`,
-        'scale': scale.toFixed(3)
+      console.log('🔍 Параметры (экспорт):', {
+        screen: `${rect.width.toFixed(0)}x${rect.height.toFixed(0)}`,
+        screenMonument: `${screenMonumentWidth.toFixed(0)}x${screenMonumentHeight.toFixed(0)} offset(${screenOffsetX.toFixed(0)},${screenOffsetY.toFixed(0)})`,
+        export: `${exportWidth}x${exportHeight}`,
+        exportMonument: `${drawWidth.toFixed(0)}x${drawHeight.toFixed(0)} offset(${offsetX.toFixed(0)},${offsetY.toFixed(0)})`,
+        scale: scale.toFixed(3)
       });
       
       // Рисуем элементы
