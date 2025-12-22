@@ -1437,8 +1437,8 @@ const Constructor = () => {
             const startY = scaledY + (scaledHeight - totalTextHeight) / 2;
             
             allLines.forEach((line, index) => {
-              const lineY = startY + index * lineHeight;
-              const lineX = linePositions[index].x;
+              const lineY = Math.round(startY + index * lineHeight);
+              const lineX = Math.round(linePositions[index].x);
               ctx.fillText(line, lineX, lineY);
             });
             
@@ -1835,8 +1835,8 @@ const Constructor = () => {
           const startY = scaledY + (scaledHeight - totalTextHeight) / 2;
           
           allLines.forEach((line, idx) => {
-            const lineY = startY + idx * lineHeight;
-            const lineX = linePositions[idx].x;
+            const lineY = Math.round(startY + idx * lineHeight);
+            const lineX = Math.round(linePositions[idx].x);
             ctx.fillText(line, lineX, lineY);
           });
           
