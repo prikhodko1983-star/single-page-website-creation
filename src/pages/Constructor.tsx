@@ -1730,6 +1730,12 @@ const Constructor = () => {
           ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           
+          // Тень для читаемости
+          ctx.shadowColor = 'rgba(0,0,0,0.8)';
+          ctx.shadowBlur = 8 * scale;
+          ctx.shadowOffsetX = 2 * scale;
+          ctx.shadowOffsetY = 2 * scale;
+          
           const lh = element.lineHeight || 1.2;
           const lineHeight = scaledFontSize * lh;
           
@@ -1746,7 +1752,7 @@ const Constructor = () => {
             }
           });
           
-          // Измеряем ширину строк ДО вращения (БЕЗ тени, чтобы не влияло на измерения)
+          // Измеряем ширину строк ДО вращения
           const textAlign = element.textAlign || 'center';
           
           console.log(`📊 Элемент ${element.type}:`, {
@@ -1789,21 +1795,11 @@ const Constructor = () => {
             ctx.translate(-centerX, -centerY);
           }
           
-          // Включаем тень только перед рисованием (после всех измерений)
-          ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 8 * scale;
-          ctx.shadowOffsetX = 2 * scale;
-          ctx.shadowOffsetY = 2 * scale;
-          
           // Рисуем строки с предварительно рассчитанными координатами
           ctx.textBaseline = 'top';
           
-          // Вертикальное центрирование текста
-          const totalTextHeight = allLines.length * lineHeight;
-          const startY = scaledY + (scaledHeight - totalTextHeight) / 2;
-          
           allLines.forEach((line, idx) => {
-            const lineY = startY + idx * lineHeight;
+            const lineY = scaledY + idx * lineHeight;
             const lineX = linePositions[idx].x;
             ctx.fillText(line, lineX, lineY);
           });
