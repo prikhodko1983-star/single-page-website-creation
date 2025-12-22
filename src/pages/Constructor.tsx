@@ -1798,8 +1798,12 @@ const Constructor = () => {
           // Рисуем строки с предварительно рассчитанными координатами
           ctx.textBaseline = 'top';
           
+          // Вертикальное центрирование текста
+          const totalTextHeight = allLines.length * lineHeight;
+          const startY = scaledY + (scaledHeight - totalTextHeight) / 2;
+          
           allLines.forEach((line, idx) => {
-            const lineY = scaledY + idx * lineHeight;
+            const lineY = startY + idx * lineHeight;
             const lineX = linePositions[idx].x;
             ctx.fillText(line, lineX, lineY);
           });
