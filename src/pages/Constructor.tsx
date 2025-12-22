@@ -1747,11 +1747,16 @@ const Constructor = () => {
         const relativeWidth = element.width / screenDrawWidth;
         const relativeHeight = element.height / screenDrawHeight;
         
-        // 2. Применяем проценты к РАЗМЕРУ ПАМЯТНИКА в экспорте
+        // Применяем проценты к РАЗМЕРУ ПАМЯТНИКА в экспорте
         const scaledX = Math.round(relativeX * drawWidth + offsetX);
         const scaledY = Math.round(relativeY * drawHeight + offsetY);
         const scaledWidth = Math.round(relativeWidth * drawWidth);
         const scaledHeight = Math.round(relativeHeight * drawHeight);
+        
+        // Диагностика для первого элемента
+        if (element === elements[0]) {
+          alert(`ТРАНСФОРМАЦИЯ:\n\n📱 На экране:\nelement.x=${element.x.toFixed(1)}\nscreenOffset=${screenOffsetX.toFixed(1)}\nscreenMonumentWidth=${screenDrawWidth.toFixed(1)}\nrelativeX=${(relativeX*100).toFixed(1)}%\n\n🖼️ В экспорте:\nexportMonumentWidth=${drawWidth}\nexportOffset=${offsetX}\nscaledX=${scaledX}\n\n✅ Итог: ${element.x.toFixed(1)}px → ${scaledX}px`);
+        }
         
         // Масштабируем fontSize пропорционально изменению размера памятника
         const fontScale = drawWidth / screenDrawWidth;
