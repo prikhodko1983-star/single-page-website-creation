@@ -77,14 +77,6 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import {
   DndContext,
   closestCenter,
   KeyboardSensor,
@@ -216,7 +208,6 @@ export default function Admin() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
-  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
 
   const [monuments, setMonuments] = useState<Monument[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -1027,208 +1018,147 @@ export default function Admin() {
               <p className="text-sm text-muted-foreground">Управление сайтом</p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => navigate('/')} className="hidden sm:flex">
+              <Button variant="outline" onClick={() => navigate('/')}>
                 <Icon name="Home" size={16} className="mr-2" />
                 На сайт
               </Button>
-              <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="hidden sm:flex">
-                <Icon name="Key" size={16} className="mr-2" />
-                Сменить пароль
-              </Button>
-              <Button variant="outline" onClick={logout} className="hidden sm:flex">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Icon name="Key" size={16} className="mr-2" />
+                    Сменить пароль
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Смена логина и пароля</DialogTitle>
+                    <DialogDescription>
+                      Измените данные для входа в админ-панель
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.currentTarget);
+                    const currentUsername = formData.get('current_username') as string;
+                    const currentPassword = formData.get('current_password') as string;
+                    const newUsername = formData.get('new_username') as string;
+                    const newPassword = formData.get('new_password') as string;
+                    
+                    if (!currentUsername || !currentPassword) {
+                      toast({
+                        title: 'Ошибка',
+                        description: 'Введите текущие данные',
+                        variant: 'destructive'
+                      });
+                      return;
+                    }
+                    
+                    if (!newUsername && !newPassword) {
+                      toast({
+                        title: 'Ошибка',
+                        description: 'Введите новый логин или пароль',
+                        variant: 'destructive'
+                      });
+                      return;
+                    }
+                    
+                    try {
+                      const response = await fetch('https://functions.poehali.dev/cf510a11-9eb6-49d2-905f-18c803ab5aa0', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          current_username: currentUsername,
+                          current_password: currentPassword,
+                          new_username: newUsername || undefined,
+                          new_password: newPassword || undefined
+                        })
+                      });
+                      
+                      const data = await response.json();
+                      
+                      if (response.ok) {
+                        toast({
+                          title: '✅ Успешно',
+                          description: 'Данные обновлены. Войдите заново.'
+                        });
+                        setTimeout(() => {
+                          logout();
+                        }, 2000);
+                      } else {
+                        toast({
+                          title: 'Ошибка',
+                          description: data.error || 'Не удалось изменить данные',
+                          variant: 'destructive'
+                        });
+                      }
+                    } catch (error) {
+                      toast({
+                        title: 'Ошибка',
+                        description: 'Не удалось подключиться к серверу',
+                        variant: 'destructive'
+                      });
+                    }
+                  }} className="space-y-4">
+                    <div>
+                      <Label htmlFor="current_username">Текущий логин</Label>
+                      <Input id="current_username" name="current_username" required />
+                    </div>
+                    <div>
+                      <Label htmlFor="current_password">Текущий пароль</Label>
+                      <Input id="current_password" name="current_password" type="password" required />
+                    </div>
+                    <div className="border-t pt-4">
+                      <div className="mb-4">
+                        <Label htmlFor="new_username">Новый логин (необязательно)</Label>
+                        <Input id="new_username" name="new_username" placeholder="Оставьте пустым, чтобы не менять" />
+                      </div>
+                      <div>
+                        <Label htmlFor="new_password">Новый пароль (необязательно)</Label>
+                        <Input id="new_password" name="new_password" type="password" placeholder="Минимум 8 символов" />
+                      </div>
+                    </div>
+                    <Button type="submit" className="w-full">
+                      <Icon name="Save" size={16} className="mr-2" />
+                      Сохранить изменения
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+              <Button variant="outline" onClick={logout}>
                 <Icon name="LogOut" size={16} className="mr-2" />
                 Выйти
               </Button>
-              
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon" className="sm:hidden">
-                    <Icon name="Menu" size={20} />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right">
-                  <SheetHeader>
-                    <SheetTitle className="font-oswald">Меню</SheetTitle>
-                    <SheetDescription>
-                      Навигация по админ-панели
-                    </SheetDescription>
-                  </SheetHeader>
-                  <div className="flex flex-col gap-3 mt-6">
-                    <div className="border-b pb-3 mb-3">
-                      <p className="text-xs font-medium text-muted-foreground mb-2 px-2">Разделы</p>
-                      <Button variant={activeTab === 'overview' ? 'default' : 'ghost'} onClick={() => setActiveTab('overview')} className="w-full justify-start">
-                        <Icon name="LayoutDashboard" size={18} className="mr-2" />
-                        Обзор
-                      </Button>
-                      <Button variant={activeTab === 'shop' ? 'default' : 'ghost'} onClick={() => setActiveTab('shop')} className="w-full justify-start">
-                        <Icon name="ShoppingBag" size={18} className="mr-2" />
-                        Магазин
-                      </Button>
-                      <Button variant={activeTab === 'crosses' ? 'default' : 'ghost'} onClick={() => setActiveTab('crosses')} className="w-full justify-start">
-                        <Icon name="Cross" size={18} className="mr-2" />
-                        Кресты
-                      </Button>
-                      <Button variant={activeTab === 'flowers' ? 'default' : 'ghost'} onClick={() => setActiveTab('flowers')} className="w-full justify-start">
-                        <Icon name="Flower2" size={18} className="mr-2" />
-                        Цветы
-                      </Button>
-                      <Button variant={activeTab === 'gallery' ? 'default' : 'ghost'} onClick={() => setActiveTab('gallery')} className="w-full justify-start">
-                        <Icon name="Images" size={18} className="mr-2" />
-                        Галерея работ
-                      </Button>
-                      <Button variant={activeTab === 'images' ? 'default' : 'ghost'} onClick={() => setActiveTab('images')} className="w-full justify-start">
-                        <Icon name="Image" size={18} className="mr-2" />
-                        Изображения
-                      </Button>
-                    </div>
-                    
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-2 px-2">Настройки</p>
-                      <Button variant="outline" onClick={() => navigate('/')} className="w-full justify-start">
-                        <Icon name="Home" size={18} className="mr-2" />
-                        На сайт
-                      </Button>
-                      <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="w-full justify-start">
-                        <Icon name="Key" size={18} className="mr-2" />
-                        Сменить пароль
-                      </Button>
-                      <Button variant="destructive" onClick={logout} className="w-full justify-start">
-                        <Icon name="LogOut" size={18} className="mr-2" />
-                        Выйти
-                      </Button>
-                    </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
             </div>
           </div>
         </div>
       </div>
 
-      <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Смена логина и пароля</DialogTitle>
-            <DialogDescription>
-              Измените данные для входа в админ-панель
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const currentUsername = formData.get('current_username') as string;
-            const currentPassword = formData.get('current_password') as string;
-            const newUsername = formData.get('new_username') as string;
-            const newPassword = formData.get('new_password') as string;
-            
-            if (!currentUsername || !currentPassword) {
-              toast({
-                title: 'Ошибка',
-                description: 'Введите текущие данные',
-                variant: 'destructive'
-              });
-              return;
-            }
-            
-            if (!newUsername && !newPassword) {
-              toast({
-                title: 'Ошибка',
-                description: 'Введите новый логин или пароль',
-                variant: 'destructive'
-              });
-              return;
-            }
-            
-            try {
-              const response = await fetch('https://functions.poehali.dev/cf510a11-9eb6-49d2-905f-18c803ab5aa0', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  current_username: currentUsername,
-                  current_password: currentPassword,
-                  new_username: newUsername || undefined,
-                  new_password: newPassword || undefined
-                })
-              });
-              
-              const data = await response.json();
-              
-              if (response.ok) {
-                toast({
-                  title: '✅ Успешно',
-                  description: 'Данные обновлены. Войдите заново.'
-                });
-                setIsPasswordDialogOpen(false);
-                setTimeout(() => {
-                  logout();
-                }, 2000);
-              } else {
-                toast({
-                  title: 'Ошибка',
-                  description: data.error || 'Не удалось изменить данные',
-                  variant: 'destructive'
-                });
-              }
-            } catch (error) {
-              toast({
-                title: 'Ошибка',
-                description: 'Не удалось подключиться к серверу',
-                variant: 'destructive'
-              });
-            }
-          }} className="space-y-4">
-            <div>
-              <Label htmlFor="current_username">Текущий логин</Label>
-              <Input id="current_username" name="current_username" required />
-            </div>
-            <div>
-              <Label htmlFor="current_password">Текущий пароль</Label>
-              <Input id="current_password" name="current_password" type="password" required />
-            </div>
-            <div className="border-t pt-4">
-              <div className="mb-4">
-                <Label htmlFor="new_username">Новый логин (необязательно)</Label>
-                <Input id="new_username" name="new_username" placeholder="Оставьте пустым, чтобы не менять" />
-              </div>
-              <div>
-                <Label htmlFor="new_password">Новый пароль (необязательно)</Label>
-                <Input id="new_password" name="new_password" type="password" placeholder="Минимум 8 символов" />
-              </div>
-            </div>
-            <Button type="submit" className="w-full">
-              <Icon name="Save" size={16} className="mr-2" />
-              Сохранить изменения
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
-
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="hidden sm:grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mb-8 sticky top-[73px] z-30 bg-background gap-1">
-            <TabsTrigger value="overview" className="font-oswald text-xs sm:text-sm">
-              <Icon name="LayoutDashboard" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Обзор</span>
+          <TabsList className="grid w-full grid-cols-6 mb-8 sticky top-[73px] z-30 bg-background">
+            <TabsTrigger value="overview" className="font-oswald">
+              <Icon name="LayoutDashboard" size={16} className="mr-2" />
+              Обзор
             </TabsTrigger>
-            <TabsTrigger value="shop" className="font-oswald text-xs sm:text-sm">
-              <Icon name="ShoppingBag" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Магазин</span>
+            <TabsTrigger value="shop" className="font-oswald">
+              <Icon name="ShoppingBag" size={16} className="mr-2" />
+              Магазин
             </TabsTrigger>
-            <TabsTrigger value="crosses" className="font-oswald text-xs sm:text-sm">
-              <Icon name="Cross" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Кресты</span>
+            <TabsTrigger value="crosses" className="font-oswald">
+              <Icon name="Cross" size={16} className="mr-2" />
+              Кресты
             </TabsTrigger>
-            <TabsTrigger value="flowers" className="font-oswald text-xs sm:text-sm">
-              <Icon name="Flower2" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Цветы</span>
+            <TabsTrigger value="flowers" className="font-oswald">
+              <Icon name="Flower2" size={16} className="mr-2" />
+              Цветы
             </TabsTrigger>
-            <TabsTrigger value="gallery" className="font-oswald text-xs sm:text-sm">
-              <Icon name="Images" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Галерея</span>
+            <TabsTrigger value="gallery" className="font-oswald">
+              <Icon name="Images" size={16} className="mr-2" />
+              Галерея работ
             </TabsTrigger>
-            <TabsTrigger value="images" className="font-oswald text-xs sm:text-sm">
-              <Icon name="Image" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Изображения</span>
+            <TabsTrigger value="images" className="font-oswald">
+              <Icon name="Image" size={16} className="mr-2" />
+              Изображения
             </TabsTrigger>
           </TabsList>
 
