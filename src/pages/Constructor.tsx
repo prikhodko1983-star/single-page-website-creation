@@ -1443,12 +1443,9 @@ const Constructor = () => {
             // Рисуем строки с предварительно рассчитанными координатами
             ctx.textBaseline = 'top';
             
-            // Вертикальное центрирование текста
-            const totalTextHeight = allLines.length * lineHeight;
-            const startY = scaledY + (scaledHeight - totalTextHeight) / 2;
-            
+            // Рисуем от верхнего края (контейнер уже отцентрован)
             allLines.forEach((line, index) => {
-              const lineY = Math.round(startY + index * lineHeight);
+              const lineY = Math.round(scaledY + index * lineHeight);
               const lineX = Math.round(linePositions[index].x);
               ctx.fillText(line, lineX, lineY);
             });
@@ -1867,12 +1864,9 @@ const Constructor = () => {
           ctx.shadowOffsetX = 2 * scale;
           ctx.shadowOffsetY = 2 * scale;
           
-          // Вертикальное центрирование текста
-          const totalTextHeight = allLines.length * lineHeight;
-          const startY = scaledY + (scaledHeight - totalTextHeight) / 2;
-          
+          // Рисуем от верхнего края (контейнер уже отцентрован)
           allLines.forEach((line, idx) => {
-            const lineY = Math.round(startY + idx * lineHeight);
+            const lineY = Math.round(scaledY + idx * lineHeight);
             const lineX = Math.round(linePositions[idx].x);
             ctx.fillText(line, lineX, lineY);
           });
