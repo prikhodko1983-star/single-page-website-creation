@@ -1366,7 +1366,7 @@ const Constructor = () => {
             // Поддержка выравнивания текста
             const textAlign = element.textAlign || 'center';
             ctx.textAlign = textAlign;
-            ctx.textBaseline = 'top';
+            ctx.textBaseline = 'hanging';
             
             // Тень для читаемости
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
@@ -1409,10 +1409,9 @@ const Constructor = () => {
               textX = scaledX + scaledWidth;
             }
             
-            // Рисуем каждую строку с небольшой коррекцией (чтобы совпадало с CSS)
-            const yOffset = scaledFontSize * 0.15; // Небольшое смещение вниз
+            // Рисуем каждую строку
             allLines.forEach((line, index) => {
-              ctx.fillText(line, textX, scaledY + yOffset + index * lineHeight);
+              ctx.fillText(line, textX, scaledY + index * lineHeight);
             });
             
             // Сбрасываем тень
@@ -1723,7 +1722,7 @@ const Constructor = () => {
           // Поддержка выравнивания текста
           const textAlign = element.textAlign || 'center';
           ctx.textAlign = textAlign;
-          ctx.textBaseline = 'top';
+          ctx.textBaseline = 'hanging';
           
           // Тень для читаемости
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
@@ -1764,10 +1763,9 @@ const Constructor = () => {
             textX = scaledX + scaledWidth;
           }
           
-          // Рисуем каждую строку с небольшой коррекцией (чтобы совпадало с CSS)
-          const yOffset = scaledFontSize * 0.15; // Небольшое смещение вниз
+          // Рисуем каждую строку
           allLines.forEach((line, idx) => {
-            ctx.fillText(line, textX, scaledY + yOffset + idx * lineHeight);
+            ctx.fillText(line, textX, scaledY + idx * lineHeight);
           });
           
           // Сбрасываем тень
