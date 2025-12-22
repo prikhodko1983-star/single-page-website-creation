@@ -1353,16 +1353,30 @@ const Constructor = () => {
         for (const element of elements) {
           ctx.save();
           
-          // НОВАЯ ЛОГИКА: координаты в процентах относительно памятника
+          // Координаты в процентах относительно памятника
           const relativeX = (element.x - screenOffsetX) / screenDrawWidth;
           const relativeY = (element.y - screenOffsetY) / screenDrawHeight;
           const relativeWidth = element.width / screenDrawWidth;
           const relativeHeight = element.height / screenDrawHeight;
           
-          const scaledX = Math.round(relativeX * drawWidth + offsetX);
-          const scaledY = Math.round(relativeY * drawHeight + offsetY);
-          const scaledWidth = Math.round(relativeWidth * drawWidth);
-          const scaledHeight = Math.round(relativeHeight * drawHeight);
+          // Для текстовых элементов используем центр контейнера
+          let scaledX, scaledY, scaledWidth, scaledHeight;
+          
+          if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
+            const relativeCenterX = (element.x + element.width / 2 - screenOffsetX) / screenDrawWidth;
+            const relativeCenterY = (element.y + element.height / 2 - screenOffsetY) / screenDrawHeight;
+            
+            scaledWidth = Math.round(relativeWidth * drawWidth);
+            scaledHeight = Math.round(relativeHeight * drawHeight);
+            
+            scaledX = Math.round(relativeCenterX * drawWidth + offsetX - scaledWidth / 2);
+            scaledY = Math.round(relativeCenterY * drawHeight + offsetY - scaledHeight / 2);
+          } else {
+            scaledX = Math.round(relativeX * drawWidth + offsetX);
+            scaledY = Math.round(relativeY * drawHeight + offsetY);
+            scaledWidth = Math.round(relativeWidth * drawWidth);
+            scaledHeight = Math.round(relativeHeight * drawHeight);
+          }
           
           if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
             const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
@@ -1748,14 +1762,26 @@ const Constructor = () => {
         const relativeHeight = element.height / screenDrawHeight;
         
         // Применяем проценты к РАЗМЕРУ ПАМЯТНИКА в экспорте
-        const scaledX = Math.round(relativeX * drawWidth + offsetX);
-        const scaledY = Math.round(relativeY * drawHeight + offsetY);
-        const scaledWidth = Math.round(relativeWidth * drawWidth);
-        const scaledHeight = Math.round(relativeHeight * drawHeight);
+        // Для текстовых элементов используем центр контейнера, а не левый край
+        let scaledX, scaledY, scaledWidth, scaledHeight;
         
-        // Диагностика для первого элемента
-        if (element === elements[0]) {
-          alert(`ТРАНСФОРМАЦИЯ:\n\n📱 На экране:\nelement.x=${element.x.toFixed(1)}\nscreenOffset=${screenOffsetX.toFixed(1)}\nscreenMonumentWidth=${screenDrawWidth.toFixed(1)}\nrelativeX=${(relativeX*100).toFixed(1)}%\n\n🖼️ В экспорте:\nexportMonumentWidth=${drawWidth}\nexportOffset=${offsetX}\nscaledX=${scaledX}\n\n✅ Итог: ${element.x.toFixed(1)}px → ${scaledX}px`);
+        if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
+          // Для текста: сохраняем относительную позицию ЦЕНТРА контейнера
+          const relativeCenterX = (element.x + element.width / 2 - screenOffsetX) / screenDrawWidth;
+          const relativeCenterY = (element.y + element.height / 2 - screenOffsetY) / screenDrawHeight;
+          
+          scaledWidth = Math.round(relativeWidth * drawWidth);
+          scaledHeight = Math.round(relativeHeight * drawHeight);
+          
+          // Восстанавливаем левый верхний угол из центра
+          scaledX = Math.round(relativeCenterX * drawWidth + offsetX - scaledWidth / 2);
+          scaledY = Math.round(relativeCenterY * drawHeight + offsetY - scaledHeight / 2);
+        } else {
+          // Для изображений: обычная трансформация
+          scaledX = Math.round(relativeX * drawWidth + offsetX);
+          scaledY = Math.round(relativeY * drawHeight + offsetY);
+          scaledWidth = Math.round(relativeWidth * drawWidth);
+          scaledHeight = Math.round(relativeHeight * drawHeight);
         }
         
         // Масштабируем fontSize пропорционально изменению размера памятника
