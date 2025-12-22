@@ -1705,8 +1705,6 @@ const Constructor = () => {
         'screenRatio': screenRatio.toFixed(3),
         'screenMonument': `${screenMonumentWidth.toFixed(2)}x${screenMonumentHeight.toFixed(2)}`,
         'screenOffset': `${screenOffsetX.toFixed(2)}, ${screenOffsetY.toFixed(2)}`,
-        'exportMonument': `${drawWidth.toFixed(2)}x${drawHeight.toFixed(2)}`,
-        'exportOffset': `${offsetX.toFixed(2)}, ${offsetY.toFixed(2)}`,
         'scale': scale.toFixed(3)
       });
       
