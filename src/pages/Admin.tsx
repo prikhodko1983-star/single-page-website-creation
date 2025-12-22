@@ -1021,54 +1021,24 @@ export default function Admin() {
     <div className="bg-background pb-20">
       <div className="w-full border-b bg-background sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="font-oswald font-bold text-2xl">Панель администратора</h1>
               <p className="text-sm text-muted-foreground">Управление сайтом</p>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => navigate('/')} className="hidden sm:flex">
+            <div className="flex gap-2 flex-wrap">
+              <Button variant="outline" onClick={() => navigate('/')} className="flex-1 sm:flex-none">
                 <Icon name="Home" size={16} className="mr-2" />
                 На сайт
               </Button>
-              <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="hidden sm:flex">
+              <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="flex-1 sm:flex-none">
                 <Icon name="Key" size={16} className="mr-2" />
                 Сменить пароль
               </Button>
-              <Button variant="outline" onClick={logout} className="hidden sm:flex">
+              <Button variant="outline" onClick={logout} className="flex-1 sm:flex-none">
                 <Icon name="LogOut" size={16} className="mr-2" />
                 Выйти
               </Button>
-              
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon" className="sm:hidden">
-                    <Icon name="Menu" size={20} />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right">
-                  <SheetHeader>
-                    <SheetTitle className="font-oswald">Настройки</SheetTitle>
-                    <SheetDescription>
-                      Управление панелью
-                    </SheetDescription>
-                  </SheetHeader>
-                  <div className="flex flex-col gap-2 mt-6">
-                    <Button variant="outline" onClick={() => navigate('/')} className="w-full justify-start">
-                      <Icon name="Home" size={18} className="mr-2" />
-                      На сайт
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="w-full justify-start">
-                      <Icon name="Key" size={18} className="mr-2" />
-                      Сменить пароль
-                    </Button>
-                    <Button variant="destructive" onClick={logout} className="w-full justify-start">
-                      <Icon name="LogOut" size={18} className="mr-2" />
-                      Выйти
-                    </Button>
-                  </div>
-                </SheetContent>
-              </Sheet>
             </div>
           </div>
         </div>
