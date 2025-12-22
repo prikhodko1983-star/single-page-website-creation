@@ -1730,12 +1730,6 @@ const Constructor = () => {
           ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           
-          // Тень для читаемости
-          ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 8 * scale;
-          ctx.shadowOffsetX = 2 * scale;
-          ctx.shadowOffsetY = 2 * scale;
-          
           const lh = element.lineHeight || 1.2;
           const lineHeight = scaledFontSize * lh;
           
@@ -1752,7 +1746,7 @@ const Constructor = () => {
             }
           });
           
-          // Измеряем ширину строк ДО вращения
+          // Измеряем ширину строк ДО вращения (БЕЗ тени, чтобы не влияло на измерения)
           const textAlign = element.textAlign || 'center';
           
           console.log(`📊 Элемент ${element.type}:`, {
@@ -1794,6 +1788,12 @@ const Constructor = () => {
             ctx.rotate(element.rotation * Math.PI / 180);
             ctx.translate(-centerX, -centerY);
           }
+          
+          // Включаем тень только перед рисованием (после всех измерений)
+          ctx.shadowColor = 'rgba(0,0,0,0.8)';
+          ctx.shadowBlur = 8 * scale;
+          ctx.shadowOffsetX = 2 * scale;
+          ctx.shadowOffsetY = 2 * scale;
           
           // Рисуем строки с предварительно рассчитанными координатами
           ctx.textBaseline = 'top';
