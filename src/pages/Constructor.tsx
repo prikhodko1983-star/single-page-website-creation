@@ -1282,6 +1282,9 @@ const Constructor = () => {
     if (!canvasRef.current) return null;
     
     try {
+      // Загружаем шрифты перед экспортом
+      await loadFonts(elements);
+      
       // Превью размер (меньше, чем финальный экспорт)
       const previewWidth = 600;
       const previewHeight = 800;
@@ -1439,6 +1442,30 @@ const Constructor = () => {
     }
   };
 
+  const loadFonts = async (elements: CanvasElement[]): Promise<void> => {
+    const uniqueFonts = new Set<string>();
+    
+    elements.forEach(element => {
+      if (element.fontFamily && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
+        const [fontFamily, fontWeight] = element.fontFamily.split('|');
+        uniqueFonts.add(`${fontFamily}:${fontWeight}`);
+      }
+    });
+    
+    if (uniqueFonts.size === 0) return;
+    
+    const fontPromises = Array.from(uniqueFonts).map(async (fontKey) => {
+      const [family, weight] = fontKey.split(':');
+      try {
+        await document.fonts.load(`${weight} 24px "${family}"`);
+      } catch (error) {
+        console.warn(`Не удалось загрузить шрифт ${family}:`, error);
+      }
+    });
+    
+    await Promise.all(fontPromises);
+  };
+
   const loadImageWithCORS = async (src: string): Promise<HTMLImageElement | null> => {
     if (src.startsWith('data:')) {
       return new Promise((resolve) => {
@@ -1501,6 +1528,9 @@ const Constructor = () => {
         console.error('❌ canvasRef не найден');
         return;
       }
+      
+      // Загружаем шрифты перед экспортом
+      await loadFonts(elements);
       
       // Фиксированный размер экспорта (3:4 пропорции)
       const exportWidth = 1200;

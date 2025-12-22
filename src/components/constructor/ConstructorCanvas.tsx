@@ -164,6 +164,9 @@ export const ConstructorCanvas = ({
                       wordBreak: 'break-word',
                       overflow: 'visible',
                       width: '100%',
+                      display: 'block',
+                      margin: 0,
+                      padding: 0,
                     }}
                   >
                     {element.content}
@@ -213,6 +216,9 @@ export const ConstructorCanvas = ({
                       wordBreak: 'break-word',
                       overflow: 'visible',
                       width: '100%',
+                      display: 'block',
+                      margin: 0,
+                      padding: 0,
                     }}
                   >
                     {element.content}
@@ -260,6 +266,9 @@ export const ConstructorCanvas = ({
                       whiteSpace: 'pre-wrap',
                       overflow: 'visible',
                       width: '100%',
+                      display: 'block',
+                      margin: 0,
+                      padding: 0,
                     }}
                   >
                     {element.content}
@@ -307,6 +316,9 @@ export const ConstructorCanvas = ({
                       whiteSpace: 'pre-wrap',
                       overflow: 'visible',
                       width: '100%',
+                      display: 'block',
+                      margin: 0,
+                      padding: 0,
                     }}
                   >
                     {element.content}
