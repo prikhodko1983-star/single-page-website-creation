@@ -1712,28 +1712,11 @@ const Constructor = () => {
       
       ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
       
-      // Рассчитываем масштаб для элементов
-      const screenRatio = rect.width / rect.height;
-      let screenMonumentWidth = rect.width;
-      let screenMonumentHeight = rect.height;
-      let screenOffsetX = 0;
-      let screenOffsetY = 0;
-      
-      if (imgRatio > screenRatio) {
-        screenMonumentWidth = rect.width;
-        screenMonumentHeight = rect.width / imgRatio;
-        screenOffsetY = (rect.height - screenMonumentHeight) / 2;
-      } else {
-        screenMonumentHeight = rect.height;
-        screenMonumentWidth = rect.height * imgRatio;
-        screenOffsetX = (rect.width - screenMonumentWidth) / 2;
-      }
-      
-      const scale = drawWidth / screenMonumentWidth;
+      // Масштаб: прямое соотношение размеров canvas (экран → экспорт)
+      const scale = exportWidth / rect.width;
       
       console.log('🔍 Параметры (экспорт):', {
         screen: `${rect.width.toFixed(0)}x${rect.height.toFixed(0)}`,
-        screenMonument: `${screenMonumentWidth.toFixed(0)}x${screenMonumentHeight.toFixed(0)} offset(${screenOffsetX.toFixed(0)},${screenOffsetY.toFixed(0)})`,
         export: `${exportWidth}x${exportHeight}`,
         exportMonument: `${drawWidth.toFixed(0)}x${drawHeight.toFixed(0)} offset(${offsetX.toFixed(0)},${offsetY.toFixed(0)})`,
         scale: scale.toFixed(3)
@@ -1743,8 +1726,9 @@ const Constructor = () => {
       for (const element of elements) {
         ctx.save();
         
-        const scaledX = (element.x - screenOffsetX) * scale + offsetX;
-        const scaledY = (element.y - screenOffsetY) * scale + offsetY;
+        // Координаты элементов уже в системе canvas, просто масштабируем
+        const scaledX = element.x * scale;
+        const scaledY = element.y * scale;
         const scaledWidth = element.width * scale;
         const scaledHeight = element.height * scale;
         
