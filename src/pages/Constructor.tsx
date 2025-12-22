@@ -1300,11 +1300,6 @@ const Constructor = () => {
       
       const rect = canvasRef.current.getBoundingClientRect();
       
-      // Учитываем border-4 (4px с каждой стороны) из ConstructorCanvas
-      const borderWidth = 4;
-      const actualWidth = rect.width - borderWidth * 2;
-      const actualHeight = rect.height - borderWidth * 2;
-      
       // Черный фон
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, previewWidth, previewHeight);
@@ -1334,21 +1329,21 @@ const Constructor = () => {
         
         ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
         
-        // Рассчитываем масштаб для элементов используя РЕАЛЬНУЮ рабочую область (без border)
-        const screenRatio = actualWidth / actualHeight;
-        let screenMonumentWidth = actualWidth;
-        let screenMonumentHeight = actualHeight;
-        let screenOffsetX = borderWidth; // offset начинается после border
-        let screenOffsetY = borderWidth;
+        // Рассчитываем масштаб для элементов
+        const screenRatio = rect.width / rect.height;
+        let screenMonumentWidth = rect.width;
+        let screenMonumentHeight = rect.height;
+        let screenOffsetX = 0;
+        let screenOffsetY = 0;
         
         if (imgRatio > screenRatio) {
-          screenMonumentWidth = actualWidth;
-          screenMonumentHeight = actualWidth / imgRatio;
-          screenOffsetY = borderWidth + (actualHeight - screenMonumentHeight) / 2;
+          screenMonumentWidth = rect.width;
+          screenMonumentHeight = rect.width / imgRatio;
+          screenOffsetY = (rect.height - screenMonumentHeight) / 2;
         } else {
-          screenMonumentHeight = actualHeight;
-          screenMonumentWidth = actualHeight * imgRatio;
-          screenOffsetX = borderWidth + (actualWidth - screenMonumentWidth) / 2;
+          screenMonumentHeight = rect.height;
+          screenMonumentWidth = rect.height * imgRatio;
+          screenOffsetX = (rect.width - screenMonumentWidth) / 2;
         }
         
         const scale = drawWidth / screenMonumentWidth;
@@ -1648,11 +1643,6 @@ const Constructor = () => {
       // Получаем реальные размеры canvas на экране
       const rect = canvasRef.current.getBoundingClientRect();
       
-      // Учитываем border-4 (4px с каждой стороны) из ConstructorCanvas
-      const borderWidth = 4;
-      const actualWidth = rect.width - borderWidth * 2;
-      const actualHeight = rect.height - borderWidth * 2;
-      
       // Экспорт с увеличенным разрешением (3:4 пропорции)
       const exportWidth = 1200;
       const exportHeight = 1600;
@@ -1712,21 +1702,21 @@ const Constructor = () => {
       
       ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
       
-      // Рассчитываем масштаб для элементов используя РЕАЛЬНУЮ рабочую область (без border)
-      const screenRatio = actualWidth / actualHeight;
-      let screenMonumentWidth = actualWidth;
-      let screenMonumentHeight = actualHeight;
-      let screenOffsetX = borderWidth; // offset начинается после border
-      let screenOffsetY = borderWidth;
+      // Рассчитываем масштаб для элементов
+      const screenRatio = rect.width / rect.height;
+      let screenMonumentWidth = rect.width;
+      let screenMonumentHeight = rect.height;
+      let screenOffsetX = 0;
+      let screenOffsetY = 0;
       
       if (imgRatio > screenRatio) {
-        screenMonumentWidth = actualWidth;
-        screenMonumentHeight = actualWidth / imgRatio;
-        screenOffsetY = borderWidth + (actualHeight - screenMonumentHeight) / 2;
+        screenMonumentWidth = rect.width;
+        screenMonumentHeight = rect.width / imgRatio;
+        screenOffsetY = (rect.height - screenMonumentHeight) / 2;
       } else {
-        screenMonumentHeight = actualHeight;
-        screenMonumentWidth = actualHeight * imgRatio;
-        screenOffsetX = borderWidth + (actualWidth - screenMonumentWidth) / 2;
+        screenMonumentHeight = rect.height;
+        screenMonumentWidth = rect.height * imgRatio;
+        screenOffsetX = (rect.width - screenMonumentWidth) / 2;
       }
       
       const scale = drawWidth / screenMonumentWidth;
