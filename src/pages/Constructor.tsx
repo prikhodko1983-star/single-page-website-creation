@@ -1364,24 +1364,11 @@ const Constructor = () => {
             ctx.fillStyle = element.color || '#FFFFFF';
             
             // Поддержка выравнивания текста
-            const textAlign = element.textAlign || 'center';
-            ctx.textAlign = textAlign;
-            ctx.textBaseline = 'top';
-            
             // Тень для читаемости
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
             ctx.shadowBlur = 4 * scale;
             ctx.shadowOffsetX = 2 * scale;
             ctx.shadowOffsetY = 2 * scale;
-            
-            // Применяем вращение если есть
-            if (element.rotation) {
-              const centerX = scaledX + scaledWidth / 2;
-              const centerY = scaledY + scaledHeight / 2;
-              ctx.translate(centerX, centerY);
-              ctx.rotate(element.rotation * Math.PI / 180);
-              ctx.translate(-centerX, -centerY);
-            }
             
             // Поддержка многострочного текста с автопереносом
             const content = element.content || '';
@@ -1401,17 +1388,33 @@ const Constructor = () => {
               }
             });
             
-            // Вычисляем X координату в зависимости от выравнивания
-            let textX = scaledX;
-            if (textAlign === 'center') {
-              textX = scaledX + scaledWidth / 2;
-            } else if (textAlign === 'right') {
-              textX = scaledX + scaledWidth;
+            // Применяем вращение если есть
+            if (element.rotation) {
+              const centerX = scaledX + scaledWidth / 2;
+              const centerY = scaledY + scaledHeight / 2;
+              ctx.translate(centerX, centerY);
+              ctx.rotate(element.rotation * Math.PI / 180);
+              ctx.translate(-centerX, -centerY);
             }
             
-            // Рисуем каждую строку
+            // Рисуем строки БЕЗ ctx.textAlign (вручную рассчитываем X)
+            const textAlign = element.textAlign || 'center';
+            ctx.textBaseline = 'top';
+            
             allLines.forEach((line, index) => {
-              ctx.fillText(line, textX, scaledY + index * lineHeight);
+              const lineY = scaledY + index * lineHeight;
+              
+              if (textAlign === 'center') {
+                const lineWidth = ctx.measureText(line).width;
+                const lineX = scaledX + (scaledWidth - lineWidth) / 2;
+                ctx.fillText(line, lineX, lineY);
+              } else if (textAlign === 'right') {
+                const lineWidth = ctx.measureText(line).width;
+                const lineX = scaledX + scaledWidth - lineWidth;
+                ctx.fillText(line, lineX, lineY);
+              } else {
+                ctx.fillText(line, scaledX, lineY);
+              }
             });
             
             // Сбрасываем тень
@@ -1719,11 +1722,6 @@ const Constructor = () => {
           ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           
-          // Поддержка выравнивания текста
-          const textAlign = element.textAlign || 'center';
-          ctx.textAlign = textAlign;
-          ctx.textBaseline = 'top';
-          
           // Тень для читаемости
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
           ctx.shadowBlur = 8 * scale;
@@ -1732,15 +1730,6 @@ const Constructor = () => {
           
           const lh = element.lineHeight || 1.2;
           const lineHeight = scaledFontSize * lh;
-          
-          // Применяем вращение если есть
-          if (element.rotation) {
-            const centerX = scaledX + scaledWidth / 2;
-            const centerY = scaledY + scaledHeight / 2;
-            ctx.translate(centerX, centerY);
-            ctx.rotate(element.rotation * Math.PI / 180);
-            ctx.translate(-centerX, -centerY);
-          }
           
           // Обрабатываем многострочный текст с переносами
           const paragraphs = element.content?.split('\n') || [];
@@ -1755,17 +1744,33 @@ const Constructor = () => {
             }
           });
           
-          // Вычисляем X координату в зависимости от выравнивания
-          let textX = scaledX;
-          if (textAlign === 'center') {
-            textX = scaledX + scaledWidth / 2;
-          } else if (textAlign === 'right') {
-            textX = scaledX + scaledWidth;
+          // Применяем вращение если есть
+          if (element.rotation) {
+            const centerX = scaledX + scaledWidth / 2;
+            const centerY = scaledY + scaledHeight / 2;
+            ctx.translate(centerX, centerY);
+            ctx.rotate(element.rotation * Math.PI / 180);
+            ctx.translate(-centerX, -centerY);
           }
           
-          // Рисуем каждую строку
+          // Рисуем строки БЕЗ ctx.textAlign (вручную рассчитываем X)
+          const textAlign = element.textAlign || 'center';
+          ctx.textBaseline = 'top';
+          
           allLines.forEach((line, idx) => {
-            ctx.fillText(line, textX, scaledY + idx * lineHeight);
+            const lineY = scaledY + idx * lineHeight;
+            
+            if (textAlign === 'center') {
+              const lineWidth = ctx.measureText(line).width;
+              const lineX = scaledX + (scaledWidth - lineWidth) / 2;
+              ctx.fillText(line, lineX, lineY);
+            } else if (textAlign === 'right') {
+              const lineWidth = ctx.measureText(line).width;
+              const lineX = scaledX + scaledWidth - lineWidth;
+              ctx.fillText(line, lineX, lineY);
+            } else {
+              ctx.fillText(line, scaledX, lineY);
+            }
           });
           
           // Сбрасываем тень
