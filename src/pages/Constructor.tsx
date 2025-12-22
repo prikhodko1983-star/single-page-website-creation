@@ -1436,12 +1436,63 @@ const Constructor = () => {
                   ctx.translate(-centerX, -centerY);
                 }
                 
-                if (element.flipHorizontal) {
-                  ctx.translate(scaledX + scaledWidth, scaledY);
-                  ctx.scale(-1, 1);
-                  ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+                // Для НЕ-фото применяем object-contain
+                if (element.type === 'photo') {
+                  // Фото: object-cover (заполняем, обрезаем)
+                  const imgRatio = img.width / img.height;
+                  const boxRatio = scaledWidth / scaledHeight;
+                  
+                  let drawW = scaledWidth;
+                  let drawH = scaledHeight;
+                  let drawX = scaledX;
+                  let drawY = scaledY;
+                  
+                  if (imgRatio > boxRatio) {
+                    drawW = scaledHeight * imgRatio;
+                    drawX = scaledX - (drawW - scaledWidth) / 2;
+                  } else {
+                    drawH = scaledWidth / imgRatio;
+                    drawY = scaledY - (drawH - scaledHeight) / 2;
+                  }
+                  
+                  ctx.save();
+                  ctx.rect(scaledX, scaledY, scaledWidth, scaledHeight);
+                  ctx.clip();
+                  
+                  if (element.flipHorizontal) {
+                    ctx.translate(drawX + drawW, drawY);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(img, 0, 0, drawW, drawH);
+                  } else {
+                    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                  }
+                  
+                  ctx.restore();
                 } else {
-                  ctx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
+                  // Крест, цветы, изображения: object-contain (вписываем, сохраняем пропорции)
+                  const imgRatio = img.width / img.height;
+                  const boxRatio = scaledWidth / scaledHeight;
+                  
+                  let drawW = scaledWidth;
+                  let drawH = scaledHeight;
+                  let drawX = scaledX;
+                  let drawY = scaledY;
+                  
+                  if (imgRatio > boxRatio) {
+                    drawH = scaledWidth / imgRatio;
+                    drawY = scaledY + (scaledHeight - drawH) / 2;
+                  } else {
+                    drawW = scaledHeight * imgRatio;
+                    drawX = scaledX + (scaledWidth - drawW) / 2;
+                  }
+                  
+                  if (element.flipHorizontal) {
+                    ctx.translate(drawX + drawW, drawY);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(img, 0, 0, drawW, drawH);
+                  } else {
+                    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                  }
                 }
               }
             }
@@ -1741,12 +1792,67 @@ const Constructor = () => {
                 ctx.translate(-centerX, -centerY);
               }
               
-              if (element.flipHorizontal) {
-                ctx.translate(scaledX + scaledWidth, scaledY);
-                ctx.scale(-1, 1);
-                ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+              // Для НЕ-фото применяем object-contain
+              if (element.type === 'photo') {
+                // Фото: object-cover (заполняем, обрезаем)
+                const imgRatio = img.width / img.height;
+                const boxRatio = scaledWidth / scaledHeight;
+                
+                let drawW = scaledWidth;
+                let drawH = scaledHeight;
+                let drawX = scaledX;
+                let drawY = scaledY;
+                
+                if (imgRatio > boxRatio) {
+                  // Изображение шире - обрезаем по бокам
+                  drawW = scaledHeight * imgRatio;
+                  drawX = scaledX - (drawW - scaledWidth) / 2;
+                } else {
+                  // Изображение выше - обрезаем сверху/снизу
+                  drawH = scaledWidth / imgRatio;
+                  drawY = scaledY - (drawH - scaledHeight) / 2;
+                }
+                
+                ctx.save();
+                ctx.rect(scaledX, scaledY, scaledWidth, scaledHeight);
+                ctx.clip();
+                
+                if (element.flipHorizontal) {
+                  ctx.translate(drawX + drawW, drawY);
+                  ctx.scale(-1, 1);
+                  ctx.drawImage(img, 0, 0, drawW, drawH);
+                } else {
+                  ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                }
+                
+                ctx.restore();
               } else {
-                ctx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
+                // Крест, цветы, изображения: object-contain (вписываем, сохраняем пропорции)
+                const imgRatio = img.width / img.height;
+                const boxRatio = scaledWidth / scaledHeight;
+                
+                let drawW = scaledWidth;
+                let drawH = scaledHeight;
+                let drawX = scaledX;
+                let drawY = scaledY;
+                
+                if (imgRatio > boxRatio) {
+                  // Изображение шире - вписываем по ширине
+                  drawH = scaledWidth / imgRatio;
+                  drawY = scaledY + (scaledHeight - drawH) / 2;
+                } else {
+                  // Изображение выше - вписываем по высоте
+                  drawW = scaledHeight * imgRatio;
+                  drawX = scaledX + (scaledWidth - drawW) / 2;
+                }
+                
+                if (element.flipHorizontal) {
+                  ctx.translate(drawX + drawW, drawY);
+                  ctx.scale(-1, 1);
+                  ctx.drawImage(img, 0, 0, drawW, drawH);
+                } else {
+                  ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                }
               }
             }
           }
