@@ -1352,15 +1352,6 @@ const Constructor = () => {
           const scaledWidth = element.width * scale;
           const scaledHeight = element.height * scale;
           
-          // Применяем вращение относительно центра элемента
-          if (element.rotation) {
-            const centerX = scaledX + scaledWidth / 2;
-            const centerY = scaledY + scaledHeight / 2;
-            ctx.translate(centerX, centerY);
-            ctx.rotate((element.rotation || 0) * Math.PI / 180);
-            ctx.translate(-centerX, -centerY);
-          }
-          
           if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
             const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
             const scaledFontSize = (element.fontSize || 24) * scale;
@@ -1375,8 +1366,17 @@ const Constructor = () => {
             // Тень для читаемости
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
             ctx.shadowBlur = 4 * scale;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
+            ctx.shadowOffsetX = 2 * scale;
+            ctx.shadowOffsetY = 2 * scale;
+            
+            // Применяем вращение если есть
+            if (element.rotation) {
+              const centerX = scaledX + scaledWidth / 2;
+              const centerY = scaledY + scaledHeight / 2;
+              ctx.translate(centerX, centerY);
+              ctx.rotate(element.rotation * Math.PI / 180);
+              ctx.translate(-centerX, -centerY);
+            }
             
             // Поддержка многострочного текста
             const content = element.content || '';
@@ -1400,13 +1400,22 @@ const Constructor = () => {
             // Сбрасываем тень
             ctx.shadowColor = 'transparent';
             ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
             
           } else if (element.type === 'image' || element.type === 'cross' || element.type === 'flower' || element.type === 'photo') {
             const imgSrc = (element.screenMode && element.processedSrc) ? element.processedSrc : element.src;
             if (imgSrc) {
               const img = await loadImageWithCORS(imgSrc);
               if (img) {
-                ctx.save();
+                // Применяем вращение если есть
+                if (element.rotation) {
+                  const centerX = scaledX + scaledWidth / 2;
+                  const centerY = scaledY + scaledHeight / 2;
+                  ctx.translate(centerX, centerY);
+                  ctx.rotate(element.rotation * Math.PI / 180);
+                  ctx.translate(-centerX, -centerY);
+                }
                 
                 if (element.flipHorizontal) {
                   ctx.translate(scaledX + scaledWidth, scaledY);
@@ -1415,8 +1424,6 @@ const Constructor = () => {
                 } else {
                   ctx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
                 }
-                
-                ctx.restore();
               }
             }
           }
@@ -1590,13 +1597,6 @@ const Constructor = () => {
         const scaledWidth = element.width * monumentScale;
         const scaledHeight = element.height * monumentScale;
         
-        const centerX = scaledX + scaledWidth / 2;
-        const centerY = scaledY + scaledHeight / 2;
-        
-        ctx.translate(centerX, centerY);
-        ctx.rotate((element.rotation || 0) * Math.PI / 180);
-        ctx.translate(-centerX, -centerY);
-        
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
           const scaledFontSize = (element.fontSize || 24) * monumentScale;
@@ -1616,6 +1616,15 @@ const Constructor = () => {
           
           const lines = element.content?.split('\n') || [];
           const lineHeight = scaledFontSize * (element.lineHeight || 1.2);
+          
+          // Применяем вращение если есть
+          if (element.rotation) {
+            const centerX = scaledX + scaledWidth / 2;
+            const centerY = scaledY + scaledHeight / 2;
+            ctx.translate(centerX, centerY);
+            ctx.rotate(element.rotation * Math.PI / 180);
+            ctx.translate(-centerX, -centerY);
+          }
           
           // Вычисляем X координату в зависимости от выравнивания
           let textX = scaledX;
@@ -1681,13 +1690,20 @@ const Constructor = () => {
               }
             }
             
+            // Применяем вращение если есть
+            if (element.rotation) {
+              const centerX = scaledX + scaledWidth / 2;
+              const centerY = scaledY + scaledHeight / 2;
+              ctx.translate(centerX, centerY);
+              ctx.rotate(element.rotation * Math.PI / 180);
+              ctx.translate(-centerX, -centerY);
+            }
+            
             // Применяем отзеркаливание если нужно
             if (element.flipHorizontal) {
-              ctx.save();
               ctx.translate(drawX + drawWidth, drawY);
               ctx.scale(-1, 1);
               ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
-              ctx.restore();
             } else {
               ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
             }
