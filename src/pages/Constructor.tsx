@@ -1655,6 +1655,14 @@ const Constructor = () => {
       // Масштаб: от реального размера памятника на экране к размеру в экспорте
       const scale = drawWidth / screenMonumentWidth;
       
+      console.log('🔍 Экспорт DEBUG:');
+      console.log('Canvas на экране:', rect.width, 'x', rect.height);
+      console.log('Памятник на экране:', screenMonumentWidth, 'x', screenMonumentHeight, 'offset:', screenOffsetX, screenOffsetY);
+      console.log('Экспорт canvas:', exportWidth, 'x', exportHeight);
+      console.log('Памятник в экспорте:', drawWidth, 'x', drawHeight, 'offset:', offsetX, offsetY);
+      console.log('Масштаб:', scale);
+      console.log('Соотношения - imgRatio:', imgRatio, 'screenRatio:', screenRatio, 'canvasRatio:', canvasRatio);
+      
       for (const element of elements) {
         ctx.save();
         
