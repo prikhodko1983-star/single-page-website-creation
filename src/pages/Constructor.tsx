@@ -1573,7 +1573,10 @@ const Constructor = () => {
       // Загружаем шрифты перед экспортом
       await loadFonts(elements);
       
-      // Фиксированный размер экспорта (3:4 пропорции)
+      // Получаем реальные размеры canvas на экране
+      const rect = canvasRef.current.getBoundingClientRect();
+      
+      // Экспорт в том же соотношении, что и экран (3:4)
       const exportWidth = 1200;
       const exportHeight = 1600;
       
@@ -1584,8 +1587,9 @@ const Constructor = () => {
       const ctx = canvasElement.getContext('2d');
       if (!ctx) return;
       
-      // Получаем реальные размеры canvas на экране
-      const rect = canvasRef.current.getBoundingClientRect();
+      // Простой масштаб: размер экспорта / размер экрана
+      const scaleX = exportWidth / rect.width;
+      const scaleY = exportHeight / rect.height;
       
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, exportWidth, exportHeight);
@@ -1614,63 +1618,39 @@ const Constructor = () => {
       
       console.log('✅ Изображение памятника загружено');
       
-      // Рассчитываем object-contain для экспорта
+      // Рисуем памятник с тем же object-contain, масштабируя canvas
       const imgRatio = monumentImg.width / monumentImg.height;
       const canvasRatio = exportWidth / exportHeight;
       
-      let monumentDrawWidth = exportWidth;
-      let monumentDrawHeight = exportHeight;
-      let monumentOffsetX = 0;
-      let monumentOffsetY = 0;
+      let drawWidth = exportWidth;
+      let drawHeight = exportHeight;
+      let offsetX = 0;
+      let offsetY = 0;
       
       if (imgRatio > canvasRatio) {
-        monumentDrawWidth = exportWidth;
-        monumentDrawHeight = exportWidth / imgRatio;
-        monumentOffsetX = 0;
-        monumentOffsetY = (exportHeight - monumentDrawHeight) / 2;
+        drawWidth = exportWidth;
+        drawHeight = exportWidth / imgRatio;
+        offsetY = (exportHeight - drawHeight) / 2;
       } else {
-        monumentDrawHeight = exportHeight;
-        monumentDrawWidth = exportHeight * imgRatio;
-        monumentOffsetX = (exportWidth - monumentDrawWidth) / 2;
-        monumentOffsetY = 0;
+        drawHeight = exportHeight;
+        drawWidth = exportHeight * imgRatio;
+        offsetX = (exportWidth - drawWidth) / 2;
       }
       
-      // Рассчитываем object-contain для экрана (чтобы понять реальные размеры)
-      const screenRatio = rect.width / rect.height;
-      let screenMonumentWidth = rect.width;
-      let screenMonumentHeight = rect.height;
-      let screenMonumentOffsetX = 0;
-      let screenMonumentOffsetY = 0;
-      
-      if (imgRatio > screenRatio) {
-        screenMonumentWidth = rect.width;
-        screenMonumentHeight = rect.width / imgRatio;
-        screenMonumentOffsetX = 0;
-        screenMonumentOffsetY = (rect.height - screenMonumentHeight) / 2;
-      } else {
-        screenMonumentHeight = rect.height;
-        screenMonumentWidth = rect.height * imgRatio;
-        screenMonumentOffsetX = (rect.width - screenMonumentWidth) / 2;
-        screenMonumentOffsetY = 0;
-      }
-      
-      ctx.drawImage(monumentImg, monumentOffsetX, monumentOffsetY, monumentDrawWidth, monumentDrawHeight);
-      
-      // Единый масштаб от реальных размеров памятника на экране
-      const monumentScale = monumentDrawWidth / screenMonumentWidth;
+      ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
       
       for (const element of elements) {
         ctx.save();
         
-        // Масштабируем позицию с учетом offset на экране и на экспорте
-        const scaledX = (element.x - screenMonumentOffsetX) * monumentScale + monumentOffsetX;
-        const scaledY = (element.y - screenMonumentOffsetY) * monumentScale + monumentOffsetY;
-        const scaledWidth = element.width * monumentScale;
-        const scaledHeight = element.height * monumentScale;
+        // Масштабируем позицию и размеры элементов
+        const scaledX = element.x * scaleX;
+        const scaledY = element.y * scaleY;
+        const scaledWidth = element.width * scaleX;
+        const scaledHeight = element.height * scaleY;
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
-          const scaledFontSize = (element.fontSize || 24) * monumentScale;
+          const scaledFontSize = (element.fontSize || 24) * scaleX;
           ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           
@@ -1681,9 +1661,9 @@ const Constructor = () => {
           
           // Тень для читаемости
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 8 * monumentScale;
-          ctx.shadowOffsetX = 2 * monumentScale;
-          ctx.shadowOffsetY = 2 * monumentScale;
+          ctx.shadowBlur = 8 * scaleX;
+          ctx.shadowOffsetX = 2 * scaleX;
+          ctx.shadowOffsetY = 2 * scaleX;
           
           const lh = element.lineHeight || 1.2;
           const lineHeight = scaledFontSize * lh;
