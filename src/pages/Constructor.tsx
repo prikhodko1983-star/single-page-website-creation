@@ -1745,6 +1745,34 @@ const Constructor = () => {
           if (imgSrc) {
             const img = await loadImageWithCORS(imgSrc);
             if (img) {
+              // Фото использует object-cover (как на экране), остальное - просто рисуем
+              const useObjectCover = element.type === 'photo';
+              
+              let drawX = scaledX;
+              let drawY = scaledY;
+              let drawW = scaledWidth;
+              let drawH = scaledHeight;
+              
+              if (useObjectCover) {
+                // object-cover: заполняем контейнер, обрезая лишнее (как CSS)
+                const imgRatio = img.width / img.height;
+                const boxRatio = scaledWidth / scaledHeight;
+                
+                if (imgRatio > boxRatio) {
+                  // Изображение шире - обрезаем по бокам
+                  drawW = scaledHeight * imgRatio;
+                  drawH = scaledHeight;
+                  drawX = scaledX - (drawW - scaledWidth) / 2;
+                  drawY = scaledY;
+                } else {
+                  // Изображение выше - обрезаем сверху/снизу
+                  drawW = scaledWidth;
+                  drawH = scaledWidth / imgRatio;
+                  drawX = scaledX;
+                  drawY = scaledY - (drawH - scaledHeight) / 2;
+                }
+              }
+              
               // Применяем вращение если есть
               if (element.rotation) {
                 const centerX = scaledX + scaledWidth / 2;
@@ -1756,11 +1784,11 @@ const Constructor = () => {
               
               // Применяем отзеркаливание если нужно
               if (element.flipHorizontal) {
-                ctx.translate(scaledX + scaledWidth, scaledY);
+                ctx.translate(drawX + drawW, drawY);
                 ctx.scale(-1, 1);
-                ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+                ctx.drawImage(img, 0, 0, drawW, drawH);
               } else {
-                ctx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
+                ctx.drawImage(img, drawX, drawY, drawW, drawH);
               }
             }
           }
