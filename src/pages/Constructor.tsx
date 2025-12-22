@@ -1287,29 +1287,9 @@ const Constructor = () => {
       // Загружаем шрифты перед экспортом
       await loadFonts(elements);
       
-      const rect = canvasRef.current.getBoundingClientRect();
-      
-      // Загружаем изображение памятника
-      const monumentImg = await loadImageWithCORS(monumentImage);
-      
-      if (!monumentImg) return null;
-      
-      // Превью размер — пропорционально памятнику, макс 800px по длинной стороне
-      const maxSize = 800;
-      let previewWidth = monumentImg.width;
-      let previewHeight = monumentImg.height;
-      
-      if (previewWidth > previewHeight) {
-        if (previewWidth > maxSize) {
-          previewHeight = (maxSize / previewWidth) * previewHeight;
-          previewWidth = maxSize;
-        }
-      } else {
-        if (previewHeight > maxSize) {
-          previewWidth = (maxSize / previewHeight) * previewWidth;
-          previewHeight = maxSize;
-        }
-      }
+      // Превью размер (меньше, чем финальный экспорт)
+      const previewWidth = 600;
+      const previewHeight = 800;
       
       const canvas = document.createElement('canvas');
       canvas.width = previewWidth;
@@ -1318,51 +1298,79 @@ const Constructor = () => {
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
       
-      // Рисуем памятник на весь canvas
-      ctx.drawImage(monumentImg, 0, 0, previewWidth, previewHeight);
+      const rect = canvasRef.current.getBoundingClientRect();
       
-      // Рассчитываем масштаб для элементов
-      const imgRatio = monumentImg.width / monumentImg.height;
-      const screenRatio = rect.width / rect.height;
+      // Черный фон
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, previewWidth, previewHeight);
       
-      let screenMonumentWidth = rect.width;
-      let screenMonumentHeight = rect.height;
-      let screenOffsetX = 0;
-      let screenOffsetY = 0;
+      // Загружаем изображение памятника
+      const monumentImg = await loadImageWithCORS(monumentImage);
       
-      if (imgRatio > screenRatio) {
-        screenMonumentWidth = rect.width;
-        screenMonumentHeight = rect.width / imgRatio;
-        screenOffsetY = (rect.height - screenMonumentHeight) / 2;
-      } else {
-        screenMonumentHeight = rect.height;
-        screenMonumentWidth = rect.height * imgRatio;
-        screenOffsetX = (rect.width - screenMonumentWidth) / 2;
-      }
-      
-      const scale = previewWidth / screenMonumentWidth;
-      
-      console.log('🔍 Параметры масштабирования (превью):', {
-        'rect (screen canvas)': `${rect.width.toFixed(2)}x${rect.height.toFixed(2)}`,
-        'previewCanvas': `${previewWidth}x${previewHeight}`,
-        'monumentImg': `${monumentImg.width}x${monumentImg.height}`,
-        'imgRatio': imgRatio.toFixed(3),
-        'screenRatio': screenRatio.toFixed(3),
-        'screenMonument': `${screenMonumentWidth.toFixed(2)}x${screenMonumentHeight.toFixed(2)}`,
-        'screenOffset': `${screenOffsetX.toFixed(2)}, ${screenOffsetY.toFixed(2)}`,
-        'scale': scale.toFixed(3)
-      });
-      
-      // Рисуем элементы
-      for (const element of elements) {
-        ctx.save();
+      if (monumentImg) {
+        // Рассчитываем object-contain
+        const imgRatio = monumentImg.width / monumentImg.height;
+        const canvasRatio = previewWidth / previewHeight;
         
-        const scaledX = (element.x - screenOffsetX) * scale;
-        const scaledY = (element.y - screenOffsetY) * scale;
-        const scaledWidth = element.width * scale;
-        const scaledHeight = element.height * scale;
+        let drawWidth = previewWidth;
+        let drawHeight = previewHeight;
+        let offsetX = 0;
+        let offsetY = 0;
         
-        if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
+        if (imgRatio > canvasRatio) {
+          drawWidth = previewWidth;
+          drawHeight = previewWidth / imgRatio;
+          offsetY = (previewHeight - drawHeight) / 2;
+        } else {
+          drawHeight = previewHeight;
+          drawWidth = previewHeight * imgRatio;
+          offsetX = (previewWidth - drawWidth) / 2;
+        }
+        
+        ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
+        
+        // Рассчитываем масштаб для элементов
+        const screenRatio = rect.width / rect.height;
+        let screenMonumentWidth = rect.width;
+        let screenMonumentHeight = rect.height;
+        let screenOffsetX = 0;
+        let screenOffsetY = 0;
+        
+        if (imgRatio > screenRatio) {
+          screenMonumentWidth = rect.width;
+          screenMonumentHeight = rect.width / imgRatio;
+          screenOffsetY = (rect.height - screenMonumentHeight) / 2;
+        } else {
+          screenMonumentHeight = rect.height;
+          screenMonumentWidth = rect.height * imgRatio;
+          screenOffsetX = (rect.width - screenMonumentWidth) / 2;
+        }
+        
+        const scale = drawWidth / screenMonumentWidth;
+        
+        console.log('🔍 Параметры масштабирования (превью):', {
+          'rect (screen canvas)': `${rect.width.toFixed(2)}x${rect.height.toFixed(2)}`,
+          'previewCanvas': `${previewWidth}x${previewHeight}`,
+          'monumentImg': `${monumentImg.width}x${monumentImg.height}`,
+          'imgRatio': imgRatio.toFixed(3),
+          'screenRatio': screenRatio.toFixed(3),
+          'screenMonument': `${screenMonumentWidth.toFixed(2)}x${screenMonumentHeight.toFixed(2)}`,
+          'screenOffset': `${screenOffsetX.toFixed(2)}, ${screenOffsetY.toFixed(2)}`,
+          'previewMonument': `${drawWidth.toFixed(2)}x${drawHeight.toFixed(2)}`,
+          'previewOffset': `${offsetX.toFixed(2)}, ${offsetY.toFixed(2)}`,
+          'scale': scale.toFixed(3)
+        });
+        
+        // Рисуем элементы
+        for (const element of elements) {
+          ctx.save();
+          
+          const scaledX = (element.x - screenOffsetX) * scale + offsetX;
+          const scaledY = (element.y - screenOffsetY) * scale + offsetY;
+          const scaledWidth = element.width * scale;
+          const scaledHeight = element.height * scale;
+          
+          if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
             const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
             const scaledFontSize = (element.fontSize || 24) * scale;
             const fontStyle = element.italic ? 'italic' : 'normal';
@@ -1443,83 +1451,84 @@ const Constructor = () => {
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
             
-        } else if (element.type === 'image' || element.type === 'cross' || element.type === 'flower' || element.type === 'photo') {
-          const imgSrc = (element.screenMode && element.processedSrc) ? element.processedSrc : element.src;
-          if (imgSrc) {
-            const img = await loadImageWithCORS(imgSrc);
-            if (img) {
-              // Применяем вращение если есть
-              if (element.rotation) {
-                const centerX = scaledX + scaledWidth / 2;
-                const centerY = scaledY + scaledHeight / 2;
-                ctx.translate(centerX, centerY);
-                ctx.rotate(element.rotation * Math.PI / 180);
-                ctx.translate(-centerX, -centerY);
-              }
-              
-              // Для НЕ-фото применяем object-contain
-              if (element.type === 'photo') {
-                // Фото: object-cover (заполняем, обрезаем)
-                const imgRatio = img.width / img.height;
-                const boxRatio = scaledWidth / scaledHeight;
-                
-                let drawW = scaledWidth;
-                let drawH = scaledHeight;
-                let drawX = scaledX;
-                let drawY = scaledY;
-                
-                if (imgRatio > boxRatio) {
-                  drawW = scaledHeight * imgRatio;
-                  drawX = scaledX - (drawW - scaledWidth) / 2;
-                } else {
-                  drawH = scaledWidth / imgRatio;
-                  drawY = scaledY - (drawH - scaledHeight) / 2;
+          } else if (element.type === 'image' || element.type === 'cross' || element.type === 'flower' || element.type === 'photo') {
+            const imgSrc = (element.screenMode && element.processedSrc) ? element.processedSrc : element.src;
+            if (imgSrc) {
+              const img = await loadImageWithCORS(imgSrc);
+              if (img) {
+                // Применяем вращение если есть
+                if (element.rotation) {
+                  const centerX = scaledX + scaledWidth / 2;
+                  const centerY = scaledY + scaledHeight / 2;
+                  ctx.translate(centerX, centerY);
+                  ctx.rotate(element.rotation * Math.PI / 180);
+                  ctx.translate(-centerX, -centerY);
                 }
                 
-                ctx.save();
-                ctx.rect(scaledX, scaledY, scaledWidth, scaledHeight);
-                ctx.clip();
-                
-                if (element.flipHorizontal) {
-                  ctx.translate(drawX + drawW, drawY);
-                  ctx.scale(-1, 1);
-                  ctx.drawImage(img, 0, 0, drawW, drawH);
+                // Для НЕ-фото применяем object-contain
+                if (element.type === 'photo') {
+                  // Фото: object-cover (заполняем, обрезаем)
+                  const imgRatio = img.width / img.height;
+                  const boxRatio = scaledWidth / scaledHeight;
+                  
+                  let drawW = scaledWidth;
+                  let drawH = scaledHeight;
+                  let drawX = scaledX;
+                  let drawY = scaledY;
+                  
+                  if (imgRatio > boxRatio) {
+                    drawW = scaledHeight * imgRatio;
+                    drawX = scaledX - (drawW - scaledWidth) / 2;
+                  } else {
+                    drawH = scaledWidth / imgRatio;
+                    drawY = scaledY - (drawH - scaledHeight) / 2;
+                  }
+                  
+                  ctx.save();
+                  ctx.rect(scaledX, scaledY, scaledWidth, scaledHeight);
+                  ctx.clip();
+                  
+                  if (element.flipHorizontal) {
+                    ctx.translate(drawX + drawW, drawY);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(img, 0, 0, drawW, drawH);
+                  } else {
+                    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                  }
+                  
+                  ctx.restore();
                 } else {
-                  ctx.drawImage(img, drawX, drawY, drawW, drawH);
-                }
-                
-                ctx.restore();
-              } else {
-                // Крест, цветы, изображения: object-contain (вписываем, сохраняем пропорции)
-                const imgRatio = img.width / img.height;
-                const boxRatio = scaledWidth / scaledHeight;
-                
-                let drawW = scaledWidth;
-                let drawH = scaledHeight;
-                let drawX = scaledX;
-                let drawY = scaledY;
-                
-                if (imgRatio > boxRatio) {
-                  drawH = scaledWidth / imgRatio;
-                  drawY = scaledY + (scaledHeight - drawH) / 2;
-                } else {
-                  drawW = scaledHeight * imgRatio;
-                  drawX = scaledX + (scaledWidth - drawW) / 2;
-                }
-                
-                if (element.flipHorizontal) {
-                  ctx.translate(drawX + drawW, drawY);
-                  ctx.scale(-1, 1);
-                  ctx.drawImage(img, 0, 0, drawW, drawH);
-                } else {
-                  ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                  // Крест, цветы, изображения: object-contain (вписываем, сохраняем пропорции)
+                  const imgRatio = img.width / img.height;
+                  const boxRatio = scaledWidth / scaledHeight;
+                  
+                  let drawW = scaledWidth;
+                  let drawH = scaledHeight;
+                  let drawX = scaledX;
+                  let drawY = scaledY;
+                  
+                  if (imgRatio > boxRatio) {
+                    drawH = scaledWidth / imgRatio;
+                    drawY = scaledY + (scaledHeight - drawH) / 2;
+                  } else {
+                    drawW = scaledHeight * imgRatio;
+                    drawX = scaledX + (scaledWidth - drawW) / 2;
+                  }
+                  
+                  if (element.flipHorizontal) {
+                    ctx.translate(drawX + drawW, drawY);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(img, 0, 0, drawW, drawH);
+                  } else {
+                    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                  }
                 }
               }
             }
           }
+          
+          ctx.restore();
         }
-        
-        ctx.restore();
       }
       
       return canvas.toDataURL('image/png');
@@ -1647,11 +1656,34 @@ const Constructor = () => {
       // Получаем реальные размеры canvas на экране
       const rect = canvasRef.current.getBoundingClientRect();
       
+      // Экспорт с увеличенным разрешением (3:4 пропорции)
+      const exportWidth = 1200;
+      const exportHeight = 1600;
+      
+      const canvasElement = document.createElement('canvas');
+      canvasElement.width = exportWidth;
+      canvasElement.height = exportHeight;
+      
+      const ctx = canvasElement.getContext('2d');
+      if (!ctx) return;
+      
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, exportWidth, exportHeight);
+      
       console.log('📥 Загружаем изображение памятника:', monumentImage);
       const monumentImg = await loadImageWithCORS(monumentImage);
       
       if (!monumentImg) {
         console.error('❌ Не удалось загрузить изображение памятника');
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillRect(0, 0, exportWidth, exportHeight);
+        ctx.fillStyle = '#666';
+        ctx.font = 'bold 48px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Памятник', exportWidth / 2, exportHeight / 2 - 40);
+        ctx.font = '32px sans-serif';
+        ctx.fillText('(изображение недоступно)', exportWidth / 2, exportHeight / 2 + 40);
+        
         toast({
           title: "Ошибка загрузки памятника",
           description: "Попробуйте выбрать другое изображение",
@@ -1662,24 +1694,29 @@ const Constructor = () => {
       
       console.log('✅ Изображение памятника загружено');
       
-      // ВАЖНО: Экспорт точно в размер оригинального изображения памятника
-      const exportWidth = monumentImg.width;
-      const exportHeight = monumentImg.height;
+      // Рисуем памятник с object-contain
+      const imgRatio = monumentImg.width / monumentImg.height;
+      const canvasRatio = exportWidth / exportHeight;
       
-      const canvasElement = document.createElement('canvas');
-      canvasElement.width = exportWidth;
-      canvasElement.height = exportHeight;
+      let drawWidth = exportWidth;
+      let drawHeight = exportHeight;
+      let offsetX = 0;
+      let offsetY = 0;
       
-      const ctx = canvasElement.getContext('2d');
-      if (!ctx) return;
+      if (imgRatio > canvasRatio) {
+        drawWidth = exportWidth;
+        drawHeight = exportWidth / imgRatio;
+        offsetY = (exportHeight - drawHeight) / 2;
+      } else {
+        drawHeight = exportHeight;
+        drawWidth = exportHeight * imgRatio;
+        offsetX = (exportWidth - drawWidth) / 2;
+      }
       
-      // Рисуем памятник на весь canvas (без offset)
-      ctx.drawImage(monumentImg, 0, 0, exportWidth, exportHeight);
+      ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
       
       // Рассчитываем масштаб для элементов
-      const imgRatio = monumentImg.width / monumentImg.height;
       const screenRatio = rect.width / rect.height;
-      
       let screenMonumentWidth = rect.width;
       let screenMonumentHeight = rect.height;
       let screenOffsetX = 0;
@@ -1695,7 +1732,7 @@ const Constructor = () => {
         screenOffsetX = (rect.width - screenMonumentWidth) / 2;
       }
       
-      const scale = exportWidth / screenMonumentWidth;
+      const scale = drawWidth / screenMonumentWidth;
       
       console.log('🔍 Параметры масштабирования:', {
         'rect (screen canvas)': `${rect.width.toFixed(2)}x${rect.height.toFixed(2)}`,
@@ -1705,6 +1742,8 @@ const Constructor = () => {
         'screenRatio': screenRatio.toFixed(3),
         'screenMonument': `${screenMonumentWidth.toFixed(2)}x${screenMonumentHeight.toFixed(2)}`,
         'screenOffset': `${screenOffsetX.toFixed(2)}, ${screenOffsetY.toFixed(2)}`,
+        'exportMonument': `${drawWidth.toFixed(2)}x${drawHeight.toFixed(2)}`,
+        'exportOffset': `${offsetX.toFixed(2)}, ${offsetY.toFixed(2)}`,
         'scale': scale.toFixed(3)
       });
       
@@ -1712,8 +1751,8 @@ const Constructor = () => {
       for (const element of elements) {
         ctx.save();
         
-        const scaledX = (element.x - screenOffsetX) * scale;
-        const scaledY = (element.y - screenOffsetY) * scale;
+        const scaledX = (element.x - screenOffsetX) * scale + offsetX;
+        const scaledY = (element.y - screenOffsetY) * scale + offsetY;
         const scaledWidth = element.width * scale;
         const scaledHeight = element.height * scale;
         
