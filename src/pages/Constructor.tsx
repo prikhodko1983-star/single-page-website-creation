@@ -1417,16 +1417,24 @@ const Constructor = () => {
               }
             });
             
-            // Измеряем ширину строк ДО вращения
+            // Измеряем ширину строк и позиционируем
             const textAlign = element.textAlign || 'center';
+            
+            // Для autoSize используем максимальную ширину строки
+            let effectiveWidth = scaledWidth;
+            if (element.autoSize) {
+              const maxLineWidth = Math.max(...allLines.map(line => ctx.measureText(line).width));
+              effectiveWidth = maxLineWidth;
+            }
+            
             const linePositions = allLines.map(line => {
               const lineWidth = ctx.measureText(line).width;
               let lineX = scaledX;
               
               if (textAlign === 'center') {
-                lineX = scaledX + (scaledWidth - lineWidth) / 2;
+                lineX = scaledX + (effectiveWidth - lineWidth) / 2;
               } else if (textAlign === 'right') {
-                lineX = scaledX + scaledWidth - lineWidth;
+                lineX = scaledX + effectiveWidth - lineWidth;
               }
               
               return { x: lineX, width: lineWidth };
@@ -1811,36 +1819,25 @@ const Constructor = () => {
             }
           });
           
-          // Измеряем ширину строк БЕЗ shadow (чтобы не влияло на позиционирование)
+          // Измеряем ширину строк и позиционируем
           const textAlign = element.textAlign || 'center';
           
-          console.log(`📊 Элемент ${element.type}:`, {
-            'element.x': element.x,
-            'element.y': element.y,
-            'element.width': element.width,
-            'scaledX': scaledX.toFixed(2),
-            'scaledY': scaledY.toFixed(2),
-            'scaledWidth': scaledWidth.toFixed(2),
-            'scale': scale.toFixed(3),
-            'textAlign': textAlign,
-            'rotation': element.rotation || 0
-          });
+          // Для autoSize элементов используем максимальную ширину строки как базу
+          let effectiveWidth = scaledWidth;
+          if (element.autoSize) {
+            const maxLineWidth = Math.max(...allLines.map(line => ctx.measureText(line).width));
+            effectiveWidth = maxLineWidth;
+          }
           
-          const linePositions = allLines.map((line, idx) => {
+          const linePositions = allLines.map((line) => {
             const lineWidth = ctx.measureText(line).width;
             let lineX = scaledX;
             
             if (textAlign === 'center') {
-              lineX = scaledX + (scaledWidth - lineWidth) / 2;
+              lineX = scaledX + (effectiveWidth - lineWidth) / 2;
             } else if (textAlign === 'right') {
-              lineX = scaledX + scaledWidth - lineWidth;
+              lineX = scaledX + effectiveWidth - lineWidth;
             }
-            
-            console.log(`  📏 Строка ${idx} "${line}":`, {
-              'lineWidth': lineWidth.toFixed(2),
-              'lineX': lineX.toFixed(2),
-              'расчёт center': `${scaledX.toFixed(2)} + (${scaledWidth.toFixed(2)} - ${lineWidth.toFixed(2)}) / 2`
-            });
             
             return { x: lineX, width: lineWidth };
           });
