@@ -1635,15 +1635,36 @@ const Constructor = () => {
       
       ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
       
-      // Единый масштаб: от размера экрана к размеру экспорта
-      const scale = exportWidth / rect.width;
+      // Вычисляем object-contain для памятника НА ЭКРАНЕ
+      const screenRatio = rect.width / rect.height;
+      let screenMonumentWidth = rect.width;
+      let screenMonumentHeight = rect.height;
+      let screenOffsetX = 0;
+      let screenOffsetY = 0;
+      
+      if (imgRatio > screenRatio) {
+        screenMonumentWidth = rect.width;
+        screenMonumentHeight = rect.width / imgRatio;
+        screenOffsetY = (rect.height - screenMonumentHeight) / 2;
+      } else {
+        screenMonumentHeight = rect.height;
+        screenMonumentWidth = rect.height * imgRatio;
+        screenOffsetX = (rect.width - screenMonumentWidth) / 2;
+      }
+      
+      // Масштаб: от реального размера памятника на экране к размеру в экспорте
+      const scale = drawWidth / screenMonumentWidth;
       
       for (const element of elements) {
         ctx.save();
         
-        // Масштабируем позицию и размеры с единым масштабом
-        const scaledX = element.x * scale;
-        const scaledY = element.y * scale;
+        // Элементы позиционированы относительно canvas, вычитаем экранные отступы
+        const relX = element.x - screenOffsetX;
+        const relY = element.y - screenOffsetY;
+        
+        // Масштабируем и добавляем отступы экспорта
+        const scaledX = relX * scale + offsetX;
+        const scaledY = relY * scale + offsetY;
         const scaledWidth = element.width * scale;
         const scaledHeight = element.height * scale;
         
