@@ -1388,9 +1388,6 @@ const Constructor = () => {
             const lh = element.lineHeight || 1.2;
             const lineHeight = scaledFontSize * lh;
             
-            // Компенсация leading (CSS добавляет отступ сверху = (lineHeight - 1) / 2 * fontSize)
-            const leadingOffset = ((lh - 1) / 2) * scaledFontSize;
-            
             // Обрабатываем многострочный текст с переносами
             const paragraphs = content.split('\n');
             const allLines: string[] = [];
@@ -1412,10 +1409,9 @@ const Constructor = () => {
               textX = scaledX + scaledWidth;
             }
             
-            // Рисуем каждую строку с учетом leading offset
+            // Рисуем каждую строку (без leading offset для точного совпадения с CSS)
             allLines.forEach((line, index) => {
-              const textY = scaledY + leadingOffset + index * lineHeight;
-              ctx.fillText(line, textX, textY);
+              ctx.fillText(line, textX, scaledY + index * lineHeight);
             });
             
             // Сбрасываем тень
@@ -1737,9 +1733,6 @@ const Constructor = () => {
           const lh = element.lineHeight || 1.2;
           const lineHeight = scaledFontSize * lh;
           
-          // Компенсация leading (CSS добавляет отступ сверху = (lineHeight - 1) / 2 * fontSize)
-          const leadingOffset = ((lh - 1) / 2) * scaledFontSize;
-          
           // Применяем вращение если есть
           if (element.rotation) {
             const centerX = scaledX + scaledWidth / 2;
@@ -1770,9 +1763,9 @@ const Constructor = () => {
             textX = scaledX + scaledWidth;
           }
           
-          // Рисуем каждую строку с учетом leading offset
+          // Рисуем каждую строку (без leading offset для точного совпадения с CSS)
           allLines.forEach((line, idx) => {
-            ctx.fillText(line, textX, scaledY + leadingOffset + idx * lineHeight);
+            ctx.fillText(line, textX, scaledY + idx * lineHeight);
           });
           
           // Сбрасываем тень
