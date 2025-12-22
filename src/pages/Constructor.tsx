@@ -1576,7 +1576,7 @@ const Constructor = () => {
       // Получаем реальные размеры canvas на экране
       const rect = canvasRef.current.getBoundingClientRect();
       
-      // Экспорт в том же соотношении, что и экран (3:4)
+      // Экспорт с увеличенным разрешением (3:4 пропорции)
       const exportWidth = 1200;
       const exportHeight = 1600;
       
@@ -1586,10 +1586,6 @@ const Constructor = () => {
       
       const ctx = canvasElement.getContext('2d');
       if (!ctx) return;
-      
-      // Простой масштаб: размер экспорта / размер экрана
-      const scaleX = exportWidth / rect.width;
-      const scaleY = exportHeight / rect.height;
       
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, exportWidth, exportHeight);
@@ -1618,7 +1614,7 @@ const Constructor = () => {
       
       console.log('✅ Изображение памятника загружено');
       
-      // Рисуем памятник с тем же object-contain, масштабируя canvas
+      // Рисуем памятник с object-contain
       const imgRatio = monumentImg.width / monumentImg.height;
       const canvasRatio = exportWidth / exportHeight;
       
@@ -1639,18 +1635,21 @@ const Constructor = () => {
       
       ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
       
+      // Единый масштаб: от размера экрана к размеру экспорта
+      const scale = exportWidth / rect.width;
+      
       for (const element of elements) {
         ctx.save();
         
-        // Масштабируем позицию и размеры элементов
-        const scaledX = element.x * scaleX;
-        const scaledY = element.y * scaleY;
-        const scaledWidth = element.width * scaleX;
-        const scaledHeight = element.height * scaleY;
+        // Масштабируем позицию и размеры с единым масштабом
+        const scaledX = element.x * scale;
+        const scaledY = element.y * scale;
+        const scaledWidth = element.width * scale;
+        const scaledHeight = element.height * scale;
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
-          const scaledFontSize = (element.fontSize || 24) * scaleX;
+          const scaledFontSize = (element.fontSize || 24) * scale;
           ctx.font = `${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
           
@@ -1661,9 +1660,9 @@ const Constructor = () => {
           
           // Тень для читаемости
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 8 * scaleX;
-          ctx.shadowOffsetX = 2 * scaleX;
-          ctx.shadowOffsetY = 2 * scaleX;
+          ctx.shadowBlur = 8 * scale;
+          ctx.shadowOffsetX = 2 * scale;
+          ctx.shadowOffsetY = 2 * scale;
           
           const lh = element.lineHeight || 1.2;
           const lineHeight = scaledFontSize * lh;
