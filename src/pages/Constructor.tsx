@@ -1732,67 +1732,28 @@ const Constructor = () => {
           ctx.shadowOffsetX = 0;
           ctx.shadowOffsetY = 0;
           
-        } else if (element.src) {
+        } else if (element.type === 'image' || element.type === 'cross' || element.type === 'flower' || element.type === 'photo') {
           const imgSrc = element.screenMode && element.processedSrc ? element.processedSrc : element.src;
-          const img = await loadImageWithCORS(imgSrc);
-          
-          if (img) {
-            // Для фотографий используем object-cover (заполнение без искажений)
-            // Для крестов и цветов используем object-contain (вписывание без искажений)
-            const useObjectCover = element.type === 'photo';
-            
-            const imgRatio = img.width / img.height;
-            const boxRatio = scaledWidth / scaledHeight;
-            
-            let drawWidth = scaledWidth;
-            let drawHeight = scaledHeight;
-            let drawX = scaledX;
-            let drawY = scaledY;
-            
-            if (useObjectCover) {
-              // object-cover: заполняем весь контейнер, обрезая лишнее
-              if (imgRatio > boxRatio) {
-                drawHeight = scaledHeight;
-                drawWidth = scaledHeight * imgRatio;
-                drawX = scaledX - (drawWidth - scaledWidth) / 2;
-                drawY = scaledY;
-              } else {
-                drawWidth = scaledWidth;
-                drawHeight = scaledWidth / imgRatio;
-                drawX = scaledX;
-                drawY = scaledY - (drawHeight - scaledHeight) / 2;
+          if (imgSrc) {
+            const img = await loadImageWithCORS(imgSrc);
+            if (img) {
+              // Применяем вращение если есть
+              if (element.rotation) {
+                const centerX = scaledX + scaledWidth / 2;
+                const centerY = scaledY + scaledHeight / 2;
+                ctx.translate(centerX, centerY);
+                ctx.rotate(element.rotation * Math.PI / 180);
+                ctx.translate(-centerX, -centerY);
               }
-            } else {
-              // object-contain: вписываем полностью, добавляя отступы
-              if (imgRatio > boxRatio) {
-                drawWidth = scaledWidth;
-                drawHeight = scaledWidth / imgRatio;
-                drawX = scaledX;
-                drawY = scaledY + (scaledHeight - drawHeight) / 2;
+              
+              // Применяем отзеркаливание если нужно
+              if (element.flipHorizontal) {
+                ctx.translate(scaledX + scaledWidth, scaledY);
+                ctx.scale(-1, 1);
+                ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
               } else {
-                drawHeight = scaledHeight;
-                drawWidth = scaledHeight * imgRatio;
-                drawX = scaledX + (scaledWidth - drawWidth) / 2;
-                drawY = scaledY;
+                ctx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
               }
-            }
-            
-            // Применяем вращение если есть
-            if (element.rotation) {
-              const centerX = scaledX + scaledWidth / 2;
-              const centerY = scaledY + scaledHeight / 2;
-              ctx.translate(centerX, centerY);
-              ctx.rotate(element.rotation * Math.PI / 180);
-              ctx.translate(-centerX, -centerY);
-            }
-            
-            // Применяем отзеркаливание если нужно
-            if (element.flipHorizontal) {
-              ctx.translate(drawX + drawWidth, drawY);
-              ctx.scale(-1, 1);
-              ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
-            } else {
-              ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
             }
           }
         }
