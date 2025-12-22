@@ -1750,7 +1750,20 @@ const Constructor = () => {
           
           // Измеряем ширину строк ДО вращения
           const textAlign = element.textAlign || 'center';
-          const linePositions = allLines.map(line => {
+          
+          console.log(`📊 Элемент ${element.type}:`, {
+            'element.x': element.x,
+            'element.y': element.y,
+            'element.width': element.width,
+            'scaledX': scaledX.toFixed(2),
+            'scaledY': scaledY.toFixed(2),
+            'scaledWidth': scaledWidth.toFixed(2),
+            'scale': scale.toFixed(3),
+            'textAlign': textAlign,
+            'rotation': element.rotation || 0
+          });
+          
+          const linePositions = allLines.map((line, idx) => {
             const lineWidth = ctx.measureText(line).width;
             let lineX = scaledX;
             
@@ -1759,6 +1772,12 @@ const Constructor = () => {
             } else if (textAlign === 'right') {
               lineX = scaledX + scaledWidth - lineWidth;
             }
+            
+            console.log(`  📏 Строка ${idx} "${line}":`, {
+              'lineWidth': lineWidth.toFixed(2),
+              'lineX': lineX.toFixed(2),
+              'расчёт center': `${scaledX.toFixed(2)} + (${scaledWidth.toFixed(2)} - ${lineWidth.toFixed(2)}) / 2`
+            });
             
             return { x: lineX, width: lineWidth };
           });
