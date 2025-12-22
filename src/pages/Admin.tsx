@@ -1174,32 +1174,36 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-6 mb-8 sticky top-[73px] z-30 bg-background">
-            <TabsTrigger value="overview" className="font-oswald">
-              <Icon name="LayoutDashboard" size={16} className="mr-2" />
-              Обзор
-            </TabsTrigger>
-            <TabsTrigger value="shop" className="font-oswald">
-              <Icon name="ShoppingBag" size={16} className="mr-2" />
-              Магазин
-            </TabsTrigger>
-            <TabsTrigger value="crosses" className="font-oswald">
-              <Icon name="Cross" size={16} className="mr-2" />
-              Кресты
-            </TabsTrigger>
-            <TabsTrigger value="flowers" className="font-oswald">
-              <Icon name="Flower2" size={16} className="mr-2" />
-              Цветы
-            </TabsTrigger>
-            <TabsTrigger value="gallery" className="font-oswald">
-              <Icon name="Images" size={16} className="mr-2" />
-              Галерея работ
-            </TabsTrigger>
-            <TabsTrigger value="images" className="font-oswald">
-              <Icon name="Image" size={16} className="mr-2" />
-              Изображения
-            </TabsTrigger>
-          </TabsList>
+          <div className="w-full mb-8 sticky top-[73px] z-30 bg-background -mx-4 px-4">
+            <div className="overflow-x-auto pb-2 scrollbar-hide">
+              <TabsList className="inline-flex w-auto h-auto p-1 bg-muted">
+                <TabsTrigger value="overview" className="font-oswald whitespace-nowrap">
+                  <Icon name="LayoutDashboard" size={16} className="mr-2" />
+                  Обзор
+                </TabsTrigger>
+                <TabsTrigger value="shop" className="font-oswald whitespace-nowrap">
+                  <Icon name="ShoppingBag" size={16} className="mr-2" />
+                  Магазин
+                </TabsTrigger>
+                <TabsTrigger value="crosses" className="font-oswald whitespace-nowrap">
+                  <Icon name="Cross" size={16} className="mr-2" />
+                  Кресты
+                </TabsTrigger>
+                <TabsTrigger value="flowers" className="font-oswald whitespace-nowrap">
+                  <Icon name="Flower2" size={16} className="mr-2" />
+                  Цветы
+                </TabsTrigger>
+                <TabsTrigger value="gallery" className="font-oswald whitespace-nowrap">
+                  <Icon name="Images" size={16} className="mr-2" />
+                  Галерея работ
+                </TabsTrigger>
+                <TabsTrigger value="images" className="font-oswald whitespace-nowrap">
+                  <Icon name="Image" size={16} className="mr-2" />
+                  Изображения
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
