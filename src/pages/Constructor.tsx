@@ -1366,7 +1366,7 @@ const Constructor = () => {
             // Поддержка выравнивания текста
             const textAlign = element.textAlign || 'center';
             ctx.textAlign = textAlign;
-            ctx.textBaseline = 'hanging';
+            ctx.textBaseline = 'top';
             
             // Тень для читаемости
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
@@ -1722,7 +1722,7 @@ const Constructor = () => {
           // Поддержка выравнивания текста
           const textAlign = element.textAlign || 'center';
           ctx.textAlign = textAlign;
-          ctx.textBaseline = 'hanging';
+          ctx.textBaseline = 'top';
           
           // Тень для читаемости
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
