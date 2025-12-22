@@ -1744,20 +1744,30 @@ const Constructor = () => {
       for (const element of elements) {
         ctx.save();
         
-        // Трансформация: (экранКоорд - экранOffset) * scale + экспортOffset
-        const scaledX = Math.round((element.x - screenOffsetX) * scale + offsetX);
-        const scaledY = Math.round((element.y - screenOffsetY) * scale + offsetY);
-        const scaledWidth = Math.round(element.width * scale);
-        const scaledHeight = Math.round(element.height * scale);
+        // НОВАЯ ЛОГИКА: координаты элемента нормализуем к размеру памятника
+        // 1. Переводим element.x/y в проценты относительно РАЗМЕРА ПАМЯТНИКА на экране
+        const relativeX = (element.x - screenOffsetX) / screenDrawWidth;  // 0..1
+        const relativeY = (element.y - screenOffsetY) / screenDrawHeight; // 0..1
+        const relativeWidth = element.width / screenDrawWidth;
+        const relativeHeight = element.height / screenDrawHeight;
         
-        // Показываем данные первого элемента для диагностики
+        // 2. Применяем проценты к РАЗМЕРУ ПАМЯТНИКА в экспорте
+        const scaledX = Math.round(relativeX * drawWidth + offsetX);
+        const scaledY = Math.round(relativeY * drawHeight + offsetY);
+        const scaledWidth = Math.round(relativeWidth * drawWidth);
+        const scaledHeight = Math.round(relativeHeight * drawHeight);
+        
+        // Диагностика первого элемента
         if (element === elements[0]) {
-          alert(`Диагностика координат:\n\nCanvas на экране: ${rect.width.toFixed(0)}x${rect.height.toFixed(0)}\nCanvas экспорт: ${exportWidth}x${exportHeight}\n\nЭлемент "${element.type}":\nНа экране: x=${element.x.toFixed(0)}, y=${element.y.toFixed(0)}\nВ экспорте: x=${scaledX}, y=${scaledY}\n\nМасштаб: ${scale.toFixed(3)}\nОфсеты экран: ${screenOffsetX}, ${screenOffsetY}\nОфсеты экспорт: ${offsetX}, ${offsetY}`);
+          alert(`НОВАЯ ФОРМУЛА:\n\nПамятник экран: ${screenDrawWidth}x${screenDrawHeight}\nПамятник экспорт: ${drawWidth}x${drawHeight}\n\nЭлемент x=${element.x} → относительно памятника: ${(relativeX * 100).toFixed(1)}%\n→ в экспорте: ${scaledX}px\n\nЭлемент y=${element.y} → относительно памятника: ${(relativeY * 100).toFixed(1)}%\n→ в экспорте: ${scaledY}px`);
         }
+        
+        // Масштабируем fontSize пропорционально изменению размера памятника
+        const fontScale = drawWidth / screenDrawWidth;
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
-          const scaledFontSize = (element.fontSize || 24) * scale;
+          const scaledFontSize = (element.fontSize || 24) * fontScale;
           const fontStyle = element.italic ? 'italic' : 'normal';
           ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
