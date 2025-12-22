@@ -1741,6 +1741,11 @@ const Constructor = () => {
       for (const element of elements) {
         ctx.save();
         
+        // ДИАГНОСТИКА: проверяем что element.x уже включает offset или нет
+        if (element === elements[0]) {
+          alert(`ПРОВЕРКА OFFSET:\n\nCanvas: ${rect.width}x${rect.height}\nПамятник: ${screenDrawWidth}x${screenDrawHeight}\nOffset: ${screenOffsetX}, ${screenOffsetY}\n\nЭлемент x=${element.x}, y=${element.y}\n\nВариант 1 (БЕЗ вычитания offset):\nrelativeX = ${element.x}/${screenDrawWidth} = ${(element.x / screenDrawWidth * 100).toFixed(1)}%\n\nВариант 2 (С вычитанием offset):\nrelativeX = (${element.x}-${screenOffsetX})/${screenDrawWidth} = ${((element.x - screenOffsetX) / screenDrawWidth * 100).toFixed(1)}%`);
+        }
+        
         // НОВАЯ ЛОГИКА: координаты элемента нормализуем к размеру памятника
         // 1. Переводим element.x/y в проценты относительно РАЗМЕРА ПАМЯТНИКА на экране
         const relativeX = (element.x - screenOffsetX) / screenDrawWidth;  // 0..1
