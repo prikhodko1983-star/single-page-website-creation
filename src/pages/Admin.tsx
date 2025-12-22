@@ -1135,30 +1135,30 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mb-8 sticky top-[73px] z-30 bg-background gap-1">
-            <TabsTrigger value="overview" className="font-oswald text-xs sm:text-sm">
-              <Icon name="LayoutDashboard" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Обзор</span>
+          <TabsList className="grid w-full grid-cols-6 mb-8 sticky top-[73px] z-30 bg-background">
+            <TabsTrigger value="overview" className="font-oswald">
+              <Icon name="LayoutDashboard" size={16} className="mr-2" />
+              Обзор
             </TabsTrigger>
-            <TabsTrigger value="shop" className="font-oswald text-xs sm:text-sm">
-              <Icon name="ShoppingBag" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Магазин</span>
+            <TabsTrigger value="shop" className="font-oswald">
+              <Icon name="ShoppingBag" size={16} className="mr-2" />
+              Магазин
             </TabsTrigger>
-            <TabsTrigger value="crosses" className="font-oswald text-xs sm:text-sm">
-              <Icon name="Cross" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Кресты</span>
+            <TabsTrigger value="crosses" className="font-oswald">
+              <Icon name="Cross" size={16} className="mr-2" />
+              Кресты
             </TabsTrigger>
-            <TabsTrigger value="flowers" className="font-oswald text-xs sm:text-sm">
-              <Icon name="Flower2" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Цветы</span>
+            <TabsTrigger value="flowers" className="font-oswald">
+              <Icon name="Flower2" size={16} className="mr-2" />
+              Цветы
             </TabsTrigger>
-            <TabsTrigger value="gallery" className="font-oswald text-xs sm:text-sm">
-              <Icon name="Images" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Галерея</span>
+            <TabsTrigger value="gallery" className="font-oswald">
+              <Icon name="Images" size={16} className="mr-2" />
+              Галерея работ
             </TabsTrigger>
-            <TabsTrigger value="images" className="font-oswald text-xs sm:text-sm">
-              <Icon name="Image" size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">Изображения</span>
+            <TabsTrigger value="images" className="font-oswald">
+              <Icon name="Image" size={16} className="mr-2" />
+              Изображения
             </TabsTrigger>
           </TabsList>
 
