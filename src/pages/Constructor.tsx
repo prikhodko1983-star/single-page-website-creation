@@ -1359,10 +1359,10 @@ const Constructor = () => {
           const relativeWidth = element.width / screenDrawWidth;
           const relativeHeight = element.height / screenDrawHeight;
           
-          // Для текстовых элементов используем центр контейнера
           let scaledX, scaledY, scaledWidth, scaledHeight;
           
-          if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
+          if ((element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') && !element.autoSize) {
+            // Для текста с фиксированной шириной: позиционируем по центру
             const relativeCenterX = (element.x + element.width / 2 - screenOffsetX) / screenDrawWidth;
             const relativeCenterY = (element.y + element.height / 2 - screenOffsetY) / screenDrawHeight;
             
@@ -1372,6 +1372,7 @@ const Constructor = () => {
             scaledX = Math.round(relativeCenterX * drawWidth + offsetX - scaledWidth / 2);
             scaledY = Math.round(relativeCenterY * drawHeight + offsetY - scaledHeight / 2);
           } else {
+            // Для изображений и autoSize текста: по левому краю
             scaledX = Math.round(relativeX * drawWidth + offsetX);
             scaledY = Math.round(relativeY * drawHeight + offsetY);
             scaledWidth = Math.round(relativeWidth * drawWidth);
@@ -1759,22 +1760,20 @@ const Constructor = () => {
         const relativeHeight = element.height / screenDrawHeight;
         
         // Применяем проценты к РАЗМЕРУ ПАМЯТНИКА в экспорте
-        // Для текстовых элементов используем центр контейнера, а не левый край
         let scaledX, scaledY, scaledWidth, scaledHeight;
         
-        if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
-          // Для текста: сохраняем относительную позицию ЦЕНТРА контейнера
+        if ((element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') && !element.autoSize) {
+          // Для текста с фиксированной шириной: позиционируем по центру контейнера
           const relativeCenterX = (element.x + element.width / 2 - screenOffsetX) / screenDrawWidth;
           const relativeCenterY = (element.y + element.height / 2 - screenOffsetY) / screenDrawHeight;
           
           scaledWidth = Math.round(relativeWidth * drawWidth);
           scaledHeight = Math.round(relativeHeight * drawHeight);
           
-          // Восстанавливаем левый верхний угол из центра
           scaledX = Math.round(relativeCenterX * drawWidth + offsetX - scaledWidth / 2);
           scaledY = Math.round(relativeCenterY * drawHeight + offsetY - scaledHeight / 2);
         } else {
-          // Для изображений: обычная трансформация
+          // Для изображений и autoSize текста: позиционируем по левому краю
           scaledX = Math.round(relativeX * drawWidth + offsetX);
           scaledY = Math.round(relativeY * drawHeight + offsetY);
           scaledWidth = Math.round(relativeWidth * drawWidth);
