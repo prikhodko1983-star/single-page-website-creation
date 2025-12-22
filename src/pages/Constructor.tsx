@@ -1366,7 +1366,7 @@ const Constructor = () => {
             // Поддержка выравнивания текста
             const textAlign = element.textAlign || 'center';
             ctx.textAlign = textAlign;
-            ctx.textBaseline = 'alphabetic';
+            ctx.textBaseline = 'top';
             
             // Тень для читаемости
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
@@ -1409,11 +1409,10 @@ const Constructor = () => {
               textX = scaledX + scaledWidth;
             }
             
-            // Рисуем каждую строку с alphabetic baseline (как в браузере)
+            // Рисуем каждую строку с небольшой коррекцией (чтобы совпадало с CSS)
+            const yOffset = scaledFontSize * 0.15; // Небольшое смещение вниз
             allLines.forEach((line, index) => {
-              // Для alphabetic baseline добавляем высоту шрифта к Y-координате первой строки
-              const baseY = scaledY + scaledFontSize * 0.8; // 0.8 - коэффициент для baseline
-              ctx.fillText(line, textX, baseY + index * lineHeight);
+              ctx.fillText(line, textX, scaledY + yOffset + index * lineHeight);
             });
             
             // Сбрасываем тень
@@ -1724,7 +1723,7 @@ const Constructor = () => {
           // Поддержка выравнивания текста
           const textAlign = element.textAlign || 'center';
           ctx.textAlign = textAlign;
-          ctx.textBaseline = 'alphabetic';
+          ctx.textBaseline = 'top';
           
           // Тень для читаемости
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
@@ -1765,11 +1764,10 @@ const Constructor = () => {
             textX = scaledX + scaledWidth;
           }
           
-          // Рисуем каждую строку с alphabetic baseline (как в браузере)
+          // Рисуем каждую строку с небольшой коррекцией (чтобы совпадало с CSS)
+          const yOffset = scaledFontSize * 0.15; // Небольшое смещение вниз
           allLines.forEach((line, idx) => {
-            // Для alphabetic baseline добавляем высоту шрифта к Y-координате первой строки
-            const baseY = scaledY + scaledFontSize * 0.8; // 0.8 - коэффициент для baseline
-            ctx.fillText(line, textX, baseY + idx * lineHeight);
+            ctx.fillText(line, textX, scaledY + yOffset + idx * lineHeight);
           });
           
           // Сбрасываем тень
