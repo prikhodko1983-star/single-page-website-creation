@@ -1319,12 +1319,12 @@ const Constructor = () => {
         
         if (imgRatio > canvasRatio) {
           drawWidth = previewWidth;
-          drawHeight = previewWidth / imgRatio;
-          offsetY = (previewHeight - drawHeight) / 2;
+          drawHeight = Math.round(previewWidth / imgRatio);
+          offsetY = Math.round((previewHeight - drawHeight) / 2);
         } else {
           drawHeight = previewHeight;
-          drawWidth = previewHeight * imgRatio;
-          offsetX = (previewWidth - drawWidth) / 2;
+          drawWidth = Math.round(previewHeight * imgRatio);
+          offsetX = Math.round((previewWidth - drawWidth) / 2);
         }
         
         ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
@@ -1338,12 +1338,12 @@ const Constructor = () => {
         
         if (imgRatio > screenRatio) {
           screenDrawWidth = rect.width;
-          screenDrawHeight = rect.width / imgRatio;
-          screenOffsetY = (rect.height - screenDrawHeight) / 2;
+          screenDrawHeight = Math.round(rect.width / imgRatio);
+          screenOffsetY = Math.round((rect.height - screenDrawHeight) / 2);
         } else {
           screenDrawHeight = rect.height;
-          screenDrawWidth = rect.height * imgRatio;
-          screenOffsetX = (rect.width - screenDrawWidth) / 2;
+          screenDrawWidth = Math.round(rect.height * imgRatio);
+          screenOffsetX = Math.round((rect.width - screenDrawWidth) / 2);
         }
         
         // Масштаб: от экранного памятника к экспортному
@@ -1362,10 +1362,10 @@ const Constructor = () => {
           ctx.save();
           
           // Координаты: (экран - screenOffset) * scale + exportOffset
-          const scaledX = (element.x - screenOffsetX) * scale + offsetX;
-          const scaledY = (element.y - screenOffsetY) * scale + offsetY;
-          const scaledWidth = element.width * scale;
-          const scaledHeight = element.height * scale;
+          const scaledX = Math.round((element.x - screenOffsetX) * scale + offsetX);
+          const scaledY = Math.round((element.y - screenOffsetY) * scale + offsetY);
+          const scaledWidth = Math.round(element.width * scale);
+          const scaledHeight = Math.round(element.height * scale);
           
           if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
             const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
@@ -1702,12 +1702,12 @@ const Constructor = () => {
       
       if (imgRatio > canvasRatio) {
         drawWidth = exportWidth;
-        drawHeight = exportWidth / imgRatio;
-        offsetY = (exportHeight - drawHeight) / 2;
+        drawHeight = Math.round(exportWidth / imgRatio);
+        offsetY = Math.round((exportHeight - drawHeight) / 2);
       } else {
         drawHeight = exportHeight;
-        drawWidth = exportHeight * imgRatio;
-        offsetX = (exportWidth - drawWidth) / 2;
+        drawWidth = Math.round(exportHeight * imgRatio);
+        offsetX = Math.round((exportWidth - drawWidth) / 2);
       }
       
       ctx.drawImage(monumentImg, offsetX, offsetY, drawWidth, drawHeight);
@@ -1721,12 +1721,12 @@ const Constructor = () => {
       
       if (imgRatio > screenRatio) {
         screenDrawWidth = rect.width;
-        screenDrawHeight = rect.width / imgRatio;
-        screenOffsetY = (rect.height - screenDrawHeight) / 2;
+        screenDrawHeight = Math.round(rect.width / imgRatio);
+        screenOffsetY = Math.round((rect.height - screenDrawHeight) / 2);
       } else {
         screenDrawHeight = rect.height;
-        screenDrawWidth = rect.height * imgRatio;
-        screenOffsetX = (rect.width - screenDrawWidth) / 2;
+        screenDrawWidth = Math.round(rect.height * imgRatio);
+        screenOffsetX = Math.round((rect.width - screenDrawWidth) / 2);
       }
       
       // Масштаб: от экранного памятника к экспортному
@@ -1745,10 +1745,10 @@ const Constructor = () => {
         ctx.save();
         
         // Трансформация: (экранКоорд - экранOffset) * scale + экспортOffset
-        const scaledX = (element.x - screenOffsetX) * scale + offsetX;
-        const scaledY = (element.y - screenOffsetY) * scale + offsetY;
-        const scaledWidth = element.width * scale;
-        const scaledHeight = element.height * scale;
+        const scaledX = Math.round((element.x - screenOffsetX) * scale + offsetX);
+        const scaledY = Math.round((element.y - screenOffsetY) * scale + offsetY);
+        const scaledWidth = Math.round(element.width * scale);
+        const scaledHeight = Math.round(element.height * scale);
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
