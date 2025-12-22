@@ -1348,6 +1348,19 @@ const Constructor = () => {
         
         const scale = drawWidth / screenMonumentWidth;
         
+        console.log('🔍 Параметры масштабирования (превью):', {
+          'rect (screen canvas)': `${rect.width.toFixed(2)}x${rect.height.toFixed(2)}`,
+          'previewCanvas': `${previewWidth}x${previewHeight}`,
+          'monumentImg': `${monumentImg.width}x${monumentImg.height}`,
+          'imgRatio': imgRatio.toFixed(3),
+          'screenRatio': screenRatio.toFixed(3),
+          'screenMonument': `${screenMonumentWidth.toFixed(2)}x${screenMonumentHeight.toFixed(2)}`,
+          'screenOffset': `${screenOffsetX.toFixed(2)}, ${screenOffsetY.toFixed(2)}`,
+          'previewMonument': `${drawWidth.toFixed(2)}x${drawHeight.toFixed(2)}`,
+          'previewOffset': `${offsetX.toFixed(2)}, ${offsetY.toFixed(2)}`,
+          'scale': scale.toFixed(3)
+        });
+        
         // Рисуем элементы
         for (const element of elements) {
           ctx.save();
