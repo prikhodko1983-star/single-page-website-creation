@@ -67,9 +67,21 @@ export const TextEditorModal = ({
   }, [editingElement, onApply]);
 
   const handleCancel = useCallback(() => {
+    // Автоматически применяем изменения перед закрытием
+    if (editingElement) {
+      onApply({
+        content: editingElement.content,
+        fontSize: editingElement.fontSize,
+        color: editingElement.color,
+        lineHeight: editingElement.lineHeight,
+        letterSpacing: editingElement.letterSpacing,
+        textAlign: editingElement.textAlign,
+        italic: editingElement.italic,
+      });
+    }
     onClose();
     setEditingElement(null);
-  }, [onClose, setEditingElement]);
+  }, [editingElement, onApply, onClose, setEditingElement]);
 
   if (!isOpen || !editingElement) return null;
 
@@ -77,7 +89,7 @@ export const TextEditorModal = ({
     <div 
       className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto"
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) handleCancel();
       }}
     >
       <Card className="w-full max-w-3xl my-auto">
@@ -87,7 +99,7 @@ export const TextEditorModal = ({
             <Button
               variant="ghost"
               size="sm"
-              onClick={onClose}
+              onClick={handleCancel}
               className="h-10 w-10"
             >
               <Icon name="X" size={24} />
