@@ -216,24 +216,24 @@ export default function IndexHeroSections({
               </div>
 
               {/* Контент справа */}
-              <div className="relative bg-white p-4 lg:py-8 lg:px-12 flex flex-col justify-center">
-                <h2 className="font-oswald font-bold text-lg lg:text-6xl text-zinc-900 leading-tight mb-3 lg:mb-4">
+              <div className="relative bg-white p-3 lg:py-8 lg:px-12 flex flex-col justify-center">
+                <h2 className="font-oswald font-bold text-base lg:text-6xl text-zinc-900 leading-tight mb-2 lg:mb-4">
                   Премиум памятники из гранита со скидкой до 25%
                 </h2>
 
-                <div className="flex flex-col gap-2 lg:gap-4 items-start">
-                  <Link to="/catalog">
+                <div className="flex flex-col gap-1.5 lg:gap-4 items-stretch">
+                  <Link to="/catalog" className="w-full">
                     <Button 
                       size="sm"
                       variant="outline"
-                      className="bg-transparent hover:bg-zinc-100 text-zinc-900 border-2 border-zinc-900 font-oswald text-xs lg:text-base px-4 lg:px-6 h-8 lg:h-10"
+                      className="w-full bg-transparent hover:bg-zinc-100 text-zinc-900 border-2 border-zinc-900 font-oswald text-[10px] lg:text-base px-2 lg:px-6 h-7 lg:h-10"
                     >
                       Посмотреть все памятники
                     </Button>
                   </Link>
                   <Button 
                     size="sm"
-                    className="bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-xs lg:text-base px-4 lg:px-6 h-8 lg:h-10"
+                    className="w-full bg-[#E89C1F] hover:bg-[#d88a09] text-white font-oswald text-[10px] lg:text-base px-2 lg:px-6 h-7 lg:h-10"
                     onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     Выбрать с менеджером
