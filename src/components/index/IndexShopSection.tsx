@@ -76,9 +76,9 @@ export default function IndexShopSection() {
   };
 
   return (
-    <section id="shop" className="py-20 bg-background">
+    <section id="shop" className="py-8 md:py-12 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h2 className="font-oswald font-bold text-3xl md:text-5xl mb-4">
             Купить памятник из гранита в Великом Новгороде
           </h2>
