@@ -1346,37 +1346,37 @@ const Constructor = () => {
           screenOffsetX = Math.round((rect.width - screenDrawWidth) / 2);
         }
         
-        // Масштаб: от экранного памятника к экспортному
-        const fontScale = drawWidth / screenDrawWidth;
+        // Масштаб: от экранного canvas к preview canvas
+        const fontScale = exportWidth / rect.width;
         
         // Рисуем элементы
         for (const element of elements) {
           ctx.save();
           
-          // Координаты в процентах относительно памятника
-          const relativeX = (element.x - screenOffsetX) / screenDrawWidth;
-          const relativeY = (element.y - screenOffsetY) / screenDrawHeight;
-          const relativeWidth = element.width / screenDrawWidth;
-          const relativeHeight = element.height / screenDrawHeight;
+          // Координаты в процентах относительно ВСЕГО canvas
+          const relativeX = element.x / rect.width;
+          const relativeY = element.y / rect.height;
+          const relativeWidth = element.width / rect.width;
+          const relativeHeight = element.height / rect.height;
           
           let scaledX, scaledY, scaledWidth, scaledHeight;
           
           if ((element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') && !element.autoSize) {
             // Для текста с фиксированной шириной: позиционируем по центру
-            const relativeCenterX = (element.x + element.width / 2 - screenOffsetX) / screenDrawWidth;
-            const relativeCenterY = (element.y + element.height / 2 - screenOffsetY) / screenDrawHeight;
+            const relativeCenterX = (element.x + element.width / 2) / rect.width;
+            const relativeCenterY = (element.y + element.height / 2) / rect.height;
             
-            scaledWidth = Math.round(relativeWidth * drawWidth);
-            scaledHeight = Math.round(relativeHeight * drawHeight);
+            scaledWidth = Math.round(relativeWidth * exportWidth);
+            scaledHeight = Math.round(relativeHeight * exportHeight);
             
-            scaledX = Math.round(relativeCenterX * drawWidth + offsetX - scaledWidth / 2);
-            scaledY = Math.round(relativeCenterY * drawHeight + offsetY - scaledHeight / 2);
+            scaledX = Math.round(relativeCenterX * exportWidth - scaledWidth / 2);
+            scaledY = Math.round(relativeCenterY * exportHeight - scaledHeight / 2);
           } else {
             // Для изображений и autoSize текста: по левому краю
-            scaledX = Math.round(relativeX * drawWidth + offsetX);
-            scaledY = Math.round(relativeY * drawHeight + offsetY);
-            scaledWidth = Math.round(relativeWidth * drawWidth);
-            scaledHeight = Math.round(relativeHeight * drawHeight);
+            scaledX = Math.round(relativeX * exportWidth);
+            scaledY = Math.round(relativeY * exportHeight);
+            scaledWidth = Math.round(relativeWidth * exportWidth);
+            scaledHeight = Math.round(relativeHeight * exportHeight);
           }
           
           if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
@@ -1807,8 +1807,8 @@ const Constructor = () => {
           scaledHeight = Math.round(relativeHeight * exportHeight);
         }
         
-        // Масштабируем fontSize пропорционально изменению размера памятника
-        const fontScale = drawWidth / screenDrawWidth;
+        // Масштабируем fontSize пропорционально изменению размера ВСЕГО canvas
+        const fontScale = exportWidth / rect.width;
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           console.log(`🎨 Отрисовка элемента ${element.type} (id: ${element.id}):`, {
@@ -1893,9 +1893,9 @@ const Constructor = () => {
           
           // Применяем shadow ТОЛЬКО перед отрисовкой
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 8 * scale;
-          ctx.shadowOffsetX = 2 * scale;
-          ctx.shadowOffsetY = 2 * scale;
+          ctx.shadowBlur = 8 * fontScale;
+          ctx.shadowOffsetX = 2 * fontScale;
+          ctx.shadowOffsetY = 2 * fontScale;
           
           // Рисуем от верхнего края (контейнер уже отцентрован)
           allLines.forEach((line, idx) => {
