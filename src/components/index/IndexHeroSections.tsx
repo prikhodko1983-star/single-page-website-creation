@@ -200,12 +200,12 @@ export default function IndexHeroSections({
 
       <section className="py-8 md:py-16 bg-[#1a1a1a]">
         <div className="container mx-auto px-4">
-          <div className="relative bg-white rounded-2xl overflow-hidden">
+          <div className="relative bg-white rounded-2xl overflow-hidden max-w-7xl mx-auto">
             <div className="absolute top-4 right-4 md:top-8 md:right-8 bg-[#E89C1F] text-white px-3 py-1 md:px-6 md:py-2 rounded-lg font-oswald font-semibold text-xs md:text-sm z-20">
               до 11 ноября
             </div>
 
-            <div className="grid grid-cols-[180px,1fr] lg:grid-cols-[300px,1fr] gap-0 items-stretch min-h-[220px] lg:min-h-[200px]">
+            <div className="grid grid-cols-[180px,1fr] lg:grid-cols-[300px,1fr] xl:grid-cols-[420px,1fr] gap-0 items-stretch min-h-[220px] lg:min-h-[200px]">
               {/* Изображение слева */}
               <div className="relative h-full">
                 <img 
