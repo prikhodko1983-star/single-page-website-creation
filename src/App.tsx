@@ -23,6 +23,11 @@ const NavigationBar = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   
+  // Скрываем навигацию на страницах админки, конструктора и логина
+  if (location.pathname === '/admin' || location.pathname === '/constructor' || location.pathname === '/login') {
+    return null;
+  }
+  
   return (
     <>
       <div className="hidden md:flex fixed top-4 right-4 z-50 gap-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-lg p-2 shadow-lg">
