@@ -1659,20 +1659,6 @@ const Constructor = () => {
     }
     
     try {
-      console.log('🖼️ Начинаем создание PNG...');
-      console.log('📝 Данные элементов перед экспортом:', elements.map(el => ({
-        id: el.id,
-        type: el.type,
-        content: el.content,
-        fontSize: el.fontSize,
-        fontFamily: el.fontFamily,
-        color: el.color,
-        italic: el.italic,
-        letterSpacing: el.letterSpacing,
-        lineHeight: el.lineHeight,
-        textAlign: el.textAlign
-      })));
-      
       toast({
         title: "Создание изображения...",
         description: "Пожалуйста, подождите",
@@ -1807,21 +1793,10 @@ const Constructor = () => {
           scaledHeight = Math.round(relativeHeight * exportHeight);
         }
         
-        // Масштабируем fontSize пропорционально изменению размера памятника
-        const fontScale = drawWidth / screenDrawWidth;
+        // Масштабируем fontSize пропорционально изменению размера ВСЕГО canvas
+        const fontScale = exportWidth / rect.width;
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
-          console.log(`🎨 Отрисовка элемента ${element.type} (id: ${element.id}):`, {
-            content: element.content,
-            fontSize: element.fontSize,
-            fontFamily: element.fontFamily,
-            color: element.color,
-            italic: element.italic,
-            letterSpacing: element.letterSpacing,
-            lineHeight: element.lineHeight,
-            textAlign: element.textAlign
-          });
-          
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
           const scaledFontSize = (element.fontSize || 24) * fontScale;
           const fontStyle = element.italic ? 'italic' : 'normal';
@@ -1893,9 +1868,9 @@ const Constructor = () => {
           
           // Применяем shadow ТОЛЬКО перед отрисовкой
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 8 * scale;
-          ctx.shadowOffsetX = 2 * scale;
-          ctx.shadowOffsetY = 2 * scale;
+          ctx.shadowBlur = 8 * fontScale;
+          ctx.shadowOffsetX = 2 * fontScale;
+          ctx.shadowOffsetY = 2 * fontScale;
           
           // Рисуем от верхнего края (контейнер уже отцентрован)
           allLines.forEach((line, idx) => {
