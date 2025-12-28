@@ -1018,30 +1018,22 @@ export default function Admin() {
   }
 
   return (
-    <div className="bg-background pb-20">
-      <div className="w-full border-b bg-background sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-3">
+    <div className="bg-background pb-20 pt-14">
+      <div className="w-full border-b bg-background sticky top-14 z-40">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex-shrink-0">
-              <h1 className="font-oswald font-bold text-xl sm:text-2xl">Админка</h1>
+            <div>
+              <h1 className="font-oswald font-bold text-2xl">Панель администратора</h1>
+              <p className="text-sm text-muted-foreground">Управление сайтом</p>
             </div>
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={() => navigate('/')} className="hidden sm:flex">
-                <Icon name="Home" size={16} className="mr-2" />
-                На сайт
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => navigate('/')}>
-                <Icon name="Home" size={16} className="sm:hidden" />
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="hidden sm:flex">
-                <Icon name="Key" size={16} className="mr-2" />
-                Пароль
-              </Button>
               <Button size="sm" variant="outline" onClick={() => setIsPasswordDialogOpen(true)}>
-                <Icon name="Key" size={16} className="sm:hidden" />
+                <Icon name="Key" size={16} className="mr-2" />
+                <span className="hidden sm:inline">Сменить пароль</span>
               </Button>
               <Button size="sm" variant="outline" onClick={logout}>
-                <Icon name="LogOut" size={16} />
+                <Icon name="LogOut" size={16} className="mr-2" />
+                <span className="hidden sm:inline">Выйти</span>
               </Button>
             </div>
           </div>
@@ -1148,7 +1140,7 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="w-full mb-8 sticky top-[57px] z-30 bg-background/95 backdrop-blur -mx-4 px-4 py-2 border-b">
+          <div className="w-full mb-8 sticky top-[122px] z-30 bg-background/95 backdrop-blur -mx-4 px-4 py-2 border-b">
             <div className="overflow-x-auto scrollbar-hide">
               <TabsList className="inline-flex w-auto h-auto p-1 bg-muted">
                 <TabsTrigger value="overview" className="font-oswald whitespace-nowrap text-xs sm:text-sm">

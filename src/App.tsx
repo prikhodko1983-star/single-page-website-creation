@@ -23,112 +23,113 @@ const NavigationBar = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   
-  // Скрываем навигацию только на странице логина
   if (location.pathname === '/login') {
     return null;
   }
   
   return (
-    <>
-      <div className="hidden md:flex fixed top-4 left-4 z-50 gap-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-lg p-2 shadow-lg">
-        <Button
-          variant={location.pathname === "/" ? "default" : "outline"}
-          size="sm"
-          onClick={() => navigate("/")}
-        >
-          <Icon name="Home" size={16} className="mr-2" />
-          Главная
-        </Button>
-        <Button
-          variant={location.pathname === "/catalog" || location.pathname.startsWith("/product") ? "default" : "outline"}
-          size="sm"
-          onClick={() => navigate("/catalog")}
-        >
-          <Icon name="ShoppingBag" size={16} className="mr-2" />
-          Каталог
-        </Button>
-        <Button
-          variant={location.pathname === "/admin" ? "default" : "outline"}
-          size="sm"
-          onClick={() => navigate("/admin")}
-        >
-          <Icon name="Settings" size={16} className="mr-2" />
-          Админка
-        </Button>
-        <Button
-          variant={location.pathname === "/constructor" ? "default" : "outline"}
-          size="sm"
-          onClick={() => navigate("/constructor")}
-        >
-          <Icon name="Wrench" size={16} className="mr-2" />
-          Конструктор
-        </Button>
+    <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-b">
+      <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+        {/* Навигация по центру */}
+        <nav className="hidden md:flex items-center gap-1 flex-1 justify-center">
+          <Button
+            variant={location.pathname === "/" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => navigate("/")}
+          >
+            <Icon name="Home" size={16} className="mr-2" />
+            Главная
+          </Button>
+          <Button
+            variant={location.pathname === "/catalog" || location.pathname.startsWith("/product") ? "default" : "ghost"}
+            size="sm"
+            onClick={() => navigate("/catalog")}
+          >
+            <Icon name="ShoppingBag" size={16} className="mr-2" />
+            Каталог
+          </Button>
+          <Button
+            variant={location.pathname === "/admin" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => navigate("/admin")}
+          >
+            <Icon name="Settings" size={16} className="mr-2" />
+            Админка
+          </Button>
+          <Button
+            variant={location.pathname === "/constructor" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => navigate("/constructor")}
+          >
+            <Icon name="Wrench" size={16} className="mr-2" />
+            Конструктор
+          </Button>
+        </nav>
+
+        {/* Мобильное меню */}
+        <div className="md:hidden flex-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <Icon name={isOpen ? "X" : "Menu"} size={20} />
+          </Button>
+        </div>
+
+        {/* Кнопки справа (только на десктопе) */}
+        <div className="hidden md:flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => window.open('https://docs.poehali.dev', '_blank')}>
+            <Icon name="BookOpen" size={16} className="mr-2" />
+            Документация
+          </Button>
+        </div>
       </div>
 
-      <div className="md:hidden fixed top-4 left-4 z-50">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setIsOpen(!isOpen)}
-          className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-lg"
-        >
-          <Icon name={isOpen ? "X" : "Menu"} size={20} />
-        </Button>
-        
-        {isOpen && (
-          <div className="absolute top-14 left-0 w-48 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-lg p-2 shadow-lg flex flex-col gap-2">
+      {/* Мобильное выпадающее меню */}
+      {isOpen && (
+        <div className="md:hidden border-t bg-background">
+          <div className="container mx-auto px-4 py-2 flex flex-col gap-1">
             <Button
-              variant={location.pathname === "/" ? "default" : "outline"}
+              variant={location.pathname === "/" ? "default" : "ghost"}
               size="sm"
-              onClick={() => {
-                navigate("/");
-                setIsOpen(false);
-              }}
-              className="w-full justify-start"
+              onClick={() => { navigate("/"); setIsOpen(false); }}
+              className="justify-start"
             >
               <Icon name="Home" size={16} className="mr-2" />
               Главная
             </Button>
             <Button
-              variant={location.pathname === "/catalog" || location.pathname.startsWith("/product") ? "default" : "outline"}
+              variant={location.pathname === "/catalog" || location.pathname.startsWith("/product") ? "default" : "ghost"}
               size="sm"
-              onClick={() => {
-                navigate("/catalog");
-                setIsOpen(false);
-              }}
-              className="w-full justify-start"
+              onClick={() => { navigate("/catalog"); setIsOpen(false); }}
+              className="justify-start"
             >
               <Icon name="ShoppingBag" size={16} className="mr-2" />
               Каталог
             </Button>
             <Button
-              variant={location.pathname === "/admin" ? "default" : "outline"}
+              variant={location.pathname === "/admin" ? "default" : "ghost"}
               size="sm"
-              onClick={() => {
-                navigate("/admin");
-                setIsOpen(false);
-              }}
-              className="w-full justify-start"
+              onClick={() => { navigate("/admin"); setIsOpen(false); }}
+              className="justify-start"
             >
               <Icon name="Settings" size={16} className="mr-2" />
               Админка
             </Button>
             <Button
-              variant={location.pathname === "/constructor" ? "default" : "outline"}
+              variant={location.pathname === "/constructor" ? "default" : "ghost"}
               size="sm"
-              onClick={() => {
-                navigate("/constructor");
-                setIsOpen(false);
-              }}
-              className="w-full justify-start"
+              onClick={() => { navigate("/constructor"); setIsOpen(false); }}
+              className="justify-start"
             >
               <Icon name="Wrench" size={16} className="mr-2" />
               Конструктор
             </Button>
           </div>
-        )}
-      </div>
-    </>
+        </div>
+      )}
+    </div>
   );
 };
 
