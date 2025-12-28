@@ -1020,24 +1020,28 @@ export default function Admin() {
   return (
     <div className="bg-background pb-20">
       <div className="w-full border-b bg-background sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="font-oswald font-bold text-2xl">Панель администратора</h1>
-              <p className="text-sm text-muted-foreground">Управление сайтом</p>
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-shrink-0">
+              <h1 className="font-oswald font-bold text-xl sm:text-2xl">Админка</h1>
             </div>
-            <div className="flex gap-2 flex-wrap">
-              <Button variant="outline" onClick={() => navigate('/')} className="flex-1 sm:flex-none">
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={() => navigate('/')} className="hidden sm:flex">
                 <Icon name="Home" size={16} className="mr-2" />
                 На сайт
               </Button>
-              <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="flex-1 sm:flex-none">
-                <Icon name="Key" size={16} className="mr-2" />
-                Сменить пароль
+              <Button size="sm" variant="outline" onClick={() => navigate('/')}>
+                <Icon name="Home" size={16} className="sm:hidden" />
               </Button>
-              <Button variant="outline" onClick={logout} className="flex-1 sm:flex-none">
-                <Icon name="LogOut" size={16} className="mr-2" />
-                Выйти
+              <Button size="sm" variant="outline" onClick={() => setIsPasswordDialogOpen(true)} className="hidden sm:flex">
+                <Icon name="Key" size={16} className="mr-2" />
+                Пароль
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setIsPasswordDialogOpen(true)}>
+                <Icon name="Key" size={16} className="sm:hidden" />
+              </Button>
+              <Button size="sm" variant="outline" onClick={logout}>
+                <Icon name="LogOut" size={16} />
               </Button>
             </div>
           </div>
@@ -1144,32 +1148,32 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="w-full mb-8 sticky top-[73px] z-30 bg-background -mx-4 px-4">
-            <div className="overflow-x-auto pb-2 scrollbar-hide">
+          <div className="w-full mb-8 sticky top-[57px] z-30 bg-background/95 backdrop-blur -mx-4 px-4 py-2 border-b">
+            <div className="overflow-x-auto scrollbar-hide">
               <TabsList className="inline-flex w-auto h-auto p-1 bg-muted">
-                <TabsTrigger value="overview" className="font-oswald whitespace-nowrap">
-                  <Icon name="LayoutDashboard" size={16} className="mr-2" />
-                  Обзор
+                <TabsTrigger value="overview" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
+                  <Icon name="LayoutDashboard" size={14} className="sm:mr-2" />
+                  <span className="hidden sm:inline">Обзор</span>
                 </TabsTrigger>
-                <TabsTrigger value="shop" className="font-oswald whitespace-nowrap">
-                  <Icon name="ShoppingBag" size={16} className="mr-2" />
-                  Магазин
+                <TabsTrigger value="shop" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
+                  <Icon name="ShoppingBag" size={14} className="sm:mr-2" />
+                  <span className="hidden sm:inline">Магазин</span>
                 </TabsTrigger>
-                <TabsTrigger value="crosses" className="font-oswald whitespace-nowrap">
-                  <Icon name="Cross" size={16} className="mr-2" />
-                  Кресты
+                <TabsTrigger value="crosses" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
+                  <Icon name="Cross" size={14} className="sm:mr-2" />
+                  <span className="hidden sm:inline">Кресты</span>
                 </TabsTrigger>
-                <TabsTrigger value="flowers" className="font-oswald whitespace-nowrap">
-                  <Icon name="Flower2" size={16} className="mr-2" />
-                  Цветы
+                <TabsTrigger value="flowers" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
+                  <Icon name="Flower2" size={14} className="sm:mr-2" />
+                  <span className="hidden sm:inline">Цветы</span>
                 </TabsTrigger>
-                <TabsTrigger value="gallery" className="font-oswald whitespace-nowrap">
-                  <Icon name="Images" size={16} className="mr-2" />
-                  Галерея работ
+                <TabsTrigger value="gallery" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
+                  <Icon name="Images" size={14} className="sm:mr-2" />
+                  <span className="hidden sm:inline">Галерея</span>
                 </TabsTrigger>
-                <TabsTrigger value="images" className="font-oswald whitespace-nowrap">
-                  <Icon name="Image" size={16} className="mr-2" />
-                  Изображения
+                <TabsTrigger value="images" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
+                  <Icon name="Image" size={14} className="sm:mr-2" />
+                  <span className="hidden sm:inline">Изображения</span>
                 </TabsTrigger>
               </TabsList>
             </div>
