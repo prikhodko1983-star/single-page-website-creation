@@ -182,6 +182,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Получаем токен, chat_id и topic_id из переменных окружения
         telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN', '8230420684:AAEL95wk4Np-dLdEtCqJEJA8wGZATeiUsEI')
         telegram_chat_id = os.environ.get('TELEGRAM_CHAT_ID', '8230420684')
+        telegram_chat_id_2 = os.environ.get('TELEGRAM_CHAT_ID_2', '')
         telegram_topic_id = os.environ.get('TELEGRAM_TOPIC_ID', '')
         
         # Получаем Content-Type
@@ -241,8 +242,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        # Отправляем в Telegram
-        success = send_to_telegram(
+        # Отправляем в первую группу
+        success1 = send_to_telegram(
             telegram_token,
             telegram_chat_id,
             name,
@@ -253,7 +254,21 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             telegram_topic_id if telegram_topic_id else None
         )
         
-        if success:
+        # Отправляем во вторую группу (если указана)
+        success2 = True
+        if telegram_chat_id_2:
+            success2 = send_to_telegram(
+                telegram_token,
+                telegram_chat_id_2,
+                name,
+                phone,
+                comment,
+                photo_data,
+                filename,
+                None  # Во второй группе топики не используем
+            )
+        
+        if success1 and success2:
             return {
                 'statusCode': 200,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
