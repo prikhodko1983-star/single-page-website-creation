@@ -1386,6 +1386,13 @@ const Constructor = () => {
             ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${fontFamily}`;
             ctx.fillStyle = element.color || '#FFFFFF';
             
+            // Применяем letterSpacing
+            if (element.letterSpacing) {
+              ctx.letterSpacing = `${element.letterSpacing * fontScale}px`;
+            } else {
+              ctx.letterSpacing = '0px';
+            }
+            
             // Поддержка выравнивания текста
             // Тень для читаемости
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
@@ -1653,6 +1660,18 @@ const Constructor = () => {
     
     try {
       console.log('🖼️ Начинаем создание PNG...');
+      console.log('📝 Данные элементов перед экспортом:', elements.map(el => ({
+        id: el.id,
+        type: el.type,
+        content: el.content,
+        fontSize: el.fontSize,
+        fontFamily: el.fontFamily,
+        color: el.color,
+        italic: el.italic,
+        letterSpacing: el.letterSpacing,
+        lineHeight: el.lineHeight,
+        textAlign: el.textAlign
+      })));
       
       toast({
         title: "Создание изображения...",
@@ -1792,11 +1811,29 @@ const Constructor = () => {
         const fontScale = drawWidth / screenDrawWidth;
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
+          console.log(`🎨 Отрисовка элемента ${element.type} (id: ${element.id}):`, {
+            content: element.content,
+            fontSize: element.fontSize,
+            fontFamily: element.fontFamily,
+            color: element.color,
+            italic: element.italic,
+            letterSpacing: element.letterSpacing,
+            lineHeight: element.lineHeight,
+            textAlign: element.textAlign
+          });
+          
           const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
           const scaledFontSize = (element.fontSize || 24) * fontScale;
           const fontStyle = element.italic ? 'italic' : 'normal';
           ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${fontFamily}`;
           ctx.fillStyle = element.color || '#FFFFFF';
+          
+          // Применяем letterSpacing
+          if (element.letterSpacing) {
+            ctx.letterSpacing = `${element.letterSpacing * fontScale}px`;
+          } else {
+            ctx.letterSpacing = '0px';
+          }
           
           // Разные дефолтные lineHeight для разных типов
           let defaultLineHeight = 1.2;
