@@ -48,11 +48,6 @@ export default function IndexHeroSections({
 
   const blagoustroySlides = [
     {
-      image: 'https://cdn.poehali.dev/files/IMG_4105.jpeg',
-      title: 'Укладка плитки',
-      description: 'Профессиональная укладка гранитной плитки вокруг памятника'
-    },
-    {
       image: 'https://cdn.poehali.dev/files/bbcac88c-6deb-429e-b227-40488c7c5273.jpg',
       title: 'Мемориальные комплексы',
       description: 'Полное обустройство с плиткой, оградой и элементами благоустройства'
