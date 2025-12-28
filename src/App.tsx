@@ -23,14 +23,14 @@ const NavigationBar = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   
-  // Скрываем навигацию на страницах админки, конструктора и логина
-  if (location.pathname === '/admin' || location.pathname === '/constructor' || location.pathname === '/login') {
+  // Скрываем навигацию только на странице логина
+  if (location.pathname === '/login') {
     return null;
   }
   
   return (
     <>
-      <div className="hidden md:flex fixed top-4 right-4 z-50 gap-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-lg p-2 shadow-lg">
+      <div className="hidden md:flex fixed top-4 left-4 z-50 gap-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-lg p-2 shadow-lg">
         <Button
           variant={location.pathname === "/" ? "default" : "outline"}
           size="sm"
@@ -65,7 +65,7 @@ const NavigationBar = () => {
         </Button>
       </div>
 
-      <div className="md:hidden fixed top-4 right-4 z-50">
+      <div className="md:hidden fixed top-4 left-4 z-50">
         <Button
           variant="outline"
           size="icon"
@@ -76,7 +76,7 @@ const NavigationBar = () => {
         </Button>
         
         {isOpen && (
-          <div className="absolute top-14 right-0 w-48 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-lg p-2 shadow-lg flex flex-col gap-2">
+          <div className="absolute top-14 left-0 w-48 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-lg p-2 shadow-lg flex flex-col gap-2">
             <Button
               variant={location.pathname === "/" ? "default" : "outline"}
               size="sm"
