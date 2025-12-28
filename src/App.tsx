@@ -25,41 +25,37 @@ const NavigationBar = () => {
   
   return (
     <>
-      <div className="hidden md:flex fixed top-4 right-4 z-50 flex-wrap gap-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-lg p-2 shadow-lg max-w-md">
+      <div className="hidden md:flex fixed top-4 right-4 z-50 gap-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-lg p-2 shadow-lg">
         <Button
           variant={location.pathname === "/" ? "default" : "outline"}
           size="sm"
           onClick={() => navigate("/")}
-          className="flex-shrink-0"
         >
-          <Icon name="Home" size={16} className="mr-1.5" />
+          <Icon name="Home" size={16} className="mr-2" />
           Главная
         </Button>
         <Button
           variant={location.pathname === "/catalog" || location.pathname.startsWith("/product") ? "default" : "outline"}
           size="sm"
           onClick={() => navigate("/catalog")}
-          className="flex-shrink-0"
         >
-          <Icon name="ShoppingBag" size={16} className="mr-1.5" />
+          <Icon name="ShoppingBag" size={16} className="mr-2" />
           Каталог
         </Button>
         <Button
           variant={location.pathname === "/admin" ? "default" : "outline"}
           size="sm"
           onClick={() => navigate("/admin")}
-          className="flex-shrink-0"
         >
-          <Icon name="Settings" size={16} className="mr-1.5" />
+          <Icon name="Settings" size={16} className="mr-2" />
           Админка
         </Button>
         <Button
           variant={location.pathname === "/constructor" ? "default" : "outline"}
           size="sm"
           onClick={() => navigate("/constructor")}
-          className="flex-shrink-0"
         >
-          <Icon name="Wrench" size={16} className="mr-1.5" />
+          <Icon name="Wrench" size={16} className="mr-2" />
           Конструктор
         </Button>
       </div>
