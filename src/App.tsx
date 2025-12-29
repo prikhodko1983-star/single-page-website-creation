@@ -15,6 +15,7 @@ import Catalog from "./pages/Catalog";
 import Product from "./pages/Product";
 import Legal from "./pages/Legal";
 import NotFound from "./pages/NotFound";
+import UnderDevelopment from "./pages/UnderDevelopment";
 
 const queryClient = new QueryClient();
 
@@ -134,6 +135,12 @@ const NavigationBar = () => {
 };
 
 const AppContent = () => {
+  const isDevelopment = true;
+
+  if (isDevelopment) {
+    return <UnderDevelopment />;
+  }
+
   return (
     <>
       <NavigationBar />
