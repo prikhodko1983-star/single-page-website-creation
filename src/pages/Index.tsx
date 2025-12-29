@@ -129,6 +129,18 @@ const Index = () => {
         onNavigateAdmin={() => navigate('/admin')}
       />
 
+      {/* Уведомление о разработке */}
+      <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white py-4 px-4">
+        <div className="container mx-auto text-center">
+          <p className="text-lg font-semibold">
+            ⚠️ Сайт находится в разработке
+          </p>
+          <p className="text-sm mt-1 opacity-90">
+            Некоторые функции могут работать не полностью. Спасибо за понимание!
+          </p>
+        </div>
+      </div>
+
       <IndexHeroSections 
         onNavigateCatalog={() => navigate('/catalog')}
         onNavigateConstructor={() => navigate('/constructor')}
