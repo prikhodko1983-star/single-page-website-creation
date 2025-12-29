@@ -12,9 +12,9 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
   return (
     <>
       {/* Баннер о разработке */}
-      <div className="bg-primary text-primary-foreground py-2 px-4 text-center text-sm">
+      <div className="bg-orange-500 text-white py-3 px-4 text-center text-sm font-medium shadow-md">
         <div className="flex items-center justify-center gap-2">
-          <Icon name="Info" size={16} />
+          <Icon name="AlertCircle" size={18} />
           <span>Сайт находится в разработке. Некоторые функции могут работать не полностью.</span>
         </div>
       </div>
