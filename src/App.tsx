@@ -15,7 +15,6 @@ import Catalog from "./pages/Catalog";
 import Product from "./pages/Product";
 import Legal from "./pages/Legal";
 import NotFound from "./pages/NotFound";
-import Maintenance from "./pages/Maintenance";
 
 const queryClient = new QueryClient();
 
@@ -135,13 +134,6 @@ const NavigationBar = () => {
 };
 
 const AppContent = () => {
-  // Включить заглушку для всех посетителей
-  const isMaintenanceMode = true;
-
-  if (isMaintenanceMode) {
-    return <Maintenance />;
-  }
-
   return (
     <>
       <NavigationBar />
