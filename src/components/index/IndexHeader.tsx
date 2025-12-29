@@ -10,17 +10,8 @@ interface IndexHeaderProps {
 
 export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavigateAdmin }: IndexHeaderProps) {
   return (
-    <>
-      {/* Баннер о разработке */}
-      <div className="bg-orange-500 text-white py-3 px-4 text-center text-sm font-medium shadow-md">
-        <div className="flex items-center justify-center gap-2">
-          <Icon name="AlertCircle" size={18} />
-          <span>Сайт находится в разработке. Некоторые функции могут работать не полностью.</span>
-        </div>
-      </div>
-      
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
-        <div className="container mx-auto px-4 py-4">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
+      <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="font-oswald font-bold text-2xl text-primary">ГРАНИТНЫЕ ПАМЯТНИКИ</h1>
@@ -137,6 +128,5 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
         )}
       </div>
     </header>
-    </>
   );
 }
