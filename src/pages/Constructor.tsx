@@ -1431,10 +1431,7 @@ const Constructor = () => {
             const scaledFontSize = (element.fontSize || 24) * fontScale;
             const fontStyle = element.italic ? 'italic' : 'normal';
             
-            // Увеличиваем размер для заглавных букв в PF Monumenta Pro
-            const actualFontSize = (element.type === 'fio' && fontFamily.includes('PF Monumenta Pro')) 
-              ? scaledFontSize * 1.15 
-              : scaledFontSize;
+            const actualFontSize = scaledFontSize;
             
             ctx.font = `${fontStyle} ${fontWeight} ${actualFontSize}px "${fontFamily}"`;
             ctx.fillStyle = element.color || '#FFFFFF';
@@ -1542,7 +1539,7 @@ const Constructor = () => {
                     
                     // Рисуем первую букву увеличенной
                     const originalFont = ctx.font;
-                    const enlargedSize = actualFontSize * initialScale;
+                    const enlargedSize = scaledFontSize * initialScale;
                     ctx.font = `${fontStyle} ${fontWeight} ${enlargedSize}px "${fontFamily}"`;
                     ctx.fillText(firstChar, currentX, lineY);
                     const firstCharWidth = ctx.measureText(firstChar).width;
@@ -1984,11 +1981,45 @@ const Constructor = () => {
           ctx.shadowOffsetX = 2 * fontScale;
           ctx.shadowOffsetY = 2 * fontScale;
           
+          const initialScale = element.initialScale || 1.0;
+          
           // Рисуем от верхнего края (контейнер уже отцентрован)
           allLines.forEach((line, idx) => {
             const lineY = Math.round(scaledY + idx * lineHeight);
-            const lineX = Math.round(linePositions[idx].x);
-            ctx.fillText(line, lineX, lineY);
+            let currentX = Math.round(linePositions[idx].x);
+            
+            // Если есть увеличение первой буквы (для FIO)
+            if (element.type === 'fio' && initialScale > 1.0 && line.length > 0) {
+              const words = line.split(/\s+/);
+              
+              words.forEach((word, wordIdx) => {
+                if (wordIdx > 0) {
+                  const spaceWidth = ctx.measureText(' ').width;
+                  currentX += spaceWidth;
+                }
+                
+                if (word.length > 0) {
+                  const firstChar = word[0];
+                  const rest = word.slice(1);
+                  
+                  // Рисуем первую букву увеличенной
+                  const originalFont = ctx.font;
+                  const enlargedSize = scaledFontSize * initialScale;
+                  ctx.font = `${fontStyle} ${fontWeight} ${enlargedSize}px "${fontFamily}"`;
+                  ctx.fillText(firstChar, currentX, lineY);
+                  const firstCharWidth = ctx.measureText(firstChar).width;
+                  currentX += firstCharWidth;
+                  
+                  // Возвращаем обычный размер
+                  ctx.font = originalFont;
+                  ctx.fillText(rest, currentX, lineY);
+                  const restWidth = ctx.measureText(rest).width;
+                  currentX += restWidth;
+                }
+              });
+            } else {
+              ctx.fillText(line, currentX, lineY);
+            }
           });
           
           // Сбрасываем тень
