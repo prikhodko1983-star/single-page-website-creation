@@ -95,10 +95,11 @@ export const ConstructorCanvas = ({
       const rest = word.slice(1);
       
       return (
-        <div key={idx} style={{ whiteSpace: 'nowrap' }}>
+        <React.Fragment key={idx}>
+          {idx > 0 && <br />}
           <span className="initial">{firstChar}</span>
           {rest}
-        </div>
+        </React.Fragment>
       );
     });
   };
@@ -292,15 +293,9 @@ export const ConstructorCanvas = ({
                       lineHeight: element.fontFamily?.includes('|custom|') ? 1.6 : (element.lineHeight || 1.05),
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
-                      whiteSpace: 'normal',
-                      wordBreak: 'break-word',
-                      overflowWrap: 'break-word',
                       overflow: 'visible',
                       width: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'flex-start',
+                      display: 'block',
                       margin: 0,
                       padding: 0,
                     }}
