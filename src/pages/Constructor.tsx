@@ -913,8 +913,7 @@ const Constructor = () => {
       const blob = new Blob([pngWithMetadata], { type: 'image/png' });
       const url = URL.createObjectURL(blob);
       
-      const timestamp = Date.now();
-      const fileName = `monument_${timestamp}.png`;
+      const fileName = `проект.png`;
       
       console.log('💾 Скачиваем PNG с метаданными:', fileName);
       
