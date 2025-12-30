@@ -125,11 +125,32 @@ export const ConstructorLibrary = ({
         setImageCategories(data);
         if (data.length > 0) {
           setSelectedImageCategory(data[0].id);
-          loadCategoryImages(data[0].id);
+          loadAllCategoryImages(data);
         }
       }
     } catch (error) {
       console.error('Error loading image categories:', error);
+    }
+  };
+
+  const loadAllCategoryImages = async (categories: Array<{id: number, name: string, slug: string}>) => {
+    setIsLoadingImages(true);
+    try {
+      const allImages: Array<{id: number, category_id: number, name: string, image_url: string, category_name: string}> = [];
+      
+      for (const category of categories) {
+        const response = await fetch(`https://functions.poehali.dev/dee0114f-9dc3-4783-87b7-346a133d7c73?type=images&category_id=${category.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          allImages.push(...data);
+        }
+      }
+      
+      setCategoryImages(allImages);
+    } catch (error) {
+      console.error('Error loading category images:', error);
+    } finally {
+      setIsLoadingImages(false);
     }
   };
 
@@ -256,7 +277,6 @@ export const ConstructorLibrary = ({
                   <Tabs value={selectedImageCategory?.toString()} onValueChange={(val) => {
                     const catId = parseInt(val);
                     setSelectedImageCategory(catId);
-                    loadCategoryImages(catId);
                   }} className="w-full">
                     <TabsList className="w-full flex-wrap h-auto gap-1">
                       {imageCategories.map(cat => {
