@@ -426,7 +426,7 @@ export const ConstructorCanvas = ({
             className="flex-1"
           >
             <Icon name="Image" size={18} className="mr-2" />
-            PNG
+            Сохранить проект
           </Button>
           <label 
             htmlFor="import-design"
