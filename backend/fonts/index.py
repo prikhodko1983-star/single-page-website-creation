@@ -11,7 +11,7 @@ s3 = boto3.client('s3',
 )
 
 BUCKET = 'files'
-FONTS_PREFIX = 'fonts/'
+FONTS_PREFIX = 'font_'
 
 def handler(event: dict, context: Any) -> Dict[str, Any]:
     '''API для управления шрифтами в конструкторе'''
@@ -77,14 +77,21 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
             file_bytes = base64.b64decode(file_data)
             print(f'Decoded file size: {len(file_bytes)} bytes')
             
-            s3_key = f'{FONTS_PREFIX}{filename}'
+            import uuid
+            file_id = str(uuid.uuid4())
+            file_ext = filename.split('.')[-1] if '.' in filename else 'ttf'
+            s3_key = f'{FONTS_PREFIX}{file_id}.{file_ext}'
             print(f'Uploading to S3: bucket={BUCKET}, key={s3_key}')
             s3.put_object(
                 Bucket=BUCKET,
                 Key=s3_key,
                 Body=file_bytes,
                 ContentType='font/ttf',
-                Metadata={'display_name': display_name}
+                Metadata={
+                    'display_name': display_name,
+                    'original_filename': filename,
+                    'font_type': 'custom'
+                }
             )
             print('Upload successful')
             
@@ -124,16 +131,30 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            s3_key = f'{FONTS_PREFIX}{filename}'
-            s3.delete_object(Bucket=BUCKET, Key=s3_key)
+            # Находим файл по оригинальному имени через метаданные
+            response = s3.list_objects_v2(Bucket=BUCKET)
+            if 'Contents' in response:
+                for obj in response['Contents']:
+                    key = obj['Key']
+                    if key.startswith(FONTS_PREFIX):
+                        head = s3.head_object(Bucket=BUCKET, Key=key)
+                        metadata = head.get('Metadata', {})
+                        if metadata.get('original_filename') == filename:
+                            s3.delete_object(Bucket=BUCKET, Key=key)
+                            return {
+                                'statusCode': 200,
+                                'headers': {
+                                    'Content-Type': 'application/json',
+                                    'Access-Control-Allow-Origin': '*'
+                                },
+                                'body': json.dumps({'message': 'Font deleted'}),
+                                'isBase64Encoded': False
+                            }
             
             return {
-                'statusCode': 200,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                'body': json.dumps({'message': 'Font deleted'}),
+                'statusCode': 404,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'error': 'Font not found'}),
                 'isBase64Encoded': False
             }
         
@@ -161,34 +182,43 @@ def list_fonts():
     fonts = []
     
     try:
-        print(f'Listing objects from bucket={BUCKET}, prefix={FONTS_PREFIX}')
-        response = s3.list_objects_v2(Bucket=BUCKET, Prefix=FONTS_PREFIX)
+        print(f'Listing objects from bucket={BUCKET}')
+        response = s3.list_objects_v2(Bucket=BUCKET)
         print(f'S3 response keys: {response.keys()}')
         
         if 'Contents' in response:
             print(f'Found {len(response["Contents"])} objects')
             for obj in response['Contents']:
                 key = obj['Key']
-                print(f'Processing key: {key}')
-                if key == FONTS_PREFIX:
-                    print(f'Skipping prefix-only key')
+                
+                # Фильтруем только файлы шрифтов (с префиксом font_)
+                if not key.startswith(FONTS_PREFIX):
                     continue
+                
+                print(f'Processing font key: {key}')
+                
+                try:
+                    head = s3.head_object(Bucket=BUCKET, Key=key)
+                    metadata = head.get('Metadata', {})
                     
-                filename = key.replace(FONTS_PREFIX, '')
-                print(f'Filename: {filename}')
-                
-                head = s3.head_object(Bucket=BUCKET, Key=key)
-                metadata = head.get('Metadata', {})
-                display_name = metadata.get('display_name', filename.replace('.ttf', '').replace('.otf', ''))
-                print(f'Display name: {display_name}, metadata: {metadata}')
-                
-                cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{key}"
-                
-                fonts.append({
-                    'filename': filename,
-                    'name': display_name,
-                    'url': cdn_url
-                })
+                    # Проверяем, что это файл шрифта
+                    if metadata.get('font_type') != 'custom':
+                        continue
+                    
+                    display_name = metadata.get('display_name', key)
+                    original_filename = metadata.get('original_filename', key)
+                    print(f'Display name: {display_name}, metadata: {metadata}')
+                    
+                    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{key}"
+                    
+                    fonts.append({
+                        'filename': original_filename,
+                        'name': display_name,
+                        'url': cdn_url
+                    })
+                except Exception as e:
+                    print(f'Error processing font {key}: {e}')
+                    continue
         else:
             print('No Contents in S3 response')
     
