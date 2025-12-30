@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -304,6 +304,7 @@ export default function Admin() {
   const [fontForm, setFontForm] = useState({ name: '', file: null as File | null });
   const [uploadingFont, setUploadingFont] = useState(false);
   const [fontUploadProgress, setFontUploadProgress] = useState(0);
+  const fontInputRef = useRef<HTMLInputElement>(null);
 
   const categories_list = ["Вертикальные", "Горизонтальные", "Эксклюзивные", "С крестом"];
   const filterCategories = ["Все", ...categories_list];
@@ -650,10 +651,15 @@ export default function Admin() {
 
   const loadFonts = async () => {
     try {
+      console.log('Loading fonts from:', FONTS_API);
       const response = await fetch(FONTS_API);
+      console.log('Fonts response status:', response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log('Fonts data:', data);
         setFonts(data);
+      } else {
+        console.error('Failed to load fonts:', response.statusText);
       }
     } catch (error) {
       console.error('Error loading fonts:', error);
@@ -675,9 +681,10 @@ export default function Admin() {
     setUploadingFont(true);
     setFontUploadProgress(0);
 
-    try {
-      const reader = new FileReader();
-      reader.onload = async () => {
+    const reader = new FileReader();
+    
+    reader.onload = async () => {
+      try {
         const base64 = reader.result?.toString().split(',')[1];
         
         if (!base64) {
@@ -685,6 +692,7 @@ export default function Admin() {
         }
 
         const token = localStorage.getItem('auth_token');
+        console.log('Uploading font:', fontForm.file!.name, 'to', FONTS_API);
         const response = await fetch(FONTS_API, {
           method: 'POST',
           headers: {
@@ -698,28 +706,46 @@ export default function Admin() {
           })
         });
 
+        console.log('Upload response status:', response.status);
         if (response.ok) {
+          const result = await response.json();
+          console.log('Upload success:', result);
           toast({
             title: '✅ Успешно',
             description: 'Шрифт загружен'
           });
-          loadFonts();
+          await loadFonts();
           setFontForm({ name: '', file: null });
+          if (fontInputRef.current) {
+            fontInputRef.current.value = '';
+          }
         } else {
-          throw new Error('Upload failed');
+          const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+          console.error('Upload failed:', errorData);
+          throw new Error(errorData.error || 'Upload failed');
         }
-      };
+      } catch (error) {
+        console.error('Font upload error:', error);
+        toast({
+          title: '❌ Ошибка',
+          description: error instanceof Error ? error.message : 'Не удалось загрузить шрифт',
+          variant: 'destructive'
+        });
+      } finally {
+        setUploadingFont(false);
+      }
+    };
 
-      reader.readAsDataURL(fontForm.file);
-    } catch (error) {
+    reader.onerror = () => {
       toast({
         title: '❌ Ошибка',
-        description: 'Не удалось загрузить шрифт',
+        description: 'Не удалось прочитать файл',
         variant: 'destructive'
       });
-    } finally {
       setUploadingFont(false);
-    }
+    };
+
+    reader.readAsDataURL(fontForm.file);
   };
 
   const handleFontDelete = async (filename: string) => {
@@ -2807,6 +2833,7 @@ export default function Admin() {
                   <div>
                     <Label htmlFor="font-file">Файл шрифта (.ttf, .otf, .woff, .woff2)</Label>
                     <Input
+                      ref={fontInputRef}
                       id="font-file"
                       type="file"
                       accept=".ttf,.otf,.woff,.woff2"
