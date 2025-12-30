@@ -84,37 +84,7 @@ export const ConstructorCanvas = ({
   handleInlineTextChange,
   handleInlineEditBlur,
 }: ConstructorCanvasProps) => {
-  // Функция для выделения заглавных букв
-  const formatFIOWithInitials = (text: string, isCustomFont: boolean) => {
-    if (!text) return text;
-    
-    const words = text.split(/\s+/).filter(w => w);
-    
-    if (isCustomFont) {
-      // Для кастомных шрифтов - увеличенные заглавные буквы
-      return words.map((word, idx) => {
-        if (!word) return null;
-        const firstChar = word[0];
-        const rest = word.slice(1);
-        
-        return (
-          <React.Fragment key={idx}>
-            {idx > 0 && <br />}
-            <span className="initial">{firstChar}</span>
-            {rest}
-          </React.Fragment>
-        );
-      });
-    } else {
-      // Для обычных шрифтов - просто перенос строк между словами
-      return words.map((word, idx) => (
-        <React.Fragment key={idx}>
-          {idx > 0 && <br />}
-          {word}
-        </React.Fragment>
-      ));
-    }
-  };
+
 
   return (
     <div className="flex flex-col items-center">
@@ -294,7 +264,7 @@ export const ConstructorCanvas = ({
                   />
                 ) : (
                   <div
-                    className={`select-none ${element.fontFamily?.includes('|custom|') ? 'fio-custom' : ''}`}
+                    className="select-none"
                     style={{ 
                       fontSize: `${element.fontSize}px`, 
                       color: element.color,
@@ -302,9 +272,10 @@ export const ConstructorCanvas = ({
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.includes('|custom|') ? 'normal' : (element.fontFamily?.split('|')[1] || '400'),
                       fontStyle: element.italic ? 'italic' : 'normal',
-                      lineHeight: element.fontFamily?.includes('|custom|') ? 1.6 : (element.lineHeight || 1.05),
+                      lineHeight: element.lineHeight || 1.05,
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
+                      whiteSpace: 'pre-wrap',
                       overflow: 'visible',
                       width: '100%',
                       display: 'block',
@@ -312,7 +283,7 @@ export const ConstructorCanvas = ({
                       padding: 0,
                     }}
                   >
-                    {formatFIOWithInitials(element.content || '', element.fontFamily?.includes('|custom|') || false)}
+                    {element.content}
                   </div>
                 )}
               </div>
