@@ -1,17 +1,15 @@
 import json
 import os
 import base64
-import boto3
+import psycopg2
 from typing import Any, Dict
 
-s3 = boto3.client('s3',
-    endpoint_url='https://bucket.poehali.dev',
-    aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
-    aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-)
-
-BUCKET = 'files'
-FONTS_PREFIX = 'font_'
+def get_db_connection():
+    '''Подключение к PostgreSQL через DATABASE_URL'''
+    dsn = os.environ.get('DATABASE_URL')
+    if not dsn:
+        raise Exception('DATABASE_URL not set')
+    return psycopg2.connect(dsn)
 
 def handler(event: dict, context: Any) -> Dict[str, Any]:
     '''API для управления шрифтами в конструкторе'''
@@ -46,9 +44,7 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
             }
         
         if method == 'POST':
-            print(f'POST request received, auth_token present: {bool(auth_token)}')
             if not auth_token:
-                print('No auth token, returning 401')
                 return {
                     'statusCode': 401,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -57,15 +53,12 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
                 }
             
             body_str = event.get('body', '{}')
-            print(f'Request body length: {len(body_str)} characters')
             body = json.loads(body_str)
             filename = body.get('filename', '')
             file_data = body.get('data', '')
             display_name = body.get('name', filename)
-            print(f'Filename: {filename}, display_name: {display_name}, data length: {len(file_data)}')
             
             if not filename or not file_data:
-                print('Missing filename or data')
                 return {
                     'statusCode': 400,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -73,29 +66,17 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            print('Decoding base64')
-            file_bytes = base64.b64decode(file_data)
-            print(f'Decoded file size: {len(file_bytes)} bytes')
+            conn = get_db_connection()
+            cur = conn.cursor()
             
-            import uuid
-            file_id = str(uuid.uuid4())
-            file_ext = filename.split('.')[-1] if '.' in filename else 'ttf'
-            s3_key = f'{FONTS_PREFIX}{file_id}.{file_ext}'
-            print(f'Uploading to S3: bucket={BUCKET}, key={s3_key}')
-            s3.put_object(
-                Bucket=BUCKET,
-                Key=s3_key,
-                Body=file_bytes,
-                ContentType='font/ttf',
-                Metadata={
-                    'display_name': display_name,
-                    'original_filename': filename,
-                    'font_type': 'custom'
-                }
+            cur.execute(
+                "INSERT INTO fonts (filename, display_name, font_data) VALUES (%s, %s, %s) RETURNING id",
+                (filename, display_name, file_data)
             )
-            print('Upload successful')
-            
-            cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{s3_key}"
+            font_id = cur.fetchone()[0]
+            conn.commit()
+            cur.close()
+            conn.close()
             
             return {
                 'statusCode': 200,
@@ -104,8 +85,8 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
                     'Access-Control-Allow-Origin': '*'
                 },
                 'body': json.dumps({
+                    'id': font_id,
                     'filename': filename,
-                    'url': cdn_url,
                     'name': display_name
                 }),
                 'isBase64Encoded': False
@@ -131,30 +112,20 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Находим файл по оригинальному имени через метаданные
-            response = s3.list_objects_v2(Bucket=BUCKET)
-            if 'Contents' in response:
-                for obj in response['Contents']:
-                    key = obj['Key']
-                    if key.startswith(FONTS_PREFIX):
-                        head = s3.head_object(Bucket=BUCKET, Key=key)
-                        metadata = head.get('Metadata', {})
-                        if metadata.get('original_filename') == filename:
-                            s3.delete_object(Bucket=BUCKET, Key=key)
-                            return {
-                                'statusCode': 200,
-                                'headers': {
-                                    'Content-Type': 'application/json',
-                                    'Access-Control-Allow-Origin': '*'
-                                },
-                                'body': json.dumps({'message': 'Font deleted'}),
-                                'isBase64Encoded': False
-                            }
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("DELETE FROM fonts WHERE filename = %s", (filename,))
+            conn.commit()
+            cur.close()
+            conn.close()
             
             return {
-                'statusCode': 404,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'Font not found'}),
+                'statusCode': 200,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({'message': 'Font deleted'}),
                 'isBase64Encoded': False
             }
         
@@ -166,6 +137,9 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
         }
     
     except Exception as e:
+        print(f'Error: {e}')
+        import traceback
+        traceback.print_exc()
         return {
             'statusCode': 500,
             'headers': {
@@ -178,54 +152,28 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
 
 
 def list_fonts():
-    '''Получить список всех шрифтов из S3'''
-    fonts = []
-    
+    '''Получить список всех шрифтов из БД'''
     try:
-        print(f'Listing objects from bucket={BUCKET}')
-        response = s3.list_objects_v2(Bucket=BUCKET)
-        print(f'S3 response keys: {response.keys()}')
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id, filename, display_name, font_data FROM fonts ORDER BY id")
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
         
-        if 'Contents' in response:
-            print(f'Found {len(response["Contents"])} objects')
-            for obj in response['Contents']:
-                key = obj['Key']
-                
-                # Фильтруем только файлы шрифтов (с префиксом font_)
-                if not key.startswith(FONTS_PREFIX):
-                    continue
-                
-                print(f'Processing font key: {key}')
-                
-                try:
-                    head = s3.head_object(Bucket=BUCKET, Key=key)
-                    metadata = head.get('Metadata', {})
-                    
-                    # Проверяем, что это файл шрифта
-                    if metadata.get('font_type') != 'custom':
-                        continue
-                    
-                    display_name = metadata.get('display_name', key)
-                    original_filename = metadata.get('original_filename', key)
-                    print(f'Display name: {display_name}, metadata: {metadata}')
-                    
-                    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{key}"
-                    
-                    fonts.append({
-                        'filename': original_filename,
-                        'name': display_name,
-                        'url': cdn_url
-                    })
-                except Exception as e:
-                    print(f'Error processing font {key}: {e}')
-                    continue
-        else:
-            print('No Contents in S3 response')
-    
+        fonts = []
+        for row in rows:
+            font_id, filename, display_name, font_data = row
+            fonts.append({
+                'id': font_id,
+                'filename': filename,
+                'name': display_name,
+                'url': f'data:font/ttf;base64,{font_data}'
+            })
+        
+        return fonts
     except Exception as e:
         print(f'Error listing fonts: {e}')
         import traceback
         traceback.print_exc()
-    
-    print(f'Returning {len(fonts)} fonts')
-    return fonts
+        return []

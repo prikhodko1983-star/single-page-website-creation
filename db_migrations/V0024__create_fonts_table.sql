@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS fonts (
+    id SERIAL PRIMARY KEY,
+    filename VARCHAR(255) NOT NULL,
+    display_name VARCHAR(255) NOT NULL,
+    font_data TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
