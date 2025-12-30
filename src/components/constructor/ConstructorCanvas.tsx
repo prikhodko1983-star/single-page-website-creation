@@ -256,6 +256,8 @@ export const ConstructorCanvas = ({
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
                       textTransform: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? 'uppercase' : 'none',
+                      fontFeatureSettings: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? "'ss01', 'calt', 'swsh', 'liga', 'dlig'" : 'normal',
+                      fontVariantLigatures: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? 'common-ligatures discretionary-ligatures' : 'normal',
                     }}
                   />
                 ) : (
@@ -278,6 +280,8 @@ export const ConstructorCanvas = ({
                       margin: 0,
                       padding: 0,
                       textTransform: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? 'uppercase' : 'none',
+                      fontFeatureSettings: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? "'ss01', 'calt', 'swsh', 'liga', 'dlig'" : 'normal',
+                      fontVariantLigatures: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? 'common-ligatures discretionary-ligatures' : 'normal',
                     }}
                   >
                     {element.content}
