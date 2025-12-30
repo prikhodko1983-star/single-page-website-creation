@@ -678,6 +678,16 @@ export default function Admin() {
       return;
     }
 
+    const maxSize = 5 * 1024 * 1024;
+    if (fontForm.file.size > maxSize) {
+      toast({
+        title: 'Ошибка',
+        description: 'Файл слишком большой (максимум 5 МБ)',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setUploadingFont(true);
     setFontUploadProgress(0);
 

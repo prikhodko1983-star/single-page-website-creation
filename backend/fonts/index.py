@@ -46,7 +46,9 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
             }
         
         if method == 'POST':
+            print(f'POST request received, auth_token present: {bool(auth_token)}')
             if not auth_token:
+                print('No auth token, returning 401')
                 return {
                     'statusCode': 401,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -54,12 +56,16 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            body = json.loads(event.get('body', '{}'))
+            body_str = event.get('body', '{}')
+            print(f'Request body length: {len(body_str)} characters')
+            body = json.loads(body_str)
             filename = body.get('filename', '')
             file_data = body.get('data', '')
             display_name = body.get('name', filename)
+            print(f'Filename: {filename}, display_name: {display_name}, data length: {len(file_data)}')
             
             if not filename or not file_data:
+                print('Missing filename or data')
                 return {
                     'statusCode': 400,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -67,9 +73,12 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
+            print('Decoding base64')
             file_bytes = base64.b64decode(file_data)
+            print(f'Decoded file size: {len(file_bytes)} bytes')
             
             s3_key = f'{FONTS_PREFIX}{filename}'
+            print(f'Uploading to S3: bucket={BUCKET}, key={s3_key}')
             s3.put_object(
                 Bucket=BUCKET,
                 Key=s3_key,
@@ -77,6 +86,7 @@ def handler(event: dict, context: Any) -> Dict[str, Any]:
                 ContentType='font/ttf',
                 Metadata={'display_name': display_name}
             )
+            print('Upload successful')
             
             cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{s3_key}"
             
