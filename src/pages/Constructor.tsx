@@ -1425,10 +1425,12 @@ const Constructor = () => {
           }
           
           if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
-            const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
+            const parts = element.fontFamily?.split('|') || ['serif', '400'];
+            const fontFamily = parts[0];
+            const fontWeight = parts[1] === 'custom' ? 'normal' : (parts[1] || '400');
             const scaledFontSize = (element.fontSize || 24) * fontScale;
             const fontStyle = element.italic ? 'italic' : 'normal';
-            ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${fontFamily}`;
+            ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px "${fontFamily}"`;
             ctx.fillStyle = element.color || '#FFFFFF';
             
             // Применяем letterSpacing
@@ -1630,27 +1632,43 @@ const Constructor = () => {
   };
 
   const loadFonts = async (elements: CanvasElement[]): Promise<void> => {
-    const uniqueFonts = new Set<string>();
+    const uniqueFonts = new Map<string, string>();
     
     elements.forEach(element => {
       if (element.fontFamily && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
-        const [fontFamily, fontWeight] = element.fontFamily.split('|');
-        uniqueFonts.add(`${fontFamily}:${fontWeight}`);
+        const parts = element.fontFamily.split('|');
+        const fontFamily = parts[0];
+        const fontType = parts[1];
+        const fontUrl = parts[2];
+        
+        if (fontType === 'custom' && fontUrl) {
+          uniqueFonts.set(fontFamily, fontUrl);
+        } else {
+          uniqueFonts.set(fontFamily, '');
+        }
       }
     });
     
     if (uniqueFonts.size === 0) return;
     
-    const fontPromises = Array.from(uniqueFonts).map(async (fontKey) => {
-      const [family, weight] = fontKey.split(':');
+    const fontPromises = Array.from(uniqueFonts).map(async ([family, url]) => {
       try {
-        await document.fonts.load(`${weight} 24px "${family}"`);
+        if (url) {
+          const fontFace = new FontFace(family, `url(${url})`);
+          await fontFace.load();
+          document.fonts.add(fontFace);
+          console.log(`✅ Загружен кастомный шрифт: ${family}`);
+        } else {
+          await document.fonts.load(`400 24px "${family}"`);
+          console.log(`✅ Загружен системный шрифт: ${family}`);
+        }
       } catch (error) {
-        console.warn(`Не удалось загрузить шрифт ${family}:`, error);
+        console.warn(`⚠️ Не удалось загрузить шрифт ${family}:`, error);
       }
     });
     
     await Promise.all(fontPromises);
+    console.log('✅ Все шрифты загружены для экспорта');
   };
 
   const loadImageWithCORS = async (src: string): Promise<HTMLImageElement | null> => {
