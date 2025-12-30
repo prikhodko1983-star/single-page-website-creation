@@ -913,7 +913,9 @@ const Constructor = () => {
       const blob = new Blob([pngWithMetadata], { type: 'image/png' });
       const url = URL.createObjectURL(blob);
       
-      const fileName = `проект.png`;
+      const date = new Date();
+      const dateStr = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+      const fileName = `проект_${dateStr}.png`;
       
       console.log('💾 Скачиваем PNG с метаданными:', fileName);
       
