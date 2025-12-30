@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import React from "react";
 
 interface CanvasElement {
   id: string;
@@ -83,6 +84,26 @@ export const ConstructorCanvas = ({
   handleInlineTextChange,
   handleInlineEditBlur,
 }: ConstructorCanvasProps) => {
+  // Функция для выделения заглавных букв
+  const formatFIOWithInitials = (text: string, isCustomFont: boolean) => {
+    if (!text || !isCustomFont) return text;
+    
+    const words = text.split(/\s+/);
+    return words.map((word, idx) => {
+      if (!word) return null;
+      const firstChar = word[0];
+      const rest = word.slice(1);
+      
+      return (
+        <React.Fragment key={idx}>
+          {idx > 0 && ' '}
+          <span style={{ fontSize: '1.3em', fontWeight: 'bold' }}>{firstChar}</span>
+          {rest}
+        </React.Fragment>
+      );
+    });
+  };
+
   return (
     <div className="flex flex-col items-center">
       <div 
@@ -255,7 +276,6 @@ export const ConstructorCanvas = ({
                       lineHeight: element.fontFamily?.includes('|custom|') ? 1.6 : (element.lineHeight || 1.05),
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
-                      textTransform: element.fontFamily?.includes('|custom|') ? 'uppercase' : 'none',
                       fontFeatureSettings: element.fontFamily?.includes('|custom|') ? "'ss01', 'calt', 'swsh', 'liga', 'dlig'" : 'normal',
                       fontVariantLigatures: element.fontFamily?.includes('|custom|') ? 'common-ligatures discretionary-ligatures' : 'normal',
                     }}
@@ -279,12 +299,11 @@ export const ConstructorCanvas = ({
                       display: 'block',
                       margin: 0,
                       padding: 0,
-                      textTransform: element.fontFamily?.includes('|custom|') ? 'uppercase' : 'none',
                       fontFeatureSettings: element.fontFamily?.includes('|custom|') ? "'ss01', 'calt', 'swsh', 'liga', 'dlig'" : 'normal',
                       fontVariantLigatures: element.fontFamily?.includes('|custom|') ? 'common-ligatures discretionary-ligatures' : 'normal',
                     }}
                   >
-                    {element.content}
+                    {formatFIOWithInitials(element.content || '', element.fontFamily?.includes('|custom|') || false)}
                   </div>
                 )}
               </div>
