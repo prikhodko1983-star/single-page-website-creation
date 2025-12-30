@@ -151,19 +151,26 @@ def list_fonts():
     fonts = []
     
     try:
+        print(f'Listing objects from bucket={BUCKET}, prefix={FONTS_PREFIX}')
         response = s3.list_objects_v2(Bucket=BUCKET, Prefix=FONTS_PREFIX)
+        print(f'S3 response keys: {response.keys()}')
         
         if 'Contents' in response:
+            print(f'Found {len(response["Contents"])} objects')
             for obj in response['Contents']:
                 key = obj['Key']
+                print(f'Processing key: {key}')
                 if key == FONTS_PREFIX:
+                    print(f'Skipping prefix-only key')
                     continue
                     
                 filename = key.replace(FONTS_PREFIX, '')
+                print(f'Filename: {filename}')
                 
                 head = s3.head_object(Bucket=BUCKET, Key=key)
                 metadata = head.get('Metadata', {})
                 display_name = metadata.get('display_name', filename.replace('.ttf', '').replace('.otf', ''))
+                print(f'Display name: {display_name}, metadata: {metadata}')
                 
                 cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{key}"
                 
@@ -172,8 +179,13 @@ def list_fonts():
                     'name': display_name,
                     'url': cdn_url
                 })
+        else:
+            print('No Contents in S3 response')
     
     except Exception as e:
         print(f'Error listing fonts: {e}')
+        import traceback
+        traceback.print_exc()
     
+    print(f'Returning {len(fonts)} fonts')
     return fonts
