@@ -88,18 +88,17 @@ export const ConstructorCanvas = ({
   const formatFIOWithInitials = (text: string, isCustomFont: boolean) => {
     if (!text || !isCustomFont) return text;
     
-    const words = text.split(/\s+/);
+    const words = text.split(/\s+/).filter(w => w);
     return words.map((word, idx) => {
       if (!word) return null;
       const firstChar = word[0];
       const rest = word.slice(1);
       
       return (
-        <React.Fragment key={idx}>
-          {idx > 0 && ' '}
+        <div key={idx} style={{ whiteSpace: 'nowrap' }}>
           <span className="initial">{firstChar}</span>
           {rest}
-        </React.Fragment>
+        </div>
       );
     });
   };
@@ -293,10 +292,15 @@ export const ConstructorCanvas = ({
                       lineHeight: element.fontFamily?.includes('|custom|') ? 1.6 : (element.lineHeight || 1.05),
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
-                      whiteSpace: 'pre-wrap',
+                      whiteSpace: 'normal',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word',
                       overflow: 'visible',
                       width: '100%',
-                      display: 'block',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'flex-start',
                       margin: 0,
                       padding: 0,
                     }}
