@@ -86,22 +86,34 @@ export const ConstructorCanvas = ({
 }: ConstructorCanvasProps) => {
   // Функция для выделения заглавных букв
   const formatFIOWithInitials = (text: string, isCustomFont: boolean) => {
-    if (!text || !isCustomFont) return text;
+    if (!text) return text;
     
     const words = text.split(/\s+/).filter(w => w);
-    return words.map((word, idx) => {
-      if (!word) return null;
-      const firstChar = word[0];
-      const rest = word.slice(1);
-      
-      return (
+    
+    if (isCustomFont) {
+      // Для кастомных шрифтов - увеличенные заглавные буквы
+      return words.map((word, idx) => {
+        if (!word) return null;
+        const firstChar = word[0];
+        const rest = word.slice(1);
+        
+        return (
+          <React.Fragment key={idx}>
+            {idx > 0 && <br />}
+            <span className="initial">{firstChar}</span>
+            {rest}
+          </React.Fragment>
+        );
+      });
+    } else {
+      // Для обычных шрифтов - просто перенос строк между словами
+      return words.map((word, idx) => (
         <React.Fragment key={idx}>
           {idx > 0 && <br />}
-          <span className="initial">{firstChar}</span>
-          {rest}
+          {word}
         </React.Fragment>
-      );
-    });
+      ));
+    }
   };
 
   return (
