@@ -446,7 +446,7 @@ export const ConstructorCanvas = ({
           </label>
         </div>
         <p className="text-xs text-muted-foreground text-center px-2">
-          💡 PNG workflow (как ComfyUI) — все данные в одном файле
+          💡 Сохраните проект на устройство и загрузите позже, чтобы продолжить работу
         </p>
       </div>
     </div>
