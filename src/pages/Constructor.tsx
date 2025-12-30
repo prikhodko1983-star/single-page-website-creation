@@ -1906,10 +1906,12 @@ const Constructor = () => {
         const fontScale = exportWidth / rect.width;
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
-          const [fontFamily, fontWeight] = element.fontFamily?.split('|') || ['serif', '400'];
+          const parts = element.fontFamily?.split('|') || ['serif', '400'];
+          const fontFamily = parts[0];
+          const fontWeight = parts[1] === 'custom' ? 'normal' : (parts[1] || '400');
           const scaledFontSize = (element.fontSize || 24) * fontScale;
           const fontStyle = element.italic ? 'italic' : 'normal';
-          ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${fontFamily}`;
+          ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px "${fontFamily}"`;
           ctx.fillStyle = element.color || '#FFFFFF';
           
           // Применяем letterSpacing
