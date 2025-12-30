@@ -275,7 +275,7 @@ const Constructor = () => {
   const addDatesElement = () => {
     if (!birthDate && !deathDate) return;
     
-    const datesText = `${birthDate} — ${deathDate}`.trim();
+    const datesText = `${birthDate} – ${deathDate}`.trim();
     const selectedFontData = fonts.find(f => f.id === selectedDateFont);
     
     const newElement: CanvasElement = {
