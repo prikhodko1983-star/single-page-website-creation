@@ -26,6 +26,7 @@ interface CanvasElement {
   flipHorizontal?: boolean;
   autoSize?: boolean;
   italic?: boolean;
+  initialScale?: number;
 }
 
 interface ConstructorPropertiesProps {
@@ -201,6 +202,25 @@ export const ConstructorProperties = ({
                 <span>Вправо →</span>
               </div>
             </div>
+            
+            {selectedEl.type === 'fio' && (
+              <div>
+                <Label>Размер первой буквы: {selectedEl.initialScale?.toFixed(1) || '1.0'}x</Label>
+                <input 
+                  type="range" 
+                  min="1.0" 
+                  max="2.0" 
+                  step="0.1"
+                  value={selectedEl.initialScale || 1.0}
+                  onChange={(e) => updateElement(selectedEl.id, { initialScale: parseFloat(e.target.value) })}
+                  className="w-full mt-1"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>Обычный</span>
+                  <span>Увеличенный</span>
+                </div>
+              </div>
+            )}
             
             {(selectedEl.type === 'image' || selectedEl.type === 'cross' || selectedEl.type === 'flower') && (
               <div>

@@ -23,6 +23,7 @@ interface CanvasElement {
   flipHorizontal?: boolean;
   autoSize?: boolean;
   italic?: boolean;
+  initialScale?: number; // Размер первой буквы (1.0 = обычный, 1.5 = в 1.5 раза больше)
 }
 
 interface ConstructorCanvasProps {
@@ -84,7 +85,25 @@ export const ConstructorCanvas = ({
   handleInlineTextChange,
   handleInlineEditBlur,
 }: ConstructorCanvasProps) => {
-
+  // Функция для рендеринга текста с увеличенными первыми буквами
+  const renderTextWithInitials = (text: string, initialScale?: number) => {
+    if (!initialScale || initialScale === 1) return text;
+    
+    const words = text.split(/\s+/);
+    return words.map((word, idx) => {
+      if (!word) return null;
+      const firstChar = word[0];
+      const rest = word.slice(1);
+      
+      return (
+        <React.Fragment key={idx}>
+          {idx > 0 && ' '}
+          <span style={{ fontSize: `${initialScale}em`, lineHeight: 1 }}>{firstChar}</span>
+          {rest}
+        </React.Fragment>
+      );
+    });
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -283,7 +302,7 @@ export const ConstructorCanvas = ({
                       padding: 0,
                     }}
                   >
-                    {element.content}
+                    {renderTextWithInitials(element.content || '', element.initialScale)}
                   </div>
                 )}
               </div>
