@@ -236,6 +236,7 @@ export const ConstructorCanvas = ({
               <div 
                 className="w-full h-full flex items-start justify-center"
               >
+                {console.log('🔍 FIO element fontFamily:', element.fontFamily)}
                 {inlineEditingId === element.id ? (
                   <textarea
                     autoFocus
