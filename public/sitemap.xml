@@ -6,33 +6,34 @@
 
   <!-- Главная страница -->
   <url>
-    <loc>https://your-domain.ru/</loc>
-    <lastmod>2025-12-07</lastmod>
+    <loc>https://xn----7sbblivwnxcgmi.xn--p1ai/</loc>
+    <lastmod>2024-12-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Каталог товаров -->
+  <!-- Каталог памятников -->
   <url>
-    <loc>https://your-domain.ru/catalog</loc>
-    <lastmod>2025-12-07</lastmod>
+    <loc>https://xn----7sbblivwnxcgmi.xn--p1ai/catalog</loc>
+    <lastmod>2024-12-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- Примеры карточек товаров -->
+  <!-- Конструктор памятников -->
   <url>
-    <loc>https://your-domain.ru/product/granit-100x50</loc>
-    <lastmod>2025-12-07</lastmod>
+    <loc>https://xn----7sbblivwnxcgmi.xn--p1ai/constructor</loc>
+    <lastmod>2024-12-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
-  
+
+  <!-- Юридическая информация -->
   <url>
-    <loc>https://your-domain.ru/product/granit-120x60</loc>
-    <lastmod>2025-12-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://xn----7sbblivwnxcgmi.xn--p1ai/legal</loc>
+    <lastmod>2024-12-30</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 
 </urlset>
