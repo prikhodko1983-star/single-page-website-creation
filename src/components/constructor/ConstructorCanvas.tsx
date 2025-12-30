@@ -252,11 +252,10 @@ export const ConstructorCanvas = ({
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || '400',
                       fontStyle: element.italic ? 'italic' : 'normal',
-                      lineHeight: element.fontFamily?.includes('PF Monumenta Pro') ? (element.lineHeight || 1.4) : (element.lineHeight || 1.05),
+                      lineHeight: element.fontFamily?.includes('PF Monumenta Pro') ? 1.6 : (element.lineHeight || 1.05),
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
                       textTransform: element.fontFamily?.includes('PF Monumenta Pro') ? 'uppercase' : 'none',
-                      fontVariant: element.fontFamily?.includes('PF Monumenta Pro') ? 'all-small-caps' : 'normal',
                     }}
                   />
                 ) : (
@@ -269,7 +268,7 @@ export const ConstructorCanvas = ({
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
                       fontWeight: element.fontFamily?.split('|')[1] || '400',
                       fontStyle: element.italic ? 'italic' : 'normal',
-                      lineHeight: element.fontFamily?.includes('PF Monumenta Pro') ? (element.lineHeight || 1.4) : (element.lineHeight || 1.05),
+                      lineHeight: element.fontFamily?.includes('PF Monumenta Pro') ? 1.6 : (element.lineHeight || 1.05),
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
                       whiteSpace: 'pre-wrap',
@@ -279,7 +278,6 @@ export const ConstructorCanvas = ({
                       margin: 0,
                       padding: 0,
                       textTransform: element.fontFamily?.includes('PF Monumenta Pro') ? 'uppercase' : 'none',
-                      fontVariant: element.fontFamily?.includes('PF Monumenta Pro') ? 'all-small-caps' : 'normal',
                     }}
                   >
                     {element.content}
