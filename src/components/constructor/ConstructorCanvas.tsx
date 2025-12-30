@@ -97,7 +97,7 @@ export const ConstructorCanvas = ({
       return (
         <React.Fragment key={idx}>
           {idx > 0 && ' '}
-          <span style={{ fontSize: '1.3em', fontWeight: 'bold' }}>{firstChar}</span>
+          <span className="initial">{firstChar}</span>
           {rest}
         </React.Fragment>
       );
@@ -282,7 +282,7 @@ export const ConstructorCanvas = ({
                   />
                 ) : (
                   <div
-                    className="select-none"
+                    className={`select-none ${element.fontFamily?.includes('|custom|') ? 'fio-custom' : ''}`}
                     style={{ 
                       fontSize: `${element.fontSize}px`, 
                       color: element.color,
@@ -299,8 +299,6 @@ export const ConstructorCanvas = ({
                       display: 'block',
                       margin: 0,
                       padding: 0,
-                      fontFeatureSettings: element.fontFamily?.includes('|custom|') ? "'ss01', 'calt', 'swsh', 'liga', 'dlig'" : 'normal',
-                      fontVariantLigatures: element.fontFamily?.includes('|custom|') ? 'common-ligatures discretionary-ligatures' : 'normal',
                     }}
                   >
                     {formatFIOWithInitials(element.content || '', element.fontFamily?.includes('|custom|') || false)}

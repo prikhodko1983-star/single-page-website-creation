@@ -111,3 +111,17 @@
     display: none;
   }
 }
+
+/* FIO декоративный стиль */
+.fio-custom {
+  line-height: 1.6 !important;
+  font-variant-ligatures: common-ligatures discretionary-ligatures;
+  font-feature-settings: "ss01", "calt", "swsh", "liga", "dlig";
+}
+
+.fio-custom .initial {
+  font-size: 1.5em;
+  font-weight: 600;
+  vertical-align: baseline;
+  line-height: 1;
+}
