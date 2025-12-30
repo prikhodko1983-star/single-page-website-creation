@@ -89,17 +89,28 @@ export const ConstructorCanvas = ({
   const renderTextWithInitials = (text: string, initialScale?: number) => {
     if (!initialScale || initialScale === 1) return text;
     
-    const words = text.split(/\s+/);
-    return words.map((word, idx) => {
-      if (!word) return null;
-      const firstChar = word[0];
-      const rest = word.slice(1);
+    // Разбиваем текст на строки, затем каждую строку на слова
+    const lines = text.split('\n');
+    
+    return lines.map((line, lineIdx) => {
+      const words = line.split(/\s+/);
       
       return (
-        <React.Fragment key={idx}>
-          {idx > 0 && ' '}
-          <span style={{ fontSize: `${initialScale}em`, lineHeight: 1 }}>{firstChar}</span>
-          {rest}
+        <React.Fragment key={lineIdx}>
+          {lineIdx > 0 && <br />}
+          {words.map((word, wordIdx) => {
+            if (!word) return null;
+            const firstChar = word[0];
+            const rest = word.slice(1);
+            
+            return (
+              <React.Fragment key={wordIdx}>
+                {wordIdx > 0 && ' '}
+                <span style={{ fontSize: `${initialScale}em`, lineHeight: 1 }}>{firstChar}</span>
+                {rest}
+              </React.Fragment>
+            );
+          })}
         </React.Fragment>
       );
     });
