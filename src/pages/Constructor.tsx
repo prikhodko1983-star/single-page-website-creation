@@ -1460,13 +1460,18 @@ const Constructor = () => {
             ctx.shadowOffsetY = 2 * fontScale;
             
             // Поддержка многострочного текста с автопереносом
-            const content = element.content || '';
+            let content = element.content || '';
+            
+            // Для FIO элементов заменяем пробелы на переносы строк
+            if (element.type === 'fio') {
+              content = content.replace(/\s+/g, '\n');
+            }
             
             // Разные дефолтные lineHeight для разных типов
             let defaultLineHeight = 1.2;
             if (element.type === 'fio') {
-              // Увеличенный lineHeight для PF Monumenta Pro
-              defaultLineHeight = fontFamily.includes('PF Monumenta Pro') ? 1.4 : 1.05;
+              // Увеличенный lineHeight для кастомных шрифтов
+              defaultLineHeight = parts[1] === 'custom' ? 1.6 : 1.05;
             } else if (element.type === 'epitaph') {
               defaultLineHeight = 1.4;
             }
@@ -1490,15 +1495,39 @@ const Constructor = () => {
             // Измеряем ширину строк и позиционируем
             const textAlign = element.textAlign || 'center';
             
+            const isCustomFont = parts[1] === 'custom';
+            const isFIO = element.type === 'fio';
+            
+            // Функция для измерения ширины строки с учётом увеличенной первой буквы
+            const measureLineWidth = (line: string): number => {
+              if (isFIO && isCustomFont && line.length > 0) {
+                const firstChar = line[0];
+                const rest = line.slice(1);
+                
+                // Измеряем первую букву увеличенной
+                const originalFont = ctx.font;
+                const enlargedSize = actualFontSize * 1.5;
+                ctx.font = `${fontStyle} ${fontWeight} ${enlargedSize}px "${fontFamily}"`;
+                const firstCharWidth = ctx.measureText(firstChar).width;
+                
+                // Измеряем остальной текст обычным размером
+                ctx.font = originalFont;
+                const restWidth = ctx.measureText(rest).width;
+                
+                return firstCharWidth + restWidth;
+              }
+              return ctx.measureText(line).width;
+            };
+            
             // Для autoSize используем максимальную ширину строки
             let effectiveWidth = scaledWidth;
             if (element.autoSize) {
-              const maxLineWidth = Math.max(...allLines.map(line => ctx.measureText(line).width));
+              const maxLineWidth = Math.max(...allLines.map(line => measureLineWidth(line)));
               effectiveWidth = maxLineWidth;
             }
             
             const linePositions = allLines.map(line => {
-              const lineWidth = ctx.measureText(line).width;
+              const lineWidth = measureLineWidth(line);
               let lineX = scaledX;
               
               if (textAlign === 'center') {
@@ -1526,7 +1555,26 @@ const Constructor = () => {
             allLines.forEach((line, index) => {
               const lineY = Math.round(scaledY + index * lineHeight);
               const lineX = Math.round(linePositions[index].x);
-              ctx.fillText(line, lineX, lineY);
+              
+              // Для FIO с кастомными шрифтами - увеличенные первые буквы
+              if (isFIO && isCustomFont && line.length > 0) {
+                const firstChar = line[0];
+                const rest = line.slice(1);
+                
+                // Рисуем первую букву увеличенной
+                const originalFont = ctx.font;
+                const enlargedSize = actualFontSize * 1.5;
+                ctx.font = `${fontStyle} ${fontWeight} ${enlargedSize}px "${fontFamily}"`;
+                
+                ctx.fillText(firstChar, lineX, lineY);
+                const firstCharWidth = ctx.measureText(firstChar).width;
+                
+                // Возвращаем обычный размер для остального текста
+                ctx.font = originalFont;
+                ctx.fillText(rest, lineX + firstCharWidth, lineY);
+              } else {
+                ctx.fillText(line, lineX, lineY);
+              }
             });
             
             // Сбрасываем тень
