@@ -1433,6 +1433,12 @@ const Constructor = () => {
             ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px "${fontFamily}"`;
             ctx.fillStyle = element.color || '#FFFFFF';
             
+            // OpenType features для декоративных шрифтов
+            if (parts[1] === 'custom') {
+              (ctx as any).fontVariantLigatures = 'common-ligatures discretionary-ligatures';
+              (ctx as any).fontFeatureSettings = "'ss01', 'calt', 'swsh', 'liga', 'dlig'";
+            }
+            
             // Применяем letterSpacing
             if (element.letterSpacing) {
               ctx.letterSpacing = `${element.letterSpacing * fontScale}px`;
@@ -1654,10 +1660,12 @@ const Constructor = () => {
     const fontPromises = Array.from(uniqueFonts).map(async ([family, url]) => {
       try {
         if (url) {
-          const fontFace = new FontFace(family, `url(${url})`);
+          const fontFace = new FontFace(family, `url(${url})`, {
+            featureSettings: "'ss01', 'calt', 'swsh', 'liga', 'dlig'"
+          });
           await fontFace.load();
           document.fonts.add(fontFace);
-          console.log(`✅ Загружен кастомный шрифт: ${family}`);
+          console.log(`✅ Загружен кастомный шрифт с OpenType: ${family}`);
         } else {
           await document.fonts.load(`400 24px "${family}"`);
           console.log(`✅ Загружен системный шрифт: ${family}`);
