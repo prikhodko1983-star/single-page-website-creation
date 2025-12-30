@@ -250,14 +250,14 @@ export const ConstructorCanvas = ({
                       color: element.color,
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                      fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      fontWeight: element.fontFamily?.includes('|custom|') ? 'normal' : (element.fontFamily?.split('|')[1] || '400'),
                       fontStyle: element.italic ? 'italic' : 'normal',
-                      lineHeight: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? 1.6 : (element.lineHeight || 1.05),
+                      lineHeight: element.fontFamily?.includes('|custom|') ? 1.6 : (element.lineHeight || 1.05),
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
-                      textTransform: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? 'uppercase' : 'none',
-                      fontFeatureSettings: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? "'ss01', 'calt', 'swsh', 'liga', 'dlig'" : 'normal',
-                      fontVariantLigatures: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? 'common-ligatures discretionary-ligatures' : 'normal',
+                      textTransform: element.fontFamily?.includes('|custom|') ? 'uppercase' : 'none',
+                      fontFeatureSettings: element.fontFamily?.includes('|custom|') ? "'ss01', 'calt', 'swsh', 'liga', 'dlig'" : 'normal',
+                      fontVariantLigatures: element.fontFamily?.includes('|custom|') ? 'common-ligatures discretionary-ligatures' : 'normal',
                     }}
                   />
                 ) : (
@@ -268,9 +268,9 @@ export const ConstructorCanvas = ({
                       color: element.color,
                       textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                       fontFamily: element.fontFamily?.split('|')[0] || 'serif',
-                      fontWeight: element.fontFamily?.split('|')[1] || '400',
+                      fontWeight: element.fontFamily?.includes('|custom|') ? 'normal' : (element.fontFamily?.split('|')[1] || '400'),
                       fontStyle: element.italic ? 'italic' : 'normal',
-                      lineHeight: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? 1.6 : (element.lineHeight || 1.05),
+                      lineHeight: element.fontFamily?.includes('|custom|') ? 1.6 : (element.lineHeight || 1.05),
                       letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : 'normal',
                       textAlign: element.textAlign || 'center',
                       whiteSpace: 'pre-wrap',
@@ -279,9 +279,9 @@ export const ConstructorCanvas = ({
                       display: 'block',
                       margin: 0,
                       padding: 0,
-                      textTransform: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? 'uppercase' : 'none',
-                      fontFeatureSettings: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? "'ss01', 'calt', 'swsh', 'liga', 'dlig'" : 'normal',
-                      fontVariantLigatures: (element.fontFamily?.startsWith('PF Monumenta Pro') || element.fontFamily?.startsWith('Monumenta')) ? 'common-ligatures discretionary-ligatures' : 'normal',
+                      textTransform: element.fontFamily?.includes('|custom|') ? 'uppercase' : 'none',
+                      fontFeatureSettings: element.fontFamily?.includes('|custom|') ? "'ss01', 'calt', 'swsh', 'liga', 'dlig'" : 'normal',
+                      fontVariantLigatures: element.fontFamily?.includes('|custom|') ? 'common-ligatures discretionary-ligatures' : 'normal',
                     }}
                   >
                     {element.content}
