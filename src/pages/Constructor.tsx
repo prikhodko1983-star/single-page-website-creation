@@ -1430,7 +1430,13 @@ const Constructor = () => {
             const fontWeight = parts[1] === 'custom' ? 'normal' : (parts[1] || '400');
             const scaledFontSize = (element.fontSize || 24) * fontScale;
             const fontStyle = element.italic ? 'italic' : 'normal';
-            ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px "${fontFamily}"`;
+            
+            // Увеличиваем размер для заглавных букв в PF Monumenta Pro
+            const actualFontSize = (element.type === 'fio' && fontFamily.includes('PF Monumenta Pro')) 
+              ? scaledFontSize * 1.15 
+              : scaledFontSize;
+            
+            ctx.font = `${fontStyle} ${fontWeight} ${actualFontSize}px "${fontFamily}"`;
             ctx.fillStyle = element.color || '#FFFFFF';
             
             // OpenType features для декоративных шрифтов
@@ -1458,8 +1464,12 @@ const Constructor = () => {
             
             // Разные дефолтные lineHeight для разных типов
             let defaultLineHeight = 1.2;
-            if (element.type === 'fio') defaultLineHeight = 1.05;
-            else if (element.type === 'epitaph') defaultLineHeight = 1.4;
+            if (element.type === 'fio') {
+              // Увеличенный lineHeight для PF Monumenta Pro
+              defaultLineHeight = fontFamily.includes('PF Monumenta Pro') ? 1.4 : 1.05;
+            } else if (element.type === 'epitaph') {
+              defaultLineHeight = 1.4;
+            }
             
             const lh = element.lineHeight || defaultLineHeight;
             const lineHeight = scaledFontSize * lh;
