@@ -1,0 +1,27 @@
+{
+  "tests": [
+    {
+      "name": "Get all fonts",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": [],
+      "bodyMatcher": "type"
+    },
+    {
+      "name": "Upload font without auth",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "filename": "test.ttf",
+        "data": "dGVzdA==",
+        "name": "Test Font"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

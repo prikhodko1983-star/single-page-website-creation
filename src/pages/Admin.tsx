@@ -300,12 +300,18 @@ export default function Admin() {
   const [uploadingFlower, setUploadingFlower] = useState(false);
   const [flowerUploadProgress, setFlowerUploadProgress] = useState(0);
 
+  const [fonts, setFonts] = useState<Array<{filename: string, name: string, url: string}>>([]);
+  const [fontForm, setFontForm] = useState({ name: '', file: null as File | null });
+  const [uploadingFont, setUploadingFont] = useState(false);
+  const [fontUploadProgress, setFontUploadProgress] = useState(0);
+
   const categories_list = ["Вертикальные", "Горизонтальные", "Эксклюзивные", "С крестом"];
   const filterCategories = ["Все", ...categories_list];
 
   const API_URL = "https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6";
   const UPLOAD_URL = "https://functions.poehali.dev/131d63b7-bef6-496a-a392-c04e347cd6aa";
   const PRODUCTS_API = "https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d";
+  const FONTS_API = "https://functions.poehali.dev/c1b3f505-db44-492c-8db4-231760a9bb95";
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -320,6 +326,7 @@ export default function Admin() {
     loadCategories();
     loadCrosses();
     loadFlowers();
+    loadFonts();
     
     const savedGallery = localStorage.getItem('galleryItems');
     if (savedGallery) {
@@ -637,6 +644,108 @@ export default function Admin() {
         title: "Ошибка",
         description: "Не удалось изменить порядок",
         variant: "destructive"
+      });
+    }
+  };
+
+  const loadFonts = async () => {
+    try {
+      const response = await fetch(FONTS_API);
+      if (response.ok) {
+        const data = await response.json();
+        setFonts(data);
+      }
+    } catch (error) {
+      console.error('Error loading fonts:', error);
+    }
+  };
+
+  const handleFontUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!fontForm.file || !fontForm.name.trim()) {
+      toast({
+        title: 'Ошибка',
+        description: 'Выберите файл и укажите название шрифта',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setUploadingFont(true);
+    setFontUploadProgress(0);
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = reader.result?.toString().split(',')[1];
+        
+        if (!base64) {
+          throw new Error('Failed to read file');
+        }
+
+        const token = localStorage.getItem('auth_token');
+        const response = await fetch(FONTS_API, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': token || ''
+          },
+          body: JSON.stringify({
+            filename: fontForm.file!.name,
+            data: base64,
+            name: fontForm.name
+          })
+        });
+
+        if (response.ok) {
+          toast({
+            title: '✅ Успешно',
+            description: 'Шрифт загружен'
+          });
+          loadFonts();
+          setFontForm({ name: '', file: null });
+        } else {
+          throw new Error('Upload failed');
+        }
+      };
+
+      reader.readAsDataURL(fontForm.file);
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка',
+        description: 'Не удалось загрузить шрифт',
+        variant: 'destructive'
+      });
+    } finally {
+      setUploadingFont(false);
+    }
+  };
+
+  const handleFontDelete = async (filename: string) => {
+    if (!confirm(`Удалить шрифт "${filename}"?`)) return;
+
+    try {
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(`${FONTS_API}?filename=${encodeURIComponent(filename)}`, {
+        method: 'DELETE',
+        headers: {
+          'X-Auth-Token': token || ''
+        }
+      });
+
+      if (response.ok) {
+        toast({
+          title: '✅ Успешно',
+          description: 'Шрифт удален'
+        });
+        loadFonts();
+      }
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка',
+        description: 'Не удалось удалить шрифт',
+        variant: 'destructive'
       });
     }
   };
@@ -1166,6 +1275,10 @@ export default function Admin() {
                 <TabsTrigger value="images" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
                   <Icon name="Image" size={14} className="sm:mr-2" />
                   <span className="hidden sm:inline">Изображения</span>
+                </TabsTrigger>
+                <TabsTrigger value="fonts" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
+                  <Icon name="Type" size={14} className="sm:mr-2" />
+                  <span className="hidden sm:inline">Шрифты</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -2672,6 +2785,93 @@ export default function Admin() {
 
           <TabsContent value="images">
             <ImageCategoriesManager />
+          </TabsContent>
+
+          <TabsContent value="fonts" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald">Загрузить шрифт</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleFontUpload} className="space-y-4">
+                  <div>
+                    <Label htmlFor="font-name">Название шрифта</Label>
+                    <Input
+                      id="font-name"
+                      value={fontForm.name}
+                      onChange={(e) => setFontForm({ ...fontForm, name: e.target.value })}
+                      placeholder="Например: Helvetica"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="font-file">Файл шрифта (.ttf, .otf, .woff, .woff2)</Label>
+                    <Input
+                      id="font-file"
+                      type="file"
+                      accept=".ttf,.otf,.woff,.woff2"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setFontForm({ ...fontForm, file });
+                        }
+                      }}
+                      required
+                    />
+                  </div>
+                  {uploadingFont && (
+                    <Progress value={fontUploadProgress} className="w-full" />
+                  )}
+                  <Button type="submit" disabled={uploadingFont || !fontForm.file || !fontForm.name.trim()}>
+                    {uploadingFont ? (
+                      <>
+                        <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
+                        Загрузка...
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="Upload" size={16} className="mr-2" />
+                        Загрузить шрифт
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald">Загруженные шрифты</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {fonts.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Icon name="Type" size={48} className="mx-auto mb-4 opacity-20" />
+                    <p>Нет загруженных шрифтов</p>
+                    <p className="text-sm">Загрузите первый шрифт используя форму выше</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {fonts.map((font) => (
+                      <div key={font.filename} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <div className="font-semibold">{font.name}</div>
+                          <div className="text-sm text-muted-foreground">{font.filename}</div>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleFontDelete(font.filename)}
+                        >
+                          <Icon name="Trash2" size={14} className="mr-1" />
+                          Удалить
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

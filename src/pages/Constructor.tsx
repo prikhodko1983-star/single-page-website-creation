@@ -80,6 +80,8 @@ const Constructor = () => {
   const [flowers, setFlowers] = useState<Array<{id: number, name: string, image_url: string}>>([]);
   const [isLoadingFlowers, setIsLoadingFlowers] = useState(false);
 
+  const [customFonts, setCustomFonts] = useState<Array<{filename: string, name: string, url: string}>>([]);
+
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
     try {
@@ -176,14 +178,44 @@ const Constructor = () => {
     }
   };
 
+  const loadCustomFonts = async () => {
+    try {
+      const response = await fetch('https://functions.poehali.dev/c1b3f505-db44-492c-8db4-231760a9bb95');
+      if (response.ok) {
+        const data = await response.json();
+        setCustomFonts(data);
+        
+        data.forEach((font: {filename: string, name: string, url: string}) => {
+          const styleId = `font-face-${font.filename}`;
+          if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.innerHTML = `
+              @font-face {
+                font-family: '${font.name}';
+                src: url('${font.url}') format('truetype');
+                font-weight: normal;
+                font-style: normal;
+              }
+            `;
+            document.head.appendChild(style);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error loading custom fonts:', error);
+    }
+  };
+
   useEffect(() => {
     const monumentParam = searchParams.get('monument');
     if (monumentParam) {
       setMonumentImage(decodeURIComponent(monumentParam));
     }
+    loadCustomFonts();
   }, [searchParams]);
 
-  const fonts = [
+  const googleFonts = [
     { id: 'font1', name: '№ 1/1а', style: 'Playfair Display', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Playfair Display|400' },
     { id: 'font2', name: '№ 2/2а', style: 'Playfair Display', weight: '700', example: 'Фамилия Имя Отчество', fullStyle: 'Playfair Display|700' },
     { id: 'font3', name: '№ 3', style: 'Cormorant Garamond', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Cormorant Garamond|400' },
@@ -193,6 +225,18 @@ const Constructor = () => {
     { id: 'font7', name: 'Иск 2/2а', style: 'Great Vibes', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Great Vibes|400' },
     { id: 'font8', name: 'Иск 3/3а', style: 'Allura', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Allura|400' },
     { id: 'font9', name: '№ Cinzel', style: 'Cinzel', weight: '700', example: 'Фамилия Имя Отчество', fullStyle: 'Cinzel|700' },
+  ];
+
+  const fonts = [
+    ...googleFonts,
+    ...customFonts.map((font, index) => ({
+      id: `custom-${index}`,
+      name: font.name,
+      style: font.name,
+      weight: '400',
+      example: 'Фамилия Имя Отчество',
+      fullStyle: `${font.name}|custom|${font.url}`
+    }))
   ];
 
   const addTextElement = () => {
