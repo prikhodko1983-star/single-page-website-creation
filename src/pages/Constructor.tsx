@@ -1513,13 +1513,14 @@ const Constructor = () => {
             }
             
             // Рисуем строки с предварительно рассчитанными координатами
-            ctx.textBaseline = 'top';
+            ctx.textBaseline = 'alphabetic';
             
             const initialScale = element.initialScale || 1.0;
             
             // Рисуем от верхнего края (контейнер уже отцентрован)
             allLines.forEach((line, index) => {
-              const lineY = Math.round(scaledY + index * lineHeight);
+              // Для alphabetic baseline добавляем высоту шрифта к Y
+              const lineY = Math.round(scaledY + scaledFontSize + index * lineHeight);
               let currentX = Math.round(linePositions[index].x);
               
               // Если есть увеличение первой буквы (для FIO)
@@ -1975,7 +1976,7 @@ const Constructor = () => {
           }
           
           // Рисуем строки с предварительно рассчитанными координатами
-          ctx.textBaseline = 'top';
+          ctx.textBaseline = 'alphabetic';
           
           // Применяем shadow ТОЛЬКО перед отрисовкой
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
@@ -1987,7 +1988,8 @@ const Constructor = () => {
           
           // Рисуем от верхнего края (контейнер уже отцентрован)
           allLines.forEach((line, idx) => {
-            const lineY = Math.round(scaledY + idx * lineHeight);
+            // Для alphabetic baseline добавляем высоту шрифта к Y
+            const lineY = Math.round(scaledY + scaledFontSize + idx * lineHeight);
             let currentX = Math.round(linePositions[idx].x);
             
             // Если есть увеличение первой буквы (для FIO)
