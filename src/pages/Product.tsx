@@ -279,6 +279,64 @@ export default function Product() {
                 </p>
               </div>
 
+              <Card className="bg-secondary">
+                <CardContent className="p-4">
+                  <h3 className="font-medium mb-3 flex items-center gap-2">
+                    <Icon name="Share2" size={18} />
+                    Поделиться
+                  </h3>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
+                        const text = `${product.name} — ${product.price} ₽`;
+                        window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank');
+                      }}
+                    >
+                      <Icon name="Share2" size={16} className="mr-1" />
+                      VK
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
+                        const text = `${product.name} — ${product.price} ₽`;
+                        window.open(`https://telegram.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
+                      }}
+                    >
+                      <Icon name="Send" size={16} className="mr-1" />
+                      Telegram
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
+                        const text = `${product.name} — ${product.price} ₽`;
+                        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+                      }}
+                    >
+                      <Icon name="MessageCircle" size={16} className="mr-1" />
+                      WhatsApp
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
+                        navigator.clipboard.writeText(url);
+                        toast({ title: "Ссылка скопирована!" });
+                      }}
+                    >
+                      <Icon name="Copy" size={16} />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
               <div className="space-y-3">
                 {product.image_url && (
                   <Link to={`/constructor?monument=${encodeURIComponent(product.image_url)}`}>
