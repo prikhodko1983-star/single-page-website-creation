@@ -120,7 +120,7 @@ export default function Product() {
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 max-w-full">
           <Link to="/" className="flex items-center space-x-2">
             <span className="font-oswald font-bold text-2xl">Гранит Мастер</span>
           </Link>
@@ -134,8 +134,9 @@ export default function Product() {
       </header>
 
       {/* Breadcrumbs */}
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="w-full overflow-x-hidden">
+        <div className="container mx-auto px-4 py-4 max-w-full">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground overflow-x-auto scrollbar-hide">
           <Link to="/" className="hover:text-foreground">Главная</Link>
           <Icon name="ChevronRight" size={16} />
           <Link to="/catalog" className="hover:text-foreground">Каталог</Link>
@@ -144,7 +145,8 @@ export default function Product() {
             {product.category_name}
           </Link>
           <Icon name="ChevronRight" size={16} />
-          <span className="text-foreground">{product.name}</span>
+            <span className="text-foreground truncate">{product.name}</span>
+          </div>
         </div>
       </div>
 
