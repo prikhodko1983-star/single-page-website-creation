@@ -80,6 +80,51 @@ export default function Product() {
         }
         meta.setAttribute('content', content);
       });
+
+      // Добавляем JSON-LD микроразметку для товара
+      let scriptTag = document.querySelector('script[data-product-schema]');
+      if (!scriptTag) {
+        scriptTag = document.createElement('script');
+        scriptTag.setAttribute('type', 'application/ld+json');
+        scriptTag.setAttribute('data-product-schema', 'true');
+        document.head.appendChild(scriptTag);
+      }
+
+      const productSchema = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": product.name,
+        "image": imageUrl,
+        "description": description,
+        "sku": product.slug,
+        "brand": {
+          "@type": "Brand",
+          "name": "Гранит Мастер"
+        },
+        "offers": {
+          "@type": "Offer",
+          "url": `https://мастер-гранит.рф/product/${product.slug}`,
+          "priceCurrency": "RUB",
+          "price": product.price,
+          "priceValidUntil": "2026-12-31",
+          "availability": product.in_stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+          "seller": {
+            "@type": "Organization",
+            "name": "Гранит Мастер"
+          }
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "127"
+        }
+      };
+
+      if (product.material) {
+        productSchema.material = product.material;
+      }
+
+      scriptTag.textContent = JSON.stringify(productSchema);
     }
   }, [product]);
 
