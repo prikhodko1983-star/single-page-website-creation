@@ -150,6 +150,29 @@ export default function Product() {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleShare = () => {
+    if (!product) return;
+    const url = `https://мастер-гранит.рф/product/${product.slug}`;
+    const text = `${product.name} — ${product.price} ₽`;
+    
+    // Пробуем использовать Web Share API если доступен
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        text: text,
+        url: url,
+      }).catch(() => {
+        // Если не удалось - копируем в буфер
+        navigator.clipboard.writeText(url);
+        toast({ title: "Ссылка скопирована!" });
+      });
+    } else {
+      // Если Web Share API недоступен - копируем в буфер
+      navigator.clipboard.writeText(url);
+      toast({ title: "Ссылка скопирована!" });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -433,6 +456,17 @@ export default function Product() {
           </div>
         </div>
       </section>
+
+      {/* Плавающая кнопка "Поделиться" на мобильных */}
+      <div className="md:hidden fixed bottom-4 right-4 z-40">
+        <Button
+          size="lg"
+          className="rounded-full w-14 h-14 shadow-lg"
+          onClick={handleShare}
+        >
+          <Icon name="Share2" size={24} />
+        </Button>
+      </div>
 
       {/* Footer */}
       <footer className="bg-secondary py-12 mt-20">
