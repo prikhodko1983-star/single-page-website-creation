@@ -25,6 +25,19 @@ const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [designerSlideIndex, setDesignerSlideIndex] = useState(0);
 
+  // Устанавливаем og:url для главной страницы
+  useEffect(() => {
+    const ogUrlMeta = document.querySelector('meta[property="og:url"]');
+    if (ogUrlMeta) {
+      ogUrlMeta.setAttribute('content', 'https://мастер-гранит.рф/');
+    } else {
+      const meta = document.createElement('meta');
+      meta.setAttribute('property', 'og:url');
+      meta.setAttribute('content', 'https://мастер-гранит.рф/');
+      document.head.appendChild(meta);
+    }
+  }, []);
+
   const designerSlides = [
     {
       image: "https://cdn.poehali.dev/files/ff61127a-f19b-45fb-a0b0-0de645b1e942.jpg",
