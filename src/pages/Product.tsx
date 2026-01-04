@@ -194,7 +194,7 @@ export default function Product() {
             </div>
 
             {/* Info */}
-            <div className="space-y-6 md:sticky md:top-20 md:self-start">
+            <div className="space-y-6">
               <div>
                 <Badge variant="outline" className="mb-3">
                   {product.category_name}
@@ -279,59 +279,63 @@ export default function Product() {
                 </p>
               </div>
 
-              <Card className="bg-secondary">
+              <Card className="bg-card border-2">
                 <CardContent className="p-4">
-                  <h3 className="font-medium mb-3 flex items-center gap-2">
-                    <Icon name="Share2" size={18} />
-                    Поделиться
+                  <h3 className="font-semibold text-base mb-3 flex items-center gap-2">
+                    <Icon name="Share2" size={20} className="text-primary" />
+                    Поделиться товаром
                   </h3>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Button
-                      size="sm"
-                      variant="outline"
+                      size="default"
+                      variant="default"
+                      className="flex-1 min-w-[100px]"
                       onClick={() => {
                         const url = window.location.href;
                         const text = `${product.name} — ${product.price} ₽`;
                         window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank');
                       }}
                     >
-                      <Icon name="Share2" size={16} className="mr-1" />
+                      <Icon name="Share2" size={18} className="mr-2" />
                       VK
                     </Button>
                     <Button
-                      size="sm"
-                      variant="outline"
+                      size="default"
+                      variant="default"
+                      className="flex-1 min-w-[100px]"
                       onClick={() => {
                         const url = window.location.href;
                         const text = `${product.name} — ${product.price} ₽`;
                         window.open(`https://telegram.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
                       }}
                     >
-                      <Icon name="Send" size={16} className="mr-1" />
+                      <Icon name="Send" size={18} className="mr-2" />
                       Telegram
                     </Button>
                     <Button
-                      size="sm"
-                      variant="outline"
+                      size="default"
+                      variant="default"
+                      className="flex-1 min-w-[100px]"
                       onClick={() => {
                         const url = window.location.href;
                         const text = `${product.name} — ${product.price} ₽`;
                         window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
                       }}
                     >
-                      <Icon name="MessageCircle" size={16} className="mr-1" />
+                      <Icon name="MessageCircle" size={18} className="mr-2" />
                       WhatsApp
                     </Button>
                     <Button
-                      size="sm"
+                      size="default"
                       variant="outline"
+                      className="min-w-[50px]"
                       onClick={() => {
                         const url = window.location.href;
                         navigator.clipboard.writeText(url);
                         toast({ title: "Ссылка скопирована!" });
                       }}
                     >
-                      <Icon name="Copy" size={16} />
+                      <Icon name="Copy" size={18} />
                     </Button>
                   </div>
                 </CardContent>
