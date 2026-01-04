@@ -151,9 +151,9 @@ export default function Product() {
       {/* Product Details */}
       <section className="py-8">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 items-start">
             {/* Gallery */}
-            <div className="space-y-4">
+            <div className="space-y-4 w-full">
               <Card className="overflow-hidden">
                 <CardContent className="p-0">
                   <div className="aspect-square bg-secondary relative">
@@ -194,7 +194,7 @@ export default function Product() {
             </div>
 
             {/* Info */}
-            <div className="space-y-6">
+            <div className="space-y-6 w-full md:sticky md:top-20 md:self-start">
               <div>
                 <Badge variant="outline" className="mb-3">
                   {product.category_name}
