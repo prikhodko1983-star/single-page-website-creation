@@ -279,6 +279,60 @@ export default function Product() {
                 </p>
               </div>
 
+              <div className="border-2 border-primary rounded-lg p-4 bg-primary/5">
+                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-foreground">
+                  <Icon name="Share2" size={22} className="text-primary" />
+                  Поделиться товаром
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    size="lg"
+                    onClick={() => {
+                      const url = `https://мастер-гранит.рф/product/${product.slug}`;
+                      const text = `${product.name} — ${product.price} ₽`;
+                      window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank');
+                    }}
+                  >
+                    <Icon name="Share2" size={18} className="mr-2" />
+                    VK
+                  </Button>
+                  <Button
+                    size="lg"
+                    onClick={() => {
+                      const url = `https://мастер-гранит.рф/product/${product.slug}`;
+                      const text = `${product.name} — ${product.price} ₽`;
+                      window.open(`https://telegram.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
+                    }}
+                  >
+                    <Icon name="Send" size={18} className="mr-2" />
+                    Telegram
+                  </Button>
+                  <Button
+                    size="lg"
+                    onClick={() => {
+                      const url = `https://мастер-гранит.рф/product/${product.slug}`;
+                      const text = `${product.name} — ${product.price} ₽`;
+                      window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+                    }}
+                  >
+                    <Icon name="MessageCircle" size={18} className="mr-2" />
+                    WhatsApp
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => {
+                      const url = `https://мастер-гранит.рф/product/${product.slug}`;
+                      navigator.clipboard.writeText(url);
+                      toast({ title: "Ссылка скопирована!" });
+                    }}
+                  >
+                    <Icon name="Copy" size={18} className="mr-2" />
+                    Копировать
+                  </Button>
+                </div>
+              </div>
+
               <div className="space-y-3">
                 {product.image_url && (
                   <Link to={`/constructor?monument=${encodeURIComponent(product.image_url)}`}>
