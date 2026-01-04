@@ -194,7 +194,7 @@ export default function Product() {
             </div>
 
             {/* Info */}
-            <div className="space-y-6">
+            <div className="space-y-6 md:sticky md:top-20 md:self-start">
               <div>
                 <Badge variant="outline" className="mb-3">
                   {product.category_name}
