@@ -53,12 +53,19 @@ export default function Product() {
         { property: 'og:title', content: title },
         { property: 'og:description', content: description },
         { property: 'og:image', content: imageUrl },
+        { property: 'og:image:secure_url', content: imageUrl },
+        { property: 'og:image:type', content: 'image/jpeg' },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { property: 'og:image:alt', content: product.name },
         { property: 'og:url', content: `https://мастер-гранит.рф/product/${product.slug}` },
         { property: 'og:type', content: 'product' },
+        { property: 'og:site_name', content: 'Гранит Мастер' },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: title },
         { name: 'twitter:description', content: description },
         { name: 'twitter:image', content: imageUrl },
+        { name: 'twitter:image:alt', content: product.name },
         { name: 'description', content: description }
       ];
 
