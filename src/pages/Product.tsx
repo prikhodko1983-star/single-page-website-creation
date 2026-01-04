@@ -117,7 +117,7 @@ export default function Product() {
     : [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -149,9 +149,9 @@ export default function Product() {
       </div>
 
       {/* Product Details */}
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-8 items-start">
+      <section className="py-8 overflow-x-hidden">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
             {/* Gallery */}
             <div className="space-y-4 w-full">
               <Card className="overflow-hidden">
@@ -199,7 +199,7 @@ export default function Product() {
                 <Badge variant="outline" className="mb-3">
                   {product.category_name}
                 </Badge>
-                <h1 className="font-oswald font-bold text-4xl mb-4">
+                <h1 className="font-oswald font-bold text-3xl sm:text-4xl mb-4 break-words">
                   {product.name}
                 </h1>
                 {!product.in_stock && (
@@ -209,12 +209,12 @@ export default function Product() {
                 )}
               </div>
 
-              <div className="flex items-baseline gap-3">
-                <span className="font-oswald font-bold text-5xl text-primary">
+              <div className="flex flex-wrap items-baseline gap-3">
+                <span className="font-oswald font-bold text-4xl sm:text-5xl text-primary">
                   {product.is_price_from && 'от '}{parseFloat(product.price).toLocaleString('ru-RU')} ₽
                 </span>
                 {product.old_price && (
-                  <span className="text-xl text-muted-foreground line-through">
+                  <span className="text-lg sm:text-xl text-muted-foreground line-through">
                     {parseFloat(product.old_price).toLocaleString('ru-RU')} ₽
                   </span>
                 )}
