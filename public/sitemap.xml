@@ -6,32 +6,32 @@
 
   <!-- Главная страница -->
   <url>
-    <loc>https://xn----7sbblivwnxcgmi.xn--p1ai/</loc>
-    <lastmod>2024-12-30</lastmod>
+    <loc>https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/</loc>
+    <lastmod>2026-01-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <!-- Каталог памятников -->
   <url>
-    <loc>https://xn----7sbblivwnxcgmi.xn--p1ai/catalog</loc>
-    <lastmod>2024-12-30</lastmod>
+    <loc>https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/catalog</loc>
+    <lastmod>2026-01-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Конструктор памятников -->
   <url>
-    <loc>https://xn----7sbblivwnxcgmi.xn--p1ai/constructor</loc>
-    <lastmod>2024-12-30</lastmod>
+    <loc>https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/constructor</loc>
+    <lastmod>2026-01-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- Юридическая информация -->
   <url>
-    <loc>https://xn----7sbblivwnxcgmi.xn--p1ai/legal</loc>
-    <lastmod>2024-12-30</lastmod>
+    <loc>https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/legal</loc>
+    <lastmod>2026-01-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

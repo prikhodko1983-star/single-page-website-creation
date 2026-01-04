@@ -34,7 +34,7 @@ User-agent: facebookexternalhit
 Allow: /
 
 # Sitemap
-Sitemap: https://xn----7sbblivwnxcgmi.xn--p1ai/sitemap.xml
+Sitemap: https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/sitemap.xml
 
 # Частота сканирования
 Crawl-delay: 1
