@@ -279,59 +279,67 @@ export default function Product() {
                 </p>
               </div>
 
-              <div className="border-2 border-primary rounded-lg p-4 bg-primary/5">
-                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-foreground">
-                  <Icon name="Share2" size={22} className="text-primary" />
-                  Поделиться товаром
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    size="lg"
-                    onClick={() => {
-                      const url = window.location.href;
-                      const text = `${product.name} — ${product.price} ₽`;
-                      window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank');
-                    }}
-                  >
-                    <Icon name="Share2" size={18} className="mr-2" />
-                    VK
-                  </Button>
-                  <Button
-                    size="lg"
-                    onClick={() => {
-                      const url = window.location.href;
-                      const text = `${product.name} — ${product.price} ₽`;
-                      window.open(`https://telegram.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
-                    }}
-                  >
-                    <Icon name="Send" size={18} className="mr-2" />
-                    Telegram
-                  </Button>
-                  <Button
-                    size="lg"
-                    onClick={() => {
-                      const url = window.location.href;
-                      const text = `${product.name} — ${product.price} ₽`;
-                      window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-                    }}
-                  >
-                    <Icon name="MessageCircle" size={18} className="mr-2" />
-                    WhatsApp
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    onClick={() => {
-                      const url = window.location.href;
-                      navigator.clipboard.writeText(url);
-                      toast({ title: "Ссылка скопирована!" });
-                    }}
-                  >
-                    <Icon name="Copy" size={18} className="mr-2" />
-                    Копировать
-                  </Button>
-                </div>
-              </div>
+              <Card className="bg-card border-2">
+                <CardContent className="p-4">
+                  <h3 className="font-semibold text-base mb-3 flex items-center gap-2">
+                    <Icon name="Share2" size={20} className="text-primary" />
+                    Поделиться товаром
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="default"
+                      variant="default"
+                      className="flex-1 min-w-[100px]"
+                      onClick={() => {
+                        const url = window.location.href;
+                        const text = `${product.name} — ${product.price} ₽`;
+                        window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank');
+                      }}
+                    >
+                      <Icon name="Share2" size={18} className="mr-2" />
+                      VK
+                    </Button>
+                    <Button
+                      size="default"
+                      variant="default"
+                      className="flex-1 min-w-[100px]"
+                      onClick={() => {
+                        const url = window.location.href;
+                        const text = `${product.name} — ${product.price} ₽`;
+                        window.open(`https://telegram.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
+                      }}
+                    >
+                      <Icon name="Send" size={18} className="mr-2" />
+                      Telegram
+                    </Button>
+                    <Button
+                      size="default"
+                      variant="default"
+                      className="flex-1 min-w-[100px]"
+                      onClick={() => {
+                        const url = window.location.href;
+                        const text = `${product.name} — ${product.price} ₽`;
+                        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+                      }}
+                    >
+                      <Icon name="MessageCircle" size={18} className="mr-2" />
+                      WhatsApp
+                    </Button>
+                    <Button
+                      size="default"
+                      variant="outline"
+                      className="min-w-[50px]"
+                      onClick={() => {
+                        const url = window.location.href;
+                        navigator.clipboard.writeText(url);
+                        toast({ title: "Ссылка скопирована!" });
+                      }}
+                    >
+                      <Icon name="Copy" size={18} />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
               <div className="space-y-3">
                 {product.image_url && (
