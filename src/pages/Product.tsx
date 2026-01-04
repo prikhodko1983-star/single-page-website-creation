@@ -279,12 +279,12 @@ export default function Product() {
                 </p>
               </div>
 
-              <div className="border-2 border-primary/20 rounded-lg p-4 bg-card">
-                <h3 className="font-semibold text-base mb-3 flex items-center gap-2">
-                  <Icon name="Share2" size={20} className="text-primary" />
+              <div className="border-2 border-primary rounded-lg p-4 bg-primary/5">
+                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-foreground">
+                  <Icon name="Share2" size={22} className="text-primary" />
                   Поделиться товаром
                 </h3>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <Button
                     size="lg"
                     onClick={() => {
