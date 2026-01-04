@@ -44,6 +44,22 @@
 
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
 
+    <!-- Редирект на основной домен для корректного шаринга -->
+    <script>
+      (function() {
+        const hostname = window.location.hostname;
+        const isPreview = hostname.includes('preview--') || hostname.includes('poehali.dev');
+        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+        
+        // Не редиректим на localhost и если уже на основном домене
+        if (!isLocalhost && isPreview) {
+          const mainDomain = 'https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai';
+          const newUrl = mainDomain + window.location.pathname + window.location.search + window.location.hash;
+          window.location.replace(newUrl);
+        }
+      })();
+    </script>
+
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
     <script src="https://cdn.poehali.dev/intertnal/js/pp-min-2.js"></script>
     <script src="https://cdn.poehali.dev/intertnal/js/route-min.js"></script>
