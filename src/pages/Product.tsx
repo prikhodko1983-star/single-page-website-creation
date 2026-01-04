@@ -288,7 +288,7 @@ export default function Product() {
                   <Button
                     size="lg"
                     onClick={() => {
-                      const url = `https://мастер-гранит.рф/product/${product.slug}`;
+                      const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
                       const text = `${product.name} — ${product.price} ₽`;
                       window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank');
                     }}
@@ -299,7 +299,7 @@ export default function Product() {
                   <Button
                     size="lg"
                     onClick={() => {
-                      const url = `https://мастер-гранит.рф/product/${product.slug}`;
+                      const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
                       const text = `${product.name} — ${product.price} ₽`;
                       window.open(`https://telegram.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
                     }}
@@ -310,7 +310,7 @@ export default function Product() {
                   <Button
                     size="lg"
                     onClick={() => {
-                      const url = `https://мастер-гранит.рф/product/${product.slug}`;
+                      const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
                       const text = `${product.name} — ${product.price} ₽`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
                     }}
@@ -322,7 +322,7 @@ export default function Product() {
                     size="lg"
                     variant="outline"
                     onClick={() => {
-                      const url = `https://мастер-гранит.рф/product/${product.slug}`;
+                      const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
                       navigator.clipboard.writeText(url);
                       toast({ title: "Ссылка скопирована!" });
                     }}
