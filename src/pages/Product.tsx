@@ -117,10 +117,10 @@ export default function Product() {
     : [];
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 max-w-full">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link to="/" className="flex items-center space-x-2">
             <span className="font-oswald font-bold text-2xl">Гранит Мастер</span>
           </Link>
@@ -134,9 +134,8 @@ export default function Product() {
       </header>
 
       {/* Breadcrumbs */}
-      <div className="w-full overflow-x-hidden">
-        <div className="container mx-auto px-4 py-4 max-w-full">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground overflow-x-auto scrollbar-hide">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Link to="/" className="hover:text-foreground">Главная</Link>
           <Icon name="ChevronRight" size={16} />
           <Link to="/catalog" className="hover:text-foreground">Каталог</Link>
@@ -145,17 +144,16 @@ export default function Product() {
             {product.category_name}
           </Link>
           <Icon name="ChevronRight" size={16} />
-            <span className="text-foreground truncate">{product.name}</span>
-          </div>
+          <span className="text-foreground">{product.name}</span>
         </div>
       </div>
 
       {/* Product Details */}
-      <section className="py-8 overflow-x-hidden">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-8">
             {/* Gallery */}
-            <div className="space-y-4 w-full">
+            <div className="space-y-4">
               <Card className="overflow-hidden">
                 <CardContent className="p-0">
                   <div className="aspect-square bg-secondary relative">
@@ -196,12 +194,12 @@ export default function Product() {
             </div>
 
             {/* Info */}
-            <div className="space-y-6 w-full md:sticky md:top-20 md:self-start">
+            <div className="space-y-6">
               <div>
                 <Badge variant="outline" className="mb-3">
                   {product.category_name}
                 </Badge>
-                <h1 className="font-oswald font-bold text-3xl sm:text-4xl mb-4 break-words">
+                <h1 className="font-oswald font-bold text-4xl mb-4">
                   {product.name}
                 </h1>
                 {!product.in_stock && (
@@ -211,12 +209,12 @@ export default function Product() {
                 )}
               </div>
 
-              <div className="flex flex-wrap items-baseline gap-3">
-                <span className="font-oswald font-bold text-4xl sm:text-5xl text-primary">
+              <div className="flex items-baseline gap-3">
+                <span className="font-oswald font-bold text-5xl text-primary">
                   {product.is_price_from && 'от '}{parseFloat(product.price).toLocaleString('ru-RU')} ₽
                 </span>
                 {product.old_price && (
-                  <span className="text-lg sm:text-xl text-muted-foreground line-through">
+                  <span className="text-xl text-muted-foreground line-through">
                     {parseFloat(product.old_price).toLocaleString('ru-RU')} ₽
                   </span>
                 )}
@@ -292,7 +290,7 @@ export default function Product() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const url = window.location.href;
+                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
                         const text = `${product.name} — ${product.price} ₽`;
                         window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank');
                       }}
@@ -304,7 +302,7 @@ export default function Product() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const url = window.location.href;
+                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
                         const text = `${product.name} — ${product.price} ₽`;
                         window.open(`https://telegram.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
                       }}
@@ -316,7 +314,7 @@ export default function Product() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const url = window.location.href;
+                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
                         const text = `${product.name} — ${product.price} ₽`;
                         window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
                       }}
@@ -328,7 +326,7 @@ export default function Product() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const url = window.location.href;
+                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
                         navigator.clipboard.writeText(url);
                         toast({ title: "Ссылка скопирована!" });
                       }}
