@@ -44,8 +44,9 @@ export default function Product() {
   useEffect(() => {
     if (product) {
       const imageUrl = product.image_url || 'https://cdn.poehali.dev/files/7c3f7bb6-620d-4495-bf82-0abd8136ff4b.png';
-      const title = `${product.name} — ${product.price} ₽ | Гранитные памятники`;
-      const description = product.description || `${product.name}. ${product.material || 'Гранит'}. ${product.size || ''}`;
+      const priceText = `${product.is_price_from ? 'от ' : ''}${parseFloat(product.price).toLocaleString('ru-RU')} ₽`;
+      const title = `${product.name} — ${priceText} | Гранитные памятники`;
+      const description = product.description || `${product.name}. ${product.material || 'Гранит'}. ${product.size || ''}. Цена: ${priceText}`;
       
       document.title = title;
       
@@ -154,7 +155,8 @@ export default function Product() {
     if (!product) return;
     
     const url = `https://мастер-гранит.рф/product/${product.slug}`;
-    const title = `${product.name} — ${product.price} ₽`;
+    const priceText = `${product.is_price_from ? 'от ' : ''}${parseFloat(product.price).toLocaleString('ru-RU')} ₽`;
+    const title = `${product.name} — ${priceText}`;
     
     if (navigator.share) {
       try {
@@ -378,7 +380,8 @@ export default function Product() {
                     size="lg"
                     onClick={() => {
                       const url = `https://мастер-гранит.рф/product/${product.slug}`;
-                      const text = `${product.name} — ${product.price} ₽`;
+                      const priceText = `${product.is_price_from ? 'от ' : ''}${parseFloat(product.price).toLocaleString('ru-RU')} ₽`;
+                      const text = `${product.name} — ${priceText}`;
                       window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank');
                     }}
                   >
@@ -389,7 +392,8 @@ export default function Product() {
                     size="lg"
                     onClick={() => {
                       const url = `https://мастер-гранит.рф/product/${product.slug}`;
-                      const text = `${product.name} — ${product.price} ₽`;
+                      const priceText = `${product.is_price_from ? 'от ' : ''}${parseFloat(product.price).toLocaleString('ru-RU')} ₽`;
+                      const text = `${product.name} — ${priceText}`;
                       window.open(`https://telegram.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
                     }}
                   >
@@ -400,7 +404,8 @@ export default function Product() {
                     size="lg"
                     onClick={() => {
                       const url = `https://мастер-гранит.рф/product/${product.slug}`;
-                      const text = `${product.name} — ${product.price} ₽`;
+                      const priceText = `${product.is_price_from ? 'от ' : ''}${parseFloat(product.price).toLocaleString('ru-RU')} ₽`;
+                      const text = `${product.name} — ${priceText}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
                     }}
                   >
