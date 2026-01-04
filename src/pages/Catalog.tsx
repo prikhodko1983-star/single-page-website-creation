@@ -44,6 +44,39 @@ export default function Catalog() {
     loadProducts();
   }, [selectedCategory]);
 
+  useEffect(() => {
+    const title = 'Каталог памятников из гранита — Цены и фото | Гранит Мастер';
+    const description = 'Широкий выбор гранитных памятников. Вертикальные, горизонтальные, эксклюзивные. Цены от 15 000₽. Собственное производство в Великом Новгороде.';
+    const imageUrl = 'https://cdn.poehali.dev/files/7c3f7bb6-620d-4495-bf82-0abd8136ff4b.png';
+    
+    document.title = title;
+    
+    const metaTags = [
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: description },
+      { property: 'og:image', content: imageUrl },
+      { property: 'og:url', content: 'https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/catalog' },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: title },
+      { name: 'twitter:description', content: description },
+      { name: 'twitter:image', content: imageUrl },
+      { name: 'description', content: description }
+    ];
+
+    metaTags.forEach(({ property, name, content }) => {
+      const selector = property ? `meta[property="${property}"]` : `meta[name="${name}"]`;
+      let meta = document.querySelector(selector);
+      if (!meta) {
+        meta = document.createElement('meta');
+        if (property) meta.setAttribute('property', property);
+        if (name) meta.setAttribute('name', name);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    });
+  }, []);
+
   const loadCategories = async () => {
     try {
       const response = await fetch('https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d?type=categories');

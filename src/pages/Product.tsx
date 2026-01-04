@@ -41,6 +41,41 @@ export default function Product() {
     loadProduct();
   }, [slug]);
 
+  useEffect(() => {
+    if (product) {
+      const imageUrl = product.image_url || 'https://cdn.poehali.dev/files/7c3f7bb6-620d-4495-bf82-0abd8136ff4b.png';
+      const title = `${product.name} — ${product.price} ₽ | Гранитные памятники`;
+      const description = product.description || `${product.name}. ${product.material || 'Гранит'}. ${product.size || ''}`;
+      
+      document.title = title;
+      
+      const metaTags = [
+        { property: 'og:title', content: title },
+        { property: 'og:description', content: description },
+        { property: 'og:image', content: imageUrl },
+        { property: 'og:url', content: `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}` },
+        { property: 'og:type', content: 'product' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: title },
+        { name: 'twitter:description', content: description },
+        { name: 'twitter:image', content: imageUrl },
+        { name: 'description', content: description }
+      ];
+
+      metaTags.forEach(({ property, name, content }) => {
+        const selector = property ? `meta[property="${property}"]` : `meta[name="${name}"]`;
+        let meta = document.querySelector(selector);
+        if (!meta) {
+          meta = document.createElement('meta');
+          if (property) meta.setAttribute('property', property);
+          if (name) meta.setAttribute('name', name);
+          document.head.appendChild(meta);
+        }
+        meta.setAttribute('content', content);
+      });
+    }
+  }, [product]);
+
   const loadProduct = async () => {
     setLoading(true);
     try {
