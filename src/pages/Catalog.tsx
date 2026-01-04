@@ -55,7 +55,7 @@ export default function Catalog() {
       { property: 'og:title', content: title },
       { property: 'og:description', content: description },
       { property: 'og:image', content: imageUrl },
-      { property: 'og:url', content: 'https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/catalog' },
+      { property: 'og:url', content: 'https://мастер-гранит.рф/catalog' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: title },
