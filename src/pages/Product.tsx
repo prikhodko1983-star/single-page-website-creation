@@ -150,6 +150,32 @@ export default function Product() {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleNativeShare = async () => {
+    if (!product) return;
+    
+    const url = `https://мастер-гранит.рф/product/${product.slug}`;
+    const title = `${product.name} — ${product.price} ₽`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: title,
+          text: `${title} | Гранит Мастер`,
+          url: url,
+        });
+      } catch (error) {
+        // Если пользователь отменил шаринг
+        if ((error as Error).name !== 'AbortError') {
+          navigator.clipboard.writeText(url);
+          toast({ title: "Ссылка скопирована в буфер обмена!" });
+        }
+      }
+    } else {
+      navigator.clipboard.writeText(url);
+      toast({ title: "Ссылка скопирована в буфер обмена!" });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -330,6 +356,17 @@ export default function Product() {
                   Указанная цена не является фиксированной и носит информационный характер. Итоговая стоимость согласовывается индивидуально до начала работ.
                 </p>
               </div>
+
+              {/* Кнопка быстрого шаринга */}
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full font-oswald text-lg h-14 border-2 border-primary hover:bg-primary/10"
+                onClick={handleNativeShare}
+              >
+                <Icon name="Share2" size={20} className="mr-2" />
+                Поделиться товаром
+              </Button>
 
               <div className="border-2 border-primary rounded-lg p-4 bg-primary/5">
                 <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-foreground">
