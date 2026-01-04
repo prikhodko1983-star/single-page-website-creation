@@ -290,7 +290,7 @@ export default function Product() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
+                        const url = window.location.href;
                         const text = `${product.name} — ${product.price} ₽`;
                         window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank');
                       }}
@@ -302,7 +302,7 @@ export default function Product() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
+                        const url = window.location.href;
                         const text = `${product.name} — ${product.price} ₽`;
                         window.open(`https://telegram.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
                       }}
@@ -314,7 +314,7 @@ export default function Product() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
+                        const url = window.location.href;
                         const text = `${product.name} — ${product.price} ₽`;
                         window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
                       }}
@@ -326,7 +326,7 @@ export default function Product() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const url = `https://xn----7sbbalicagsfxqb6aggk7n.xn--p1ai/product/${product.slug}`;
+                        const url = window.location.href;
                         navigator.clipboard.writeText(url);
                         toast({ title: "Ссылка скопирована!" });
                       }}
