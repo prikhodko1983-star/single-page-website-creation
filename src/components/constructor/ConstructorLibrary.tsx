@@ -455,7 +455,9 @@ export const ConstructorLibrary = ({
             
             <div className="space-y-2 p-3 bg-secondary/20 rounded-lg">
               <Label className="font-semibold">Готовые эпитафии</Label>
-              <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+              
+              {/* Десктоп: список кнопок */}
+              <div className="hidden md:block space-y-2 max-h-64 overflow-y-auto pr-2">
                 {[
                   'Помним. Любим. Скорбим.',
                   'Ты всегда в нашей памяти.',
@@ -478,6 +480,38 @@ export const ConstructorLibrary = ({
                   </button>
                 ))}
               </div>
+              
+              {/* Мобильное: select */}
+              <div className="md:hidden">
+                <select 
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      addEpitaphElement(e.target.value);
+                      e.target.value = '';
+                    }
+                  }}
+                  className="w-full p-3 rounded border-2 border-border bg-background text-foreground"
+                  defaultValue=""
+                >
+                  <option value="" disabled>Выберите эпитафию</option>
+                  {[
+                    'Помним. Любим. Скорбим.',
+                    'Ты всегда в нашей памяти.',
+                    'Спасибо за все.',
+                    'Вечная память о тебе в сердцах близких.',
+                    'Покойся с миром в Царствии Небесном.',
+                    'Вечная память.',
+                    'Помним, скорбим…',
+                    'Опустела без тебя земля.',
+                    'Любим и помним.',
+                    'Память сильнее смерти.',
+                    'Рождение – не начало, смерть – не конец.',
+                  ].map((text, idx) => (
+                    <option key={idx} value={text}>{text}</option>
+                  ))}
+                </select>
+              </div>
+              
               <p className="text-xs text-muted-foreground mt-2">
                 Выберите готовый текст или добавьте свой. После добавления можно отредактировать.
               </p>
