@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "Test bot user agent gets HTML",
+      "method": "GET",
+      "path": "/?slug=pamyatnik-1",
+      "headers": {
+        "user-agent": "Twitterbot/1.0"
+      },
+      "expectedStatus": 200,
+      "bodyMatcher": "contains",
+      "expectedBody": "og:image"
+    },
+    {
+      "name": "Test regular user gets redirect",
+      "method": "GET",
+      "path": "/?slug=pamyatnik-1",
+      "headers": {
+        "user-agent": "Mozilla/5.0"
+      },
+      "expectedStatus": 302
+    }
+  ]
+}
