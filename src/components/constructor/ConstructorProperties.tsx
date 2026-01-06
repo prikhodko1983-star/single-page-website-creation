@@ -188,18 +188,38 @@ export const ConstructorProperties = ({
             </div>
             
             <div>
-              <Label>Поворот: {selectedEl.rotation || 0}°</Label>
-              <input 
-                type="range" 
-                min="-180" 
-                max="180" 
-                value={selectedEl.rotation || 0}
-                onChange={(e) => updateElement(selectedEl.id, { rotation: parseInt(e.target.value) })}
-                className="w-full mt-1"
-              />
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>← Влево</span>
-                <span>Вправо →</span>
+              <Label className="sr-only">Поворот</Label>
+              <div className="slider-wrapper">
+                <div className="text-3xl font-bold text-center mb-4">
+                  {selectedEl.rotation || 0}°
+                </div>
+                <div className="track">
+                  <input 
+                    type="range" 
+                    min="-180" 
+                    max="180" 
+                    value={selectedEl.rotation || 0}
+                    onChange={(e) => updateElement(selectedEl.id, { rotation: parseInt(e.target.value) })}
+                    className="rotation-slider"
+                  />
+                  <div 
+                    className="ticks"
+                    style={{
+                      transform: `translateX(-${((selectedEl.rotation || 0) + 180) * 1.6}px)`
+                    }}
+                  >
+                    {Array.from({ length: 73 }, (_, i) => {
+                      const degree = i * 5 - 180;
+                      const isBig = degree % 45 === 0;
+                      return (
+                        <div 
+                          key={i} 
+                          className={`tick ${isBig ? 'big' : ''}`}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
             
