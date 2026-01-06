@@ -2266,6 +2266,7 @@ const Constructor = () => {
       <MobileToolbar
         selectedEl={selectedEl}
         updateElement={updateElement}
+        deleteElement={deleteElement}
         fonts={fonts}
       />
     </div>

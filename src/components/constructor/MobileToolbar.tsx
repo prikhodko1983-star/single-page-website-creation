@@ -28,15 +28,17 @@ interface CanvasElement {
 interface MobileToolbarProps {
   selectedEl: CanvasElement | undefined;
   updateElement: (id: string, updates: Partial<CanvasElement>) => Promise<void>;
+  deleteElement: (id: string) => void;
   fonts: Array<{id: string, name: string, style: string, weight: string, example: string, fullStyle: string}>;
 }
 
 export const MobileToolbar = ({
   selectedEl,
   updateElement,
+  deleteElement,
   fonts,
 }: MobileToolbarProps) => {
-  const [activePanel, setActivePanel] = useState<'fonts' | 'size' | 'color' | 'align' | 'rotate' | null>(null);
+  const [activePanel, setActivePanel] = useState<'fonts' | 'size' | 'color' | 'align' | 'rotate' | 'imageSize' | null>(null);
   const [rotationInput, setRotationInput] = useState<string>('');
 
   if (!selectedEl) {
@@ -44,8 +46,9 @@ export const MobileToolbar = ({
   }
 
   const isTextElement = ['text', 'epitaph', 'fio', 'dates'].includes(selectedEl.type);
+  const isImageElement = ['image', 'cross', 'flower', 'photo'].includes(selectedEl.type);
 
-  const togglePanel = (panel: 'fonts' | 'size' | 'color' | 'align' | 'rotate') => {
+  const togglePanel = (panel: 'fonts' | 'size' | 'color' | 'align' | 'rotate' | 'imageSize') => {
     if (panel === 'rotate' && activePanel !== 'rotate') {
       setRotationInput((selectedEl.rotation || 0).toString());
     }
@@ -267,6 +270,38 @@ export const MobileToolbar = ({
         </div>
       )}
 
+      {isImageElement && activePanel === 'imageSize' && (
+        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-3 z-40">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-xs">Размер изображения</h3>
+            <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={14} />
+            </Button>
+          </div>
+          
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-muted-foreground">Ширина: {selectedEl.width}px</label>
+              <input
+                type="range"
+                min="50"
+                max="400"
+                value={selectedEl.width}
+                onChange={(e) => {
+                  const newWidth = parseInt(e.target.value);
+                  const aspectRatio = selectedEl.height / selectedEl.width;
+                  updateElement(selectedEl.id, { 
+                    width: newWidth,
+                    height: Math.round(newWidth * aspectRatio)
+                  });
+                }}
+                className="w-full mt-1"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Нижняя панель инструментов */}
       <div className="fixed inset-x-0 bottom-0 bg-background border-t border-border p-1.5 z-50 md:hidden">
         <div className="flex items-center justify-around gap-1">
@@ -314,14 +349,51 @@ export const MobileToolbar = ({
             </>
           )}
 
+          {isImageElement && (
+            <>
+              <button
+                onClick={() => updateElement(selectedEl.id, { flipHorizontal: !selectedEl.flipHorizontal })}
+                className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors ${
+                  selectedEl.flipHorizontal ? 'bg-primary/10 text-primary' : 'hover:bg-secondary'
+                }`}
+              >
+                <Icon name="FlipHorizontal" size={18} />
+                <span className="text-[10px]">Отзеркалить</span>
+              </button>
+
+              <button
+                onClick={() => togglePanel('imageSize')}
+                className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors ${
+                  activePanel === 'imageSize' ? 'bg-primary/10 text-primary' : 'hover:bg-secondary'
+                }`}
+              >
+                <Icon name="Maximize2" size={18} />
+                <span className="text-[10px]">Размер</span>
+              </button>
+            </>
+          )}
+
           <button
             onClick={() => togglePanel('rotate')}
             className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors ${
               activePanel === 'rotate' ? 'bg-primary/10 text-primary' : 'hover:bg-secondary'
-            } ${!isTextElement ? 'mx-auto' : ''}`}
+            }`}
           >
             <Icon name="RotateCw" size={18} />
             <span className="text-[10px]">Поворот</span>
+          </button>
+
+          <button
+            onClick={() => {
+              if (confirm('Удалить этот элемент?')) {
+                deleteElement(selectedEl.id);
+                setActivePanel(null);
+              }
+            }}
+            className="flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors hover:bg-destructive/10 hover:text-destructive"
+          >
+            <Icon name="Trash2" size={18} />
+            <span className="text-[10px]">Удалить</span>
           </button>
         </div>
       </div>
