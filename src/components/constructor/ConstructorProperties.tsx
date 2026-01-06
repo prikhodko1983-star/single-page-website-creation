@@ -46,9 +46,9 @@ export const ConstructorProperties = ({
   const lastRotationRef = useRef<number>(0);
   
   const handleRotationChange = (elementId: string, newRotation: number) => {
-    if (Math.abs(newRotation - lastRotationRef.current) >= 1) {
+    if (newRotation !== lastRotationRef.current) {
       if ('vibrate' in navigator) {
-        navigator.vibrate(10);
+        navigator.vibrate(1);
       }
       lastRotationRef.current = newRotation;
     }
