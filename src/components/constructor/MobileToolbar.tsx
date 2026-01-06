@@ -111,7 +111,7 @@ export const MobileToolbar = ({
       )}
 
       {activePanel === 'size' && (
-        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-3 z-40">
+        <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-3 z-40 max-h-64 overflow-y-auto">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-xs">Размер текста: {selectedEl.fontSize}px</h3>
             <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
@@ -124,8 +124,21 @@ export const MobileToolbar = ({
             max="72"
             value={selectedEl.fontSize || 24}
             onChange={(e) => updateElement(selectedEl.id, { fontSize: parseInt(e.target.value) })}
-            className="w-full"
+            className="w-full mb-4"
           />
+          
+          <div className="border-t border-border pt-3">
+            <h3 className="font-semibold text-xs mb-2">Межстрочное расстояние: {selectedEl.lineHeight || 1.2}</h3>
+            <input
+              type="range"
+              min="0.8"
+              max="3"
+              step="0.1"
+              value={selectedEl.lineHeight || 1.2}
+              onChange={(e) => updateElement(selectedEl.id, { lineHeight: parseFloat(e.target.value) })}
+              className="w-full"
+            />
+          </div>
         </div>
       )}
 
