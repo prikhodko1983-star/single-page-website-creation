@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Icon from "@/components/ui/icon";
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 interface CanvasElement {
   id: string;
@@ -43,20 +43,6 @@ export const ConstructorProperties = ({
   fonts,
 }: ConstructorPropertiesProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const lastRotationRef = useRef<number>(0);
-  
-  const handleRotationInput = (elementId: string, newRotation: number) => {
-    if (Math.abs(newRotation - lastRotationRef.current) >= 1) {
-      if (navigator.vibrate) {
-        navigator.vibrate(15);
-      }
-      lastRotationRef.current = newRotation;
-    }
-  };
-
-  const handleRotationChange = (elementId: string, newRotation: number) => {
-    updateElement(elementId, { rotation: newRotation });
-  };
   
   return (
     <Card>
@@ -208,29 +194,13 @@ export const ConstructorProperties = ({
                 min="-180" 
                 max="180" 
                 value={selectedEl.rotation || 0}
-                onInput={(e) => handleRotationInput(selectedEl.id, parseInt(e.currentTarget.value))}
-                onChange={(e) => handleRotationChange(selectedEl.id, parseInt(e.target.value))}
+                onChange={(e) => updateElement(selectedEl.id, { rotation: parseInt(e.target.value) })}
                 className="w-full mt-1"
               />
               <div className="flex justify-between text-xs text-muted-foreground mt-1">
                 <span>← Влево</span>
                 <span>Вправо →</span>
               </div>
-              <Button 
-                size="sm" 
-                variant="outline"
-                onClick={() => {
-                  if (navigator.vibrate) {
-                    navigator.vibrate(200);
-                    alert('Вибрация работает! ✓');
-                  } else {
-                    alert('Вибрация НЕ поддерживается в этом браузере ✗');
-                  }
-                }}
-                className="w-full mt-2"
-              >
-                🧪 Тест вибрации
-              </Button>
             </div>
             
             {selectedEl.type === 'fio' && (
