@@ -216,6 +216,21 @@ export const ConstructorProperties = ({
                 <span>← Влево</span>
                 <span>Вправо →</span>
               </div>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => {
+                  if (navigator.vibrate) {
+                    navigator.vibrate(200);
+                    alert('Вибрация работает! ✓');
+                  } else {
+                    alert('Вибрация НЕ поддерживается в этом браузере ✗');
+                  }
+                }}
+                className="w-full mt-2"
+              >
+                🧪 Тест вибрации
+              </Button>
             </div>
             
             {selectedEl.type === 'fio' && (
