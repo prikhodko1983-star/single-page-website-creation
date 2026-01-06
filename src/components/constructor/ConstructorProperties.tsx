@@ -205,11 +205,11 @@ export const ConstructorProperties = ({
                   <div 
                     className="ticks"
                     style={{
-                      transform: `translateX(-${((selectedEl.rotation || 0) + 180) * 1.6}px)`
+                      transform: `translateX(calc(-50% - ${(selectedEl.rotation || 0) * 0.888}px))`
                     }}
                   >
-                    {Array.from({ length: 73 }, (_, i) => {
-                      const degree = i * 5 - 180;
+                    {Array.from({ length: 361 }, (_, i) => {
+                      const degree = i - 180;
                       const isBig = degree % 45 === 0;
                       return (
                         <div 

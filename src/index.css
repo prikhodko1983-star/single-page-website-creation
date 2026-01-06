@@ -181,8 +181,9 @@
   align-items: center;
   height: 80px;
   pointer-events: none;
-  transition: transform 0.08s linear;
-  gap: 29px;
+  transition: transform 0.05s ease-out;
+  gap: 8px;
+  padding: 0 50%;
 }
 
 .tick {
