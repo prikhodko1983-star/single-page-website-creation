@@ -142,18 +142,6 @@ const Index = () => {
         onNavigateAdmin={() => navigate('/admin')}
       />
 
-      {/* Баннер конструктора */}
-      <div 
-        className="relative cursor-pointer overflow-hidden"
-        onClick={() => navigate('/constructor')}
-      >
-        <img 
-          src="https://cdn.poehali.dev/files/73624E06-523F-4A9E-B89D-9858B866B845.png"
-          alt="Онлайн-конструктор памятников"
-          className="w-full h-auto hover:scale-105 transition-transform duration-300"
-        />
-      </div>
-
       {/* Уведомление о разработке */}
       <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white py-4 px-4">
         <div className="container mx-auto text-center">
@@ -164,6 +152,18 @@ const Index = () => {
             Некоторые функции могут работать не полностью. Спасибо за понимание!
           </p>
         </div>
+      </div>
+
+      {/* Баннер конструктора */}
+      <div 
+        className="relative cursor-pointer overflow-hidden"
+        onClick={() => navigate('/constructor')}
+      >
+        <img 
+          src="https://cdn.poehali.dev/files/73624E06-523F-4A9E-B89D-9858B866B845.png"
+          alt="Онлайн-конструктор памятников"
+          className="w-full h-auto hover:scale-105 transition-transform duration-300"
+        />
       </div>
 
       <IndexHeroSections 
