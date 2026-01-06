@@ -189,7 +189,7 @@ const Index = () => {
               <Button 
                 size="lg" 
                 className="bg-[#E89C1F] hover:bg-[#d88a09] text-black font-oswald text-lg px-8 py-6 mt-8"
-                onClick={onNavigateConstructor}
+                onClick={() => navigate('/constructor')}
               >
                 <Icon name="ArrowRight" className="mr-2" size={20} />
                 Собрать макет памятника
