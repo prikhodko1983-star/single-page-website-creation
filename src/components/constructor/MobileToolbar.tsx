@@ -131,7 +131,7 @@ export const MobileToolbar = ({
             <h3 className="font-semibold text-xs mb-2">Межстрочное расстояние: {selectedEl.lineHeight || 1.2}</h3>
             <input
               type="range"
-              min="0.8"
+              min="0.4"
               max="3"
               step="0.1"
               value={selectedEl.lineHeight || 1.2}
