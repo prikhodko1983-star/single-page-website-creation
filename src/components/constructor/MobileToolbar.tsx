@@ -121,7 +121,7 @@ export const MobileToolbar = ({
           <input
             type="range"
             min="12"
-            max="72"
+            max="30"
             value={selectedEl.fontSize || 24}
             onChange={(e) => updateElement(selectedEl.id, { fontSize: parseInt(e.target.value) })}
             className="w-full mb-4"
