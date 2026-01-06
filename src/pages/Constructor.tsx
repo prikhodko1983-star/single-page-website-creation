@@ -279,11 +279,12 @@ const Constructor = () => {
       x: 50,
       y: 200,
       width: 300,
-      height: 100,
+      height: 60,
       content: customText || 'Вечная память',
       fontSize: 18,
       color: '#FFFFFF',
       rotation: 0,
+      autoSize: true,
     };
     setElements([...elements, newElement]);
   };
