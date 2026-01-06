@@ -155,7 +155,7 @@ const Index = () => {
       </div>
 
       {/* Баннер конструктора */}
-      <section className="relative bg-[#2a2520] overflow-hidden cursor-pointer" onClick={() => navigate('/constructor')}>
+      <section className="relative bg-[#2a2520] overflow-hidden">
         <div className="container mx-auto px-4 py-12 md:py-16">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             {/* Левая часть - текст */}
@@ -189,6 +189,7 @@ const Index = () => {
               <Button 
                 size="lg" 
                 className="bg-[#E89C1F] hover:bg-[#d88a09] text-black font-oswald text-lg px-8 py-6 mt-8"
+                onClick={onNavigateConstructor}
               >
                 <Icon name="ArrowRight" className="mr-2" size={20} />
                 Собрать макет памятника
