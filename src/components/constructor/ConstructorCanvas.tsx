@@ -447,15 +447,6 @@ export const ConstructorCanvas = ({
           />
           <Button 
             variant="secondary" 
-            onClick={exportDesign}
-            disabled={elements.length === 0}
-            className="flex-1"
-          >
-            <Icon name="FileJson" size={18} className="mr-2" />
-            JSON
-          </Button>
-          <Button 
-            variant="secondary" 
             onClick={exportDesignAsPNG}
             disabled={elements.length === 0}
             className="flex-1"
