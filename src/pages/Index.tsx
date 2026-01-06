@@ -154,6 +154,18 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Баннер конструктора */}
+      <div 
+        className="relative cursor-pointer overflow-hidden"
+        onClick={() => navigate('/constructor')}
+      >
+        <img 
+          src="https://cdn.poehali.dev/files/73624E06-523F-4A9E-B89D-9858B866B845.png"
+          alt="Онлайн-конструктор памятников"
+          className="w-full h-auto hover:scale-105 transition-transform duration-300"
+        />
+      </div>
+
       <IndexHeroSections 
         onNavigateCatalog={() => navigate('/catalog')}
         onNavigateConstructor={() => navigate('/constructor')}
