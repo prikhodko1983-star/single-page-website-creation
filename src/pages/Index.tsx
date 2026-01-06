@@ -154,6 +154,81 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Баннер конструктора */}
+      <section className="relative bg-gradient-to-br from-[#3a3229] to-[#2a241d] py-12 md:py-20">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+            {/* Текстовая часть */}
+            <div className="flex-1 text-white space-y-6">
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold font-oswald leading-tight">
+                Онлайн-конструктор<br />памятников
+              </h2>
+              <p className="text-lg md:text-xl text-gray-300">
+                Создайте макет за несколько минут
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 flex-shrink-0 mt-1">
+                    <svg className="w-full h-full text-[#E89C1F]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="text-base md:text-lg">Выберите форму и дизайн</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 flex-shrink-0 mt-1">
+                    <svg className="w-full h-full text-[#E89C1F]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="text-base md:text-lg">Добавьте фото и надпись</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 flex-shrink-0 mt-1">
+                    <svg className="w-full h-full text-[#E89C1F]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="text-base md:text-lg">Посмотрите, как будет выглядеть памятник</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 flex-shrink-0 mt-1">
+                    <svg className="w-full h-full text-[#E89C1F]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="text-base md:text-lg">Без регистрации и бесплатно</span>
+                </div>
+              </div>
+
+              <button 
+                className="inline-flex items-center gap-3 bg-[#E89C1F] hover:bg-[#d88a09] text-black font-oswald font-bold text-lg px-8 py-4 rounded-lg transition-colors mt-6"
+                onClick={() => navigate('/constructor')}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+                Собрать макет памятника
+              </button>
+
+              <p className="text-sm text-gray-400">
+                Наглядно. Удобно. Без лишних звонков.
+              </p>
+            </div>
+
+            {/* Изображение */}
+            <div className="flex-1 max-w-xl">
+              <img 
+                src="https://cdn.poehali.dev/files/73624E06-523F-4A9E-B89D-9858B866B845.png"
+                alt="Конструктор памятников онлайн"
+                className="w-full h-auto rounded-lg"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       <IndexHeroSections 
         onNavigateCatalog={() => navigate('/catalog')}
         onNavigateConstructor={() => navigate('/constructor')}
