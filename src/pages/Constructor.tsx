@@ -455,7 +455,7 @@ const Constructor = () => {
     const element = elements.find(el => el.id === elementId);
     if (!element) return;
     
-    if (['fio', 'dates'].includes(element.type)) {
+    if (['text', 'epitaph', 'fio', 'dates'].includes(element.type)) {
       setEditingElement(element);
       setIsTextEditorOpen(true);
     }
@@ -2268,13 +2268,11 @@ const Constructor = () => {
         }}
       />
 
-      {!isTextEditorOpen && (
-        <MobileToolbar
-          selectedEl={selectedEl}
-          updateElement={updateElement}
-          fonts={fonts}
-        />
-      )}
+      <MobileToolbar
+        selectedEl={selectedEl}
+        updateElement={updateElement}
+        fonts={fonts}
+      />
     </div>
   );
 };
