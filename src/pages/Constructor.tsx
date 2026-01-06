@@ -455,19 +455,14 @@ const Constructor = () => {
     const element = elements.find(el => el.id === elementId);
     if (!element) return;
     
-    if (['text', 'fio', 'dates'].includes(element.type)) {
+    if (['text', 'epitaph', 'fio', 'dates'].includes(element.type)) {
       setEditingElement(element);
       setIsTextEditorOpen(true);
     }
   };
 
   const handleSingleClick = (elementId: string) => {
-    if (selectedElement === elementId && !isDragging && !isResizing) {
-      const element = elements.find(el => el.id === elementId);
-      if (element && ['text', 'epitaph'].includes(element.type)) {
-        setInlineEditingId(elementId);
-      }
-    }
+    // Убрана возможность инлайн-редактирования, только через модальное окно
   };
 
   const handleInlineTextChange = (elementId: string, newContent: string, textareaElement?: HTMLTextAreaElement) => {
