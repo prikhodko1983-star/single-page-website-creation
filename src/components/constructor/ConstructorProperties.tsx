@@ -46,10 +46,9 @@ export const ConstructorProperties = ({
   const lastRotationRef = useRef<number>(0);
   
   const handleRotationChange = (elementId: string, newRotation: number) => {
-    // Вибрация на каждый градус изменения
     if (Math.abs(newRotation - lastRotationRef.current) >= 1) {
       if ('vibrate' in navigator) {
-        navigator.vibrate(5); // Короткая вибрация 5мс
+        navigator.vibrate(10);
       }
       lastRotationRef.current = newRotation;
     }
