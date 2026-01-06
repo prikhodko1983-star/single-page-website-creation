@@ -154,6 +154,63 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Баннер конструктора */}
+      <section className="relative bg-[#2a2520] overflow-hidden cursor-pointer" onClick={() => navigate('/constructor')}>
+        <div className="container mx-auto px-4 py-12 md:py-16">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Левая часть - текст */}
+            <div className="text-white space-y-6">
+              <h2 className="text-3xl md:text-5xl font-bold font-oswald">
+                Онлайн-конструктор памятников
+              </h2>
+              <p className="text-lg md:text-xl text-gray-300">
+                Создайте макет за несколько минут
+              </p>
+              
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Icon name="Check" className="text-[#E89C1F] flex-shrink-0" size={24} />
+                  <span className="text-base md:text-lg">Выберите форму и дизайн</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Icon name="Check" className="text-[#E89C1F] flex-shrink-0" size={24} />
+                  <span className="text-base md:text-lg">Добавьте фото и надпись</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Icon name="Check" className="text-[#E89C1F] flex-shrink-0" size={24} />
+                  <span className="text-base md:text-lg">Посмотрите, как будет выглядеть памятник</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Icon name="Check" className="text-[#E89C1F] flex-shrink-0" size={24} />
+                  <span className="text-base md:text-lg">Без регистрации и бесплатно</span>
+                </div>
+              </div>
+
+              <Button 
+                size="lg" 
+                className="bg-[#E89C1F] hover:bg-[#d88a09] text-black font-oswald text-lg px-8 py-6 mt-8"
+              >
+                <Icon name="ArrowRight" className="mr-2" size={20} />
+                Собрать макет памятника
+              </Button>
+
+              <p className="text-sm text-gray-400 mt-4">
+                Наглядно. Удобно. Без лишних звонков.
+              </p>
+            </div>
+
+            {/* Правая часть - изображение */}
+            <div className="relative">
+              <img 
+                src="https://cdn.poehali.dev/files/73624E06-523F-4A9E-B89D-9858B866B845.png"
+                alt="Конструктор памятников онлайн - создайте макет за несколько минут"
+                className="w-full h-auto rounded-lg shadow-2xl"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       <IndexHeroSections 
         onNavigateCatalog={() => navigate('/catalog')}
         onNavigateConstructor={() => navigate('/constructor')}
