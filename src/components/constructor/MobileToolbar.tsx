@@ -246,7 +246,7 @@ export const MobileToolbar = ({
               <div 
                 className="ticks-mobile"
                 style={{
-                  transform: `translateX(calc(-50% - ${(selectedEl.rotation || 0) * 0.444}px))`
+                  transform: `translateX(calc(-50% - ${(selectedEl.rotation || 0) * 1.333}px))`
                 }}
               >
                 {Array.from({ length: 361 }, (_, i) => {

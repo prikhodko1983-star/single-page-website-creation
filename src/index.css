@@ -263,7 +263,7 @@
   height: 40px;
   pointer-events: none;
   transition: transform 0.05s ease-out;
-  gap: 4px;
+  gap: 12px;
   padding: 0 50%;
 }
 
