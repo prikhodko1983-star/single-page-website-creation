@@ -203,3 +203,81 @@
   opacity: 1;
   background: hsl(var(--foreground));
 }
+
+/* Мобильная версия ползунка поворота (компактная) */
+.slider-wrapper-mobile {
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.rotation-slider-mobile {
+  width: 100%;
+  height: 100%;
+  appearance: none;
+  background: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  cursor: pointer;
+  margin: 0;
+}
+
+.rotation-slider-mobile::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 30px;
+  border-radius: 3px;
+  background: hsl(var(--primary));
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.rotation-slider-mobile::-moz-range-thumb {
+  width: 20px;
+  height: 30px;
+  border-radius: 3px;
+  background: hsl(var(--primary));
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.track-mobile {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  overflow: hidden;
+  background: hsl(var(--card));
+  border-radius: 6px;
+  border: 1px solid hsl(var(--border));
+}
+
+.ticks-mobile {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  pointer-events: none;
+  transition: transform 0.05s ease-out;
+  gap: 4px;
+  padding: 0 50%;
+}
+
+.tick-mobile {
+  width: 1.5px;
+  height: 15px;
+  background: hsl(var(--muted-foreground));
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+.tick-mobile.big {
+  height: 25px;
+  width: 2px;
+  opacity: 1;
+  background: hsl(var(--foreground));
+}

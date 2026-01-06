@@ -219,36 +219,48 @@ export const MobileToolbar = ({
 
       {activePanel === 'rotate' && (
         <div className="fixed inset-x-0 bottom-16 bg-background border-t border-border p-3 z-40">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-xs">Поворот: {selectedEl.rotation || 0}°</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-xs">Поворот</h3>
             <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
               <Icon name="X" size={14} />
             </Button>
           </div>
-          <input
-            type="range"
-            min="-180"
-            max="180"
-            value={selectedEl.rotation || 0}
-            onChange={(e) => {
-              const value = parseInt(e.target.value);
-              updateElement(selectedEl.id, { rotation: value });
-              setRotationInput(value.toString());
-            }}
-            className="w-full mb-2"
-          />
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              min="-180"
-              max="180"
-              value={rotationInput}
-              onChange={(e) => handleRotationInputChange(e.target.value)}
-              onBlur={handleRotationInputBlur}
-              className="flex-1 h-8 px-2 rounded border border-border bg-background text-center text-sm"
-              placeholder="Угол"
-            />
-            <span className="text-xs text-muted-foreground">град</span>
+          
+          <div className="slider-wrapper-mobile">
+            <div className="text-2xl font-bold text-center mb-2">
+              {selectedEl.rotation || 0}°
+            </div>
+            <div className="track-mobile">
+              <input 
+                type="range" 
+                min="-180" 
+                max="180" 
+                value={selectedEl.rotation || 0}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  updateElement(selectedEl.id, { rotation: value });
+                  setRotationInput(value.toString());
+                }}
+                className="rotation-slider-mobile"
+              />
+              <div 
+                className="ticks-mobile"
+                style={{
+                  transform: `translateX(calc(-50% - ${(selectedEl.rotation || 0) * 0.444}px))`
+                }}
+              >
+                {Array.from({ length: 361 }, (_, i) => {
+                  const degree = i - 180;
+                  const isBig = degree % 45 === 0;
+                  return (
+                    <div 
+                      key={i} 
+                      className={`tick-mobile ${isBig ? 'big' : ''}`}
+                    />
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       )}
