@@ -43,32 +43,32 @@ export default function IndexContentSections({
 }: IndexContentSectionsProps) {
   return (
     <>
-      <section id="services" className="py-20 bg-secondary">
+      <section id="services" className="py-8 md:py-12 bg-secondary">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="font-oswald font-bold text-3xl md:text-5xl mb-4">
+          <div className="text-center mb-6">
+            <h2 className="font-oswald font-bold text-2xl md:text-3xl mb-2">
               Услуги по изготовлению памятников
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
               Полный комплекс услуг от изготовления до установки
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-3 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-2 max-w-5xl mx-auto">
             {services.map((service, idx) => (
               <Card 
                 key={idx}
                 className="bg-card border-border hover:border-primary transition-all duration-300 animate-fade-in"
                 style={{ animationDelay: `${idx * 0.1}s` }}
               >
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Icon name={service.icon as any} className="text-primary" size={32} />
+                <CardContent className="p-4 text-center">
+                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Icon name={service.icon as any} className="text-primary" size={20} />
                   </div>
-                  <h3 className="font-oswald font-semibold text-xl mb-2">
+                  <h3 className="font-oswald font-semibold text-sm mb-1">
                     {service.title}
                   </h3>
-                  <div className="text-muted-foreground text-sm">
+                  <div className="text-muted-foreground text-xs">
                     {service.desc}
                   </div>
                 </CardContent>
