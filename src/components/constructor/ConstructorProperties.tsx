@@ -45,17 +45,16 @@ export const ConstructorProperties = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const lastRotationRef = useRef<number>(0);
   
-  const handleRotationChange = (elementId: string, newRotation: number) => {
+  const handleRotationInput = (elementId: string, newRotation: number) => {
     if (Math.abs(newRotation - lastRotationRef.current) >= 1) {
-      try {
-        if (navigator.vibrate) {
-          navigator.vibrate(20);
-        }
-      } catch (e) {
-        console.log('Vibration not supported');
+      if (navigator.vibrate) {
+        navigator.vibrate(15);
       }
       lastRotationRef.current = newRotation;
     }
+  };
+
+  const handleRotationChange = (elementId: string, newRotation: number) => {
     updateElement(elementId, { rotation: newRotation });
   };
   
@@ -209,6 +208,7 @@ export const ConstructorProperties = ({
                 min="-180" 
                 max="180" 
                 value={selectedEl.rotation || 0}
+                onInput={(e) => handleRotationInput(selectedEl.id, parseInt(e.currentTarget.value))}
                 onChange={(e) => handleRotationChange(selectedEl.id, parseInt(e.target.value))}
                 className="w-full mt-1"
               />
