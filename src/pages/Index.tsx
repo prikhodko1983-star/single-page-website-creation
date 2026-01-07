@@ -175,9 +175,70 @@ const Index = () => {
             className="relative rounded-2xl overflow-hidden cursor-pointer group max-w-6xl mx-auto hover:opacity-95 transition-opacity"
             onClick={() => navigate('/constructor')}
           >
-            {/* Единая версия для всех устройств - текст поверх фона */}
+            {/* Мобильная версия - фон из первого фото */}
             <div 
-              className="relative"
+              className="relative md:hidden"
+              style={{
+                backgroundImage: 'url(https://cdn.poehali.dev/files/для%20моб.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }}
+            >
+              <div className="relative z-10 min-h-[400px] p-6 flex items-center">
+                <div className="max-w-md space-y-3">
+                  <h2 className="font-serif text-2xl font-normal text-white leading-tight">
+                    Онлайн-конструктор<br />памятников
+                  </h2>
+                  
+                  <p className="text-sm text-white/90">
+                    Создайте макет за несколько минут
+                  </p>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-white/90">
+                      <svg className="w-4 h-4 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-xs">Выберите форму и дизайн</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-white/90">
+                      <svg className="w-4 h-4 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-xs">Добавьте фото и надпись</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-white/90">
+                      <svg className="w-4 h-4 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-xs">Посмотрите, как будет выглядеть памятник</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-white/90">
+                      <svg className="w-4 h-4 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-xs">Без регистрации и бесплатно</span>
+                    </div>
+                  </div>
+                  
+                  <button className="bg-[#D4A855] hover:bg-[#C49745] text-black font-medium px-5 py-3 rounded-lg text-sm transition-all flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                    Собрать макет памятника
+                  </button>
+                  
+                  <p className="text-white/70 text-xs italic">
+                    Наглядно. Удобно. Без лишних звонков.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Десктопная версия - текст поверх старого фона */}
+            <div 
+              className="relative hidden md:block"
               style={{
                 backgroundImage: 'url(https://cdn.poehali.dev/files/Фон%20копия3.jpg)',
                 backgroundSize: 'contain',
@@ -188,51 +249,51 @@ const Index = () => {
             >
               <div className="absolute inset-0 bg-black/10"></div>
               
-              <div className="relative z-10 min-h-[300px] md:min-h-[500px] lg:min-h-[600px] p-4 md:p-6 lg:p-12 flex items-center">
-                <div className="max-w-2xl space-y-1.5 md:space-y-3 lg:space-y-4">
-                  <h2 className="font-serif text-xl md:text-3xl lg:text-4xl xl:text-5xl font-normal text-white leading-tight">
+              <div className="relative z-10 min-h-[500px] lg:min-h-[600px] p-6 lg:p-12 flex items-center">
+                <div className="max-w-2xl space-y-3 lg:space-y-4">
+                  <h2 className="font-serif text-3xl lg:text-4xl xl:text-5xl font-normal text-white leading-tight">
                     Онлайн-конструктор<br />памятников
                   </h2>
                   
-                  <p className="text-xs md:text-base lg:text-lg text-white/90">
+                  <p className="text-base lg:text-lg text-white/90">
                     Создайте макет за несколько минут
                   </p>
                   
-                  <div className="space-y-1 md:space-y-1.5 lg:space-y-2">
-                    <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 text-white/90">
-                      <svg className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="space-y-1.5 lg:space-y-2">
+                    <div className="flex items-center gap-2 lg:gap-3 text-white/90">
+                      <svg className="w-4 h-4 lg:w-5 lg:h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
-                      <span className="text-[10px] md:text-sm lg:text-base">Выберите форму и дизайн</span>
+                      <span className="text-sm lg:text-base">Выберите форму и дизайн</span>
                     </div>
-                    <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 text-white/90">
-                      <svg className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="flex items-center gap-2 lg:gap-3 text-white/90">
+                      <svg className="w-4 h-4 lg:w-5 lg:h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
-                      <span className="text-[10px] md:text-sm lg:text-base">Добавьте фото и надпись</span>
+                      <span className="text-sm lg:text-base">Добавьте фото и надпись</span>
                     </div>
-                    <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 text-white/90">
-                      <svg className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="flex items-center gap-2 lg:gap-3 text-white/90">
+                      <svg className="w-4 h-4 lg:w-5 lg:h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
-                      <span className="text-[10px] md:text-sm lg:text-base">Посмотрите, как будет выглядеть памятник</span>
+                      <span className="text-sm lg:text-base">Посмотрите, как будет выглядеть памятник</span>
                     </div>
-                    <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 text-white/90">
-                      <svg className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="flex items-center gap-2 lg:gap-3 text-white/90">
+                      <svg className="w-4 h-4 lg:w-5 lg:h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
-                      <span className="text-[10px] md:text-sm lg:text-base">Без регистрации и бесплатно</span>
+                      <span className="text-sm lg:text-base">Без регистрации и бесплатно</span>
                     </div>
                   </div>
                   
-                  <button className="bg-[#D4A855] hover:bg-[#C49745] text-black font-medium px-3 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-lg text-xs md:text-base lg:text-lg transition-all duration-300 group-hover:scale-105 flex items-center gap-1.5 md:gap-2">
-                    <svg className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <button className="bg-[#D4A855] hover:bg-[#C49745] text-black font-medium px-6 py-3 lg:px-8 lg:py-4 rounded-lg text-base lg:text-lg transition-all duration-300 group-hover:scale-105 flex items-center gap-2">
+                    <svg className="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                     Собрать макет памятника
                   </button>
                   
-                  <p className="text-white/70 text-[10px] md:text-sm lg:text-base italic">
+                  <p className="text-white/70 text-sm lg:text-base italic">
                     Наглядно. Удобно. Без лишних звонков.
                   </p>
                 </div>
