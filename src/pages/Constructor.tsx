@@ -2000,10 +2000,16 @@ const Constructor = () => {
           
           const initialScale = element.initialScale || 1.0;
           
-          // Рисуем от верхнего края (контейнер уже отцентрован)
+          // Вычисляем общую высоту текста
+          const totalTextHeight = allLines.length * lineHeight;
+          
+          // Центрируем текст вертикально в контейнере
+          const textStartY = scaledY + (scaledHeight - totalTextHeight) / 2;
+          
+          // Рисуем строки
           allLines.forEach((line, idx) => {
             // Для alphabetic baseline добавляем высоту шрифта к Y
-            const lineY = Math.round(scaledY + scaledFontSize + idx * lineHeight);
+            const lineY = Math.round(textStartY + scaledFontSize + idx * lineHeight);
             let currentX = Math.round(linePositions[idx].x);
             
             // Если есть увеличение первой буквы (для FIO)
