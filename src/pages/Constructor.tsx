@@ -81,6 +81,8 @@ const Constructor = () => {
   const [isLoadingFlowers, setIsLoadingFlowers] = useState(false);
 
   const [customFonts, setCustomFonts] = useState<Array<{filename: string, name: string, url: string}>>([]);
+  const [canvasZoom, setCanvasZoom] = useState(1);
+  const [lastCanvasClick, setLastCanvasClick] = useState(0);
 
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
@@ -2139,6 +2141,15 @@ const Constructor = () => {
 
   const selectedEl = elements.find(el => el.id === selectedElement);
 
+  const handleCanvasDoubleClick = () => {
+    const now = Date.now();
+    if (now - lastCanvasClick < 300) {
+      // Двойной клик
+      setCanvasZoom(canvasZoom === 1 ? 2 : 1);
+    }
+    setLastCanvasClick(now);
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
@@ -2233,6 +2244,8 @@ const Constructor = () => {
             inlineEditingId={inlineEditingId}
             handleInlineTextChange={handleInlineTextChange}
             handleInlineEditBlur={handleInlineEditBlur}
+            canvasZoom={canvasZoom}
+            onCanvasDoubleClick={handleCanvasDoubleClick}
           />
 
           <div className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">

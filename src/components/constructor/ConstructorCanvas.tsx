@@ -54,6 +54,8 @@ interface ConstructorCanvasProps {
   inlineEditingId: string | null;
   handleInlineTextChange: (elementId: string, newContent: string, textareaElement?: HTMLTextAreaElement) => void;
   handleInlineEditBlur: () => void;
+  canvasZoom: number;
+  onCanvasDoubleClick: () => void;
 }
 
 export const ConstructorCanvas = ({
@@ -84,6 +86,8 @@ export const ConstructorCanvas = ({
   inlineEditingId,
   handleInlineTextChange,
   handleInlineEditBlur,
+  canvasZoom,
+  onCanvasDoubleClick,
 }: ConstructorCanvasProps) => {
   // Функция для рендеринга текста с увеличенными первыми буквами
   const renderTextWithInitials = (text: string, initialScale?: number) => {
@@ -120,12 +124,17 @@ export const ConstructorCanvas = ({
     <div className="flex flex-col items-center">
       <div 
         ref={canvasRef}
-        className="relative w-full max-w-lg aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none"
+        className="relative w-full max-w-lg aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none transition-transform duration-300"
+        style={{ 
+          transform: `scale(${canvasZoom})`,
+          transformOrigin: 'center center'
+        }}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onDoubleClick={onCanvasDoubleClick}
         onMouseDown={(e) => {
           if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'IMG') {
             setSelectedElement(null);
@@ -415,6 +424,15 @@ export const ConstructorCanvas = ({
       </div>
       
       <div className="mt-4 flex gap-2">
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={onCanvasDoubleClick}
+          className="flex-1 sm:flex-none"
+        >
+          <Icon name={canvasZoom === 1 ? "ZoomIn" : "ZoomOut"} size={16} className="mr-2" />
+          {canvasZoom === 1 ? "Увеличить" : "Уменьшить"}
+        </Button>
         <Button 
           variant="outline" 
           size="sm"
