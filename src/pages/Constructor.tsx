@@ -1980,7 +1980,7 @@ const Constructor = () => {
           });
           
           // Рисуем строки с предварительно рассчитанными координатами
-          ctx.textBaseline = 'top';
+          ctx.textBaseline = 'alphabetic';
           
           // Применяем вращение ПЕРЕД отрисовкой текста
           if (element.rotation) {
@@ -2001,9 +2001,11 @@ const Constructor = () => {
           const initialScale = element.initialScale || 1.0;
           
           // Рисуем строки от верхнего края контейнера (как на экране)
+          // Для alphabetic baseline: добавляем отступ равный (lineHeight - fontSize) / 2 + fontSize * 0.8
+          const topOffset = (lineHeight - scaledFontSize) / 2 + scaledFontSize * 0.8;
+          
           allLines.forEach((line, idx) => {
-            // textBaseline: 'top' — рисуем от верхнего края
-            const lineY = Math.round(scaledY + idx * lineHeight);
+            const lineY = Math.round(scaledY + topOffset + idx * lineHeight);
             let currentX = Math.round(linePositions[idx].x);
             
             // Если есть увеличение первой буквы (для FIO)
