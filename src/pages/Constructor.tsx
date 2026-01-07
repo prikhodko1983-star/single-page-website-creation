@@ -83,6 +83,9 @@ const Constructor = () => {
   const [customFonts, setCustomFonts] = useState<Array<{filename: string, name: string, url: string}>>([]);
   const [canvasZoom, setCanvasZoom] = useState(1);
   const [canvasPinchStart, setCanvasPinchStart] = useState<{ distance: number; zoom: number } | null>(null);
+  const [canvasPan, setCanvasPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
 
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
@@ -538,7 +541,18 @@ const Constructor = () => {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!canvasRef.current || !selectedElement) return;
+    if (!canvasRef.current) return;
+    
+    // Панорамирование canvas при увеличении
+    if (isPanning && !selectedElement) {
+      setCanvasPan({
+        x: e.clientX - panStart.x,
+        y: e.clientY - panStart.y
+      });
+      return;
+    }
+    
+    if (!selectedElement) return;
     
     if (isRotating) {
       const canvasRect = canvasRef.current.getBoundingClientRect();
@@ -622,6 +636,17 @@ const Constructor = () => {
       const newZoom = Math.max(1, Math.min(3, canvasPinchStart.zoom * scale));
       
       setCanvasZoom(newZoom);
+      return;
+    }
+    
+    // Панорамирование canvas при увеличении (один палец)
+    if (e.touches.length === 1 && isPanning && !selectedElement) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      setCanvasPan({
+        x: touch.clientX - panStart.x,
+        y: touch.clientY - panStart.y
+      });
       return;
     }
     
@@ -736,6 +761,7 @@ const Constructor = () => {
     setIsDragging(false);
     setIsResizing(false);
     setIsRotating(false);
+    setIsPanning(false);
   };
 
   const handleTouchEnd = () => {
@@ -745,6 +771,7 @@ const Constructor = () => {
     setTouchRotateStart(null);
     setTouchPinchStart(null);
     setCanvasPinchStart(null);
+    setIsPanning(false);
   };
 
   const handleResizeMouseDown = (e: React.MouseEvent, elementId: string) => {
@@ -2167,6 +2194,19 @@ const Constructor = () => {
   const handleCanvasDoubleClick = () => {
     // Просто переключаем зум
     setCanvasZoom(canvasZoom === 1 ? 2 : 1);
+    // Сбрасываем панорамирование при изменении зума
+    setCanvasPan({ x: 0, y: 0 });
+  };
+
+  const handleCanvasMouseDown = (e: React.MouseEvent) => {
+    // Начинаем панорамирование, если canvas увеличен и клик на фоне
+    if (canvasZoom > 1 && !selectedElement) {
+      setIsPanning(true);
+      setPanStart({
+        x: e.clientX - canvasPan.x,
+        y: e.clientY - canvasPan.y
+      });
+    }
   };
 
   const handleCanvasTouchStart = (e: React.TouchEvent) => {
@@ -2182,6 +2222,14 @@ const Constructor = () => {
       );
       
       setCanvasPinchStart({ distance, zoom: canvasZoom });
+    } else if (e.touches.length === 1 && canvasZoom > 1 && !selectedElement) {
+      // Один палец при увеличении - начинаем панорамирование
+      const touch = e.touches[0];
+      setIsPanning(true);
+      setPanStart({
+        x: touch.clientX - canvasPan.x,
+        y: touch.clientY - canvasPan.y
+      });
     }
   };
 
@@ -2282,6 +2330,8 @@ const Constructor = () => {
             canvasZoom={canvasZoom}
             onCanvasDoubleClick={handleCanvasDoubleClick}
             onCanvasTouchStart={handleCanvasTouchStart}
+            canvasPan={canvasPan}
+            onCanvasMouseDown={handleCanvasMouseDown}
           />
 
           <div className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">

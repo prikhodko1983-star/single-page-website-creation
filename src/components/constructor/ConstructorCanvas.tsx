@@ -57,6 +57,8 @@ interface ConstructorCanvasProps {
   canvasZoom: number;
   onCanvasDoubleClick: () => void;
   onCanvasTouchStart: (e: React.TouchEvent) => void;
+  canvasPan: { x: number; y: number };
+  onCanvasMouseDown: (e: React.MouseEvent) => void;
 }
 
 export const ConstructorCanvas = ({
@@ -90,6 +92,8 @@ export const ConstructorCanvas = ({
   canvasZoom,
   onCanvasDoubleClick,
   onCanvasTouchStart,
+  canvasPan,
+  onCanvasMouseDown,
 }: ConstructorCanvasProps) => {
   // Функция для рендеринга текста с увеличенными первыми буквами
   const renderTextWithInitials = (text: string, initialScale?: number) => {
@@ -134,8 +138,9 @@ export const ConstructorCanvas = ({
         ref={canvasRef}
         className="relative w-full max-w-lg aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none transition-transform duration-200"
         style={{ 
-          transform: `scale(${canvasZoom})`,
-          transformOrigin: 'center center'
+          transform: `scale(${canvasZoom}) translate(${canvasPan.x / canvasZoom}px, ${canvasPan.y / canvasZoom}px)`,
+          transformOrigin: 'center center',
+          cursor: canvasZoom > 1 ? 'move' : 'default'
         }}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -147,6 +152,7 @@ export const ConstructorCanvas = ({
         onMouseDown={(e) => {
           if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'IMG') {
             setSelectedElement(null);
+            onCanvasMouseDown(e);
           }
         }}
       >
