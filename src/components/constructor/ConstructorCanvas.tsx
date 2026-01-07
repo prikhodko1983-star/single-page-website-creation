@@ -134,33 +134,29 @@ export const ConstructorCanvas = ({
         Два пальца для масштабирования макета
       </div>
       
-      {/* Контейнер с overflow: hidden чтобы увеличенный макет не выходил за экран */}
-      <div className="relative w-full max-w-lg aspect-[3/4] overflow-hidden rounded-lg shadow-2xl ring-4 ring-border">
-        <div 
-          ref={canvasRef}
-          className="absolute inset-0 bg-secondary touch-none select-none"
-          style={{ 
-            transform: `scale(${canvasZoom}) translate(${canvasPan.x / canvasZoom}px, ${canvasPan.y / canvasZoom}px)`,
-            transformOrigin: 'center center',
-            cursor: canvasZoom > 1 ? 'move' : 'default',
-            transition: 'none',
-            width: '100%',
-            height: '100%'
-          }}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onTouchStart={onCanvasTouchStart}
-          onDoubleClick={onCanvasDoubleClick}
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'IMG') {
-              setSelectedElement(null);
-              onCanvasMouseDown(e);
-            }
-          }}
-        >
+      <div 
+        ref={canvasRef}
+        className="relative w-full max-w-lg aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none"
+        style={{ 
+          transform: `scale(${canvasZoom}) translate(${canvasPan.x / canvasZoom}px, ${canvasPan.y / canvasZoom}px)`,
+          transformOrigin: 'center center',
+          cursor: canvasZoom > 1 ? 'move' : 'default',
+          transition: 'none'
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchStart={onCanvasTouchStart}
+        onDoubleClick={onCanvasDoubleClick}
+        onMouseDown={(e) => {
+          if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'IMG') {
+            setSelectedElement(null);
+            onCanvasMouseDown(e);
+          }
+        }}
+      >
         <img 
           src={monumentImage} 
           alt="Памятник" 
@@ -512,7 +508,6 @@ export const ConstructorCanvas = ({
         <p className="text-xs text-muted-foreground text-center px-2">
           💡 Сохраните проект на устройство и загрузите позже, чтобы продолжить работу
         </p>
-      </div>
       </div>
     </div>
   );
