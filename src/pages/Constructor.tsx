@@ -82,7 +82,6 @@ const Constructor = () => {
 
   const [customFonts, setCustomFonts] = useState<Array<{filename: string, name: string, url: string}>>([]);
   const [canvasZoom, setCanvasZoom] = useState(1);
-  const [lastCanvasClick, setLastCanvasClick] = useState(0);
 
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
@@ -2142,12 +2141,8 @@ const Constructor = () => {
   const selectedEl = elements.find(el => el.id === selectedElement);
 
   const handleCanvasDoubleClick = () => {
-    const now = Date.now();
-    if (now - lastCanvasClick < 300) {
-      // Двойной клик
-      setCanvasZoom(canvasZoom === 1 ? 2 : 1);
-    }
-    setLastCanvasClick(now);
+    // Просто переключаем зум
+    setCanvasZoom(canvasZoom === 1 ? 2 : 1);
   };
 
   return (
