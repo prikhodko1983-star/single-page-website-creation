@@ -1023,7 +1023,6 @@ const Constructor = () => {
       const pngWithMetadata = addPNGTextChunk(uint8Array, keyword, jsonString);
       
       const blob = new Blob([pngWithMetadata], { type: 'image/png' });
-      const url = URL.createObjectURL(blob);
       
       const date = new Date();
       const dateStr = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
@@ -1031,6 +1030,28 @@ const Constructor = () => {
       
       console.log('💾 Скачиваем PNG с метаданными:', fileName);
       
+      // Пробуем Web Share API для мобильных (сохранение в галерею)
+      if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName)] })) {
+        try {
+          await navigator.share({
+            files: [new File([blob], fileName, { type: 'image/png' })],
+            title: 'Мой памятник',
+            text: 'Сохраните это изображение'
+          });
+          console.log('✅ Поделились через Share API');
+          toast({
+            title: "Готово!",
+            description: "Сохраните изображение в галерею",
+          });
+          return;
+        } catch (shareError) {
+          console.log('⚠️ Share API отменен/недоступен:', shareError);
+          // Fallback на обычную загрузку
+        }
+      }
+      
+      // Fallback: обычная загрузка в папку Downloads
+      const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = fileName;
