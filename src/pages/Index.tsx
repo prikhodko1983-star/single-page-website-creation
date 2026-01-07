@@ -175,21 +175,21 @@ const Index = () => {
             className="relative rounded-2xl overflow-hidden cursor-pointer group max-w-6xl mx-auto hover:opacity-95 transition-opacity"
             onClick={() => navigate('/constructor')}
           >
-            {/* Единая версия для всех устройств - текст поверх фона */}
+            {/* Версия для всех устройств */}
             <div 
               className="relative"
               style={{
-                backgroundImage: 'url(https://cdn.poehali.dev/files/Фон%20копия3.jpg)',
-                backgroundSize: 'contain',
+                backgroundImage: 'url(https://cdn.poehali.dev/files/73624E06-523F-4A9E-B89D-9858B866B845.png)',
+                backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
                 backgroundColor: '#2a2420'
               }}
             >
-              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="absolute inset-0 bg-black/20"></div>
               
-              <div className="relative z-10 min-h-[300px] md:min-h-[500px] lg:min-h-[600px] p-4 md:p-6 lg:p-12 flex items-center">
-                <div className="max-w-2xl space-y-2 md:space-y-4 lg:space-y-6">
+              <div className="relative z-10 min-h-[400px] md:min-h-[500px] lg:min-h-[600px] p-6 md:p-10 lg:p-12 flex items-center">
+                <div className="max-w-md md:max-w-2xl space-y-3 md:space-y-4 lg:space-y-6">
                   <h2 className="font-serif text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-white leading-tight">
                     Онлайн-конструктор<br />памятников
                   </h2>
@@ -198,7 +198,7 @@ const Index = () => {
                     Создайте макет за несколько минут
                   </p>
                   
-                  <div className="space-y-1.5 md:space-y-2 lg:space-y-3">
+                  <div className="space-y-2 md:space-y-2.5 lg:space-y-3">
                     <div className="flex items-center gap-2 md:gap-3 text-white/90">
                       <svg className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -225,14 +225,14 @@ const Index = () => {
                     </div>
                   </div>
                   
-                  <button className="bg-[#D4A855] hover:bg-[#C49745] text-black font-medium px-4 py-2.5 md:px-8 md:py-5 rounded-lg text-sm md:text-lg lg:text-xl transition-all duration-300 group-hover:scale-105 flex items-center gap-2">
+                  <button className="bg-[#D4A855] hover:bg-[#C49745] text-black font-medium px-5 py-3 md:px-8 md:py-4 lg:px-10 lg:py-5 rounded-lg text-sm md:text-base lg:text-lg transition-all duration-300 group-hover:scale-105 flex items-center gap-2">
                     <svg className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                     Собрать макет памятника
                   </button>
                   
-                  <p className="text-white/70 text-xs md:text-base lg:text-lg italic">
+                  <p className="text-white/70 text-xs md:text-sm lg:text-base italic">
                     Наглядно. Удобно. Без лишних звонков.
                   </p>
                 </div>
