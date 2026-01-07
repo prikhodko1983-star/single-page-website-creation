@@ -412,7 +412,7 @@ export const ConstructorCanvas = ({
             
             {selectedElement === element.id && (
               <div 
-                className={`absolute -bottom-2 -right-2 w-7 h-7 bg-primary rounded-full hover:scale-110 transition-all touch-none flex items-center justify-center ${
+                className={`absolute -bottom-1 -right-1 w-5 h-5 bg-primary rounded-full hover:scale-125 transition-transform touch-none flex items-center justify-center shadow-lg border-2 border-background ${
                   rotateMode ? 'cursor-grab' : 'cursor-nwse-resize'
                 }`}
                 onMouseDown={(e) => handleResizeMouseDown(e, element.id)}
@@ -424,7 +424,7 @@ export const ConstructorCanvas = ({
                 title={rotateMode ? 'Режим вращения (двойной клик для масштабирования)' : 'Режим масштабирования (двойной клик для вращения)'}
               >
                 {rotateMode && (
-                  <Icon name="RotateCw" size={14} className="text-primary-foreground" />
+                  <Icon name="RotateCw" size={10} className="text-primary-foreground" />
                 )}
               </div>
             )}
