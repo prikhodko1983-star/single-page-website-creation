@@ -1984,17 +1984,18 @@ const Constructor = () => {
             return { x: lineX, width: lineWidth };
           });
           
-          // Применяем вращение если есть
+          // Рисуем строки с предварительно рассчитанными координатами
+          ctx.textBaseline = 'alphabetic';
+          
+          // Применяем вращение ПЕРЕД отрисовкой текста
           if (element.rotation) {
+            // Вращаем вокруг центра контейнера элемента
             const centerX = scaledX + scaledWidth / 2;
             const centerY = scaledY + scaledHeight / 2;
             ctx.translate(centerX, centerY);
             ctx.rotate(element.rotation * Math.PI / 180);
             ctx.translate(-centerX, -centerY);
           }
-          
-          // Рисуем строки с предварительно рассчитанными координатами
-          ctx.textBaseline = 'alphabetic';
           
           // Применяем shadow ТОЛЬКО перед отрисовкой
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
