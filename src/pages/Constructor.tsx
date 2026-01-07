@@ -253,6 +253,7 @@ const Constructor = () => {
       fontSize: 24,
       color: '#FFFFFF',
       rotation: 0,
+      autoSize: true,
     };
     setElements([...elements, newElement]);
   };
@@ -1956,8 +1957,13 @@ const Constructor = () => {
             if (paragraph.trim() === '') {
               allLines.push('');
             } else {
-              const wrappedLines = wrapText(ctx, paragraph, scaledWidth);
-              allLines.push(...wrappedLines);
+              // Для autoSize элементов НЕ переносим текст
+              if (element.autoSize) {
+                allLines.push(paragraph);
+              } else {
+                const wrappedLines = wrapText(ctx, paragraph, scaledWidth);
+                allLines.push(...wrappedLines);
+              }
             }
           });
           
