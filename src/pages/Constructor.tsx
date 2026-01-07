@@ -2000,9 +2000,14 @@ const Constructor = () => {
           
           const initialScale = element.initialScale || 1.0;
           
+          // Измеряем метрики шрифта для точного позиционирования
+          const metrics = ctx.measureText('M');
+          const actualBaseline = metrics.actualBoundingBoxAscent || scaledFontSize * 0.8;
+          
           // Рисуем строки от верхнего края контейнера (как на экране)
-          // Для alphabetic baseline: добавляем отступ равный (lineHeight - fontSize) / 2 + fontSize * 0.8
-          const topOffset = (lineHeight - scaledFontSize) / 2 + scaledFontSize * 0.8;
+          // Для alphabetic baseline: добавляем ascent + половину отступа от line-height
+          const topPadding = (lineHeight - scaledFontSize) / 2;
+          const topOffset = topPadding + actualBaseline;
           
           allLines.forEach((line, idx) => {
             const lineY = Math.round(scaledY + topOffset + idx * lineHeight);
