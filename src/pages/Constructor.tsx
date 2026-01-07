@@ -2000,14 +2000,17 @@ const Constructor = () => {
           
           const initialScale = element.initialScale || 1.0;
           
-          // Измеряем метрики шрифта один раз для всех строк
+          // Измеряем метрики шрифта для точного позиционирования
           const metrics = ctx.measureText('ЙЦШЩФ');
           const ascent = metrics.actualBoundingBoxAscent || scaledFontSize * 0.8;
           
-          // Рисуем строки с учетом реальных метрик
+          // Браузер добавляет половину inter-line spacing сверху первой строки
+          const halfLeading = (lineHeight - scaledFontSize) / 2;
+          
+          // Рисуем строки с учетом реальных метрик DOM
           allLines.forEach((line, idx) => {
-            // Baseline positioning: от верха контейнера + ascent + смещение на lineHeight
-            const lineY = Math.round(scaledY + ascent + idx * lineHeight);
+            // Baseline = верх контейнера + половина leading + ascent + смещение на lineHeight для следующих строк
+            const lineY = Math.round(scaledY + halfLeading + ascent + idx * lineHeight);
             let currentX = Math.round(linePositions[idx].x);
             
             // Если есть увеличение первой буквы (для FIO)
