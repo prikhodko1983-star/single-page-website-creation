@@ -2000,23 +2000,15 @@ const Constructor = () => {
           
           const initialScale = element.initialScale || 1.0;
           
-          // Измеряем метрики каждой строки для точного позиционирования
-          const lineMetrics = allLines.map(line => {
-            const testLine = line || 'ЙЦШЩФ';
-            const metrics = ctx.measureText(testLine);
-            const ascent = metrics.actualBoundingBoxAscent || scaledFontSize * 0.8;
-            const descent = metrics.actualBoundingBoxDescent || scaledFontSize * 0.2;
-            return { ascent, descent, height: ascent + descent };
-          });
+          // Измеряем метрики шрифта один раз для всех строк
+          const metrics = ctx.measureText('ЙЦШЩФ');
+          const ascent = metrics.actualBoundingBoxAscent || scaledFontSize * 0.8;
           
           // Рисуем строки с учетом реальных метрик
-          let currentY = scaledY;
           allLines.forEach((line, idx) => {
-            const metric = lineMetrics[idx];
-            // Визуальная коррекция для baseline
-            const lineY = Math.round(currentY + metric.ascent * 0.85);
+            // Baseline positioning: от верха контейнера + ascent + смещение на lineHeight
+            const lineY = Math.round(scaledY + ascent + idx * lineHeight);
             let currentX = Math.round(linePositions[idx].x);
-            currentY += lineHeight;
             
             // Если есть увеличение первой буквы (для FIO)
             if (element.type === 'fio' && initialScale > 1.0 && line.length > 0) {
