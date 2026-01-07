@@ -136,11 +136,12 @@ export const ConstructorCanvas = ({
       
       <div 
         ref={canvasRef}
-        className="relative w-full max-w-lg aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none transition-transform duration-200"
+        className="relative w-full max-w-lg aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none"
         style={{ 
           transform: `scale(${canvasZoom}) translate(${canvasPan.x / canvasZoom}px, ${canvasPan.y / canvasZoom}px)`,
           transformOrigin: 'center center',
-          cursor: canvasZoom > 1 ? 'move' : 'default'
+          cursor: canvasZoom > 1 ? 'move' : 'default',
+          transition: 'none'
         }}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
