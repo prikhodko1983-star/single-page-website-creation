@@ -169,10 +169,10 @@ const Index = () => {
       </IndexHeroSections>
 
       {/* Баннер конструктора */}
-      <section className="py-8 md:py-16 bg-[#1a1a1a]">
+      <section className="py-8 md:py-12 bg-[#1a1a1a]">
         <div className="container mx-auto px-4">
           <div 
-            className="relative rounded-2xl overflow-hidden cursor-pointer group max-w-7xl mx-auto"
+            className="relative rounded-2xl overflow-hidden cursor-pointer group max-w-6xl mx-auto"
             onClick={() => navigate('/constructor')}
             style={{
               backgroundImage: 'url(https://cdn.poehali.dev/files/Фон%20копия.jpg)',
@@ -182,61 +182,53 @@ const Index = () => {
           >
             <div className="absolute inset-0 bg-black/20"></div>
             
-            <div className="relative z-10 grid lg:grid-cols-2 gap-8 items-center min-h-[400px] lg:min-h-[500px] p-8 md:p-12 lg:p-16">
-              <div className="space-y-6">
-                <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-normal text-white leading-tight">
+            <div className="relative z-10 min-h-[320px] md:min-h-[380px] p-6 md:p-10 lg:p-12 flex items-center">
+              <div className="max-w-2xl space-y-4 md:space-y-5">
+                <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal text-white leading-tight">
                   Онлайн-конструктор<br />памятников
                 </h2>
                 
-                <p className="text-base md:text-lg text-white/90">
+                <p className="text-sm md:text-base text-white/90">
                   Создайте макет за несколько минут
                 </p>
                 
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-white/90">
-                    <svg className="w-5 h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-white/90">
+                    <svg className="w-4 h-4 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-sm md:text-base">Выберите форму и дизайн</span>
+                    <span className="text-xs md:text-sm">Выберите форму и дизайн</span>
                   </div>
-                  <div className="flex items-center gap-3 text-white/90">
-                    <svg className="w-5 h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="flex items-center gap-2 text-white/90">
+                    <svg className="w-4 h-4 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-sm md:text-base">Добавьте фото и надпись</span>
+                    <span className="text-xs md:text-sm">Добавьте фото и надпись</span>
                   </div>
-                  <div className="flex items-center gap-3 text-white/90">
-                    <svg className="w-5 h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="flex items-center gap-2 text-white/90">
+                    <svg className="w-4 h-4 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-sm md:text-base">Посмотрите, как будет выглядеть памятник</span>
+                    <span className="text-xs md:text-sm">Посмотрите, как будет выглядеть памятник</span>
                   </div>
-                  <div className="flex items-center gap-3 text-white/90">
-                    <svg className="w-5 h-5 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="flex items-center gap-2 text-white/90">
+                    <svg className="w-4 h-4 text-[#D4A855] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-sm md:text-base">Без регистрации и бесплатно</span>
+                    <span className="text-xs md:text-sm">Без регистрации и бесплатно</span>
                   </div>
                 </div>
                 
-                <button className="bg-[#D4A855] hover:bg-[#C49745] text-black font-medium px-8 py-4 rounded-lg text-base md:text-lg transition-all duration-300 group-hover:scale-105 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button className="bg-[#D4A855] hover:bg-[#C49745] text-black font-medium px-6 py-3 rounded-lg text-sm md:text-base transition-all duration-300 group-hover:scale-105 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                   Собрать макет памятника
                 </button>
                 
-                <p className="text-white/70 text-sm md:text-base italic">
+                <p className="text-white/70 text-xs md:text-sm italic">
                   Наглядно. Удобно. Без лишних звонков.
                 </p>
-              </div>
-              
-              <div className="hidden lg:block">
-                <img 
-                  src="https://cdn.poehali.dev/files/73624E06-523F-4A9E-B89D-9858B866B845.png"
-                  alt="Конструктор памятников на мобильном"
-                  className="w-full max-w-md ml-auto group-hover:scale-105 transition-transform duration-500"
-                />
               </div>
             </div>
           </div>
