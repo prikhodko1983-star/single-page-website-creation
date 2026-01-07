@@ -177,7 +177,7 @@ const Index = () => {
           >
             {/* Мобильная версия - статичное изображение */}
             <img 
-              src="https://cdn.poehali.dev/files/еее.jpg"
+              src="https://cdn.poehali.dev/files/Фон%20копия3.jpg"
               alt="Онлайн-конструктор памятников"
               className="w-full h-auto md:hidden"
             />
