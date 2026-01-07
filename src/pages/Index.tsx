@@ -175,7 +175,7 @@ const Index = () => {
             className="relative rounded-2xl overflow-hidden cursor-pointer group max-w-6xl mx-auto"
             onClick={() => navigate('/constructor')}
             style={{
-              backgroundImage: 'url(https://cdn.poehali.dev/files/Фон%20копия2.jpg)',
+              backgroundImage: 'url(https://cdn.poehali.dev/files/Фон%20копия3.jpg)',
               backgroundSize: 'contain',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
