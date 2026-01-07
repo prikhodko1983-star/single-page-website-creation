@@ -490,12 +490,17 @@ const Constructor = () => {
     setIsDragging(true);
     
     const element = elements.find(el => el.id === elementId);
-    if (!element) return;
+    if (!element || !canvasRef.current) return;
     
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    
+    // Учитываем zoom и pan при расчёте offset
+    const mouseX = (e.clientX - canvasRect.left - canvasRect.width / 2) / canvasZoom - canvasPan.x / canvasZoom + canvasRect.width / 2;
+    const mouseY = (e.clientY - canvasRect.top - canvasRect.height / 2) / canvasZoom - canvasPan.y / canvasZoom + canvasRect.height / 2;
+    
     setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: mouseX - element.x,
+      y: mouseY - element.y,
     });
   };
 
@@ -531,12 +536,19 @@ const Constructor = () => {
     }
     
     // Один палец = перетаскивание
+    if (!canvasRef.current) return;
+    
     setIsDragging(true);
     const touch = e.touches[0];
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    
+    // Учитываем zoom и pan при расчёте offset
+    const touchX = (touch.clientX - canvasRect.left - canvasRect.width / 2) / canvasZoom - canvasPan.x / canvasZoom + canvasRect.width / 2;
+    const touchY = (touch.clientY - canvasRect.top - canvasRect.height / 2) / canvasZoom - canvasPan.y / canvasZoom + canvasRect.height / 2;
+    
     setDragOffset({
-      x: touch.clientX - rect.left,
-      y: touch.clientY - rect.top,
+      x: touchX - element.x,
+      y: touchY - element.y,
     });
   };
 
@@ -600,8 +612,13 @@ const Constructor = () => {
       }
     } else if (isDragging) {
       const canvasRect = canvasRef.current.getBoundingClientRect();
-      const newX = e.clientX - canvasRect.left - dragOffset.x;
-      const newY = e.clientY - canvasRect.top - dragOffset.y;
+      
+      // Учитываем zoom и pan при расчёте координат
+      const mouseX = (e.clientX - canvasRect.left - canvasRect.width / 2) / canvasZoom - canvasPan.x / canvasZoom + canvasRect.width / 2;
+      const mouseY = (e.clientY - canvasRect.top - canvasRect.height / 2) / canvasZoom - canvasPan.y / canvasZoom + canvasRect.height / 2;
+      
+      const newX = mouseX - dragOffset.x;
+      const newY = mouseY - dragOffset.y;
       
       setElements(elements.map(el => {
         if (el.id === selectedElement) {
@@ -738,8 +755,13 @@ const Constructor = () => {
       }
     } else if (isDragging) {
       const canvasRect = canvasRef.current.getBoundingClientRect();
-      const newX = touch.clientX - canvasRect.left - dragOffset.x;
-      const newY = touch.clientY - canvasRect.top - dragOffset.y;
+      
+      // Учитываем zoom и pan при расчёте координат
+      const touchX = (touch.clientX - canvasRect.left - canvasRect.width / 2) / canvasZoom - canvasPan.x / canvasZoom + canvasRect.width / 2;
+      const touchY = (touch.clientY - canvasRect.top - canvasRect.height / 2) / canvasZoom - canvasPan.y / canvasZoom + canvasRect.height / 2;
+      
+      const newX = touchX - dragOffset.x;
+      const newY = touchY - dragOffset.y;
       
       setElements(elements.map(el => {
         if (el.id === selectedElement) {
