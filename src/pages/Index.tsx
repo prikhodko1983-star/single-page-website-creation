@@ -175,14 +175,16 @@ const Index = () => {
             className="relative rounded-2xl overflow-hidden cursor-pointer group max-w-6xl mx-auto"
             onClick={() => navigate('/constructor')}
             style={{
-              backgroundImage: 'url(https://cdn.poehali.dev/files/Фон%20копия.jpg)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
+              backgroundImage: 'url(https://cdn.poehali.dev/files/Фон%20копия2.jpg)',
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              backgroundColor: '#2a2420'
             }}
           >
-            <div className="absolute inset-0 bg-black/20"></div>
+            <div className="absolute inset-0 bg-black/10"></div>
             
-            <div className="relative z-10 min-h-[320px] md:min-h-[380px] p-6 md:p-10 lg:p-12 flex items-center">
+            <div className="relative z-10 min-h-[400px] md:min-h-[500px] lg:min-h-[600px] p-6 md:p-10 lg:p-12 flex items-center">
               <div className="max-w-2xl space-y-4 md:space-y-5">
                 <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal text-white leading-tight">
                   Онлайн-конструктор<br />памятников
