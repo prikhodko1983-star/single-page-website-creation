@@ -82,6 +82,7 @@ const Constructor = () => {
 
   const [customFonts, setCustomFonts] = useState<Array<{filename: string, name: string, url: string}>>([]);
   const [canvasZoom, setCanvasZoom] = useState(1);
+  const [canvasPinchStart, setCanvasPinchStart] = useState<{ distance: number; zoom: number } | null>(null);
 
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
@@ -604,9 +605,28 @@ const Constructor = () => {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!canvasRef.current || !selectedElement) return;
+    if (!canvasRef.current) return;
     
-    // Вращение + масштабирование двумя пальцами
+    // Масштабирование всего canvas двумя пальцами (если нет выбранного элемента)
+    if (e.touches.length === 2 && !selectedElement && canvasPinchStart) {
+      e.preventDefault();
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      
+      const currentDistance = Math.sqrt(
+        Math.pow(touch2.clientX - touch1.clientX, 2) + 
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+      );
+      const scale = currentDistance / canvasPinchStart.distance;
+      const newZoom = Math.max(1, Math.min(3, canvasPinchStart.zoom * scale));
+      
+      setCanvasZoom(newZoom);
+      return;
+    }
+    
+    if (!selectedElement) return;
+    
+    // Вращение + масштабирование двумя пальцами для выбранного элемента
     if (e.touches.length === 2 && touchRotateStart && touchPinchStart) {
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
@@ -723,6 +743,7 @@ const Constructor = () => {
     setIsRotating(false);
     setTouchRotateStart(null);
     setTouchPinchStart(null);
+    setCanvasPinchStart(null);
   };
 
   const handleResizeMouseDown = (e: React.MouseEvent, elementId: string) => {
@@ -2145,6 +2166,22 @@ const Constructor = () => {
     setCanvasZoom(canvasZoom === 1 ? 2 : 1);
   };
 
+  const handleCanvasTouchStart = (e: React.TouchEvent) => {
+    // Если два пальца на пустом canvas (нет выбранного элемента) - начинаем зум
+    if (e.touches.length === 2 && !selectedElement) {
+      e.preventDefault();
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      
+      const distance = Math.sqrt(
+        Math.pow(touch2.clientX - touch1.clientX, 2) + 
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+      );
+      
+      setCanvasPinchStart({ distance, zoom: canvasZoom });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
@@ -2241,6 +2278,7 @@ const Constructor = () => {
             handleInlineEditBlur={handleInlineEditBlur}
             canvasZoom={canvasZoom}
             onCanvasDoubleClick={handleCanvasDoubleClick}
+            onCanvasTouchStart={handleCanvasTouchStart}
           />
 
           <div className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">

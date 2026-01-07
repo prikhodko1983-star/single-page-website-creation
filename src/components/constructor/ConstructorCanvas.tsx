@@ -56,6 +56,7 @@ interface ConstructorCanvasProps {
   handleInlineEditBlur: () => void;
   canvasZoom: number;
   onCanvasDoubleClick: () => void;
+  onCanvasTouchStart: (e: React.TouchEvent) => void;
 }
 
 export const ConstructorCanvas = ({
@@ -88,6 +89,7 @@ export const ConstructorCanvas = ({
   handleInlineEditBlur,
   canvasZoom,
   onCanvasDoubleClick,
+  onCanvasTouchStart,
 }: ConstructorCanvasProps) => {
   // Функция для рендеринга текста с увеличенными первыми буквами
   const renderTextWithInitials = (text: string, initialScale?: number) => {
@@ -122,20 +124,15 @@ export const ConstructorCanvas = ({
 
   return (
     <div className="flex flex-col items-center">
-      {/* Кнопка зума для мобильных */}
-      <Button 
-        variant="outline" 
-        size="sm"
-        onClick={onCanvasDoubleClick}
-        className="mb-2 md:hidden"
-      >
-        <Icon name={canvasZoom === 1 ? "ZoomIn" : "ZoomOut"} size={16} className="mr-2" />
-        {canvasZoom === 1 ? "Увеличить макет" : "Уменьшить макет"}
-      </Button>
+      {/* Подсказка для мобильных */}
+      <div className="mb-2 md:hidden text-xs text-muted-foreground text-center">
+        <Icon name="Hand" size={12} className="inline mr-1" />
+        Два пальца для масштабирования макета
+      </div>
       
       <div 
         ref={canvasRef}
-        className="relative w-full max-w-lg aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none transition-transform duration-300"
+        className="relative w-full max-w-lg aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none transition-transform duration-200"
         style={{ 
           transform: `scale(${canvasZoom})`,
           transformOrigin: 'center center'
@@ -145,6 +142,7 @@ export const ConstructorCanvas = ({
         onMouseLeave={handleMouseUp}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onTouchStart={onCanvasTouchStart}
         onDoubleClick={onCanvasDoubleClick}
         onMouseDown={(e) => {
           if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'IMG') {
