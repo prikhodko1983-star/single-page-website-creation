@@ -1954,28 +1954,17 @@ const Constructor = () => {
           const allLines: string[] = [];
           
           paragraphs.forEach(paragraph => {
-            if (paragraph.trim() === '') {
-              allLines.push('');
-            } else {
-              // Для autoSize элементов НЕ переносим текст
-              if (element.autoSize) {
-                allLines.push(paragraph);
-              } else {
-                const wrappedLines = wrapText(ctx, paragraph, scaledWidth);
-                allLines.push(...wrappedLines);
-              }
-            }
+            // Просто добавляем каждый параграф как отдельную строку
+            // НЕ делаем автоматический перенос по ширине
+            allLines.push(paragraph);
           });
           
           // Измеряем ширину строк и позиционируем
           const textAlign = element.textAlign || 'center';
           
-          // Для autoSize элементов используем максимальную ширину строки как базу
-          let effectiveWidth = scaledWidth;
-          if (element.autoSize) {
-            const maxLineWidth = Math.max(...allLines.map(line => ctx.measureText(line).width));
-            effectiveWidth = maxLineWidth;
-          }
+          // Используем максимальную ширину строки для выравнивания
+          const maxLineWidth = Math.max(...allLines.map(line => ctx.measureText(line).width), 1);
+          const effectiveWidth = element.autoSize ? maxLineWidth : scaledWidth;
           
           const linePositions = allLines.map((line) => {
             const lineWidth = ctx.measureText(line).width;
