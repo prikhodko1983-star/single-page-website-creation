@@ -122,6 +122,17 @@ export const ConstructorCanvas = ({
 
   return (
     <div className="flex flex-col items-center">
+      {/* Кнопка зума для мобильных */}
+      <Button 
+        variant="outline" 
+        size="sm"
+        onClick={onCanvasDoubleClick}
+        className="mb-2 md:hidden"
+      >
+        <Icon name={canvasZoom === 1 ? "ZoomIn" : "ZoomOut"} size={16} className="mr-2" />
+        {canvasZoom === 1 ? "Увеличить макет" : "Уменьшить макет"}
+      </Button>
+      
       <div 
         ref={canvasRef}
         className="relative w-full max-w-lg aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none transition-transform duration-300"
@@ -428,7 +439,7 @@ export const ConstructorCanvas = ({
           variant="outline" 
           size="sm"
           onClick={onCanvasDoubleClick}
-          className="flex-1 sm:flex-none"
+          className="hidden md:flex flex-1 sm:flex-none"
         >
           <Icon name={canvasZoom === 1 ? "ZoomIn" : "ZoomOut"} size={16} className="mr-2" />
           {canvasZoom === 1 ? "Увеличить" : "Уменьшить"}
