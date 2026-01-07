@@ -2004,10 +2004,13 @@ const Constructor = () => {
           const metrics = ctx.measureText('ЙЦШЩФ');
           const ascent = metrics.actualBoundingBoxAscent || scaledFontSize * 0.8;
           
+          // Браузер добавляет половину inter-line spacing сверху первой строки
+          const halfLeading = (lineHeight - scaledFontSize) / 2;
+          
           // Рисуем строки с учетом реальных метрик DOM
           allLines.forEach((line, idx) => {
-            // Baseline = верх контейнера + ascent + смещение на lineHeight для следующих строк
-            const lineY = Math.round(scaledY + ascent + idx * lineHeight);
+            // Baseline = верх контейнера + половина leading + ascent + смещение на lineHeight для следующих строк
+            const lineY = Math.round(scaledY + halfLeading + ascent + idx * lineHeight);
             let currentX = Math.round(linePositions[idx].x);
             
             // Если есть увеличение первой буквы (для FIO)
