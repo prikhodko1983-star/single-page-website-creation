@@ -60,6 +60,7 @@ const useAuth = () => {
   return { logout, username: localStorage.getItem('auth_username'), isVerifying };
 };
 import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import {
   Dialog,
   DialogContent,
@@ -1655,7 +1656,7 @@ export default function Admin() {
                   <Button 
                     variant="outline" 
                     className="font-oswald"
-                    onClick={() => {
+                    onClick={async () => {
                       if (products.length === 0) {
                         toast({
                           title: '⚠️ Нет товаров',
@@ -1665,59 +1666,94 @@ export default function Admin() {
                         return;
                       }
 
-                      const exportData = products.map(product => ({
-                        'Название': product.name,
-                        'Артикул': product.sku || '',
-                        'Описание': product.description,
-                        'Цена': parseFloat(product.price),
-                        'Старая цена': product.old_price ? parseFloat(product.old_price) : '',
-                        'URL изображения': product.image_url || '',
-                        'Материал': product.material || '',
-                        'Размер': product.size || '',
-                        'Полировка': product.polish || '',
-                        'ID категории': product.category_id || '',
-                        'Категория': product.category_name,
-                        'В наличии': product.in_stock ? 1 : 0,
-                        'Хит продаж': product.is_featured ? 1 : 0,
-                        'Цена от': product.is_price_from ? 1 : 0
-                      }));
+                      try {
+                        const workbook = new ExcelJS.Workbook();
+                        const worksheet = workbook.addWorksheet('Товары');
 
-                      const ws = XLSX.utils.json_to_sheet(exportData);
-                      
-                      const categoriesData = categories.map(cat => ({
-                        'ID': cat.id,
-                        'Название категории': cat.name,
-                        'Описание': cat.description || ''
-                      }));
-                      const wsCat = XLSX.utils.json_to_sheet(categoriesData);
-                      
-                      const sizesData = [
-                        { 'Размер': '60х40х5' },
-                        { 'Размер': '60х40х8' },
-                        { 'Размер': '80х40х5' },
-                        { 'Размер': '80х40х8' },
-                        { 'Размер': '90х45х8' },
-                        { 'Размер': '100х50х5' },
-                        { 'Размер': '100х50х8' },
-                        { 'Размер': '100х60х5' },
-                        { 'Размер': '100х60х8' },
-                        { 'Размер': '120х60х8' },
-                        { 'Размер': '110х70х8' }
-                      ];
-                      const wsSizes = XLSX.utils.json_to_sheet(sizesData);
-                      
-                      const wb = XLSX.utils.book_new();
-                      XLSX.utils.book_append_sheet(wb, ws, 'Товары');
-                      XLSX.utils.book_append_sheet(wb, wsCat, 'Категории (справочник)');
-                      XLSX.utils.book_append_sheet(wb, wsSizes, 'Размеры (справочник)');
-                      
-                      const date = new Date().toISOString().split('T')[0];
-                      XLSX.writeFile(wb, `товары_${date}.xlsx`);
-                      
-                      toast({
-                        title: '✅ Товары экспортированы',
-                        description: `Файл товары_${date}.xlsx успешно скачан`
-                      });
+                        worksheet.columns = [
+                          { header: 'Название', key: 'name', width: 30 },
+                          { header: 'Артикул', key: 'sku', width: 15 },
+                          { header: 'Категория', key: 'category', width: 20 },
+                          { header: 'Описание', key: 'description', width: 40 },
+                          { header: 'Цена', key: 'price', width: 15 },
+                          { header: 'Старая цена', key: 'old_price', width: 15 },
+                          { header: 'Материал', key: 'material', width: 20 },
+                          { header: 'Размер', key: 'size', width: 20 },
+                          { header: 'Полировка', key: 'polish', width: 20 },
+                          { header: 'В наличии', key: 'in_stock', width: 12 },
+                          { header: 'Хит продаж', key: 'is_featured', width: 12 },
+                          { header: 'Изображение', key: 'image', width: 40 }
+                        ];
+
+                        worksheet.getRow(1).font = { bold: true };
+                        worksheet.getRow(1).fill = {
+                          type: 'pattern',
+                          pattern: 'solid',
+                          fgColor: { argb: 'FFD4A855' }
+                        };
+
+                        for (const product of products) {
+                          const rowNumber = worksheet.rowCount + 1;
+                          const row = worksheet.addRow({
+                            name: product.name,
+                            sku: product.sku || '',
+                            category: product.category_name,
+                            description: product.description,
+                            price: `${product.is_price_from ? 'от ' : ''}${parseFloat(product.price).toLocaleString('ru-RU')} ₽`,
+                            old_price: product.old_price ? `${parseFloat(product.old_price).toLocaleString('ru-RU')} ₽` : '',
+                            material: product.material || '',
+                            size: product.size || '',
+                            polish: product.polish || '',
+                            in_stock: product.in_stock ? 'Да' : 'Нет',
+                            is_featured: product.is_featured ? 'Да' : 'Нет'
+                          });
+
+                          row.height = 100;
+
+                          if (product.image_url) {
+                            try {
+                              const imageResponse = await fetch(product.image_url);
+                              const imageBlob = await imageResponse.blob();
+                              const imageBuffer = await imageBlob.arrayBuffer();
+
+                              const imageId = workbook.addImage({
+                                buffer: imageBuffer,
+                                extension: 'png',
+                              });
+
+                              worksheet.addImage(imageId, {
+                                tl: { col: 11, row: rowNumber - 1 },
+                                ext: { width: 120, height: 120 }
+                              });
+                            } catch (error) {
+                              console.error('Error loading image:', error);
+                              row.getCell('image').value = product.image_url;
+                            }
+                          }
+                        }
+
+                        const buffer = await workbook.xlsx.writeBuffer();
+                        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        const date = new Date().toISOString().split('T')[0];
+                        link.download = `товары_${date}.xlsx`;
+                        link.click();
+                        window.URL.revokeObjectURL(url);
+
+                        toast({
+                          title: '✅ Товары экспортированы',
+                          description: `Файл товары_${date}.xlsx успешно скачан`
+                        });
+                      } catch (error) {
+                        console.error('Error exporting to Excel:', error);
+                        toast({
+                          title: '❌ Ошибка экспорта',
+                          description: 'Не удалось экспортировать товары',
+                          variant: 'destructive'
+                        });
+                      }
                     }}
                   >
                     <Icon name="FileDown" size={20} className="mr-2" />
