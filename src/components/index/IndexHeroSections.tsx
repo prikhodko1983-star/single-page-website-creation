@@ -122,7 +122,7 @@ export default function IndexHeroSections({
   return (
     <>
       <section className="relative pt-2 pb-4 md:py-32 bg-secondary overflow-hidden">
-        <div className="absolute inset-0 opacity-90 flex justify-end items-end md:items-center md:justify-center md:ml-[5%]">
+        <div className="absolute inset-0 opacity-90 flex justify-end items-end md:items-center md:justify-center md:mr-[-5%]">
           <img 
             src="https://cdn.poehali.dev/files/7c3f7bb6-620d-4495-bf82-0abd8136ff4b.png"
             alt="Гранитный памятник с художественной резьбой - производство в Великом Новгороде"
