@@ -193,7 +193,14 @@ export default function IndexHeroSections({
         </div>
       </section>
 
-      <section className="py-8 md:py-16 bg-[#1a1a1a]">
+      <section className="py-8 md:py-16 bg-[#1a1a1a] relative">
+        <div className="absolute left-1/2 -translate-x-1/2 -top-8 md:-top-12 z-30 pointer-events-none">
+          <img 
+            src="https://cdn.poehali.dev/files/Стрелка.png"
+            alt="Декоративная стрелка"
+            className="w-16 h-16 md:w-24 md:h-24 opacity-80"
+          />
+        </div>
         <div className="container mx-auto px-4">
           <div className="relative bg-white rounded-2xl overflow-hidden">
             <div className="absolute top-4 right-4 md:top-8 md:right-8 bg-[#E89C1F] text-white px-3 py-1 md:px-6 md:py-2 rounded-lg font-oswald font-semibold text-xs md:text-sm z-20">
