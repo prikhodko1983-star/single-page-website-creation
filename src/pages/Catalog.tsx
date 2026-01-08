@@ -7,6 +7,7 @@ import Icon from '@/components/ui/icon';
 import { CartSheet } from '@/components/CartSheet';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
+import ExcelJS from 'exceljs';
 
 interface Category {
   id: number;
@@ -109,6 +110,90 @@ export default function Catalog() {
     }
   };
 
+  const exportToExcel = async () => {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Каталог памятников');
+
+      worksheet.columns = [
+        { header: 'Название', key: 'name', width: 30 },
+        { header: 'Категория', key: 'category', width: 20 },
+        { header: 'Описание', key: 'description', width: 40 },
+        { header: 'Цена', key: 'price', width: 15 },
+        { header: 'Старая цена', key: 'old_price', width: 15 },
+        { header: 'Материал', key: 'material', width: 20 },
+        { header: 'Размер', key: 'size', width: 20 },
+        { header: 'В наличии', key: 'in_stock', width: 12 },
+        { header: 'Изображение', key: 'image', width: 40 }
+      ];
+
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFD4A855' }
+      };
+
+      for (const product of products) {
+        const rowNumber = worksheet.rowCount + 1;
+        const row = worksheet.addRow({
+          name: product.name,
+          category: product.category_name,
+          description: product.description,
+          price: `${product.is_price_from ? 'от ' : ''}${parseFloat(product.price).toLocaleString('ru-RU')} ₽`,
+          old_price: product.old_price ? `${parseFloat(product.old_price).toLocaleString('ru-RU')} ₽` : '',
+          material: product.material || '',
+          size: product.size || '',
+          in_stock: product.in_stock ? 'Да' : 'Нет'
+        });
+
+        row.height = 100;
+
+        if (product.image_url) {
+          try {
+            const imageResponse = await fetch(product.image_url);
+            const imageBlob = await imageResponse.blob();
+            const imageBuffer = await imageBlob.arrayBuffer();
+
+            const imageId = workbook.addImage({
+              buffer: imageBuffer,
+              extension: 'png',
+            });
+
+            worksheet.addImage(imageId, {
+              tl: { col: 8, row: rowNumber - 1 },
+              ext: { width: 120, height: 120 }
+            });
+          } catch (error) {
+            console.error('Error loading image:', error);
+            row.getCell('image').value = product.image_url;
+          }
+        }
+      }
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Каталог_памятников_${new Date().toLocaleDateString('ru-RU')}.xlsx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "Успешно",
+        description: "Каталог экспортирован в Excel",
+      });
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось экспортировать каталог",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -141,24 +226,35 @@ export default function Catalog() {
       {/* Filters */}
       <section className="py-8 border-b">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap gap-2 justify-center">
-            <Button
-              variant={selectedCategory === null ? 'default' : 'outline'}
-              onClick={() => setSelectedCategory(null)}
-              className="font-oswald"
-            >
-              Все категории
-            </Button>
-            {categories.map((category) => (
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+            <div className="flex flex-wrap gap-2 justify-center">
               <Button
-                key={category.id}
-                variant={selectedCategory === category.slug ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory(category.slug)}
+                variant={selectedCategory === null ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory(null)}
                 className="font-oswald"
               >
-                {category.name}
+                Все категории
               </Button>
-            ))}
+              {categories.map((category) => (
+                <Button
+                  key={category.id}
+                  variant={selectedCategory === category.slug ? 'default' : 'outline'}
+                  onClick={() => setSelectedCategory(category.slug)}
+                  className="font-oswald"
+                >
+                  {category.name}
+                </Button>
+              ))}
+            </div>
+            <Button
+              onClick={exportToExcel}
+              variant="outline"
+              className="font-oswald flex items-center gap-2"
+              disabled={products.length === 0}
+            >
+              <Icon name="Download" size={18} />
+              Скачать Excel
+            </Button>
           </div>
         </div>
       </section>
