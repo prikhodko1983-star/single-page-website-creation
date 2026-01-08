@@ -182,7 +182,7 @@ export default function IndexHeroSections({
                 <Button 
                   size="sm"
                   className="bg-[#0088cc] hover:bg-[#006699] text-white font-oswald text-sm px-4 py-2 w-auto"
-                  onClick={() => window.open('https://t.me/TELEGRAM_BOT_USERNAME', '_blank')}
+                  onClick={() => window.open('https://t.me/otvetrzakai_bot', '_blank')}
                 >
                   <Icon name="Send" className="mr-2" size={16} />
                   НАПИСАТЬ В TELEGRAM
