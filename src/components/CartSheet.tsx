@@ -104,8 +104,8 @@ export function CartSheet() {
             </Link>
           </div>
         ) : (
-          <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto py-6 space-y-4">
+          <div className="flex flex-col h-[calc(100vh-120px)]">
+            <div className="flex-1 overflow-y-auto py-6 space-y-4 pr-2">
               {items.map((item) => (
                 <div key={item.id} className="flex gap-4 border rounded-lg p-3">
                   <div className="w-20 h-20 bg-secondary rounded flex-shrink-0">
@@ -162,7 +162,7 @@ export function CartSheet() {
               ))}
             </div>
             
-            <div className="border-t pt-4 space-y-4">
+            <div className="border-t pt-4 space-y-4 flex-shrink-0 bg-background">
               <div className="flex justify-between items-center text-lg font-bold">
                 <span className="font-oswald">Итого:</span>
                 <span className="text-primary">
@@ -205,7 +205,7 @@ export function CartSheet() {
                       placeholder="+7 (999) 123-45-67"
                     />
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 pb-2">
                     <Button
                       className="flex-1 font-oswald"
                       onClick={handleSubmitOrder}
