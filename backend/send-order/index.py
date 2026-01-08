@@ -56,6 +56,9 @@ def handler(event: dict, context) -> dict:
         bot_token = os.environ.get('TELEGRAM_ORDERS_BOT_TOKEN')
         chat_id = os.environ.get('TELEGRAM_ORDERS_CHAT_ID')
         
+        print(f'DEBUG: bot_token = {bot_token[:20]}... (len={len(bot_token) if bot_token else 0})')
+        print(f'DEBUG: chat_id = {chat_id} (type={type(chat_id)})')
+        
         if not bot_token or not chat_id:
             return {
                 'statusCode': 500,
