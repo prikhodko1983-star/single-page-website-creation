@@ -83,28 +83,44 @@ def handler(event: dict, context) -> dict:
             headers={'Content-Type': 'application/json'}
         )
         
-        with urllib.request.urlopen(req) as response:
-            result = json.loads(response.read().decode('utf-8'))
+        try:
+            with urllib.request.urlopen(req) as response:
+                result = json.loads(response.read().decode('utf-8'))
+                
+                if result.get('ok'):
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'success': True, 'message': 'Сообщение отправлено'}),
+                        'isBase64Encoded': False
+                    }
+                else:
+                    error_msg = result.get('description', 'Неизвестная ошибка')
+                    return {
+                        'statusCode': 500,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': f'Telegram API: {error_msg}'}),
+                        'isBase64Encoded': False
+                    }
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode('utf-8')
+            try:
+                error_data = json.loads(error_body)
+                error_msg = error_data.get('description', str(e))
+            except:
+                error_msg = f'HTTP {e.code}: {error_body[:200]}'
             
-            if result.get('ok'):
-                return {
-                    'statusCode': 200,
-                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                    'body': json.dumps({'success': True, 'message': 'Сообщение отправлено'}),
-                    'isBase64Encoded': False
-                }
-            else:
-                return {
-                    'statusCode': 500,
-                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                    'body': json.dumps({'error': 'Ошибка отправки в Telegram'}),
-                    'isBase64Encoded': False
-                }
+            return {
+                'statusCode': 500,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'error': f'Не удалось отправить: {error_msg}'}),
+                'isBase64Encoded': False
+            }
     
     except Exception as e:
         return {
             'statusCode': 500,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': str(e)}),
+            'body': json.dumps({'error': f'Ошибка: {str(e)}'}),
             'isBase64Encoded': False
         }
