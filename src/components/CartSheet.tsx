@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -10,9 +11,69 @@ import {
 import { useCart } from '@/contexts/CartContext';
 import Icon from '@/components/ui/icon';
 import { Link } from 'react-router-dom';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 export function CartSheet() {
-  const { items, removeFromCart, updateQuantity, getTotalPrice, getTotalItems } = useCart();
+  const { items, removeFromCart, updateQuantity, getTotalPrice, getTotalItems, clearCart } = useCart();
+  const { toast } = useToast();
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmitOrder = async () => {
+    if (!name.trim() || !phone.trim()) {
+      toast({
+        title: 'Ошибка',
+        description: 'Заполните имя и телефон',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch('https://functions.poehali.dev/ea9959d5-aa7f-4172-aebd-486fef3e3ae4', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: phone.trim(),
+          items: items.map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price
+          })),
+          total_price: getTotalPrice()
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        toast({
+          title: 'Заказ отправлен!',
+          description: 'Мы свяжемся с вами в ближайшее время'
+        });
+        clearCart();
+        setName('');
+        setPhone('');
+        setShowOrderForm(false);
+      } else {
+        throw new Error(result.error || 'Ошибка отправки');
+      }
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: error instanceof Error ? error.message : 'Не удалось отправить заказ',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Sheet>
@@ -108,20 +169,60 @@ export function CartSheet() {
                   {getTotalPrice().toLocaleString('ru-RU')} ₽
                 </span>
               </div>
-              <Button
-                className="w-full font-oswald"
-                size="lg"
-                onClick={() => {
-                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
-                Оформить заказ
-              </Button>
-              <Link to="/catalog">
-                <Button variant="outline" className="w-full" size="lg">
-                  Продолжить покупки
-                </Button>
-              </Link>
+              
+              {!showOrderForm ? (
+                <>
+                  <Button
+                    className="w-full font-oswald"
+                    size="lg"
+                    onClick={() => setShowOrderForm(true)}
+                  >
+                    Оформить заказ
+                  </Button>
+                  <Link to="/catalog">
+                    <Button variant="outline" className="w-full" size="lg">
+                      Продолжить покупки
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="order-name">Ваше имя</Label>
+                    <Input
+                      id="order-name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Иван Иванов"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="order-phone">Телефон</Label>
+                    <Input
+                      id="order-phone"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+7 (999) 123-45-67"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      className="flex-1 font-oswald"
+                      onClick={handleSubmitOrder}
+                      disabled={loading}
+                    >
+                      {loading ? 'Отправка...' : 'Отправить заказ'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowOrderForm(false)}
+                      disabled={loading}
+                    >
+                      Отмена
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
