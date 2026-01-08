@@ -75,6 +75,60 @@ export default function Catalog() {
       }
       meta.setAttribute('content', content);
     });
+
+    // Добавляем JSON-LD микроразметку для каталога
+    let scriptTag = document.querySelector('script[data-catalog-schema]');
+    if (!scriptTag) {
+      scriptTag = document.createElement('script');
+      scriptTag.setAttribute('type', 'application/ld+json');
+      scriptTag.setAttribute('data-catalog-schema', 'true');
+      document.head.appendChild(scriptTag);
+    }
+
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Главная",
+          "item": "https://мастер-гранит.рф/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Каталог",
+          "item": "https://мастер-гранит.рф/catalog"
+        }
+      ]
+    };
+
+    scriptTag.textContent = JSON.stringify(breadcrumbSchema);
+
+    // Добавляем микроразметку для страницы каталога
+    let catalogScriptTag = document.querySelector('script[data-catalog-page-schema]');
+    if (!catalogScriptTag) {
+      catalogScriptTag = document.createElement('script');
+      catalogScriptTag.setAttribute('type', 'application/ld+json');
+      catalogScriptTag.setAttribute('data-catalog-page-schema', 'true');
+      document.head.appendChild(catalogScriptTag);
+    }
+
+    const catalogPageSchema = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": title,
+      "description": description,
+      "url": "https://мастер-гранит.рф/catalog",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Гранит Мастер",
+        "url": "https://мастер-гранит.рф"
+      }
+    };
+
+    catalogScriptTag.textContent = JSON.stringify(catalogPageSchema);
   }, []);
 
   const loadCategories = async () => {

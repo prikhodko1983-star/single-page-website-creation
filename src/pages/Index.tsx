@@ -25,7 +25,7 @@ const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [designerSlideIndex, setDesignerSlideIndex] = useState(0);
 
-  // Устанавливаем og:url для главной страницы
+  // Устанавливаем og:url и микроразметку для главной страницы
   useEffect(() => {
     const ogUrlMeta = document.querySelector('meta[property="og:url"]');
     if (ogUrlMeta) {
@@ -36,6 +36,61 @@ const Index = () => {
       meta.setAttribute('content', 'https://мастер-гранит.рф/');
       document.head.appendChild(meta);
     }
+
+    // Добавляем JSON-LD микроразметку для организации
+    let scriptTag = document.querySelector('script[data-organization-schema]');
+    if (!scriptTag) {
+      scriptTag = document.createElement('script');
+      scriptTag.setAttribute('type', 'application/ld+json');
+      scriptTag.setAttribute('data-organization-schema', 'true');
+      document.head.appendChild(scriptTag);
+    }
+
+    const organizationSchema = {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Гранит Мастер",
+      "url": "https://мастер-гранит.рф",
+      "logo": "https://cdn.poehali.dev/files/7c3f7bb6-620d-4495-bf82-0abd8136ff4b.png",
+      "description": "Производство и установка гранитных памятников. Изготовление памятников из гранита любой сложности. Доставка и установка по всей области.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "RU"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": "Russian"
+      },
+      "sameAs": []
+    };
+
+    scriptTag.textContent = JSON.stringify(organizationSchema);
+
+    // Добавляем микроразметку LocalBusiness
+    let businessScriptTag = document.querySelector('script[data-business-schema]');
+    if (!businessScriptTag) {
+      businessScriptTag = document.createElement('script');
+      businessScriptTag.setAttribute('type', 'application/ld+json');
+      businessScriptTag.setAttribute('data-business-schema', 'true');
+      document.head.appendChild(businessScriptTag);
+    }
+
+    const businessSchema = {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Гранит Мастер",
+      "url": "https://мастер-гранит.рф",
+      "image": "https://cdn.poehali.dev/files/7c3f7bb6-620d-4495-bf82-0abd8136ff4b.png",
+      "priceRange": "₽₽",
+      "description": "Производство и установка гранитных памятников. Изготовление памятников из гранита любой сложности. Доставка и установка по всей области.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "RU"
+      }
+    };
+
+    businessScriptTag.textContent = JSON.stringify(businessSchema);
   }, []);
 
   const designerSlides = [
