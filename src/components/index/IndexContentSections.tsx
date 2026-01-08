@@ -276,30 +276,33 @@ export default function IndexContentSections({
         </div>
       </section>
 
-      <section className="py-6 md:py-8 bg-secondary">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-4">
-            <h2 className="font-oswald font-bold text-xl md:text-2xl mb-1">
+      <section className="py-12 md:py-16 bg-background relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-secondary via-background to-secondary opacity-50"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-8">
+            <h2 className="font-oswald font-bold text-2xl md:text-4xl mb-3">
               Почему выбирают нас
             </h2>
-            <p className="text-muted-foreground text-xs md:text-sm">
+            <p className="text-muted-foreground text-sm md:text-base">
               Профессионализм и качество проверенные временем
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
             {advantages.map((adv, idx) => (
-              <div 
+              <Card 
                 key={idx} 
-                className="text-center animate-fade-in"
+                className="text-center animate-fade-in bg-card border-border shadow-sm hover:shadow-md transition-all duration-300"
                 style={{ animationDelay: `${idx * 0.1}s` }}
               >
-                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Icon name={adv.icon as any} className="text-primary" size={20} />
-                </div>
-                <h3 className="font-oswald font-semibold text-sm mb-1">{adv.title}</h3>
-                <div className="text-muted-foreground text-xs">{adv.desc}</div>
-              </div>
+                <CardContent className="p-4 md:p-6">
+                  <div className="w-12 h-12 md:w-14 md:h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Icon name={adv.icon as any} className="text-primary" size={24} />
+                  </div>
+                  <h3 className="font-oswald font-semibold text-sm md:text-base mb-2">{adv.title}</h3>
+                  <div className="text-muted-foreground text-xs md:text-sm">{adv.desc}</div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
