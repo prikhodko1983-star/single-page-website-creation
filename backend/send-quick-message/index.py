@@ -45,9 +45,11 @@ def handler(event: dict, context) -> dict:
             }
         
         bot_token = os.environ.get('TELEGRAM_ORDERS_BOT_TOKEN')
-        chat_id = os.environ.get('TELEGRAM_ORDERS_CHAT_ID')
+        chat_id_str = os.environ.get('TELEGRAM_ORDERS_CHAT_ID')
         
-        if not bot_token or not chat_id:
+        print(f'DEBUG: chat_id_str = "{chat_id_str}" (type={type(chat_id_str)})')
+        
+        if not bot_token or not chat_id_str:
             return {
                 'statusCode': 500,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -71,8 +73,10 @@ def handler(event: dict, context) -> dict:
         
         # Отправляем в Telegram
         telegram_url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
+        chat_id = int(chat_id_str)
+        print(f'DEBUG: chat_id converted to int = {chat_id}')
         data = {
-            'chat_id': int(chat_id),
+            'chat_id': chat_id,
             'text': telegram_message,
             'parse_mode': 'HTML'
         }
