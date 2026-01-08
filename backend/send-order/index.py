@@ -91,7 +91,7 @@ def handler(event: dict, context) -> dict:
         # Отправляем в Telegram
         telegram_url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
         data = {
-            'chat_id': chat_id,
+            'chat_id': int(chat_id),
             'text': message,
             'parse_mode': 'HTML'
         }
