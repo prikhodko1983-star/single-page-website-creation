@@ -194,7 +194,7 @@ export default function IndexHeroSections({
       </section>
 
       <section className="py-8 md:py-16 bg-[#1a1a1a] relative">
-        <div className="absolute left-[15%] md:left-[20%] -top-8 md:-top-12 z-30 pointer-events-none">
+        <div className="absolute left-1/2 -translate-x-1/2 -top-8 md:-top-12 z-30 pointer-events-none">
           <img 
             src="https://cdn.poehali.dev/files/Стрелка.png"
             alt="Декоративная стрелка"
