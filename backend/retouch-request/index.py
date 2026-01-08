@@ -268,7 +268,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 None  # Во второй группе топики не используем
             )
         
-        if success1 and success2:
+        if success1:
             return {
                 'statusCode': 200,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
