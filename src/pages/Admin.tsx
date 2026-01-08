@@ -306,6 +306,8 @@ export default function Admin() {
   const [uploadingFont, setUploadingFont] = useState(false);
   const [fontUploadProgress, setFontUploadProgress] = useState(0);
   const fontInputRef = useRef<HTMLInputElement>(null);
+  const excelImportRef = useRef<HTMLInputElement>(null);
+  const [importing, setImporting] = useState(false);
 
   const categories_list = ["Вертикальные", "Горизонтальные", "Эксклюзивные", "С крестом"];
   const filterCategories = ["Все", ...categories_list];
@@ -1051,25 +1053,39 @@ export default function Admin() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setImporting(true);
+    toast({
+      title: '⏳ Импорт начат',
+      description: 'Обработка файла...'
+    });
+
     try {
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
+      console.log('Excel data:', jsonData);
+
+      if (!jsonData || jsonData.length === 0) {
+        throw new Error('Файл пустой или формат неверный');
+      }
+
       let successCount = 0;
       let errorCount = 0;
       let updatedCount = 0;
       let createdCount = 0;
+      const errors: string[] = [];
 
-      for (const row of jsonData as any[]) {
+      for (let i = 0; i < jsonData.length; i++) {
+        const row = jsonData[i] as any;
         try {
           const productData = {
             name: row['Название'] || row['name'] || '',
             slug: generateSlug(row['Название'] || row['name'] || ''),
             description: row['Описание'] || row['description'] || '',
             price: String(row['Цена'] || row['price'] || 0),
-            old_price: row['Старая цена'] || row['old_price'] || '',
+            old_price: row['Старая цена'] || row['old_price'] ? String(row['Старая цена'] || row['old_price']) : '',
             image_url: row['URL изображения'] || row['image_url'] || '',
             material: row['Материал'] || row['material'] || '',
             size: row['Размер'] || row['size'] || '',
@@ -1081,7 +1097,10 @@ export default function Admin() {
             is_price_from: row['Цена от'] !== undefined ? Boolean(row['Цена от']) : false,
           };
 
+          console.log(`Row ${i + 2}:`, productData);
+
           if (!productData.name || !productData.price) {
+            errors.push(`Строка ${i + 2}: отсутствует название или цена`);
             errorCount++;
             continue;
           }
@@ -1095,7 +1114,7 @@ export default function Admin() {
             : PRODUCTS_API;
           
           const method = existingProduct ? 'PUT' : 'POST';
-          const token = localStorage.getItem('admin_token');
+          const token = localStorage.getItem('auth_token');
 
           const response = await fetch(url, {
             method: method,
@@ -1114,16 +1133,28 @@ export default function Admin() {
               createdCount++;
             }
           } else {
+            const errorText = await response.text();
+            console.error(`Row ${i + 2} error:`, response.status, errorText);
+            errors.push(`Строка ${i + 2}: ${response.status} ${errorText}`);
             errorCount++;
           }
         } catch (error) {
+          console.error(`Row ${i + 2} exception:`, error);
+          errors.push(`Строка ${i + 2}: ${error instanceof Error ? error.message : 'неизвестная ошибка'}`);
           errorCount++;
         }
       }
 
+      console.log('Import result:', { createdCount, updatedCount, errorCount, errors });
+
+      if (errors.length > 0) {
+        console.error('Import errors:', errors);
+      }
+
       toast({
-        title: '✅ Импорт завершён',
-        description: `Создано: ${createdCount}, Обновлено: ${updatedCount}, Ошибок: ${errorCount}`
+        title: successCount > 0 ? '✅ Импорт завершён' : '❌ Импорт завершён с ошибками',
+        description: `Создано: ${createdCount}, Обновлено: ${updatedCount}, Ошибок: ${errorCount}`,
+        variant: errorCount > 0 && successCount === 0 ? 'destructive' : 'default'
       });
 
       loadProducts();
@@ -1131,10 +1162,12 @@ export default function Admin() {
     } catch (error) {
       console.error('Excel import error:', error);
       toast({
-        title: '❌ Ошибка',
-        description: 'Не удалось обработать файл Excel',
+        title: '❌ Ошибка импорта',
+        description: error instanceof Error ? error.message : 'Не удалось обработать файл Excel',
         variant: 'destructive'
       });
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -1593,7 +1626,7 @@ export default function Admin() {
                                           if (!confirm(`Удалить категорию "${category.name}"?`)) return;
                                           
                                           try {
-                                            const token = localStorage.getItem('admin_token');
+                                            const token = localStorage.getItem('auth_token');
                                             const response = await fetch(`${PRODUCTS_API}?type=categories&id=${category.id}`, {
                                               method: 'DELETE',
                                               headers: {
@@ -1642,14 +1675,16 @@ export default function Admin() {
                       onChange={handleExcelImport}
                       className="hidden"
                       id="excel-import"
+                      disabled={importing}
                     />
                     <Button 
                       variant="outline" 
                       className="font-oswald"
                       onClick={() => document.getElementById('excel-import')?.click()}
+                      disabled={importing}
                     >
-                      <Icon name="Upload" size={20} className="mr-2" />
-                      Импорт из Excel
+                      <Icon name={importing ? "Loader2" : "Upload"} size={20} className={`mr-2 ${importing ? 'animate-spin' : ''}`} />
+                      {importing ? 'Импортирую...' : 'Импорт из Excel'}
                     </Button>
                   </div>
 
