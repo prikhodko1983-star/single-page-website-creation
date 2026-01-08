@@ -3,28 +3,40 @@ User-agent: *
 Allow: /
 Allow: /catalog
 Allow: /product/
+Allow: /legal
 
-# Запрещаем индексацию админки
+# Запрещаем индексацию служебных страниц
 Disallow: /admin
 Disallow: /constructor
 
 # Yandex
 User-agent: Yandex
 Allow: /
+Allow: /catalog
+Allow: /product/
+Allow: /legal
 Disallow: /admin
 Disallow: /constructor
 Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term
+Host: https://мастер-гранит.рф
 
 # Google
 User-agent: Googlebot
 Allow: /
+Allow: /catalog
+Allow: /product/
+Allow: /legal
 Disallow: /admin
 Disallow: /constructor
 
 # Bing
 User-agent: Bingbot
 Allow: /
+Allow: /catalog
+Allow: /product/
+Allow: /legal
 Disallow: /admin
+Disallow: /constructor
 
 # Social networks
 User-agent: Twitterbot
@@ -36,5 +48,5 @@ Allow: /
 # Sitemap
 Sitemap: https://мастер-гранит.рф/sitemap.xml
 
-# Частота сканирования
-Crawl-delay: 1
+# Частота сканирования (оптимально для каталога)
+Crawl-delay: 0.5
