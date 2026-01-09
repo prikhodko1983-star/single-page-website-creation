@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { initYandexMetrika, ymHit } from "@/utils/metrika";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { CartProvider } from "@/contexts/CartContext";
@@ -134,6 +135,18 @@ const NavigationBar = () => {
 };
 
 const AppContent = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Инициализация Метрики при первой загрузке
+    initYandexMetrika();
+  }, []);
+
+  useEffect(() => {
+    // Отправка хита при каждом изменении маршрута
+    ymHit(window.location.pathname + window.location.search);
+  }, [location]);
+
   return (
     <>
       <NavigationBar />
