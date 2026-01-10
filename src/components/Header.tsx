@@ -1,10 +1,6 @@
-import { useState } from 'react';
 import Icon from "@/components/ui/icon";
-import { TelegramQuickMessage } from '@/components/TelegramQuickMessage';
 
 const Header = () => {
-  const [isTelegramOpen, setIsTelegramOpen] = useState(false);
-
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
       <div className="container mx-auto px-4 py-4">
@@ -27,17 +23,18 @@ const Header = () => {
             <a href="https://wa.me/79960681168" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-lg transition-colors">
               <Icon name="MessageCircle" size={18} />
             </a>
-            <button
-              onClick={() => setIsTelegramOpen(true)}
+            <a 
+              href="https://t.me/otvetzakaz_bot" 
+              target="_blank" 
+              rel="noopener noreferrer"
               className="p-2 bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors"
               title="Написать в Telegram"
             >
               <Icon name="Send" size={18} />
-            </button>
+            </a>
           </div>
         </div>
       </div>
-      <TelegramQuickMessage open={isTelegramOpen} onOpenChange={setIsTelegramOpen} />
     </header>
   );
 };
