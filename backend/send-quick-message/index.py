@@ -49,9 +49,11 @@ def handler(event: dict, context) -> dict:
                 'isBase64Encoded': False
             }
         
-        bot_token = os.environ.get('TELEGRAM_ORDERS_BOT_TOKEN')
-        chat_id_str = os.environ.get('TELEGRAM_ORDERS_CHAT_ID')
+        # Используем новые секреты
+        bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN') or os.environ.get('TELEGRAM_ORDERS_BOT_TOKEN')
+        chat_id_str = os.environ.get('TELEGRAM_NEW_CHAT_ID') or os.environ.get('TELEGRAM_ORDERS_CHAT_ID')
         
+        print(f'DEBUG: bot_token = "{bot_token[:20] if bot_token else None}..." (exists={bool(bot_token)})')
         print(f'DEBUG: chat_id_str = "{chat_id_str}" (type={type(chat_id_str)})')
         
         if not bot_token or not chat_id_str:
@@ -84,7 +86,7 @@ def handler(event: dict, context) -> dict:
         
         # Отправляем в Telegram (группа менеджеров)
         telegram_url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
-        chat_id = -1003548321738  # Группа менеджеров
+        chat_id = int(chat_id_str)  # Используем chat_id из секретов
         print(f'DEBUG: Sending to {telegram_url[:50]}...')
         print(f'DEBUG: chat_id = {chat_id}')
         
