@@ -52,10 +52,11 @@ def handler(event: dict, context) -> dict:
                 'isBase64Encoded': False
             }
         
-        bot_token = os.environ.get('TELEGRAM_ORDERS_BOT_TOKEN')
-        chat_id = os.environ.get('TELEGRAM_ORDERS_CHAT_ID')
+        # Используем новые секреты (fallback на старые)
+        bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN') or os.environ.get('TELEGRAM_ORDERS_BOT_TOKEN')
+        chat_id = os.environ.get('TELEGRAM_NEW_CHAT_ID') or os.environ.get('TELEGRAM_ORDERS_CHAT_ID')
         
-        print(f'DEBUG: bot_token = {bot_token[:20]}... (len={len(bot_token) if bot_token else 0})')
+        print(f'DEBUG: bot_token = {bot_token[:20] if bot_token else "None"}... (exists={bool(bot_token)})')
         print(f'DEBUG: chat_id = {chat_id} (type={type(chat_id)})')
         
         if not bot_token or not chat_id:
