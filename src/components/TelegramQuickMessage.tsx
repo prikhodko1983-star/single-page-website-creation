@@ -20,6 +20,7 @@ interface TelegramQuickMessageProps {
 export function TelegramQuickMessage({ open, onOpenChange }: TelegramQuickMessageProps) {
   const { toast } = useToast();
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,8 +42,10 @@ export function TelegramQuickMessage({ open, onOpenChange }: TelegramQuickMessag
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name.trim(),
+          email: email.trim(),
           phone: phone.trim(),
-          message: message.trim()
+          message: message.trim(),
+          source: 'Сайт (кнопка Telegram)'
         })
       });
 
@@ -54,6 +57,7 @@ export function TelegramQuickMessage({ open, onOpenChange }: TelegramQuickMessag
           description: 'Мы свяжемся с вами в ближайшее время'
         });
         setName('');
+        setEmail('');
         setPhone('');
         setMessage('');
         onOpenChange(false);
@@ -88,6 +92,16 @@ export function TelegramQuickMessage({ open, onOpenChange }: TelegramQuickMessag
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Иван Иванов"
+            />
+          </div>
+          <div>
+            <Label htmlFor="quick-email">E-mail (необязательно)</Label>
+            <Input
+              id="quick-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
             />
           </div>
           <div>

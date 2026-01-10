@@ -1,6 +1,7 @@
 import json
 import os
 import requests
+from datetime import datetime
 
 def handler(event: dict, context) -> dict:
     '''Быстрая отправка сообщения в Telegram-группу'''
@@ -33,8 +34,11 @@ def handler(event: dict, context) -> dict:
         body = json.loads(body_str)
         
         name = body.get('name', '').strip()
+        email = body.get('email', '').strip()
         phone = body.get('phone', '').strip()
         message = body.get('message', '').strip()
+        source = body.get('source', 'Сайт').strip()
+        date = datetime.now().strftime('%d.%m.%Y %H:%M:%S')
         
         if not phone:
             return {
@@ -57,23 +61,29 @@ def handler(event: dict, context) -> dict:
                 'isBase64Encoded': False
             }
         
-        # Формируем сообщение
-        message_lines = ['💬 <b>Быстрое сообщение с сайта</b>', '']
+        # Формируем сообщение по вашему шаблону
+        message_lines = ['🔔 <b>Новое сообщение с сайта:</b>', '']
         
         if name:
-            message_lines.append(f'👤 <b>Имя:</b> {name}')
+            message_lines.append(f'<b>Имя:</b> {name}')
         
-        message_lines.append(f'📱 <b>Телефон:</b> {phone}')
+        if email:
+            message_lines.append(f'<b>E-mail:</b> {email}')
+        
+        if phone:
+            message_lines.append(f'<b>Телефон:</b> {phone}')
         
         if message:
-            message_lines.append('')
-            message_lines.append(f'💭 <b>Сообщение:</b>\n{message}')
+            message_lines.append(f'<b>Сообщение:</b> {message}')
+        
+        message_lines.append(f'<b>Источник:</b> {source}')
+        message_lines.append(f'<b>Время:</b> {date}')
         
         telegram_message = '\n'.join(message_lines)
         
-        # Отправляем в Telegram
+        # Отправляем в Telegram (группа менеджеров)
         telegram_url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
-        chat_id = int(chat_id_str)
+        chat_id = -1003548321738  # Группа менеджеров
         print(f'DEBUG: Sending to {telegram_url[:50]}...')
         print(f'DEBUG: chat_id = {chat_id}')
         
