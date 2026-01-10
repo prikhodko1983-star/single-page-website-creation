@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { CartSheet } from "@/components/CartSheet";
-import { TelegramQuickMessage } from "@/components/TelegramQuickMessage";
 
 interface IndexHeaderProps {
   mobileMenuOpen: boolean;
@@ -11,8 +9,6 @@ interface IndexHeaderProps {
 }
 
 export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavigateAdmin }: IndexHeaderProps) {
-  const [telegramDialogOpen, setTelegramDialogOpen] = useState(false);
-
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
       <div className="container mx-auto px-4 py-4">
@@ -37,16 +33,15 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
             <a href="https://wa.me/79960681168" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-lg transition-colors">
               <Icon name="MessageCircle" size={18} />
             </a>
-            <button
-              onClick={() => setTelegramDialogOpen(true)}
+            <a 
+              href="https://t.me/otvetzakaz_bot" 
+              target="_blank" 
+              rel="noopener noreferrer"
               className="p-2 bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors"
+              title="Написать в Telegram"
             >
               <Icon name="Send" size={18} />
-            </button>
-            <TelegramQuickMessage
-              open={telegramDialogOpen}
-              onOpenChange={setTelegramDialogOpen}
-            />
+            </a>
             <div className="hidden md:block">
               <CartSheet />
             </div>
