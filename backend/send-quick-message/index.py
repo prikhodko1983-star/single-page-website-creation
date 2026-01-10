@@ -5,6 +5,7 @@ from datetime import datetime
 
 def handler(event: dict, context) -> dict:
     '''Быстрая отправка сообщения в Telegram-группу'''
+    # Updated: 2026-01-10 - новый токен бота
     method = event.get('httpMethod', 'POST')
     
     if method == 'OPTIONS':
