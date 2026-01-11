@@ -264,10 +264,20 @@ const Constructor = () => {
         
         const base64Data = await promise;
         if (base64Data) {
-          console.log('✅ URL конвертирован в base64 для экспорта');
+          console.log('✅ URL конвертирован в base64 для экспорта, размер:', Math.round(base64Data.length / 1024), 'KB');
           setMonumentImageBase64(base64Data);
+          toast({
+            title: "Памятник готов к экспорту",
+            description: "Base64 версия создана успешно",
+          });
         } else {
+          console.warn('⚠️ Не удалось создать base64, экспорт может не сработать');
           setMonumentImageBase64(null);
+          toast({
+            title: "Предупреждение",
+            description: "Не удалось подготовить памятник для экспорта",
+            variant: "destructive",
+          });
         }
       } catch (error) {
         console.error('❌ Ошибка конвертации:', error);
