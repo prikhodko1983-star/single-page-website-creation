@@ -2214,12 +2214,15 @@ export default function Admin() {
                                 is_price_from: false,
                               });
                             } else {
-                              throw new Error('Failed to save product');
+                              const errorData = await response.json().catch(() => ({}));
+                              console.error('Server error:', response.status, errorData);
+                              throw new Error(errorData.error || `HTTP ${response.status}`);
                             }
                           } catch (error) {
+                            console.error('Save product error:', error);
                             toast({
                               title: '❌ Ошибка',
-                              description: 'Не удалось сохранить товар',
+                              description: error instanceof Error ? error.message : 'Не удалось сохранить товар',
                               variant: 'destructive'
                             });
                           }
