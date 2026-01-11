@@ -354,7 +354,7 @@ def create_product(conn, data: Dict[str, Any]) -> Dict[str, Any]:
         (name, slug, description, price, old_price, image_url, material, size, sku, polish,
          category_id, in_stock, is_featured, is_price_from, display_order)
         VALUES 
-        ('{name}', '{slug}', '{description}', '{price}', {old_price_str}, {image_url_str}, 
+        ('{name}', '{slug}', '{description}', {price}, {old_price_str}, {image_url_str}, 
          {material_str}, {size_str}, {sku_str}, {polish_str}, {category_id_str}, {in_stock}, {is_featured}, {is_price_from}, 999)
         RETURNING *
     """
@@ -407,7 +407,7 @@ def update_product(conn, product_id: str, data: Dict[str, Any]) -> Dict[str, Any
     query = f"""
         UPDATE products 
         SET name = '{name}', slug = '{slug}', description = '{description}',
-            price = '{price}', old_price = {old_price_str}, image_url = {image_url_str},
+            price = {price}, old_price = {old_price_str}, image_url = {image_url_str},
             material = {material_str}, size = {size_str}, sku = {sku_str}, polish = {polish_str},
             category_id = {category_id_str},
             in_stock = {in_stock}, is_featured = {is_featured}, is_price_from = {is_price_from}, updated_at = NOW()
