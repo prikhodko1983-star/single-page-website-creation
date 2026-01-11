@@ -2175,7 +2175,7 @@ export default function Admin() {
                           }
 
                           try {
-                            const token = localStorage.getItem('auth_token');
+                            const token = localStorage.getItem('admin_token');
                             const url = editingProduct 
                               ? `${PRODUCTS_API}?id=${editingProduct.id}`
                               : PRODUCTS_API;
@@ -2214,15 +2214,12 @@ export default function Admin() {
                                 is_price_from: false,
                               });
                             } else {
-                              const errorData = await response.json().catch(() => ({}));
-                              console.error('Server error:', response.status, errorData);
-                              throw new Error(errorData.error || `HTTP ${response.status}`);
+                              throw new Error('Failed to save product');
                             }
                           } catch (error) {
-                            console.error('Save product error:', error);
                             toast({
                               title: '❌ Ошибка',
-                              description: error instanceof Error ? error.message : 'Не удалось сохранить товар',
+                              description: 'Не удалось сохранить товар',
                               variant: 'destructive'
                             });
                           }
@@ -2442,7 +2439,7 @@ export default function Admin() {
                                   if (!confirm(`Удалить товар "${product.name}"?`)) return;
                                   
                                   try {
-                                    const token = localStorage.getItem('auth_token');
+                                    const token = localStorage.getItem('admin_token');
                                     const response = await fetch(`${PRODUCTS_API}?id=${product.id}`, {
                                       method: 'DELETE',
                                       headers: {

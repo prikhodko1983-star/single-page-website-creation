@@ -30,7 +30,7 @@ interface CanvasElement {
 
 interface ConstructorLibraryProps {
   monumentImage: string;
-  setMonumentImage: (src: string, base64?: string | null) => void;
+  setMonumentImage: (src: string) => void;
   addTextElement: () => void;
   addEpitaphElement: (customText?: string) => void;
   addImageElement: (src: string, type: 'image' | 'cross' | 'flower') => void;
