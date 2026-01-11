@@ -41,6 +41,7 @@ const Constructor = () => {
   const [savedDesigns, setSavedDesigns] = useState<Array<{monumentImage: string, elements: CanvasElement[], timestamp: number}>>([]);
   
   const [monumentImage, setMonumentImage] = useState<string>('https://storage.yandexcloud.net/sitevek/5474527360758972468.jpg');
+  const [monumentImageBase64, setMonumentImageBase64] = useState<string | null>(null);
   const [elements, setElements] = useState<CanvasElement[]>([]);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -219,6 +220,61 @@ const Constructor = () => {
     }
     loadCustomFonts();
   }, [searchParams]);
+
+  const handleSetMonumentImage = async (src: string, base64?: string | null) => {
+    setMonumentImage(src);
+    
+    if (base64) {
+      setMonumentImageBase64(base64);
+    } else if (src.startsWith('data:')) {
+      setMonumentImageBase64(src);
+    } else {
+      // URL изображения - конвертируем в base64 для экспорта
+      try {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        const promise = new Promise<string | null>((resolve) => {
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              canvas.width = img.width;
+              canvas.height = img.height;
+              const ctx = canvas.getContext('2d');
+              if (ctx) {
+                ctx.drawImage(img, 0, 0);
+                const base64Data = canvas.toDataURL('image/png');
+                resolve(base64Data);
+              } else {
+                resolve(null);
+              }
+            } catch (error) {
+              console.warn('⚠️ Не удалось конвертировать в base64:', error);
+              resolve(null);
+            }
+          };
+          
+          img.onerror = () => {
+            console.warn('⚠️ Не удалось загрузить изображение для base64');
+            resolve(null);
+          };
+          
+          img.src = src;
+        });
+        
+        const base64Data = await promise;
+        if (base64Data) {
+          console.log('✅ URL конвертирован в base64 для экспорта');
+          setMonumentImageBase64(base64Data);
+        } else {
+          setMonumentImageBase64(null);
+        }
+      } catch (error) {
+        console.error('❌ Ошибка конвертации:', error);
+        setMonumentImageBase64(null);
+      }
+    }
+  };
 
   const googleFonts = [
     { id: 'font1', name: '№ 1/1а', style: 'Playfair Display', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Playfair Display|400' },
@@ -1870,17 +1926,24 @@ const Constructor = () => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, exportWidth, exportHeight);
       
-      // Попытка 1: Берём изображение из canvas напрямую
-      const canvasImg = document.querySelector('.relative.w-full.h-full.overflow-hidden img') as HTMLImageElement;
+      // Попытка 1: Используем base64 версию (если есть - для загруженных изображений)
       let monumentImg: HTMLImageElement | null = null;
       
-      if (canvasImg && canvasImg.complete && canvasImg.naturalWidth > 0) {
-        console.log('✅ Используем изображение из DOM');
-        monumentImg = canvasImg;
+      if (monumentImageBase64) {
+        console.log('✅ Используем base64 версию памятника');
+        monumentImg = await loadImageWithCORS(monumentImageBase64);
       } else {
-        // Попытка 2: Загружаем через loadImageWithCORS
-        console.log('📥 Загружаем изображение памятника:', monumentImage);
-        monumentImg = await loadImageWithCORS(monumentImage);
+        // Попытка 2: Берём изображение из canvas напрямую
+        const canvasImg = document.querySelector('.relative.w-full.h-full.overflow-hidden img') as HTMLImageElement;
+        
+        if (canvasImg && canvasImg.complete && canvasImg.naturalWidth > 0) {
+          console.log('✅ Используем изображение из DOM');
+          monumentImg = canvasImg;
+        } else {
+          // Попытка 3: Загружаем через loadImageWithCORS
+          console.log('📥 Загружаем изображение памятника:', monumentImage);
+          monumentImg = await loadImageWithCORS(monumentImage);
+        }
       }
       
       if (!monumentImg) {
@@ -2287,7 +2350,7 @@ const Constructor = () => {
           <div className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
             <ConstructorLibrary
             monumentImage={monumentImage}
-            setMonumentImage={setMonumentImage}
+            setMonumentImage={handleSetMonumentImage}
             addTextElement={addTextElement}
             addEpitaphElement={addEpitaphElement}
             addImageElement={addImageElement}
