@@ -1817,9 +1817,10 @@ const Constructor = () => {
       });
     }
     
-    if (src.includes('/bucket/')) {
+    if (src.includes('/bucket/') || src.includes('cdn.poehali.dev')) {
       try {
-        const response = await fetch(src);
+        const response = await fetch(src, { mode: 'cors' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const blob = await response.blob();
         const dataUrl = await new Promise<string>((resolve) => {
           const reader = new FileReader();
@@ -1834,7 +1835,17 @@ const Constructor = () => {
           img.src = dataUrl;
         });
       } catch (error) {
-        return null;
+        console.error('Fetch error:', error, 'for', src);
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => resolve(img);
+          img.onerror = () => {
+            console.error('❌ Image load failed for:', src);
+            resolve(null);
+          };
+          img.src = src;
+        });
       }
     }
     
