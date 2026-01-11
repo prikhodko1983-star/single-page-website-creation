@@ -1808,52 +1808,23 @@ const Constructor = () => {
   };
 
   const loadImageWithCORS = async (src: string): Promise<HTMLImageElement | null> => {
-    if (src.startsWith('data:')) {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = () => resolve(null);
-        img.src = src;
-      });
-    }
-    
-    if (src.includes('/bucket/') || src.includes('cdn.poehali.dev')) {
-      try {
-        const response = await fetch(src, { mode: 'cors' });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const blob = await response.blob();
-        const dataUrl = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(blob);
-        });
-        
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.onerror = () => resolve(null);
-          img.src = dataUrl;
-        });
-      } catch (error) {
-        console.error('Fetch error:', error, 'for', src);
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.onload = () => resolve(img);
-          img.onerror = () => {
-            console.error('❌ Image load failed for:', src);
-            resolve(null);
-          };
-          img.src = src;
-        });
-      }
-    }
-    
     return new Promise((resolve) => {
       const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => resolve(img);
-      img.onerror = () => resolve(null);
+      
+      if (!src.startsWith('data:')) {
+        img.crossOrigin = 'anonymous';
+      }
+      
+      img.onload = () => {
+        console.log('✅ Изображение загружено успешно:', src);
+        resolve(img);
+      };
+      
+      img.onerror = (error) => {
+        console.error('❌ Ошибка загрузки изображения:', src, error);
+        resolve(null);
+      };
+      
       img.src = src;
     });
   };
@@ -1899,29 +1870,30 @@ const Constructor = () => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, exportWidth, exportHeight);
       
-      console.log('📥 Загружаем изображение памятника:', monumentImage);
-      const monumentImg = await loadImageWithCORS(monumentImage);
+      // Попытка 1: Берём изображение из canvas напрямую
+      const canvasImg = document.querySelector('.relative.w-full.h-full.overflow-hidden img') as HTMLImageElement;
+      let monumentImg: HTMLImageElement | null = null;
+      
+      if (canvasImg && canvasImg.complete && canvasImg.naturalWidth > 0) {
+        console.log('✅ Используем изображение из DOM');
+        monumentImg = canvasImg;
+      } else {
+        // Попытка 2: Загружаем через loadImageWithCORS
+        console.log('📥 Загружаем изображение памятника:', monumentImage);
+        monumentImg = await loadImageWithCORS(monumentImage);
+      }
       
       if (!monumentImg) {
         console.error('❌ Не удалось загрузить изображение памятника');
-        ctx.fillStyle = '#1a1a1a';
-        ctx.fillRect(0, 0, exportWidth, exportHeight);
-        ctx.fillStyle = '#666';
-        ctx.font = 'bold 48px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Памятник', exportWidth / 2, exportHeight / 2 - 40);
-        ctx.font = '32px sans-serif';
-        ctx.fillText('(изображение недоступно)', exportWidth / 2, exportHeight / 2 + 40);
-        
         toast({
           title: "Ошибка загрузки памятника",
-          description: "Попробуйте выбрать другое изображение",
+          description: "Изображение недоступно, попробуйте другое",
           variant: "destructive",
         });
         return;
       }
       
-      console.log('✅ Изображение памятника загружено');
+      console.log('✅ Изображение памятника готово к экспорту');
       
       // Рисуем памятник с object-contain
       const imgRatio = monumentImg.width / monumentImg.height;
