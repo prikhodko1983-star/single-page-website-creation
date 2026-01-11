@@ -2175,7 +2175,7 @@ export default function Admin() {
                           }
 
                           try {
-                            const token = localStorage.getItem('admin_token');
+                            const token = localStorage.getItem('auth_token');
                             const url = editingProduct 
                               ? `${PRODUCTS_API}?id=${editingProduct.id}`
                               : PRODUCTS_API;
@@ -2439,7 +2439,7 @@ export default function Admin() {
                                   if (!confirm(`Удалить товар "${product.name}"?`)) return;
                                   
                                   try {
-                                    const token = localStorage.getItem('admin_token');
+                                    const token = localStorage.getItem('auth_token');
                                     const response = await fetch(`${PRODUCTS_API}?id=${product.id}`, {
                                       method: 'DELETE',
                                       headers: {
