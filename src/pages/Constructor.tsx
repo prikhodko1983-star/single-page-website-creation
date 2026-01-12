@@ -2211,12 +2211,62 @@ const Constructor = () => {
       const fileName = `monument_design_${Date.now()}.png`;
       
       console.log('💾 Скачиваем файл:', fileName);
-      const link = document.createElement('a');
-      link.href = imgData;
-      link.download = fileName;
-      link.click();
       
-      console.log('✅ PNG успешно создан и скачан');
+      // Конвертируем base64 в Blob для лучшей совместимости
+      const base64Data = imgData.split(',')[1];
+      const binaryData = atob(base64Data);
+      const uint8Array = new Uint8Array(binaryData.length);
+      for (let i = 0; i < binaryData.length; i++) {
+        uint8Array[i] = binaryData.charCodeAt(i);
+      }
+      const blob = new Blob([uint8Array], { type: 'image/png' });
+      
+      // Пробуем Web Share API для мобильных (сохранение в галерею)
+      if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName)] })) {
+        try {
+          await navigator.share({
+            files: [new File([blob], fileName, { type: 'image/png' })],
+            title: 'Дизайн памятника',
+            text: 'Скачайте изображение'
+          });
+          console.log('✅ Поделились через Share API');
+          toast({
+            title: "Готово!",
+            description: "Сохраните изображение в галерею",
+          });
+          return;
+        } catch (shareError) {
+          console.log('⚠️ Share API отменен/недоступен, используем fallback');
+        }
+      }
+      
+      // Fallback: обычная загрузка
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      
+      try {
+        link.click();
+        console.log('✅ PNG: click() вызван');
+      } catch (clickError) {
+        console.error('❌ Ошибка click():', clickError);
+        const event = new MouseEvent('click', {
+          view: window,
+          bubbles: true,
+          cancelable: true
+        });
+        link.dispatchEvent(event);
+        console.log('✅ PNG: dispatchEvent() вызван');
+      }
+      
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        console.log('✅ PNG успешно создан и скачан');
+      }, 1000);
       
       toast({
         title: "Изображение сохранено!",
