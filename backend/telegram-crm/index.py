@@ -49,13 +49,15 @@ def handler(event: dict, context) -> dict:
         conn = psycopg2.connect(db_url)
         cur = conn.cursor()
         
+        schema = 't_p78642605_single_page_website_'
+        
         if telegram_id == ADMIN_ID:
-            reply_text = handle_admin_command(message_text, cur, conn)
+            reply_text = handle_admin_command(message_text, cur, conn, schema)
             if reply_text:
                 send_telegram_message(telegram_id, reply_text)
         else:
             cur.execute(
-                "SELECT id FROM crm_clients WHERE telegram_id = %s",
+                f"SELECT id FROM {schema}.crm_clients WHERE telegram_id = %s",
                 (telegram_id,)
             )
             result = cur.fetchone()
@@ -63,18 +65,18 @@ def handler(event: dict, context) -> dict:
             if result:
                 client_id = result[0]
                 cur.execute(
-                    "UPDATE crm_clients SET last_contact = NOW(), telegram_username = %s, full_name = %s WHERE id = %s",
+                    f"UPDATE {schema}.crm_clients SET last_contact = NOW(), telegram_username = %s, full_name = %s WHERE id = %s",
                     (telegram_username, full_name, client_id)
                 )
             else:
                 cur.execute(
-                    "INSERT INTO crm_clients (telegram_id, telegram_username, full_name, status) VALUES (%s, %s, %s, 'new') RETURNING id",
+                    f"INSERT INTO {schema}.crm_clients (telegram_id, telegram_username, full_name, status) VALUES (%s, %s, %s, 'new') RETURNING id",
                     (telegram_id, telegram_username, full_name)
                 )
                 client_id = cur.fetchone()[0]
             
             cur.execute(
-                "INSERT INTO crm_messages (client_id, telegram_id, message_text) VALUES (%s, %s, %s)",
+                f"INSERT INTO {schema}.crm_messages (client_id, telegram_id, message_text) VALUES (%s, %s, %s)",
                 (client_id, telegram_id, message_text)
             )
             
@@ -115,7 +117,7 @@ def handler(event: dict, context) -> dict:
         }
 
 
-def handle_admin_command(text: str, cur, conn):
+def handle_admin_command(text: str, cur, conn, schema: str):
     '''Обработка команд администратора для управления воркфло'''
     
     text_lower = text.lower().strip()
@@ -129,7 +131,7 @@ def handle_admin_command(text: str, cur, conn):
             return "Укажите ID клиента: /work 123456789"
         telegram_id = int(parts[1])
         cur.execute(
-            "UPDATE crm_clients SET status = 'work' WHERE telegram_id = %s",
+            f"UPDATE {schema}.crm_clients SET status = 'work' WHERE telegram_id = %s",
             (telegram_id,)
         )
         conn.commit()
@@ -141,7 +143,7 @@ def handle_admin_command(text: str, cur, conn):
             return "Укажите ID клиента: /pay 123456789"
         telegram_id = int(parts[1])
         cur.execute(
-            "UPDATE crm_clients SET status = 'pay' WHERE telegram_id = %s",
+            f"UPDATE {schema}.crm_clients SET status = 'pay' WHERE telegram_id = %s",
             (telegram_id,)
         )
         conn.commit()
@@ -153,7 +155,7 @@ def handle_admin_command(text: str, cur, conn):
             return "Укажите ID клиента: /done 123456789"
         telegram_id = int(parts[1])
         cur.execute(
-            "UPDATE crm_clients SET status = 'done' WHERE telegram_id = %s",
+            f"UPDATE {schema}.crm_clients SET status = 'done' WHERE telegram_id = %s",
             (telegram_id,)
         )
         conn.commit()
@@ -161,7 +163,7 @@ def handle_admin_command(text: str, cur, conn):
     
     if text_lower == '/list_new' or text_lower == '🟢 новые':
         cur.execute(
-            "SELECT full_name, telegram_id, telegram_username FROM crm_clients WHERE status = 'new' ORDER BY last_contact DESC"
+            f"SELECT full_name, telegram_id, telegram_username FROM {schema}.crm_clients WHERE status = 'new' ORDER BY last_contact DESC"
         )
         clients = cur.fetchall()
         if not clients:
@@ -173,7 +175,7 @@ def handle_admin_command(text: str, cur, conn):
     
     if text_lower == '/list_work' or text_lower == '🟡 в работе':
         cur.execute(
-            "SELECT full_name, telegram_id, telegram_username FROM crm_clients WHERE status = 'work' ORDER BY last_contact DESC"
+            f"SELECT full_name, telegram_id, telegram_username FROM {schema}.crm_clients WHERE status = 'work' ORDER BY last_contact DESC"
         )
         clients = cur.fetchall()
         if not clients:
@@ -185,7 +187,7 @@ def handle_admin_command(text: str, cur, conn):
     
     if text_lower == '/list_pay' or text_lower == '🔵 на оплате':
         cur.execute(
-            "SELECT full_name, telegram_id, telegram_username FROM crm_clients WHERE status = 'pay' ORDER BY last_contact DESC"
+            f"SELECT full_name, telegram_id, telegram_username FROM {schema}.crm_clients WHERE status = 'pay' ORDER BY last_contact DESC"
         )
         clients = cur.fetchall()
         if not clients:
@@ -197,7 +199,7 @@ def handle_admin_command(text: str, cur, conn):
     
     if text_lower == '/list_done' or text_lower == '🟣 готово':
         cur.execute(
-            "SELECT full_name, telegram_id, telegram_username FROM crm_clients WHERE status = 'done' ORDER BY last_contact DESC"
+            f"SELECT full_name, telegram_id, telegram_username FROM {schema}.crm_clients WHERE status = 'done' ORDER BY last_contact DESC"
         )
         clients = cur.fetchall()
         if not clients:
