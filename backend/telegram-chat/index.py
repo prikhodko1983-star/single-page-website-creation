@@ -217,13 +217,16 @@ def handle_client_message(conn, message: Dict[str, Any]) -> Dict[str, Any]:
 <i>Чтобы ответить клиенту, используйте Reply на это сообщение</i>
     """.strip()
     
-    # Если есть фото, отправляем с подписью, иначе только текст
-    if has_photo:
+    # Отправляем информацию о клиенте
+    response = send_telegram_message(int(group_id), forward_text)
+    
+    # Если есть фото, отправляем его отдельно как Reply
+    if has_photo and response:
         photo = message['photo'][-1]
         file_id = photo['file_id']
-        send_telegram_photo(int(group_id), file_id, forward_text)
-    else:
-        send_telegram_message(int(group_id), forward_text)
+        message_id = response.get('result', {}).get('message_id')
+        if message_id:
+            send_telegram_photo(int(group_id), file_id, None, message_id)
     
     return {
         'statusCode': 200,
@@ -307,11 +310,10 @@ def handle_manager_reply(conn, message: Dict[str, Any]) -> Dict[str, Any]:
     # Отправляем ответ клиенту (текст или фото)
     if has_photo:
         photo = message['photo'][-1]
-        bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN')
         file_id = photo['file_id']
-        caption = message.get('caption', '')
+        caption = message.get('caption', '') if message.get('caption') else None
         send_telegram_photo(client_user_id, file_id, caption)
-    else:
+    elif manager_text:
         send_telegram_message(client_user_id, manager_text)
     
     return {
