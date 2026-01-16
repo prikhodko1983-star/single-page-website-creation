@@ -39,7 +39,7 @@ const TelegramChatButton = () => {
       <div
         id="tg-chat-btn"
         title="Написать в Telegram"
-        onClick={() => window.open('https://t.me/master_granit_consult_bot', '_blank')}
+        onClick={() => window.open('https://t.me/master_granit_consult_bot?start=website', '_blank')}
       >
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"
