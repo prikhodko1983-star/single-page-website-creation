@@ -217,16 +217,19 @@ def handle_client_message(conn, message: Dict[str, Any]) -> Dict[str, Any]:
 <i>Чтобы ответить клиенту, используйте Reply на это сообщение</i>
     """.strip()
     
-    # Отправляем информацию о клиенте
-    response = send_telegram_message(int(group_id), forward_text)
-    
-    # Если есть фото, отправляем его отдельно как Reply
-    if has_photo and response:
+    # Отправляем в группу
+    if has_photo:
+        # Если есть фото, отправляем с текстом в caption (макс 1024 символа)
         photo = message['photo'][-1]
         file_id = photo['file_id']
-        message_id = response.get('result', {}).get('message_id')
-        if message_id:
-            send_telegram_photo(int(group_id), file_id, None, message_id)
+        # Если текст слишком длинный, сначала отправим текст, потом фото
+        if len(forward_text) > 1000:
+            send_telegram_message(int(group_id), forward_text)
+            send_telegram_photo(int(group_id), file_id, "📸 Фото от клиента")
+        else:
+            send_telegram_photo(int(group_id), file_id, forward_text)
+    else:
+        send_telegram_message(int(group_id), forward_text)
     
     return {
         'statusCode': 200,
