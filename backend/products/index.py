@@ -347,7 +347,15 @@ def create_product(conn, data: Dict[str, Any]) -> Dict[str, Any]:
     size_str = f"'{size}'" if size and size != '' else 'NULL'
     sku_str = f"'{sku}'" if sku and sku != '' else 'NULL'
     polish_str = f"'{polish}'" if polish and polish != '' else 'NULL'
-    category_id_str = str(category_id) if category_id and category_id != '' else 'NULL'
+    
+    # Обработка category_id: может быть строкой, числом или пустым значением
+    if category_id and str(category_id).strip() != '':
+        try:
+            category_id_str = str(int(category_id))
+        except (ValueError, TypeError):
+            category_id_str = 'NULL'
+    else:
+        category_id_str = 'NULL'
     
     query = f"""
         INSERT INTO products 
@@ -396,13 +404,21 @@ def update_product(conn, product_id: str, data: Dict[str, Any]) -> Dict[str, Any
     is_featured = data.get('is_featured', False)
     is_price_from = data.get('is_price_from', False)
     
-    old_price_str = f"'{old_price}'" if old_price else 'NULL'
-    image_url_str = f"'{image_url}'" if image_url else 'NULL'
-    material_str = f"'{material}'" if material else 'NULL'
-    size_str = f"'{size}'" if size else 'NULL'
-    sku_str = f"'{sku}'" if sku else 'NULL'
-    polish_str = f"'{polish}'" if polish else 'NULL'
-    category_id_str = str(category_id) if category_id else 'NULL'
+    old_price_str = f"'{old_price}'" if old_price and old_price != '' else 'NULL'
+    image_url_str = f"'{image_url}'" if image_url and image_url != '' else 'NULL'
+    material_str = f"'{material}'" if material and material != '' else 'NULL'
+    size_str = f"'{size}'" if size and size != '' else 'NULL'
+    sku_str = f"'{sku}'" if sku and sku != '' else 'NULL'
+    polish_str = f"'{polish}'" if polish and polish != '' else 'NULL'
+    
+    # Обработка category_id: может быть строкой, числом или пустым значением
+    if category_id and str(category_id).strip() != '':
+        try:
+            category_id_str = str(int(category_id))
+        except (ValueError, TypeError):
+            category_id_str = 'NULL'
+    else:
+        category_id_str = 'NULL'
     
     query = f"""
         UPDATE products 
