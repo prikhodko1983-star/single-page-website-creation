@@ -32,9 +32,11 @@ def send_telegram_message(chat_id: int, text: str, reply_to_message_id: int = No
     
     try:
         with urllib.request.urlopen(req) as response:
-            return json.loads(response.read().decode('utf-8'))
+            result = json.loads(response.read().decode('utf-8'))
+            print(f"Message sent successfully to {chat_id}")
+            return result
     except Exception as e:
-        print(f"Error sending message: {e}")
+        print(f"Error sending message to {chat_id}: {e}")
         return None
 
 def send_telegram_photo(chat_id: int, photo_url: str, caption: str = None, reply_to_message_id: int = None):
@@ -151,6 +153,8 @@ def handle_client_message(conn, message: Dict[str, Any]) -> Dict[str, Any]:
     last_name = user.get('last_name', '')
     text = message.get('text', message.get('caption', ''))
     has_photo = 'photo' in message
+    
+    print(f"Handling client message from user_id={user_id}, text='{text}', has_photo={has_photo}")
     
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
