@@ -204,15 +204,15 @@ def handle_client_message(conn, message: Dict[str, Any]) -> Dict[str, Any]:
     full_name = f"{first_name} {last_name}".strip()
     username_str = f"@{username}" if username else "нет username"
     
+    # Формируем текст с информацией о клиенте
+    message_part = f"\n\n💬 <b>Сообщение:</b>\n{text}" if text else ""
+    
     forward_text = f"""
 📩 <b>Новое сообщение от клиента</b>
 
 👤 <b>Имя:</b> {full_name}
 🆔 <b>ID:</b> <code>{user_id}</code>
-📱 <b>Username:</b> {username_str}
-
-💬 <b>Сообщение:</b>
-{text}
+📱 <b>Username:</b> {username_str}{message_part}
 
 <i>Чтобы ответить клиенту, используйте Reply на это сообщение</i>
     """.strip()
