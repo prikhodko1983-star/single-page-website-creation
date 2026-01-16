@@ -11,7 +11,7 @@ def get_db_connection():
     return psycopg2.connect(os.environ['DATABASE_URL'])
 
 def send_telegram_message(chat_id: int, text: str, reply_to_message_id: int = None):
-    '''Отправка сообщения через Telegram Bot API'''
+    '''Отправка текстового сообщения через Telegram Bot API'''
     bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN')
     
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
@@ -35,6 +35,36 @@ def send_telegram_message(chat_id: int, text: str, reply_to_message_id: int = No
             return json.loads(response.read().decode('utf-8'))
     except Exception as e:
         print(f"Error sending message: {e}")
+        return None
+
+def send_telegram_photo(chat_id: int, photo_url: str, caption: str = None, reply_to_message_id: int = None):
+    '''Отправка фото через Telegram Bot API'''
+    bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN')
+    
+    url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
+    data = {
+        'chat_id': chat_id,
+        'photo': photo_url,
+        'parse_mode': 'HTML'
+    }
+    
+    if caption:
+        data['caption'] = caption
+    
+    if reply_to_message_id:
+        data['reply_to_message_id'] = reply_to_message_id
+    
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(data).encode('utf-8'),
+        headers={'Content-Type': 'application/json'}
+    )
+    
+    try:
+        with urllib.request.urlopen(req) as response:
+            return json.loads(response.read().decode('utf-8'))
+    except Exception as e:
+        print(f"Error sending photo: {e}")
         return None
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
@@ -113,13 +143,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             conn.close()
 
 def handle_client_message(conn, message: Dict[str, Any]) -> Dict[str, Any]:
-    '''Обработка сообщения от клиента'''
+    '''Обработка сообщения от клиента (текст или фото)'''
     user = message['from']
     user_id = user['id']
     username = user.get('username', '')
     first_name = user.get('first_name', '')
     last_name = user.get('last_name', '')
-    text = message.get('text', '')
+    text = message.get('text', message.get('caption', ''))
+    has_photo = 'photo' in message
     
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
@@ -157,6 +188,17 @@ def handle_client_message(conn, message: Dict[str, Any]) -> Dict[str, Any]:
     """)
     conn.commit()
     
+    # Если это первое сообщение от клиента, отправляем приветствие
+    if not chat:
+        welcome_text = f"""
+Привет, {first_name}! 👋
+
+Благодарим за обращение. Наш менеджер скоро ответит на ваш вопрос.
+
+Вы можете отправлять текст и фото - мы всё получим!
+        """.strip()
+        send_telegram_message(user_id, welcome_text)
+    
     # Пересылаем сообщение в группу менеджеров
     group_id = os.environ.get('TELEGRAM_NEW_CHAT_ID')
     full_name = f"{first_name} {last_name}".strip()
@@ -175,7 +217,13 @@ def handle_client_message(conn, message: Dict[str, Any]) -> Dict[str, Any]:
 <i>Чтобы ответить клиенту, используйте Reply на это сообщение</i>
     """.strip()
     
-    send_telegram_message(int(group_id), forward_text)
+    # Если есть фото, отправляем с подписью, иначе только текст
+    if has_photo:
+        photo = message['photo'][-1]
+        file_id = photo['file_id']
+        send_telegram_photo(int(group_id), file_id, forward_text)
+    else:
+        send_telegram_message(int(group_id), forward_text)
     
     return {
         'statusCode': 200,
@@ -185,7 +233,7 @@ def handle_client_message(conn, message: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 def handle_manager_reply(conn, message: Dict[str, Any]) -> Dict[str, Any]:
-    '''Обработка ответа менеджера из группы'''
+    '''Обработка ответа менеджера из группы (текст или фото)'''
     
     # Проверяем, является ли это ответом на сообщение
     if 'reply_to_message' not in message:
@@ -223,10 +271,11 @@ def handle_manager_reply(conn, message: Dict[str, Any]) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
-    # Получаем текст ответа менеджера
+    # Получаем текст или фото от менеджера
     manager_text = message.get('text', '')
+    has_photo = 'photo' in message
     
-    if not manager_text:
+    if not manager_text and not has_photo:
         return {
             'statusCode': 200,
             'headers': {'Content-Type': 'application/json'},
@@ -242,15 +291,28 @@ def handle_manager_reply(conn, message: Dict[str, Any]) -> Dict[str, Any]:
     chat = cursor.fetchone()
     
     if chat:
+        message_to_save = message.get('caption', '') if has_photo else manager_text
         cursor.execute(f"""
             INSERT INTO telegram_messages (chat_id, user_id, message_text, is_from_client)
             VALUES ({chat['id']}, {message['from']['id']}, 
-                    '{manager_text.replace("'", "''")}', false)
+                    '{message_to_save.replace("'", "''")}', false)
+        """)
+        cursor.execute(f"""
+            UPDATE telegram_chats 
+            SET last_message_at = NOW()
+            WHERE id = {chat['id']}
         """)
         conn.commit()
     
-    # Отправляем ответ клиенту
-    send_telegram_message(client_user_id, manager_text)
+    # Отправляем ответ клиенту (текст или фото)
+    if has_photo:
+        photo = message['photo'][-1]
+        bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN')
+        file_id = photo['file_id']
+        caption = message.get('caption', '')
+        send_telegram_photo(client_user_id, file_id, caption)
+    else:
+        send_telegram_message(client_user_id, manager_text)
     
     return {
         'statusCode': 200,
