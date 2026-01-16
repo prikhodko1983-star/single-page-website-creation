@@ -8,6 +8,7 @@ import { initYandexMetrika, ymHit } from "@/utils/metrika";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { CartProvider } from "@/contexts/CartContext";
+import TelegramChatButton from "@/components/TelegramChatButton";
 import Index from "./pages/Index";
 import Constructor from "./pages/Constructor";
 import Admin from "./pages/Admin";
@@ -171,6 +172,7 @@ const App = () => (
       <CartProvider>
         <Toaster />
         <Sonner />
+        <TelegramChatButton />
         <BrowserRouter>
           <AppContent />
         </BrowserRouter>
