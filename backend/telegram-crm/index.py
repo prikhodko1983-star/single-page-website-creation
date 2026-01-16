@@ -80,6 +80,8 @@ def handler(event: dict, context) -> dict:
         bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN')
         chat_id = os.environ.get('TELEGRAM_NEW_CHAT_ID')
         
+        print(f"Отправка в группу: bot_token={bot_token[:20]}..., chat_id={chat_id}")
+        
         import urllib.request
         import urllib.parse
         
@@ -88,12 +90,16 @@ def handler(event: dict, context) -> dict:
         url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
         data = urllib.parse.urlencode({
             'chat_id': chat_id,
-            'text': text,
-            'parse_mode': 'HTML'
+            'text': text
         }).encode()
         
-        req = urllib.request.Request(url, data=data)
-        urllib.request.urlopen(req)
+        try:
+            req = urllib.request.Request(url, data=data)
+            response = urllib.request.urlopen(req)
+            result = response.read().decode('utf-8')
+            print(f"Telegram API ответ: {result}")
+        except Exception as e:
+            print(f"Ошибка отправки в Telegram: {str(e)}")
         
         return {
             'statusCode': 200,
