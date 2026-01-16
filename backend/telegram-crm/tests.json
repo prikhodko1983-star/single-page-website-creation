@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "Test webhook with message",
+      "method": "POST",
+      "body": {
+        "message": {
+          "from": {
+            "id": 123456789,
+            "username": "testuser",
+            "first_name": "Тест",
+            "last_name": "Клиент"
+          },
+          "text": "Здравствуйте, хочу заказать памятник"
+        }
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "ok": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
