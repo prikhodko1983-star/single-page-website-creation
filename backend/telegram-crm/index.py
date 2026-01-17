@@ -47,10 +47,8 @@ def handler(event: dict, context) -> dict:
         conn = psycopg2.connect(db_url)
         cur = conn.cursor()
         
-        schema = 't_p78642605_single_page_website_'
-        
         cur.execute(
-            f"SELECT id FROM {schema}.crm_clients WHERE telegram_id = %s",
+            "SELECT id FROM crm_clients WHERE telegram_id = %s",
             (telegram_id,)
         )
         result = cur.fetchone()
@@ -58,18 +56,18 @@ def handler(event: dict, context) -> dict:
         if result:
             client_id = result[0]
             cur.execute(
-                f"UPDATE {schema}.crm_clients SET last_contact = NOW(), telegram_username = %s, full_name = %s WHERE id = %s",
+                "UPDATE crm_clients SET last_contact = NOW(), telegram_username = %s, full_name = %s WHERE id = %s",
                 (telegram_username, full_name, client_id)
             )
         else:
             cur.execute(
-                f"INSERT INTO {schema}.crm_clients (telegram_id, telegram_username, full_name) VALUES (%s, %s, %s) RETURNING id",
+                "INSERT INTO crm_clients (telegram_id, telegram_username, full_name) VALUES (%s, %s, %s) RETURNING id",
                 (telegram_id, telegram_username, full_name)
             )
             client_id = cur.fetchone()[0]
         
         cur.execute(
-            f"INSERT INTO {schema}.crm_messages (client_id, telegram_id, message_text) VALUES (%s, %s, %s)",
+            "INSERT INTO crm_messages (client_id, telegram_id, message_text) VALUES (%s, %s, %s)",
             (client_id, telegram_id, message_text)
         )
         
@@ -80,8 +78,6 @@ def handler(event: dict, context) -> dict:
         bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN')
         chat_id = os.environ.get('TELEGRAM_NEW_CHAT_ID')
         
-        print(f"Отправка в группу: bot_token={bot_token[:20]}..., chat_id={chat_id}")
-        
         import urllib.request
         import urllib.parse
         
@@ -90,16 +86,12 @@ def handler(event: dict, context) -> dict:
         url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
         data = urllib.parse.urlencode({
             'chat_id': chat_id,
-            'text': text
+            'text': text,
+            'parse_mode': 'HTML'
         }).encode()
         
-        try:
-            req = urllib.request.Request(url, data=data)
-            response = urllib.request.urlopen(req)
-            result = response.read().decode('utf-8')
-            print(f"Telegram API ответ: {result}")
-        except Exception as e:
-            print(f"Ошибка отправки в Telegram: {str(e)}")
+        req = urllib.request.Request(url, data=data)
+        urllib.request.urlopen(req)
         
         return {
             'statusCode': 200,

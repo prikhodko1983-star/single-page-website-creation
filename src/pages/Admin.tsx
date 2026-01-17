@@ -10,7 +10,6 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
 import { ImageCategoriesManager } from '@/components/admin/ImageCategoriesManager';
-import { CRMPanel } from '@/components/admin/CRMPanel';
 
 const useAuth = () => {
   const navigate = useNavigate();
@@ -1350,10 +1349,6 @@ export default function Admin() {
                 <TabsTrigger value="fonts" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
                   <Icon name="Type" size={14} className="sm:mr-2" />
                   <span className="hidden sm:inline">Шрифты</span>
-                </TabsTrigger>
-                <TabsTrigger value="crm" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
-                  <Icon name="MessageSquare" size={14} className="sm:mr-2" />
-                  <span className="hidden sm:inline">CRM</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -2985,10 +2980,6 @@ export default function Admin() {
                 )}
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="crm" className="space-y-6">
-            <CRMPanel />
           </TabsContent>
         </Tabs>
       </div>
