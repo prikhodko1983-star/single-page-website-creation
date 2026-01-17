@@ -215,13 +215,33 @@ const Index = () => {
     desc: item.desc
   }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const message = `Новая заявка с сайта%0A%0AИмя: ${formData.name}%0AТелефон: ${formData.phone}%0AСообщение: ${formData.message || 'не указано'}`;
-    const whatsappUrl = `https://wa.me/79960681168?text=${message}`;
+    const SEND_MESSAGE_API = "https://functions.poehali.dev/9b801ab4-aedb-4a08-beb4-326ff93721f2";
     
-    window.open(whatsappUrl, '_blank');
+    try {
+      const response = await fetch(SEND_MESSAGE_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          message: formData.message,
+          source: "Сайт (форма обратной связи)"
+        })
+      });
+      
+      if (response.ok) {
+        alert('✅ Спасибо! Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.');
+        setFormData({ name: "", phone: "", message: "" });
+      } else {
+        alert('⚠️ Произошла ошибка при отправке. Попробуйте позвонить нам напрямую.');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('⚠️ Произошла ошибка при отправке. Попробуйте позвонить нам напрямую.');
+    }
   };
 
   return (
