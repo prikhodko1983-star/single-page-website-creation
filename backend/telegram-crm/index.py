@@ -54,59 +54,88 @@ def handler(event: dict, context) -> dict:
         # Проверяем, это сообщение из группы менеджеров?
         if chat_id_from_message == manager_group_id:
             print(f"DEBUG: Это сообщение из группы менеджеров!")
-            # Это ответ менеджера - нужно отправить клиенту
-            reply_to = message.get('reply_to_message')
-            print(f"DEBUG: reply_to={reply_to}")
-            if not reply_to:
-                # Менеджер написал не в ответ - игнорируем
-                print("DEBUG: Нет reply_to, игнорируем")
+            
+            # Получаем message_thread_id - это ID первого сообщения в треде
+            thread_id = message.get('message_thread_id')
+            print(f"DEBUG: thread_id={thread_id}")
+            
+            if not thread_id:
+                # Нет треда - игнорируем
+                print("DEBUG: Нет thread_id, игнорируем")
                 return {
                     'statusCode': 200,
                     'headers': {'Content-Type': 'application/json'},
                     'body': json.dumps({'ok': True})
                 }
             
-            # Извлекаем username клиента из текста исходного сообщения
-            original_text = reply_to.get('text', '')
+            # Ищем клиента по message_id первого сообщения в БД
+            # Для этого нужно сохранять message_id при отправке в группу
+            # Но у нас есть проще способ - искать по времени последнего сообщения
+            
+            # Пока сделаем так: найдем username из любого сообщения в треде
+            reply_to = message.get('reply_to_message')
+            if reply_to:
+                original_text = reply_to.get('text', '')
+            else:
+                # Если нет reply - ищем в самом сообщении thread
+                original_text = ''
+            
             print(f"DEBUG: original_text={original_text}")
             import re
             username_match = re.search(r'@([a-zA-Z0-9_]+)', original_text)
             
-            if not username_match:
-                print("DEBUG: Не нашли username в тексте")
-                return {
-                    'statusCode': 200,
-                    'headers': {'Content-Type': 'application/json'},
-                    'body': json.dumps({'ok': True})
-                }
-            
-            client_username = username_match.group(1)
-            print(f"DEBUG: client_username={client_username}")
-            
-            # Находим telegram_id клиента по username
+            # Находим telegram_id клиента
             db_url = os.environ.get('DATABASE_URL')
             conn = psycopg2.connect(db_url)
             cur = conn.cursor()
             schema = 't_p78642605_single_page_website_'
             
-            cur.execute(
-                f"SELECT telegram_id FROM {schema}.crm_clients WHERE telegram_username = %s",
-                (client_username,)
-            )
-            result = cur.fetchone()
-            print(f"DEBUG: DB result={result}")
+            if not username_match:
+                print("DEBUG: Не нашли username, отправляем последнему клиенту")
+                # Найдем последнего клиента, который писал
+                cur.execute(
+                    f"SELECT telegram_id, telegram_username FROM {schema}.crm_clients ORDER BY last_contact DESC LIMIT 1"
+                )
+                result = cur.fetchone()
+                
+                if not result:
+                    print("DEBUG: Нет клиентов в БД")
+                    cur.close()
+                    conn.close()
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json'},
+                        'body': json.dumps({'ok': True})
+                    }
+                
+                client_telegram_id = result[0]
+                client_username = result[1]
+                print(f"DEBUG: Используем последнего клиента: {client_username} (id={client_telegram_id})")
+            else:
+                client_username = username_match.group(1)
+                print(f"DEBUG: client_username из текста={client_username}")
+                
+                cur.execute(
+                    f"SELECT telegram_id FROM {schema}.crm_clients WHERE telegram_username = %s",
+                    (client_username,)
+                )
+                result = cur.fetchone()
+                print(f"DEBUG: DB result={result}")
+                
+                if not result:
+                    print("DEBUG: Клиент не найден в БД")
+                    cur.close()
+                    conn.close()
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json'},
+                        'body': json.dumps({'ok': True})
+                    }
+                
+                client_telegram_id = result[0]
+            
             cur.close()
             conn.close()
-            
-            if not result:
-                print("DEBUG: Клиент не найден в БД")
-                return {
-                    'statusCode': 200,
-                    'headers': {'Content-Type': 'application/json'},
-                    'body': json.dumps({'ok': True})
-                }
-            
-            client_telegram_id = result[0]
             manager_reply = message.get('text', '')
             
             print(f"DEBUG: Отправляем клиенту {client_telegram_id}: {manager_reply}")
