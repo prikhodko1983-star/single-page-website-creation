@@ -343,6 +343,7 @@ export default function Admin() {
   }, []);
 
   useEffect(() => {
+    console.log('Gallery items changed, saving to localStorage:', galleryItems);
     localStorage.setItem('galleryItems', JSON.stringify(galleryItems));
     // Уведомляем другие компоненты об обновлении галереи
     window.dispatchEvent(new Event('galleryUpdated'));
@@ -987,15 +988,21 @@ export default function Admin() {
     }
 
     if (editingGalleryId !== null) {
-      setGalleryItems(galleryItems.map((item, idx) =>
+      const updated = galleryItems.map((item, idx) =>
         idx === editingGalleryId ? { ...galleryForm, id: item.id } : item
-      ));
+      );
+      console.log('Updating gallery item:', updated);
+      setGalleryItems(updated);
       toast({
         title: '✅ Успешно',
         description: 'Элемент галереи обновлён'
       });
     } else {
-      setGalleryItems([...galleryItems, { ...galleryForm, id: Date.now().toString() }]);
+      const newItem = { ...galleryForm, id: Date.now().toString() };
+      const updated = [...galleryItems, newItem];
+      console.log('Adding gallery item:', newItem);
+      console.log('New gallery items:', updated);
+      setGalleryItems(updated);
       toast({
         title: '✅ Успешно',
         description: 'Элемент добавлен в галерею'
