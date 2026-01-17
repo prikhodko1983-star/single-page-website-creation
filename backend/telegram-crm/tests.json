@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "Test webhook with message",
+      "name": "Test webhook with client message",
       "method": "POST",
       "body": {
         "message": {
@@ -10,6 +10,10 @@
             "username": "testuser",
             "first_name": "Тест",
             "last_name": "Клиент"
+          },
+          "chat": {
+            "id": 123456789,
+            "type": "private"
           },
           "text": "Здравствуйте, хочу заказать памятник"
         }
