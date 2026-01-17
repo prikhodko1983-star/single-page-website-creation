@@ -306,6 +306,6 @@
 
 @media (max-width: 600px) {
   .masonry-gallery {
-    column-count: 1;
+    column-count: 2;
   }
 }

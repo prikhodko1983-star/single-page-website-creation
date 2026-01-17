@@ -169,15 +169,24 @@ const Index = () => {
 
     loadGallery();
 
-    // Слушаем обновления галереи
+    // Слушаем обновления галереи через кастомное событие
     const handleGalleryUpdate = () => {
       loadGallery();
     };
 
+    // Слушаем изменения localStorage (для обновления при изменениях в админке)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'galleryItems') {
+        loadGallery();
+      }
+    };
+
     window.addEventListener('galleryUpdated', handleGalleryUpdate);
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
       window.removeEventListener('galleryUpdated', handleGalleryUpdate);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
