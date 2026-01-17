@@ -37,6 +37,62 @@ def handler(event: dict, context) -> dict:
             }
         
         message = body['message']
+        chat = message.get('chat', {})
+        chat_id_from_msg = chat.get('id')
+        
+        bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN')
+        manager_chat_id = os.environ.get('TELEGRAM_NEW_CHAT_ID')
+        
+        # Проверяем: это сообщение из группы менеджеров?
+        if str(chat_id_from_msg) == str(manager_chat_id):
+            # Это ответ от менеджера
+            reply_to = message.get('reply_to_message')
+            if reply_to:
+                reply_text = reply_to.get('text', '')
+                # Ищем @username в исходном сообщении
+                import re
+                match = re.search(r'@(\w+)', reply_text)
+                if match:
+                    username = match.group(1)
+                    
+                    # Находим telegram_id клиента по username
+                    db_url = os.environ.get('DATABASE_URL')
+                    conn = psycopg2.connect(db_url)
+                    cur = conn.cursor()
+                    schema = 't_p78642605_single_page_website_'
+                    
+                    cur.execute(
+                        f"SELECT telegram_id FROM {schema}.crm_clients WHERE telegram_username = %s",
+                        (username,)
+                    )
+                    result = cur.fetchone()
+                    cur.close()
+                    conn.close()
+                    
+                    if result:
+                        client_telegram_id = result[0]
+                        manager_reply = message.get('text', '')
+                        
+                        # Отправляем ответ клиенту
+                        import urllib.request
+                        import urllib.parse
+                        
+                        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+                        data = urllib.parse.urlencode({
+                            'chat_id': client_telegram_id,
+                            'text': manager_reply
+                        }).encode()
+                        
+                        req = urllib.request.Request(url, data=data)
+                        urllib.request.urlopen(req)
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json'},
+                'body': json.dumps({'ok': True})
+            }
+        
+        # Это сообщение от клиента
         telegram_id = message['from']['id']
         telegram_username = message['from'].get('username', '')
         full_name = message['from'].get('first_name', '') + ' ' + message['from'].get('last_name', '')
@@ -76,9 +132,6 @@ def handler(event: dict, context) -> dict:
         cur.close()
         conn.close()
         
-        bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN')
-        chat_id = os.environ.get('TELEGRAM_NEW_CHAT_ID')
-        
         import urllib.request
         import urllib.parse
         
@@ -86,7 +139,7 @@ def handler(event: dict, context) -> dict:
         
         url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
         data = urllib.parse.urlencode({
-            'chat_id': chat_id,
+            'chat_id': manager_chat_id,
             'text': text
         }).encode()
         
