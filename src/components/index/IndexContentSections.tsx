@@ -239,28 +239,14 @@ export default function IndexContentSections({
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 max-w-7xl mx-auto">
+          <div className="masonry-gallery max-w-7xl mx-auto">
             {portfolioImages.map((item, idx) => (
-              <div 
+              <img 
                 key={idx}
-                className="relative group overflow-hidden rounded-lg shadow-lg aspect-[4/3] cursor-pointer"
+                src={item.url}
+                alt={item.title}
                 onClick={() => setSelectedImage(item.url)}
-              >
-                <img 
-                  src={item.url}
-                  alt={item.title}
-                  className="w-full h-full object-contain bg-secondary group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <h3 className="font-oswald font-bold text-xl mb-2">{item.title}</h3>
-                    <p className="text-sm opacity-90">{item.desc}</p>
-                  </div>
-                  <div className="absolute top-4 right-4">
-                    <Icon name="ZoomIn" size={24} className="text-white" />
-                  </div>
-                </div>
-              </div>
+              />
             ))}
           </div>
 

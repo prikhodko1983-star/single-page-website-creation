@@ -281,3 +281,37 @@
   opacity: 1;
   background: hsl(var(--foreground));
 }
+
+.masonry-gallery {
+  column-count: 3;
+  column-gap: 16px;
+}
+
+.masonry-gallery img {
+  width: 100%;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  display: block;
+  break-inside: avoid;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.masonry-gallery img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 900px) {
+  .masonry-gallery {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .masonry-gallery {
+    column-count: 1;
+  }
+}
