@@ -21,17 +21,42 @@ const GallerySection = () => {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(defaultGalleryItems);
 
   useEffect(() => {
-    const savedGallery = localStorage.getItem('galleryItems');
-    if (savedGallery) {
-      try {
-        const parsed = JSON.parse(savedGallery);
-        if (parsed.length > 0) {
-          setGalleryItems(parsed);
+    const loadGallery = () => {
+      const savedGallery = localStorage.getItem('galleryItems');
+      if (savedGallery) {
+        try {
+          const parsed = JSON.parse(savedGallery);
+          if (parsed.length > 0) {
+            setGalleryItems(parsed);
+          }
+        } catch (e) {
+          console.error('Error loading gallery items:', e);
         }
-      } catch (e) {
-        console.error('Error loading gallery items:', e);
       }
-    }
+    };
+
+    loadGallery();
+
+    // Слушаем изменения localStorage
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'galleryItems') {
+        loadGallery();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Дополнительно слушаем кастомное событие для изменений в той же вкладке
+    const handleCustomEvent = () => {
+      loadGallery();
+    };
+    
+    window.addEventListener('galleryUpdated', handleCustomEvent);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('galleryUpdated', handleCustomEvent);
+    };
   }, []);
 
   return (

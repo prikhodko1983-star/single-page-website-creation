@@ -344,6 +344,8 @@ export default function Admin() {
 
   useEffect(() => {
     localStorage.setItem('galleryItems', JSON.stringify(galleryItems));
+    // Уведомляем другие компоненты об обновлении галереи
+    window.dispatchEvent(new Event('galleryUpdated'));
   }, [galleryItems]);
 
 
