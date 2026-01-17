@@ -316,6 +316,8 @@ export default function Admin() {
   const UPLOAD_URL = "https://functions.poehali.dev/131d63b7-bef6-496a-a392-c04e347cd6aa";
   const PRODUCTS_API = "https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d";
   const FONTS_API = "https://functions.poehali.dev/c1b3f505-db44-492c-8db4-231760a9bb95";
+  const GALLERY_API = "https://functions.poehali.dev/16b2bcd1-9c80-4d3e-96c6-0aaaac12c483";
+  const GALLERY_API = "https://functions.poehali.dev/16b2bcd1-9c80-4d3e-96c6-0aaaac12c483";
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -331,22 +333,13 @@ export default function Admin() {
     loadCrosses();
     loadFlowers();
     loadFonts();
-    
-    const savedGallery = localStorage.getItem('galleryItems');
-    if (savedGallery) {
-      try {
-        setGalleryItems(JSON.parse(savedGallery));
-      } catch (e) {
-        console.error('Error loading gallery items:', e);
-      }
-    }
+    loadGallery();
   }, []);
 
   useEffect(() => {
-    console.log('Gallery items changed, saving to localStorage:', galleryItems);
-    localStorage.setItem('galleryItems', JSON.stringify(galleryItems));
-    // Уведомляем другие компоненты об обновлении галереи
-    window.dispatchEvent(new Event('galleryUpdated'));
+    if (galleryItems.length > 0) {
+      saveGallery();
+    }
   }, [galleryItems]);
 
 
@@ -669,6 +662,37 @@ export default function Admin() {
       }
     } catch (error) {
       console.error('Error loading fonts:', error);
+    }
+  };
+
+  const loadGallery = async () => {
+    try {
+      const response = await fetch(GALLERY_API);
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setGalleryItems(data);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading gallery:', error);
+    }
+  };
+
+  const saveGallery = async () => {
+    try {
+      const response = await fetch(GALLERY_API, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: galleryItems })
+      });
+      
+      if (response.ok) {
+        // Уведомляем другие компоненты об обновлении
+        window.dispatchEvent(new Event('galleryUpdated'));
+      }
+    } catch (error) {
+      console.error('Error saving gallery:', error);
     }
   };
 
