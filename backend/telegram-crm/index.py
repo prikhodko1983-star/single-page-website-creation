@@ -37,74 +37,11 @@ def handler(event: dict, context) -> dict:
             }
         
         message = body['message']
-        chat_id_msg = message.get('chat', {}).get('id')
         telegram_id = message['from']['id']
         telegram_username = message['from'].get('username', '')
         full_name = message['from'].get('first_name', '') + ' ' + message['from'].get('last_name', '')
         full_name = full_name.strip()
         message_text = message.get('text', '')
-        
-        # Проверяем: это сообщение из группы менеджеров?
-        manager_chat_id = os.environ.get('TELEGRAM_NEW_CHAT_ID')
-        if manager_chat_id and str(chat_id_msg) == str(manager_chat_id):
-            # Это сообщение из группы менеджеров
-            # Проверяем есть ли reply_to_message
-            if 'reply_to_message' in message:
-                # Менеджер ответил на сообщение - нужно переслать клиенту
-                original_text = message['reply_to_message'].get('text', '')
-                
-                # Ищем username клиента в оригинальном сообщении
-                import re
-                username_match = re.search(r'@(\w+)', original_text)
-                
-                if username_match:
-                    client_username = username_match.group(1)
-                    
-                    # Находим telegram_id клиента по username
-                    db_url = os.environ.get('DATABASE_URL')
-                    conn = psycopg2.connect(db_url)
-                    cur = conn.cursor()
-                    schema = 't_p78642605_single_page_website_'
-                    
-                    cur.execute(
-                        f"SELECT telegram_id FROM {schema}.crm_clients WHERE telegram_username = %s",
-                        (client_username,)
-                    )
-                    client_result = cur.fetchone()
-                    cur.close()
-                    conn.close()
-                    
-                    if client_result:
-                        client_telegram_id = client_result[0]
-                        
-                        # Отправляем ответ клиенту
-                        bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN')
-                        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-                        data = urllib.parse.urlencode({
-                            'chat_id': client_telegram_id,
-                            'text': f"💬 Ответ менеджера:\n\n{message_text}"
-                        }).encode()
-                        
-                        try:
-                            import urllib.request
-                            req = urllib.request.Request(url, data=data)
-                            urllib.request.urlopen(req)
-                            print(f"Ответ отправлен клиенту {client_username}")
-                        except Exception as e:
-                            print(f"Ошибка отправки клиенту: {str(e)}")
-                        
-                        return {
-                            'statusCode': 200,
-                            'headers': {'Content-Type': 'application/json'},
-                            'body': json.dumps({'ok': True})
-                        }
-            
-            # Если это просто сообщение в группе (не reply) - игнорируем
-            return {
-                'statusCode': 200,
-                'headers': {'Content-Type': 'application/json'},
-                'body': json.dumps({'ok': True})
-            }
         
         db_url = os.environ.get('DATABASE_URL')
         conn = psycopg2.connect(db_url)
