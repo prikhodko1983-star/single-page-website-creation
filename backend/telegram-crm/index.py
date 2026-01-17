@@ -29,7 +29,10 @@ def handler(event: dict, context) -> dict:
     try:
         body = json.loads(event.get('body', '{}'))
         
+        print(f"DEBUG: FULL BODY = {json.dumps(body)[:500]}")
+        
         if 'message' not in body:
+            print("DEBUG: No 'message' in body, ignoring")
             return {
                 'statusCode': 200,
                 'headers': {'Content-Type': 'application/json'},
