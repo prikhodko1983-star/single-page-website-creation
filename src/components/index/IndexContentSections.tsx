@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import RetouchForm from "@/components/RetouchForm";
+import { useNavigate } from "react-router-dom";
 
 interface Service {
   icon: string;
@@ -41,6 +42,8 @@ export default function IndexContentSections({
   portfolioImages,
   setSelectedImage
 }: IndexContentSectionsProps) {
+  const navigate = useNavigate();
+  
   return (
     <>
       <section id="services" className="py-12 md:py-16 bg-background relative">
@@ -240,7 +243,7 @@ export default function IndexContentSections({
           </div>
 
           <div className="masonry-gallery max-w-7xl mx-auto">
-            {portfolioImages.map((item, idx) => (
+            {portfolioImages.slice(0, 6).map((item, idx) => (
               <img 
                 key={idx}
                 src={item.url}
@@ -250,7 +253,16 @@ export default function IndexContentSections({
             ))}
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-12 space-x-4">
+            <Button 
+              size="lg"
+              variant="outline"
+              className="font-oswald text-lg px-8"
+              onClick={() => navigate('/gallery')}
+            >
+              <Icon name="Images" className="mr-2" size={20} />
+              СМОТРЕТЬ БОЛЬШЕ
+            </Button>
             <Button 
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-lg px-8"

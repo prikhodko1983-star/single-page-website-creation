@@ -283,7 +283,7 @@
 }
 
 .masonry-gallery {
-  column-count: 3;
+  column-count: 2;
   column-gap: 16px;
 }
 
@@ -302,12 +302,6 @@
 .masonry-gallery img:hover {
   transform: scale(1.02);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-@media (max-width: 900px) {
-  .masonry-gallery {
-    column-count: 2;
-  }
 }
 
 @media (max-width: 600px) {

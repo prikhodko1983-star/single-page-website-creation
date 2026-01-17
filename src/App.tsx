@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import Catalog from "./pages/Catalog";
 import Product from "./pages/Product";
 import Legal from "./pages/Legal";
+import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -159,6 +160,7 @@ const AppContent = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/legal" element={<Legal />} />
+        <Route path="/gallery" element={<Gallery />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
