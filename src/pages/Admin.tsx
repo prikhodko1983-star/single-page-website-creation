@@ -317,7 +317,6 @@ export default function Admin() {
   const PRODUCTS_API = "https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d";
   const FONTS_API = "https://functions.poehali.dev/c1b3f505-db44-492c-8db4-231760a9bb95";
   const GALLERY_API = "https://functions.poehali.dev/16b2bcd1-9c80-4d3e-96c6-0aaaac12c483";
-  const GALLERY_API = "https://functions.poehali.dev/16b2bcd1-9c80-4d3e-96c6-0aaaac12c483";
 
   const sensors = useSensors(
     useSensor(PointerSensor),
