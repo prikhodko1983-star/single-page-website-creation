@@ -1,5 +1,4 @@
 {
-  "crm-messages": "https://functions.poehali.dev/fa967a7c-ac4f-4800-be1f-d9222edbcf80",
   "telegram-crm": "https://functions.poehali.dev/42b00f85-c475-4607-bb85-862f7c50f47c",
   "send-quick-message": "https://functions.poehali.dev/9b801ab4-aedb-4a08-beb4-326ff93721f2",
   "send-order": "https://functions.poehali.dev/ea9959d5-aa7f-4172-aebd-486fef3e3ae4",

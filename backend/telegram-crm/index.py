@@ -43,15 +43,20 @@ def handler(event: dict, context) -> dict:
         bot_token = os.environ.get('TELEGRAM_NEW_BOT_TOKEN')
         manager_group_id = os.environ.get('TELEGRAM_NEW_CHAT_ID')
         
+        print(f"DEBUG: chat_id={chat_id_from_message}, manager_group_id={manager_group_id}")
+        
         import urllib.request
         import urllib.parse
         
         # Проверяем, это сообщение из группы менеджеров?
         if chat_id_from_message == manager_group_id:
+            print(f"DEBUG: Это сообщение из группы менеджеров!")
             # Это ответ менеджера - нужно отправить клиенту
             reply_to = message.get('reply_to_message')
+            print(f"DEBUG: reply_to={reply_to}")
             if not reply_to:
                 # Менеджер написал не в ответ - игнорируем
+                print("DEBUG: Нет reply_to, игнорируем")
                 return {
                     'statusCode': 200,
                     'headers': {'Content-Type': 'application/json'},
@@ -60,10 +65,12 @@ def handler(event: dict, context) -> dict:
             
             # Извлекаем username клиента из текста исходного сообщения
             original_text = reply_to.get('text', '')
+            print(f"DEBUG: original_text={original_text}")
             import re
             username_match = re.search(r'@([a-zA-Z0-9_]+)', original_text)
             
             if not username_match:
+                print("DEBUG: Не нашли username в тексте")
                 return {
                     'statusCode': 200,
                     'headers': {'Content-Type': 'application/json'},
@@ -71,6 +78,7 @@ def handler(event: dict, context) -> dict:
                 }
             
             client_username = username_match.group(1)
+            print(f"DEBUG: client_username={client_username}")
             
             # Находим telegram_id клиента по username
             db_url = os.environ.get('DATABASE_URL')
@@ -83,10 +91,12 @@ def handler(event: dict, context) -> dict:
                 (client_username,)
             )
             result = cur.fetchone()
+            print(f"DEBUG: DB result={result}")
             cur.close()
             conn.close()
             
             if not result:
+                print("DEBUG: Клиент не найден в БД")
                 return {
                     'statusCode': 200,
                     'headers': {'Content-Type': 'application/json'},
@@ -96,6 +106,8 @@ def handler(event: dict, context) -> dict:
             client_telegram_id = result[0]
             manager_reply = message.get('text', '')
             
+            print(f"DEBUG: Отправляем клиенту {client_telegram_id}: {manager_reply}")
+            
             # Отправляем ответ менеджера клиенту
             url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
             data = urllib.parse.urlencode({
@@ -104,7 +116,9 @@ def handler(event: dict, context) -> dict:
             }).encode()
             
             req = urllib.request.Request(url, data=data)
-            urllib.request.urlopen(req)
+            response = urllib.request.urlopen(req)
+            result_text = response.read().decode('utf-8')
+            print(f"DEBUG: Telegram API response={result_text}")
             
             return {
                 'statusCode': 200,
