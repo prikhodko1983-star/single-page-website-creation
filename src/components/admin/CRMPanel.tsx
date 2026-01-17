@@ -99,8 +99,6 @@ export function CRMPanel() {
 
   useEffect(() => {
     loadClients();
-    const interval = setInterval(loadClients, 10000); // Оновлення кожні 10 сек
-    return () => clearInterval(interval);
   }, []);
 
   const formatDate = (dateStr: string) => {
@@ -180,14 +178,25 @@ export function CRMPanel() {
                       Останній: {formatDate(client.last_contact)}
                     </p>
                   </div>
-                  <Button
-                    onClick={() => setSelectedClient(client)}
-                    size="sm"
-                    className="ml-4"
-                  >
-                    <Icon name="Send" size={14} className="mr-2" />
-                    Відповісти
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => setSelectedClient(client)}
+                      size="sm"
+                      variant="outline"
+                    >
+                      <Icon name="Eye" size={14} className="mr-2" />
+                      Історія
+                    </Button>
+                    <Button
+                      size="sm"
+                      asChild
+                    >
+                      <a href={`https://t.me/${client.telegram_username}`} target="_blank" rel="noopener noreferrer">
+                        <Icon name="MessageCircle" size={14} className="mr-2" />
+                        Написать
+                      </a>
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -214,7 +223,7 @@ export function CRMPanel() {
                     <Icon name="MessageSquare" size={18} />
                     Історія повідомлень
                   </h3>
-                  <div className="space-y-2 max-h-[300px] overflow-y-auto border rounded-lg p-4 bg-secondary/10">
+                  <div className="space-y-2 max-h-[500px] overflow-y-auto border rounded-lg p-4 bg-secondary/10">
                     {selectedClient.messages && selectedClient.messages.length > 0 ? (
                       [...selectedClient.messages].reverse().map((msg) => (
                         <div key={msg.id} className="bg-background p-3 rounded border">
@@ -232,34 +241,22 @@ export function CRMPanel() {
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="font-semibold mb-3 flex items-center gap-2">
-                    <Icon name="Send" size={18} />
-                    Відправити відповідь
-                  </h3>
-                  <Textarea
-                    value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
-                    placeholder="Введіть ваше повідомлення..."
-                    rows={6}
-                    className="mb-3"
-                  />
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={sendReply}
-                      disabled={!replyText.trim() || sending}
-                      className="flex-1"
-                    >
-                      {sending ? 'Відправка...' : 'Відправити в Telegram'}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setSelectedClient(null)}
-                      disabled={sending}
-                    >
-                      Закрити
-                    </Button>
-                  </div>
+                <div className="flex gap-2">
+                  <Button
+                    className="flex-1"
+                    asChild
+                  >
+                    <a href={`https://t.me/${selectedClient.telegram_username}`} target="_blank" rel="noopener noreferrer">
+                      <Icon name="MessageCircle" size={16} className="mr-2" />
+                      Написать в Telegram
+                    </a>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedClient(null)}
+                  >
+                    Закрыть
+                  </Button>
                 </div>
               </div>
             </>
