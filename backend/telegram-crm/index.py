@@ -29,6 +29,7 @@ def handler(event: dict, context) -> dict:
     try:
         body = json.loads(event.get('body', '{}'))
         
+        # Игнорируем все кроме обычных сообщений
         if 'message' not in body:
             return {
                 'statusCode': 200,
@@ -37,6 +38,24 @@ def handler(event: dict, context) -> dict:
             }
         
         message = body['message']
+        
+        # Игнорируем служебные сообщения (добавление участников, изменение группы и т.д.)
+        if 'text' not in message:
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json'},
+                'body': json.dumps({'ok': True})
+            }
+        
+        # Игнорируем команды боту (начинаются с /)
+        message_text = message.get('text', '')
+        if message_text.startswith('/'):
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json'},
+                'body': json.dumps({'ok': True})
+            }
+        
         chat = message.get('chat', {})
         chat_id_from_msg = chat.get('id')
         
@@ -97,7 +116,6 @@ def handler(event: dict, context) -> dict:
         telegram_username = message['from'].get('username', '')
         full_name = message['from'].get('first_name', '') + ' ' + message['from'].get('last_name', '')
         full_name = full_name.strip()
-        message_text = message.get('text', '')
         
         db_url = os.environ.get('DATABASE_URL')
         conn = psycopg2.connect(db_url)
