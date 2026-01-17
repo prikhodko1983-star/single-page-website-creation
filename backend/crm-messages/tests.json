@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Get CRM clients list",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "clients": "array"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
