@@ -16,6 +16,14 @@ interface Monument {
   description?: string;
 }
 
+interface GalleryItem {
+  id: string;
+  type: 'image' | 'video';
+  url: string;
+  title: string;
+  desc: string;
+}
+
 const Index = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: "", phone: "", message: "" });
@@ -24,6 +32,7 @@ const Index = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [designerSlideIndex, setDesignerSlideIndex] = useState(0);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
 
   // Устанавливаем og:url и микроразметку для главной страницы
   useEffect(() => {
@@ -108,11 +117,21 @@ const Index = () => {
     }
   ];
 
+  const defaultGalleryItems: GalleryItem[] = [
+    { id: '1', type: 'image', url: 'https://cdn.poehali.dev/files/bbcac88c-6deb-429e-b227-40488c7c5273.jpg', title: 'Комплексное благоустройство', desc: 'Установка памятников и уход за территорией' },
+    { id: '2', type: 'image', url: 'https://cdn.poehali.dev/files/58ba923f-a428-4ebd-a17d-2cd8e5b523a8.jpg', title: 'Художественная гравировка', desc: 'Индивидуальный дизайн и качественное исполнение' },
+    { id: '3', type: 'image', url: 'https://cdn.poehali.dev/files/c80c1bd4-c413-425a-a1fc-91dbb36a8de4.jpg', title: 'Горизонтальные памятники', desc: 'Классический дизайн из чёрного гранита' },
+    { id: '4', type: 'image', url: 'https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png', title: 'Вертикальные памятники', desc: 'Традиционная форма, проверенная временем' },
+    { id: '5', type: 'image', url: 'https://cdn.poehali.dev/files/a6e29eb2-0f18-47ca-917e-adac360db4c3.jpeg', title: 'Эксклюзивные проекты', desc: 'Уникальный дизайн по индивидуальному заказу' },
+    { id: '6', type: 'image', url: 'https://cdn.poehali.dev/files/e1b733d5-8a5c-4f60-9df4-9e05bb711cf9.jpeg', title: 'Комплексы на могилу', desc: 'Полное обустройство с оградой и цветником' }
+  ];
+
   const API_URL = "https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6";
 
   useEffect(() => {
     setSelectedImage(null);
     
+    // Загружаем памятники
     fetch(API_URL)
       .then(res => res.json())
       .then(data => {
@@ -127,6 +146,39 @@ const Index = () => {
         console.error("Error loading monuments:", err);
         setMonuments([]);
       });
+
+    // Загружаем галерею из localStorage
+    const loadGallery = () => {
+      const savedGallery = localStorage.getItem('galleryItems');
+      if (savedGallery) {
+        try {
+          const parsed = JSON.parse(savedGallery);
+          if (parsed.length > 0) {
+            setGalleryItems(parsed);
+          } else {
+            setGalleryItems(defaultGalleryItems);
+          }
+        } catch (e) {
+          console.error('Error loading gallery items:', e);
+          setGalleryItems(defaultGalleryItems);
+        }
+      } else {
+        setGalleryItems(defaultGalleryItems);
+      }
+    };
+
+    loadGallery();
+
+    // Слушаем обновления галереи
+    const handleGalleryUpdate = () => {
+      loadGallery();
+    };
+
+    window.addEventListener('galleryUpdated', handleGalleryUpdate);
+
+    return () => {
+      window.removeEventListener('galleryUpdated', handleGalleryUpdate);
+    };
   }, []);
 
   useEffect(() => {
@@ -171,14 +223,11 @@ const Index = () => {
     { name: "Художественная резьба", price: "от 10 000 ₽" }
   ];
 
-  const portfolioImages = [
-    { url: "https://cdn.poehali.dev/files/bbcac88c-6deb-429e-b227-40488c7c5273.jpg", title: "Комплексное благоустройство", desc: "Установка памятников и уход за территорией" },
-    { url: "https://cdn.poehali.dev/files/58ba923f-a428-4ebd-a17d-2cd8e5b523a8.jpg", title: "Художественная гравировка", desc: "Индивидуальный дизайн и качественное исполнение" },
-    { url: "https://cdn.poehali.dev/files/c80c1bd4-c413-425a-a1fc-91dbb36a8de4.jpg", title: "Горизонтальные памятники", desc: "Классический дизайн из чёрного гранита" },
-    { url: "https://cdn.poehali.dev/files/692de6e1-c8ae-42f8-ac61-0d8770aeb8ec.png", title: "Вертикальные памятники", desc: "Традиционная форма, проверенная временем" },
-    { url: "https://cdn.poehali.dev/files/a6e29eb2-0f18-47ca-917e-adac360db4c3.jpeg", title: "Эксклюзивные проекты", desc: "Уникальный дизайн по индивидуальному заказу" },
-    { url: "https://cdn.poehali.dev/files/e1b733d5-8a5c-4f60-9df4-9e05bb711cf9.jpeg", title: "Комплексы на могилу", desc: "Полное обустройство с оградой и цветником" }
-  ];
+  const portfolioImages = galleryItems.map(item => ({
+    url: item.url,
+    title: item.title,
+    desc: item.desc
+  }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
