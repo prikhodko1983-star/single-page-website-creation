@@ -1055,27 +1055,24 @@ const Constructor = () => {
       const link = document.createElement('a');
       link.href = url;
       link.download = fileName;
-      link.style.display = 'none';
+      
+      // Важно: добавляем в DOM для совместимости
       document.body.appendChild(link);
       
-      try {
+      // Принудительный клик с задержкой для надежности
+      requestAnimationFrame(() => {
         link.click();
-        console.log('✅ PNG: click() вызван');
-      } catch (clickError) {
-        console.error('❌ Ошибка click():', clickError);
-        const event = new MouseEvent('click', {
-          view: window,
-          bubbles: true,
-          cancelable: true
-        });
-        link.dispatchEvent(event);
-        console.log('✅ PNG: dispatchEvent() вызван');
-      }
-      
-      setTimeout(() => {
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }, 1000);
+        console.log('✅ PNG: скачивание инициировано');
+        
+        // Даем браузеру время на скачивание, затем очищаем
+        setTimeout(() => {
+          if (document.body.contains(link)) {
+            document.body.removeChild(link);
+          }
+          URL.revokeObjectURL(url);
+          console.log('✅ PNG файл загружен, ресурсы очищены');
+        }, 1000);
+      });
       
       toast({
         title: "PNG с метаданными готов",
