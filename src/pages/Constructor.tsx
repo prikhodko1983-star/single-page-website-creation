@@ -583,7 +583,7 @@ const Constructor = () => {
       
       setElements(elements.map(el => 
         el.id === selectedElement 
-          ? { ...el, rotation: Math.round(rotation) }
+          ? { ...el, rotation: Math.round(rotation * 10) / 10 }
           : el
       ));
     } else if (isResizing) {
@@ -726,7 +726,7 @@ const Constructor = () => {
       
       setElements(elements.map(el => 
         el.id === selectedElement 
-          ? { ...el, rotation: Math.round(rotation) }
+          ? { ...el, rotation: Math.round(rotation * 10) / 10 }
           : el
       ));
     } else if (isResizing) {
