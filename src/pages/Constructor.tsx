@@ -579,11 +579,12 @@ const Constructor = () => {
       const startDeltaY = rotateStart.y - rotateStart.centerY;
       const startAngle = Math.atan2(startDeltaY, startDeltaX) * (180 / Math.PI);
       
-      const rotation = rotateStart.rotation + (angle - startAngle);
+      // Делим на 3 для более медленного и точного поворота
+      const rotation = rotateStart.rotation + (angle - startAngle) / 3;
       
       setElements(elements.map(el => 
         el.id === selectedElement 
-          ? { ...el, rotation: Math.round(rotation * 10) / 10 }
+          ? { ...el, rotation: Math.round(rotation) }
           : el
       ));
     } else if (isResizing) {
@@ -722,11 +723,12 @@ const Constructor = () => {
       const startDeltaY = rotateStart.y - rotateStart.centerY;
       const startAngle = Math.atan2(startDeltaY, startDeltaX) * (180 / Math.PI);
       
-      const rotation = rotateStart.rotation + (angle - startAngle);
+      // Делим на 3 для более медленного и точного поворота
+      const rotation = rotateStart.rotation + (angle - startAngle) / 3;
       
       setElements(elements.map(el => 
         el.id === selectedElement 
-          ? { ...el, rotation: Math.round(rotation * 10) / 10 }
+          ? { ...el, rotation: Math.round(rotation) }
           : el
       ));
     } else if (isResizing) {
