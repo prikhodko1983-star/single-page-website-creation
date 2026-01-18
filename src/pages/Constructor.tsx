@@ -8,6 +8,7 @@ import { ConstructorCanvas } from "@/components/constructor/ConstructorCanvas";
 import { ConstructorProperties } from "@/components/constructor/ConstructorProperties";
 import { TextEditorModal } from "@/components/constructor/TextEditorModal";
 import { MobileToolbar } from "@/components/constructor/MobileToolbar";
+import { ImageEraser } from "@/components/constructor/ImageEraser";
 
 interface CanvasElement {
   id: string;
@@ -86,6 +87,9 @@ const Constructor = () => {
   const [canvasPan, setCanvasPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+  
+  const [isImageEraserOpen, setIsImageEraserOpen] = useState(false);
+  const [editingImageId, setEditingImageId] = useState<string | null>(null);
 
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
@@ -931,6 +935,28 @@ const Constructor = () => {
   const deleteElement = (id: string) => {
     setElements(elements.filter(el => el.id !== id));
     if (selectedElement === id) setSelectedElement(null);
+  };
+
+  const handleEditImage = (id: string) => {
+    const element = elements.find(el => el.id === id);
+    if (element && element.src) {
+      setEditingImageId(id);
+      setIsImageEraserOpen(true);
+    }
+  };
+
+  const handleSaveEditedImage = (editedImageUrl: string) => {
+    if (editingImageId) {
+      setElements(elements.map(el => 
+        el.id === editingImageId 
+          ? { ...el, src: editedImageUrl, processedSrc: undefined, screenMode: false }
+          : el
+      ));
+      toast({
+        title: "Изображение обновлено",
+        description: "Отредактированное изображение применено",
+      });
+    }
   };
 
   const saveDesign = () => {
@@ -2382,6 +2408,7 @@ const Constructor = () => {
               updateElement={updateElement}
               deleteElement={deleteElement}
               fonts={fonts}
+              onEditImage={handleEditImage}
             />
           </div>
         </div>
@@ -2404,11 +2431,22 @@ const Constructor = () => {
         }}
       />
 
+      <ImageEraser
+        isOpen={isImageEraserOpen}
+        onClose={() => {
+          setIsImageEraserOpen(false);
+          setEditingImageId(null);
+        }}
+        imageUrl={editingImageId ? (elements.find(el => el.id === editingImageId)?.src || '') : ''}
+        onSave={handleSaveEditedImage}
+      />
+
       <MobileToolbar
         selectedEl={selectedEl}
         updateElement={updateElement}
         deleteElement={deleteElement}
         fonts={fonts}
+        onEditImage={handleEditImage}
       />
     </div>
   );

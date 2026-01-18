@@ -34,6 +34,7 @@ interface ConstructorPropertiesProps {
   updateElement: (id: string, updates: Partial<CanvasElement>) => Promise<void>;
   deleteElement: (id: string) => void;
   fonts: Array<{id: string, name: string, style: string, weight: string, example: string, fullStyle: string}>;
+  onEditImage?: (id: string) => void;
 }
 
 export const ConstructorProperties = ({
@@ -41,6 +42,7 @@ export const ConstructorProperties = ({
   updateElement,
   deleteElement,
   fonts,
+  onEditImage,
 }: ConstructorPropertiesProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   
@@ -237,33 +239,50 @@ export const ConstructorProperties = ({
             )}
             
             {(selectedEl.type === 'photo' || selectedEl.type === 'image' || selectedEl.type === 'cross' || selectedEl.type === 'flower') && selectedEl.src && (
-              <div className="space-y-2">
-                <Label>Режим "Экран"</Label>
-                <Button
-                  onClick={async () => {
-                    setIsProcessing(true);
-                    await updateElement(selectedEl.id, { screenMode: !selectedEl.screenMode });
-                    setIsProcessing(false);
-                  }}
-                  variant={selectedEl.screenMode ? "default" : "outline"}
-                  className="w-full"
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? (
-                    <>
-                      <Icon name="Loader2" size={18} className="mr-2 animate-spin" />
-                      Обработка...
-                    </>
-                  ) : (
-                    <>
-                      <Icon name={selectedEl.screenMode ? "Check" : "Circle"} size={18} className="mr-2" />
-                      {selectedEl.screenMode ? 'Включен' : 'Выключен'}
-                    </>
-                  )}
-                </Button>
-                <p className="text-xs text-muted-foreground">
-                  Убирает черный цвет с фотографии
-                </p>
+              <div className="space-y-3">
+                <div>
+                  <Label>Редактор изображения</Label>
+                  <Button
+                    onClick={() => onEditImage?.(selectedEl.id)}
+                    variant="outline"
+                    className="w-full mt-2"
+                  >
+                    <Icon name="Eraser" size={18} className="mr-2" />
+                    Редактировать с ластиком
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Уберите лишний фон вручную
+                  </p>
+                </div>
+                
+                <div>
+                  <Label>Режим "Экран"</Label>
+                  <Button
+                    onClick={async () => {
+                      setIsProcessing(true);
+                      await updateElement(selectedEl.id, { screenMode: !selectedEl.screenMode });
+                      setIsProcessing(false);
+                    }}
+                    variant={selectedEl.screenMode ? "default" : "outline"}
+                    className="w-full mt-2"
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Icon name="Loader2" size={18} className="mr-2 animate-spin" />
+                        Обработка...
+                      </>
+                    ) : (
+                      <>
+                        <Icon name={selectedEl.screenMode ? "Check" : "Circle"} size={18} className="mr-2" />
+                        {selectedEl.screenMode ? 'Включен' : 'Выключен'}
+                      </>
+                    )}
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Убирает черный цвет с фотографии
+                  </p>
+                </div>
               </div>
             )}
             

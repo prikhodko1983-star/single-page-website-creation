@@ -30,6 +30,7 @@ interface MobileToolbarProps {
   updateElement: (id: string, updates: Partial<CanvasElement>) => Promise<void>;
   deleteElement: (id: string) => void;
   fonts: Array<{id: string, name: string, style: string, weight: string, example: string, fullStyle: string}>;
+  onEditImage?: (id: string) => void;
 }
 
 export const MobileToolbar = ({
@@ -37,6 +38,7 @@ export const MobileToolbar = ({
   updateElement,
   deleteElement,
   fonts,
+  onEditImage,
 }: MobileToolbarProps) => {
   const [activePanel, setActivePanel] = useState<'fonts' | 'size' | 'color' | 'align' | 'rotate' | 'imageSize' | null>(null);
   const [rotationInput, setRotationInput] = useState<string>('');
@@ -351,6 +353,14 @@ export const MobileToolbar = ({
 
           {isImageElement && (
             <>
+              <button
+                onClick={() => onEditImage?.(selectedEl.id)}
+                className="flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors hover:bg-primary/10 hover:text-primary"
+              >
+                <Icon name="Eraser" size={18} />
+                <span className="text-[10px]">Ластик</span>
+              </button>
+
               <button
                 onClick={() => updateElement(selectedEl.id, { flipHorizontal: !selectedEl.flipHorizontal })}
                 className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors ${
