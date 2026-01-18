@@ -2437,12 +2437,7 @@ const Constructor = () => {
           setIsImageEraserOpen(false);
           setEditingImageId(null);
         }}
-        imageUrl={
-          editingImageId 
-            ? (elements.find(el => el.id === editingImageId)?.src || 
-               elements.find(el => el.id === editingImageId)?.processedSrc || '') 
-            : ''
-        }
+        imageUrl={editingImageId ? (elements.find(el => el.id === editingImageId)?.src || '') : ''}
         onSave={handleSaveEditedImage}
       />
 

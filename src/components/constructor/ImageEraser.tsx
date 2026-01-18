@@ -21,18 +21,14 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   const [historyStep, setHistoryStep] = useState(-1);
 
   useEffect(() => {
-    if (isOpen && canvasRef.current && imageUrl) {
+    if (isOpen && canvasRef.current) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       if (!ctx) return;
 
-      console.log('🖼️ Загружаем изображение в редактор:', imageUrl);
-
       const img = new Image();
       img.crossOrigin = "anonymous";
-      
       img.onload = () => {
-        console.log('✅ Изображение загружено:', img.width, 'x', img.height);
         canvas.width = img.width;
         canvas.height = img.height;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -41,11 +37,6 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
         // Сохраняем начальное состояние
         saveToHistory();
       };
-      
-      img.onerror = (error) => {
-        console.error('❌ Ошибка загрузки изображения:', error);
-      };
-      
       img.src = imageUrl;
     }
   }, [isOpen, imageUrl]);
