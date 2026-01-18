@@ -939,9 +939,14 @@ const Constructor = () => {
 
   const handleEditImage = (id: string) => {
     const element = elements.find(el => el.id === id);
+    console.log('📝 Открываем редактор для элемента:', id, element);
+    
     if (element && element.src) {
+      console.log('✅ Элемент найден, src:', element.src);
       setEditingImageId(id);
       setIsImageEraserOpen(true);
+    } else {
+      console.error('❌ Элемент не найден или нет src');
     }
   };
 
@@ -2437,7 +2442,15 @@ const Constructor = () => {
           setIsImageEraserOpen(false);
           setEditingImageId(null);
         }}
-        imageUrl={editingImageId ? (elements.find(el => el.id === editingImageId)?.src || '') : ''}
+        imageUrl={(() => {
+          if (!editingImageId) return '';
+          const element = elements.find(el => el.id === editingImageId);
+          if (!element) return '';
+          // Используем processedSrc если есть, иначе src
+          const url = element.processedSrc || element.src || '';
+          console.log('🖼️ Передаем URL в ImageEraser:', url);
+          return url;
+        })()}
         onSave={handleSaveEditedImage}
       />
 
