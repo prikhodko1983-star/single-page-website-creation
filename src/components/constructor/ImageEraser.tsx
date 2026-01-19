@@ -117,10 +117,25 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
     
-    return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY
-    };
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+    
+    console.log('🎯 getCoords:', {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      'rect.left': rect.left,
+      'rect.top': rect.top,
+      'rect.width': rect.width,
+      'rect.height': rect.height,
+      'canvas.width': canvas.width,
+      'canvas.height': canvas.height,
+      scaleX,
+      scaleY,
+      resultX: x,
+      resultY: y
+    });
+    
+    return { x, y };
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
