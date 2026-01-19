@@ -943,8 +943,12 @@ const Constructor = () => {
     
     if (element && element.src) {
       console.log('✅ Элемент найден, src:', element.src);
+      // Сначала устанавливаем ID
       setEditingImageId(id);
-      setIsImageEraserOpen(true);
+      // Открываем модалку в следующем тике, когда ID уже обновится
+      setTimeout(() => {
+        setIsImageEraserOpen(true);
+      }, 0);
     } else {
       console.error('❌ Элемент не найден или нет src');
     }
