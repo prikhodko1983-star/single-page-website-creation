@@ -163,6 +163,73 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     }
   };
 
+  // Touch events для мобильных устройств
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isErasing) return;
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+
+    setIsDrawing(true);
+    lastPosRef.current = { x, y };
+    erase(x, y);
+
+    // Показываем курсор в месте касания
+    if (cursorRef.current) {
+      cursorRef.current.style.left = `${touch.clientX}px`;
+      cursorRef.current.style.top = `${touch.clientY}px`;
+      cursorRef.current.style.display = 'block';
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing || !isErasing) return;
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+
+    // Обновляем позицию курсора
+    if (cursorRef.current) {
+      cursorRef.current.style.left = `${touch.clientX}px`;
+      cursorRef.current.style.top = `${touch.clientY}px`;
+    }
+
+    // Интерполяция для плавного стирания
+    if (lastPosRef.current) {
+      const lastX = lastPosRef.current.x;
+      const lastY = lastPosRef.current.y;
+      const dist = Math.sqrt((x - lastX) ** 2 + (y - lastY) ** 2);
+      const steps = Math.max(Math.ceil(dist / 2), 1);
+
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const interpX = lastX + (x - lastX) * t;
+        const interpY = lastY + (y - lastY) * t;
+        erase(interpX, interpY);
+      }
+    }
+
+    lastPosRef.current = { x, y };
+  };
+
+  const handleTouchEnd = () => {
+    setIsDrawing(false);
+    lastPosRef.current = null;
+    if (cursorRef.current) {
+      cursorRef.current.style.display = 'none';
+    }
+  };
+
   const erase = (x: number, y: number) => {
     const ctx = ctxRef.current;
     if (!ctx) return;
@@ -263,7 +330,10 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseLeave}
               onMouseEnter={handleMouseEnter}
-              style={{ cursor: isErasing ? 'none' : 'default', maxWidth: '100%', maxHeight: '100%' }}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              style={{ cursor: isErasing ? 'none' : 'default', maxWidth: '100%', maxHeight: '100%', touchAction: 'none' }}
             />
             {isErasing && (
               <div
