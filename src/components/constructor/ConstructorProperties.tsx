@@ -243,7 +243,12 @@ export const ConstructorProperties = ({
                 <div>
                   <Label>Редактор изображения</Label>
                   <Button
-                    onClick={() => onEditImage?.(selectedEl.id)}
+                    onClick={() => {
+                      console.log('🖱️ Клик на Редактировать с ластиком (десктоп)');
+                      console.log('selectedEl.id:', selectedEl.id);
+                      console.log('onEditImage:', onEditImage);
+                      onEditImage?.(selectedEl.id);
+                    }}
                     variant="outline"
                     className="w-full mt-2"
                   >

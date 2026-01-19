@@ -354,7 +354,12 @@ export const MobileToolbar = ({
           {isImageElement && (
             <>
               <button
-                onClick={() => onEditImage?.(selectedEl.id)}
+                onClick={() => {
+                  console.log('🖱️ Клик на кнопку Ластик');
+                  console.log('selectedEl.id:', selectedEl.id);
+                  console.log('onEditImage:', onEditImage);
+                  onEditImage?.(selectedEl.id);
+                }}
                 className="flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors hover:bg-primary/10 hover:text-primary"
               >
                 <Icon name="Eraser" size={18} />
