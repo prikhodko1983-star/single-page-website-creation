@@ -150,34 +150,46 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    // Обновляем позицию кастомного курсора - ВСЕГДА показываем когда ластик включен
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Получаем координаты canvas на странице
+    const rect = canvas.getBoundingClientRect();
+    
+    // Вычисляем координаты на canvas (в пикселях canvas)
+    const canvasX = ((e.clientX - rect.left) / rect.width) * canvas.width;
+    const canvasY = ((e.clientY - rect.top) / rect.height) * canvas.height;
+    
+    // Обновляем позицию курсора — позиционируем его относительно canvas, а не окна
     if (cursorRef.current && isErasing) {
-      cursorRef.current.style.left = `${e.clientX}px`;
-      cursorRef.current.style.top = `${e.clientY}px`;
+      // Пересчитываем обратно в экранные координаты с учетом масштаба
+      const screenX = rect.left + (canvasX / canvas.width) * rect.width;
+      const screenY = rect.top + (canvasY / canvas.height) * rect.height;
+      
+      cursorRef.current.style.left = `${screenX}px`;
+      cursorRef.current.style.top = `${screenY}px`;
       cursorRef.current.style.display = 'block';
     }
 
     // Стираем только если нажата кнопка мыши
     if (!isDrawing) return;
 
-    const { x, y } = getCoords(e);
-
     // Интерполяция для плавного стирания
     if (lastPosRef.current) {
       const lastX = lastPosRef.current.x;
       const lastY = lastPosRef.current.y;
-      const dist = Math.sqrt((x - lastX) ** 2 + (y - lastY) ** 2);
+      const dist = Math.sqrt((canvasX - lastX) ** 2 + (canvasY - lastY) ** 2);
       const steps = Math.max(Math.ceil(dist / 2), 1);
 
       for (let i = 0; i <= steps; i++) {
         const t = i / steps;
-        const interpX = lastX + (x - lastX) * t;
-        const interpY = lastY + (y - lastY) * t;
+        const interpX = lastX + (canvasX - lastX) * t;
+        const interpY = lastY + (canvasY - lastY) * t;
         erase(interpX, interpY);
       }
     }
 
-    lastPosRef.current = { x, y };
+    lastPosRef.current = { x: canvasX, y: canvasY };
   };
 
   const handleMouseUp = () => {
@@ -193,11 +205,19 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   };
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (cursorRef.current && isErasing) {
-      cursorRef.current.style.left = `${e.clientX}px`;
-      cursorRef.current.style.top = `${e.clientY}px`;
-      cursorRef.current.style.display = 'block';
-    }
+    const canvas = canvasRef.current;
+    if (!canvas || !cursorRef.current || !isErasing) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const canvasX = ((e.clientX - rect.left) / rect.width) * canvas.width;
+    const canvasY = ((e.clientY - rect.top) / rect.height) * canvas.height;
+    
+    const screenX = rect.left + (canvasX / canvas.width) * rect.width;
+    const screenY = rect.top + (canvasY / canvas.height) * rect.height;
+    
+    cursorRef.current.style.left = `${screenX}px`;
+    cursorRef.current.style.top = `${screenY}px`;
+    cursorRef.current.style.display = 'block';
   };
 
   // Touch events для мобильных устройств
