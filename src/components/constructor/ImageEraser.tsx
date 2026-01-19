@@ -101,20 +101,23 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     img.onload = () => {
       console.log('✅ Изображение загружено, размеры:', img.width, 'x', img.height);
       
-      const maxWidth = 800;
-      const maxHeight = 600;
-      let scale = 1;
+      // Фиксированный размер canvas для стабильных координат
+      const containerWidth = 900;
+      const containerHeight = 600;
+      
+      // Вычисляем масштаб с сохранением пропорций
+      const scale = Math.min(
+        containerWidth / img.width,
+        containerHeight / img.height
+      );
+      
+      // Устанавливаем размер canvas точно под отображаемый размер
+      canvas.width = Math.floor(img.width * scale);
+      canvas.height = Math.floor(img.height * scale);
 
-      if (img.width > maxWidth || img.height > maxHeight) {
-        scale = Math.min(maxWidth / img.width, maxHeight / img.height);
-      }
-
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-
-      console.log('🎨 Рисуем на canvas, размеры:', canvas.width, 'x', canvas.height);
+      console.log('🎨 Canvas размер:', canvas.width, 'x', canvas.height, 'scale:', scale);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      console.log('✅ Изображение отрисовано на canvas');
+      console.log('✅ Изображение отрисовано');
     };
 
     img.onerror = (e) => {
@@ -393,7 +396,7 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
           <div 
             className="relative bg-muted/20 rounded-lg p-4 flex items-center justify-center overflow-hidden" 
-            style={{ minHeight: '400px', maxHeight: '60vh' }}
+            style={{ width: '100%', height: '600px' }}
           >
             <canvas
               ref={canvasRef}
@@ -406,12 +409,9 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               style={{ 
-                cursor: isErasing ? 'none' : 'default', 
-                maxWidth: '100%', 
-                maxHeight: '100%', 
+                cursor: isErasing ? 'none' : 'default',
                 touchAction: 'none', 
-                display: 'block',
-                objectFit: 'contain'
+                display: 'block'
               }}
             />
           </div>
