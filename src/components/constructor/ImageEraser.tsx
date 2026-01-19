@@ -15,7 +15,7 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const [brushSize, setBrushSize] = useState(20);
-  const [brushHardness, setBrushHardness] = useState(0.3);
+  const [brushHardness, setBrushHardness] = useState(0.1);
   const [isErasing, setIsErasing] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const lastPosRef = useRef<{ x: number; y: number } | null>(null);
@@ -236,8 +236,10 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
     const radius = brushSize / 2;
     
-    // Создаём радиальный градиент для мягких краёв
-    const gradient = ctx.createRadialGradient(x, y, radius * brushHardness, x, y, radius);
+    // Создаём радиальный градиент для мягких краёв (как в Photoshop)
+    // brushHardness: 0 = очень мягко, 1 = жёстко
+    const innerRadius = radius * brushHardness;
+    const gradient = ctx.createRadialGradient(x, y, innerRadius, x, y, radius);
     gradient.addColorStop(0, 'rgba(0,0,0,1)');
     gradient.addColorStop(1, 'rgba(0,0,0,0)');
 
@@ -274,7 +276,7 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Редактор изображения — Ластик</DialogTitle>
         </DialogHeader>
@@ -309,7 +311,7 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
                 type="range"
                 min="0"
                 max="100"
-                step="10"
+                step="5"
                 value={brushHardness * 100}
                 onChange={(e) => setBrushHardness(parseInt(e.target.value) / 100)}
                 className="flex-1"
@@ -322,7 +324,10 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
             </Button>
           </div>
 
-          <div className="relative bg-muted/20 rounded-lg p-4 flex items-center justify-center" style={{ minHeight: '400px' }}>
+          <div 
+            className="relative bg-muted/20 rounded-lg p-4 flex items-center justify-center overflow-hidden" 
+            style={{ minHeight: '400px', maxHeight: '60vh' }}
+          >
             <canvas
               ref={canvasRef}
               onMouseDown={handleMouseDown}
@@ -333,7 +338,14 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
-              style={{ cursor: isErasing ? 'none' : 'default', maxWidth: '100%', maxHeight: '60vh', touchAction: 'none', display: 'block' }}
+              style={{ 
+                cursor: isErasing ? 'none' : 'default', 
+                maxWidth: '100%', 
+                maxHeight: '100%', 
+                touchAction: 'none', 
+                display: 'block',
+                objectFit: 'contain'
+              }}
             />
           </div>
           {isErasing && (
@@ -342,14 +354,15 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
               style={{
                 position: 'fixed',
                 pointerEvents: 'none',
-                border: '2px solid #fff',
+                border: '2px solid rgba(255,255,255,0.9)',
                 borderRadius: '50%',
                 width: `${brushSize}px`,
                 height: `${brushSize}px`,
                 transform: 'translate(-50%, -50%)',
                 display: 'none',
                 zIndex: 999999,
-                boxShadow: '0 0 0 1px rgba(0,0,0,0.5)',
+                boxShadow: '0 0 0 1px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.3)',
+                background: 'rgba(255,255,255,0.05)',
               }}
             />
           )}
