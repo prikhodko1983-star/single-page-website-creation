@@ -1,0 +1,11 @@
+{
+  "tests": [
+    {
+      "name": "Proxy image from CDN",
+      "method": "GET",
+      "path": "/?url=https://cdn.poehali.dev/projects/test/bucket/test.jpg",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    }
+  ]
+}

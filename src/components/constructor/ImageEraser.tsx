@@ -61,6 +61,12 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   const loadImage = (url: string, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
     console.log('📥 Загружаем изображение:', url);
     
+    // Используем прокси для обхода CORS
+    const PROXY_URL = 'https://functions.poehali.dev/a333157a-6afc-488c-a133-697f8cff0e15';
+    const proxiedUrl = `${PROXY_URL}?url=${encodeURIComponent(url)}`;
+    
+    console.log('🔄 Используем прокси:', proxiedUrl);
+    
     const img = new Image();
     img.crossOrigin = 'anonymous';
     
@@ -85,10 +91,11 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
     img.onerror = (e) => {
       console.error('❌ Ошибка загрузки изображения:', e);
-      console.error('URL:', url);
+      console.error('Оригинальный URL:', url);
+      console.error('Прокси URL:', proxiedUrl);
     };
 
-    img.src = url;
+    img.src = proxiedUrl;
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
