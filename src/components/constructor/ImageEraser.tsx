@@ -13,9 +13,11 @@ interface ImageEraserProps {
 export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
   const [brushSize, setBrushSize] = useState(20);
   const [isErasing, setIsErasing] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
+  const lastPosRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     console.log('🔄 ImageEraser useEffect:', { isOpen, hasCanvas: !!canvasRef.current, imageUrl });
@@ -101,16 +103,64 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isErasing) return;
     setIsDrawing(true);
-    erase(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    const x = e.nativeEvent.offsetX;
+    const y = e.nativeEvent.offsetY;
+    lastPosRef.current = { x, y };
+    erase(x, y);
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Обновляем позицию кастомного курсора
+    if (cursorRef.current && isErasing) {
+      const rect = canvas.getBoundingClientRect();
+      cursorRef.current.style.left = `${e.clientX}px`;
+      cursorRef.current.style.top = `${e.clientY}px`;
+      cursorRef.current.style.display = 'block';
+    }
+
     if (!isDrawing || !isErasing) return;
-    erase(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+
+    const x = e.nativeEvent.offsetX;
+    const y = e.nativeEvent.offsetY;
+
+    // Интерполяция для плавного стирания
+    if (lastPosRef.current) {
+      const lastX = lastPosRef.current.x;
+      const lastY = lastPosRef.current.y;
+      const dist = Math.sqrt((x - lastX) ** 2 + (y - lastY) ** 2);
+      const steps = Math.max(Math.floor(dist / 2), 1);
+
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const interpX = lastX + (x - lastX) * t;
+        const interpY = lastY + (y - lastY) * t;
+        erase(interpX, interpY);
+      }
+    }
+
+    lastPosRef.current = { x, y };
   };
 
   const handleMouseUp = () => {
     setIsDrawing(false);
+    lastPosRef.current = null;
+  };
+
+  const handleMouseLeave = () => {
+    setIsDrawing(false);
+    lastPosRef.current = null;
+    if (cursorRef.current) {
+      cursorRef.current.style.display = 'none';
+    }
+  };
+
+  const handleMouseEnter = () => {
+    if (cursorRef.current && isErasing) {
+      cursorRef.current.style.display = 'block';
+    }
   };
 
   const erase = (x: number, y: number) => {
@@ -190,9 +240,27 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              style={{ cursor: isErasing ? 'crosshair' : 'default', maxWidth: '100%', maxHeight: '100%' }}
+              onMouseLeave={handleMouseLeave}
+              onMouseEnter={handleMouseEnter}
+              style={{ cursor: isErasing ? 'none' : 'default', maxWidth: '100%', maxHeight: '100%' }}
             />
+            {isErasing && (
+              <div
+                ref={cursorRef}
+                style={{
+                  position: 'fixed',
+                  pointerEvents: 'none',
+                  border: '2px solid #fff',
+                  borderRadius: '50%',
+                  width: `${brushSize}px`,
+                  height: `${brushSize}px`,
+                  transform: 'translate(-50%, -50%)',
+                  display: 'none',
+                  zIndex: 999999,
+                  boxShadow: '0 0 0 1px rgba(0,0,0,0.5)',
+                }}
+              />
+            )}
           </div>
 
           <div className="flex justify-end gap-2 pt-4 border-t">
