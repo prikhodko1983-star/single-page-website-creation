@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import * as fabric from "fabric";
+import ImageEditor from 'tui-image-editor';
+import 'tui-image-editor/dist/tui-image-editor.css';
 
 interface ImageEraserProps {
   isOpen: boolean;
@@ -12,10 +13,8 @@ interface ImageEraserProps {
 }
 
 export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserProps) {
-  const canvasContainerRef = useRef<HTMLDivElement>(null);
-  const fabricCanvasRef = useRef<any>(null);
-  const [brushSize, setBrushSize] = useState(20);
-  const [isErasing, setIsErasing] = useState(true);
+  const editorContainerRef = useRef<HTMLDivElement>(null);
+  const editorInstanceRef = useRef<ImageEditor | null>(null);
   const [isReady, setIsReady] = useState(false);
 
   // Проверяем, когда ref станет доступен (используем таймер для гарантии)
@@ -48,151 +47,67 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     console.log('🔄 ImageEraser useEffect вызван');
     console.log('  isOpen:', isOpen);
     console.log('  isReady:', isReady);
-    console.log('  canvasContainerRef.current:', !!canvasContainerRef.current);
+    console.log('  editorContainerRef.current:', !!editorContainerRef.current);
     console.log('  imageUrl:', imageUrl?.substring(0, 100) + '...');
     
-    if (!isOpen || !isReady || !canvasContainerRef.current || !imageUrl) {
+    if (!isOpen || !isReady || !editorContainerRef.current || !imageUrl) {
       console.warn('⚠️ Редактор: isOpen =', isOpen, 'isReady =', isReady, 'imageUrl =', imageUrl?.substring(0, 50));
       return;
     }
 
-    console.log('🖼️ Инициализируем Fabric.js для:', imageUrl.substring(0, 100) + '...');
+    console.log('🖼️ Инициализируем TUI Image Editor для:', imageUrl.substring(0, 100) + '...');
 
-    const canvasEl = document.createElement('canvas');
-    canvasEl.id = 'fabric-canvas';
-    canvasContainerRef.current.appendChild(canvasEl);
-    console.log('✅ Canvas элемент создан');
-
-    const Canvas = (fabric as any).Canvas;
-    const fabricCanvas = new Canvas(canvasEl, {
-      isDrawingMode: true,
-      backgroundColor: '#000000'
+    const editor = new ImageEditor(editorContainerRef.current, {
+      includeUI: {
+        loadImage: {
+          path: imageUrl,
+          name: 'image'
+        },
+        menu: ['draw', 'crop', 'filter', 'shape', 'text'],
+        initMenu: 'draw',
+        uiSize: {
+          width: '100%',
+          height: '600px'
+        },
+        menuBarPosition: 'bottom'
+      },
+      cssMaxWidth: 900,
+      cssMaxHeight: 600,
+      usageStatistics: false
     });
-    console.log('✅ Fabric Canvas инициализирован');
 
-    fabricCanvasRef.current = fabricCanvas;
-
-    // Сначала загружаем изображение через обычный Image (чтобы обойти CORS проблемы)
-    console.log('📥 Начинаем загрузку изображения через Image...');
-    const htmlImage = new Image();
-    htmlImage.crossOrigin = 'anonymous';
-    
-    htmlImage.onload = () => {
-      console.log('✅ HTML Image загружен:', htmlImage.width, 'x', htmlImage.height);
-      
-      // Создаем fabric.Image из готового HTML Image
-      const FabricImage = (fabric as any).Image;
-      const fabricImage = new FabricImage(htmlImage);
-      
-      console.log('✅ Fabric Image создан');
-      
-      const maxWidth = 800;
-      const maxHeight = 600;
-      let scale = 1;
-
-      if (fabricImage.width > maxWidth || fabricImage.height > maxHeight) {
-        scale = Math.min(maxWidth / fabricImage.width, maxHeight / fabricImage.height);
-      }
-
-      const scaledWidth = fabricImage.width * scale;
-      const scaledHeight = fabricImage.height * scale;
-
-      // Используем setDimensions вместо setWidth/setHeight для fabric.js v7
-      fabricCanvas.setDimensions({ width: scaledWidth, height: scaledHeight });
-
-      fabricImage.scale(scale);
-      fabricImage.selectable = false;
-      fabricImage.evented = false;
-
-      fabricCanvas.add(fabricImage);
-      fabricCanvas.sendToBack(fabricImage);
-      fabricCanvas.renderAll();
-
-      console.log('✅ Изображение добавлено на canvas');
-
-      const EraserBrush = (fabric as any).EraserBrush;
-      fabricCanvas.freeDrawingBrush = new EraserBrush(fabricCanvas);
-      fabricCanvas.freeDrawingBrush.width = brushSize;
-      
-      console.log('✅ EraserBrush инициализирован');
-    };
-    
-    htmlImage.onerror = (error) => {
-      console.error('❌ Ошибка загрузки изображения:', error);
-    };
-    
-    htmlImage.src = imageUrl;
+    editorInstanceRef.current = editor;
+    console.log('✅ TUI Image Editor инициализирован');
 
     return () => {
-      fabricCanvas.dispose();
-      if (canvasContainerRef.current) {
-        canvasContainerRef.current.innerHTML = '';
+      if (editorInstanceRef.current) {
+        editorInstanceRef.current.destroy();
+        editorInstanceRef.current = null;
+        console.log('🧹 TUI Image Editor уничтожен');
       }
     };
   }, [isOpen, isReady, imageUrl]);
 
-  useEffect(() => {
-    if (fabricCanvasRef.current?.freeDrawingBrush) {
-      fabricCanvasRef.current.freeDrawingBrush.width = brushSize;
-    }
-  }, [brushSize]);
 
-  useEffect(() => {
-    if (fabricCanvasRef.current) {
-      fabricCanvasRef.current.isDrawingMode = isErasing;
-    }
-  }, [isErasing]);
 
   const handleSave = () => {
-    if (!fabricCanvasRef.current) return;
+    if (!editorInstanceRef.current) return;
 
-    const dataUrl = fabricCanvasRef.current.toDataURL({
-      format: 'png',
-      quality: 1
-    });
-
+    const dataUrl = editorInstanceRef.current.toDataURL();
     onSave(dataUrl);
     onClose();
   };
 
   const handleUndo = () => {
-    if (!fabricCanvasRef.current) return;
-    
-    const objects = fabricCanvasRef.current.getObjects();
-    if (objects.length > 1) {
-      fabricCanvasRef.current.remove(objects[objects.length - 1]);
-      fabricCanvasRef.current.renderAll();
-    }
+    if (!editorInstanceRef.current) return;
+    editorInstanceRef.current.undo();
   };
 
   const handleReset = () => {
-    if (!fabricCanvasRef.current || !imageUrl) return;
-
-    const fabricCanvas = fabricCanvasRef.current;
-    fabricCanvas.clear();
-
-    // Загружаем изображение через HTML Image
-    const htmlImage = new Image();
-    htmlImage.crossOrigin = 'anonymous';
-    
-    htmlImage.onload = () => {
-      const FabricImage = (fabric as any).Image;
-      const fabricImage = new FabricImage(htmlImage);
-      
-      // Получаем текущие размеры canvas
-      const canvasWidth = fabricCanvas.width;
-      const scale = canvasWidth / fabricImage.width;
-      
-      fabricImage.scale(scale);
-      fabricImage.selectable = false;
-      fabricImage.evented = false;
-
-      fabricCanvas.add(fabricImage);
-      fabricCanvas.sendToBack(fabricImage);
-      fabricCanvas.renderAll();
-    };
-    
-    htmlImage.src = imageUrl;
+    if (!editorInstanceRef.current || !imageUrl) return;
+    editorInstanceRef.current.loadImageFromURL(imageUrl, 'reset').then(() => {
+      console.log('✅ Изображение сброшено');
+    });
   };
 
   return (
@@ -204,28 +119,6 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-3 p-4 bg-secondary rounded-lg">
-            <Button
-              variant={isErasing ? "default" : "outline"}
-              size="sm"
-              onClick={() => setIsErasing(!isErasing)}
-            >
-              <Icon name="Eraser" size={18} className="mr-2" />
-              Ластик {isErasing ? 'ВКЛ' : 'ВЫКЛ'}
-            </Button>
-
-            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
-              <span className="text-sm whitespace-nowrap">Размер: {brushSize}px</span>
-              <input
-                type="range"
-                min="5"
-                max="100"
-                step="5"
-                value={brushSize}
-                onChange={(e) => setBrushSize(parseInt(e.target.value))}
-                className="flex-1"
-              />
-            </div>
-
             <Button variant="outline" size="sm" onClick={handleUndo}>
               <Icon name="Undo" size={18} className="mr-2" />
               Отменить
@@ -237,8 +130,8 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
             </Button>
           </div>
 
-          <div className="relative overflow-auto bg-muted/20 rounded-lg p-4 max-h-[60vh] flex items-center justify-center">
-            <div ref={canvasContainerRef} />
+          <div className="relative overflow-auto bg-muted/20 rounded-lg p-4">
+            <div ref={editorContainerRef} style={{ width: '100%', height: '600px' }} />
           </div>
 
           <div className="flex justify-end gap-2 pt-4 border-t">
