@@ -594,12 +594,13 @@ const Constructor = () => {
     } else if (isResizing) {
       const deltaX = e.clientX - resizeStart.x;
       const deltaY = e.clientY - resizeStart.y;
-      const newWidth = Math.max(50, resizeStart.width + deltaX);
-      const newHeight = Math.max(30, resizeStart.height + deltaY);
       
       const element = elements.find(el => el.id === selectedElement);
+      
       if (element && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
-        // Используем минимальное соотношение, чтобы текст всегда помещался
+        // Для текста: свободное изменение размера с масштабированием шрифта
+        const newWidth = Math.max(50, resizeStart.width + deltaX);
+        const newHeight = Math.max(30, resizeStart.height + deltaY);
         const scaleRatio = Math.min(newWidth / resizeStart.width, newHeight / resizeStart.height);
         const newFontSize = Math.max(8, Math.min(72, Math.round(resizeStart.fontSize * scaleRatio)));
         
@@ -608,7 +609,25 @@ const Constructor = () => {
             ? { ...el, width: newWidth, height: newHeight, fontSize: newFontSize }
             : el
         ));
+      } else if (element && (element.type === 'image' || element.type === 'photo' || element.type === 'cross' || element.type === 'flower')) {
+        // Для изображений: сохраняем пропорции (aspect ratio)
+        const aspectRatio = resizeStart.width / resizeStart.height;
+        
+        // Берём наибольшее изменение (по X или по Y)
+        const delta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY * aspectRatio;
+        const newWidth = Math.max(30, resizeStart.width + delta);
+        const newHeight = Math.max(30, newWidth / aspectRatio);
+        
+        setElements(elements.map(el => 
+          el.id === selectedElement 
+            ? { ...el, width: newWidth, height: newHeight }
+            : el
+        ));
       } else {
+        // Остальные элементы: свободное изменение
+        const newWidth = Math.max(50, resizeStart.width + deltaX);
+        const newHeight = Math.max(30, resizeStart.height + deltaY);
+        
         setElements(elements.map(el => 
           el.id === selectedElement 
             ? { ...el, width: newWidth, height: newHeight }
@@ -738,12 +757,13 @@ const Constructor = () => {
     } else if (isResizing) {
       const deltaX = touch.clientX - resizeStart.x;
       const deltaY = touch.clientY - resizeStart.y;
-      const newWidth = Math.max(50, resizeStart.width + deltaX);
-      const newHeight = Math.max(30, resizeStart.height + deltaY);
       
       const element = elements.find(el => el.id === selectedElement);
+      
       if (element && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
-        // Используем минимальное соотношение, чтобы текст всегда помещался
+        // Для текста: свободное изменение размера с масштабированием шрифта
+        const newWidth = Math.max(50, resizeStart.width + deltaX);
+        const newHeight = Math.max(30, resizeStart.height + deltaY);
         const scaleRatio = Math.min(newWidth / resizeStart.width, newHeight / resizeStart.height);
         const newFontSize = Math.max(8, Math.min(72, Math.round(resizeStart.fontSize * scaleRatio)));
         
@@ -752,7 +772,25 @@ const Constructor = () => {
             ? { ...el, width: newWidth, height: newHeight, fontSize: newFontSize }
             : el
         ));
+      } else if (element && (element.type === 'image' || element.type === 'photo' || element.type === 'cross' || element.type === 'flower')) {
+        // Для изображений: сохраняем пропорции (aspect ratio)
+        const aspectRatio = resizeStart.width / resizeStart.height;
+        
+        // Берём наибольшее изменение (по X или по Y)
+        const delta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY * aspectRatio;
+        const newWidth = Math.max(30, resizeStart.width + delta);
+        const newHeight = Math.max(30, newWidth / aspectRatio);
+        
+        setElements(elements.map(el => 
+          el.id === selectedElement 
+            ? { ...el, width: newWidth, height: newHeight }
+            : el
+        ));
       } else {
+        // Остальные элементы: свободное изменение
+        const newWidth = Math.max(50, resizeStart.width + deltaX);
+        const newHeight = Math.max(30, resizeStart.height + deltaY);
+        
         setElements(elements.map(el => 
           el.id === selectedElement 
             ? { ...el, width: newWidth, height: newHeight }
