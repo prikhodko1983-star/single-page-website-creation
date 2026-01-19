@@ -97,8 +97,8 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
       const scaledWidth = fabricImage.width * scale;
       const scaledHeight = fabricImage.height * scale;
 
-      fabricCanvas.setWidth(scaledWidth);
-      fabricCanvas.setHeight(scaledHeight);
+      // Используем setDimensions вместо setWidth/setHeight для fabric.js v7
+      fabricCanvas.setDimensions({ width: scaledWidth, height: scaledHeight });
 
       fabricImage.scale(scale);
       fabricImage.selectable = false;
@@ -179,7 +179,10 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
       const FabricImage = (fabric as any).Image;
       const fabricImage = new FabricImage(htmlImage);
       
-      const scale = fabricCanvas.width / fabricImage.width;
+      // Получаем текущие размеры canvas
+      const canvasWidth = fabricCanvas.width;
+      const scale = canvasWidth / fabricImage.width;
+      
       fabricImage.scale(scale);
       fabricImage.selectable = false;
       fabricImage.evented = false;
