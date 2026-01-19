@@ -44,11 +44,16 @@ export const MobileToolbar = ({
   const [rotationInput, setRotationInput] = useState<string>('');
 
   if (!selectedEl) {
+    console.log('⚠️ MobileToolbar: selectedEl пустой');
     return null;
   }
 
+  console.log('✅ MobileToolbar: selectedEl =', selectedEl);
+  
   const isTextElement = ['text', 'epitaph', 'fio', 'dates'].includes(selectedEl.type);
   const isImageElement = ['image', 'cross', 'flower', 'photo'].includes(selectedEl.type);
+  
+  console.log('isImageElement:', isImageElement, 'type:', selectedEl.type);
 
   const togglePanel = (panel: 'fonts' | 'size' | 'color' | 'align' | 'rotate' | 'imageSize') => {
     if (panel === 'rotate' && activePanel !== 'rotate') {
