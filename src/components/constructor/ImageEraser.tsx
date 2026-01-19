@@ -72,45 +72,56 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
     fabricCanvasRef.current = fabricCanvas;
 
-    const FabricImage = (fabric as any).Image;
-    console.log('📥 Начинаем загрузку изображения...');
-    FabricImage.fromURL(imageUrl, (img: any) => {
-      console.log('📥 FabricImage.fromURL callback вызван');
-      console.log('  img:', !!img);
-      console.log('  fabricCanvas:', !!fabricCanvas);
+    // Сначала загружаем изображение через обычный Image (чтобы обойти CORS проблемы)
+    console.log('📥 Начинаем загрузку изображения через Image...');
+    const htmlImage = new Image();
+    htmlImage.crossOrigin = 'anonymous';
+    
+    htmlImage.onload = () => {
+      console.log('✅ HTML Image загружен:', htmlImage.width, 'x', htmlImage.height);
       
-      if (!img || !fabricCanvas) {
-        console.error('❌ img или fabricCanvas отсутствует');
-        return;
-      }
-
-      console.log('✅ Изображение загружено:', img.width, 'x', img.height);
-
+      // Создаем fabric.Image из готового HTML Image
+      const FabricImage = (fabric as any).Image;
+      const fabricImage = new FabricImage(htmlImage);
+      
+      console.log('✅ Fabric Image создан');
+      
       const maxWidth = 800;
       const maxHeight = 600;
       let scale = 1;
 
-      if (img.width > maxWidth || img.height > maxHeight) {
-        scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+      if (fabricImage.width > maxWidth || fabricImage.height > maxHeight) {
+        scale = Math.min(maxWidth / fabricImage.width, maxHeight / fabricImage.height);
       }
 
-      const scaledWidth = img.width * scale;
-      const scaledHeight = img.height * scale;
+      const scaledWidth = fabricImage.width * scale;
+      const scaledHeight = fabricImage.height * scale;
 
       fabricCanvas.setWidth(scaledWidth);
       fabricCanvas.setHeight(scaledHeight);
 
-      img.scale(scale);
-      img.selectable = false;
-      img.evented = false;
+      fabricImage.scale(scale);
+      fabricImage.selectable = false;
+      fabricImage.evented = false;
 
-      fabricCanvas.add(img);
-      fabricCanvas.sendToBack(img);
+      fabricCanvas.add(fabricImage);
+      fabricCanvas.sendToBack(fabricImage);
+      fabricCanvas.renderAll();
+
+      console.log('✅ Изображение добавлено на canvas');
 
       const EraserBrush = (fabric as any).EraserBrush;
       fabricCanvas.freeDrawingBrush = new EraserBrush(fabricCanvas);
       fabricCanvas.freeDrawingBrush.width = brushSize;
-    }, { crossOrigin: 'anonymous' });
+      
+      console.log('✅ EraserBrush инициализирован');
+    };
+    
+    htmlImage.onerror = (error) => {
+      console.error('❌ Ошибка загрузки изображения:', error);
+    };
+    
+    htmlImage.src = imageUrl;
 
     return () => {
       fabricCanvas.dispose();
@@ -160,19 +171,25 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     const fabricCanvas = fabricCanvasRef.current;
     fabricCanvas.clear();
 
-    const FabricImage = (fabric as any).Image;
-    FabricImage.fromURL(imageUrl, (img: any) => {
-      if (!img || !fabricCanvas) return;
+    // Загружаем изображение через HTML Image
+    const htmlImage = new Image();
+    htmlImage.crossOrigin = 'anonymous';
+    
+    htmlImage.onload = () => {
+      const FabricImage = (fabric as any).Image;
+      const fabricImage = new FabricImage(htmlImage);
+      
+      const scale = fabricCanvas.width / fabricImage.width;
+      fabricImage.scale(scale);
+      fabricImage.selectable = false;
+      fabricImage.evented = false;
 
-      const scale = fabricCanvas.width / img.width;
-      img.scale(scale);
-      img.selectable = false;
-      img.evented = false;
-
-      fabricCanvas.add(img);
-      fabricCanvas.sendToBack(img);
+      fabricCanvas.add(fabricImage);
+      fabricCanvas.sendToBack(fabricImage);
       fabricCanvas.renderAll();
-    }, { crossOrigin: 'anonymous' });
+    };
+    
+    htmlImage.src = imageUrl;
   };
 
   return (
