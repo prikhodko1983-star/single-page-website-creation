@@ -103,9 +103,14 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isErasing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
     setIsDrawing(true);
-    const x = e.nativeEvent.offsetX;
-    const y = e.nativeEvent.offsetY;
     lastPosRef.current = { x, y };
     erase(x, y);
   };
@@ -114,8 +119,9 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const x = e.nativeEvent.offsetX;
-    const y = e.nativeEvent.offsetY;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
     // Обновляем позицию кастомного курсора
     if (cursorRef.current) {
