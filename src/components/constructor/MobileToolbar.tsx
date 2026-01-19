@@ -359,13 +359,22 @@ export const MobileToolbar = ({
           {isImageElement && (
             <>
               <button
-                onClick={() => {
-                  console.log('🖱️ Клик на кнопку Ластик');
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('🖱️🖱️🖱️ КЛИК НА ЛАСТИК!!! 🖱️🖱️🖱️');
+                  console.log('selectedEl:', selectedEl);
                   console.log('selectedEl.id:', selectedEl.id);
-                  console.log('onEditImage:', onEditImage);
-                  onEditImage?.(selectedEl.id);
+                  console.log('selectedEl.src:', selectedEl.src);
+                  console.log('onEditImage функция:', typeof onEditImage);
+                  if (onEditImage) {
+                    console.log('✅ Вызываем onEditImage с ID:', selectedEl.id);
+                    onEditImage(selectedEl.id);
+                  } else {
+                    console.error('❌ onEditImage отсутствует!');
+                  }
                 }}
-                className="flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors hover:bg-primary/10 hover:text-primary"
+                className="flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors hover:bg-primary/10 hover:text-primary bg-red-500"
               >
                 <Icon name="Eraser" size={18} />
                 <span className="text-[10px]">Ластик</span>

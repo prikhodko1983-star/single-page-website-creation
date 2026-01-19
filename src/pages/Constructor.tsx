@@ -938,19 +938,18 @@ const Constructor = () => {
   };
 
   const handleEditImage = (id: string) => {
+    console.log('📝 [NEW CODE] Открываем редактор для элемента:', id);
+    console.log('📝 [NEW CODE] Текущие elements:', elements);
+    
     const element = elements.find(el => el.id === id);
-    console.log('📝 Открываем редактор для элемента:', id, element);
+    console.log('📝 [NEW CODE] Найденный элемент:', element);
     
     if (element && element.src) {
-      console.log('✅ Элемент найден, src:', element.src);
-      // Сначала устанавливаем ID
+      console.log('✅ [NEW CODE] Элемент найден, src:', element.src);
       setEditingImageId(id);
-      // Открываем модалку в следующем тике, когда ID уже обновится
-      setTimeout(() => {
-        setIsImageEraserOpen(true);
-      }, 0);
+      setIsImageEraserOpen(true);
     } else {
-      console.error('❌ Элемент не найден или нет src');
+      console.error('❌ [NEW CODE] Элемент не найден или нет src');
     }
   };
 
