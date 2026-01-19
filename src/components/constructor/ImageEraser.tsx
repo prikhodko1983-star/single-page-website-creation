@@ -101,21 +101,26 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     img.onload = () => {
       console.log('✅ Изображение загружено, размеры:', img.width, 'x', img.height);
       
-      // Фиксированный размер canvas для стабильных координат
-      const containerWidth = 900;
-      const containerHeight = 600;
+      // Максимальные размеры контейнера
+      const maxWidth = 1000;
+      const maxHeight = 700;
       
       // Вычисляем масштаб с сохранением пропорций
       const scale = Math.min(
-        containerWidth / img.width,
-        containerHeight / img.height
+        maxWidth / img.width,
+        maxHeight / img.height,
+        1 // Не увеличиваем изображение больше оригинала
       );
       
-      // Устанавливаем размер canvas точно под отображаемый размер
+      // Canvas размер = точный размер изображения после масштабирования
       canvas.width = Math.floor(img.width * scale);
       canvas.height = Math.floor(img.height * scale);
+      
+      // CSS размер canvas = внутреннему размеру (1:1 mapping для точных координат)
+      canvas.style.width = `${canvas.width}px`;
+      canvas.style.height = `${canvas.height}px`;
 
-      console.log('🎨 Canvas размер:', canvas.width, 'x', canvas.height, 'scale:', scale);
+      console.log('🎨 Canvas:', canvas.width, 'x', canvas.height, 'scale:', scale.toFixed(3));
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       console.log('✅ Изображение отрисовано');
     };
@@ -396,7 +401,7 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
           <div 
             className="relative bg-muted/20 rounded-lg p-4 flex items-center justify-center overflow-hidden" 
-            style={{ width: '100%', height: '600px' }}
+            style={{ minHeight: '300px', maxHeight: '75vh' }}
           >
             <canvas
               ref={canvasRef}
@@ -411,7 +416,9 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
               style={{ 
                 cursor: isErasing ? 'none' : 'default',
                 touchAction: 'none', 
-                display: 'block'
+                display: 'block',
+                border: '2px solid rgba(255,255,255,0.1)',
+                borderRadius: '4px'
               }}
             />
           </div>
