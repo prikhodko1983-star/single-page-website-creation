@@ -278,11 +278,16 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
     const radius = brushSize / 2;
     
-    // Создаём радиальный градиент для мягких краёв (как в Photoshop)
-    // brushHardness: 0 = очень мягко, 1 = жёстко
+    // Создаём очень мягкий радиальный градиент с несколькими ступенями прозрачности
     const innerRadius = radius * brushHardness;
     const gradient = ctx.createRadialGradient(x, y, innerRadius, x, y, radius);
+    
+    // Многоступенчатый градиент для максимальной мягкости
     gradient.addColorStop(0, 'rgba(0,0,0,1)');
+    gradient.addColorStop(0.3, 'rgba(0,0,0,0.8)');
+    gradient.addColorStop(0.5, 'rgba(0,0,0,0.5)');
+    gradient.addColorStop(0.7, 'rgba(0,0,0,0.2)');
+    gradient.addColorStop(0.85, 'rgba(0,0,0,0.05)');
     gradient.addColorStop(1, 'rgba(0,0,0,0)');
 
     ctx.globalCompositeOperation = 'destination-out';
