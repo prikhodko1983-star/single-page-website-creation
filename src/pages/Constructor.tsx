@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ConstructorLibrary } from "@/components/constructor/ConstructorLibrary";
@@ -963,6 +963,30 @@ const Constructor = () => {
       });
     }
   };
+
+  // Вычисляем URL изображения для редактора
+  const editingImageUrl = useMemo(() => {
+    console.log('🔍 useMemo: Вычисляем imageUrl');
+    console.log('editingImageId:', editingImageId);
+    console.log('Все элементы:', elements.map(e => ({ id: e.id, type: e.type, hasSrc: !!e.src })));
+    
+    if (!editingImageId) {
+      console.log('❌ editingImageId пустой');
+      return '';
+    }
+    
+    const element = elements.find(el => el.id === editingImageId);
+    console.log('Найденный элемент:', element);
+    
+    if (!element) {
+      console.log('❌ Элемент не найден в массиве elements');
+      return '';
+    }
+    
+    const url = element.processedSrc || element.src || '';
+    console.log('🖼️ URL для ImageEraser:', url);
+    return url;
+  }, [editingImageId, elements]);
 
   const saveDesign = () => {
     if (elements.length === 0) {
@@ -2442,29 +2466,7 @@ const Constructor = () => {
           setIsImageEraserOpen(false);
           setEditingImageId(null);
         }}
-        imageUrl={(() => {
-          console.log('🔍 Проверка imageUrl для ImageEraser');
-          console.log('editingImageId:', editingImageId);
-          console.log('Все элементы:', elements.map(e => ({ id: e.id, type: e.type, hasSrc: !!e.src })));
-          
-          if (!editingImageId) {
-            console.log('❌ editingImageId пустой');
-            return '';
-          }
-          
-          const element = elements.find(el => el.id === editingImageId);
-          console.log('Найденный элемент:', element);
-          
-          if (!element) {
-            console.log('❌ Элемент не найден в массиве elements');
-            return '';
-          }
-          
-          // Используем processedSrc если есть, иначе src
-          const url = element.processedSrc || element.src || '';
-          console.log('🖼️ Передаем URL в ImageEraser:', url);
-          return url;
-        })()}
+        imageUrl={editingImageUrl}
         onSave={handleSaveEditedImage}
       />
 
