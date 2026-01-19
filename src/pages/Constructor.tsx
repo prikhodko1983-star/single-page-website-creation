@@ -2443,9 +2443,23 @@ const Constructor = () => {
           setEditingImageId(null);
         }}
         imageUrl={(() => {
-          if (!editingImageId) return '';
+          console.log('🔍 Проверка imageUrl для ImageEraser');
+          console.log('editingImageId:', editingImageId);
+          console.log('Все элементы:', elements.map(e => ({ id: e.id, type: e.type, hasSrc: !!e.src })));
+          
+          if (!editingImageId) {
+            console.log('❌ editingImageId пустой');
+            return '';
+          }
+          
           const element = elements.find(el => el.id === editingImageId);
-          if (!element) return '';
+          console.log('Найденный элемент:', element);
+          
+          if (!element) {
+            console.log('❌ Элемент не найден в массиве elements');
+            return '';
+          }
+          
           // Используем processedSrc если есть, иначе src
           const url = element.processedSrc || element.src || '';
           console.log('🖼️ Передаем URL в ImageEraser:', url);
