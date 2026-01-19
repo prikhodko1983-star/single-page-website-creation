@@ -18,18 +18,55 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   const [isDrawing, setIsDrawing] = useState(false);
 
   useEffect(() => {
-    if (!isOpen || !canvasRef.current || !imageUrl) return;
+    console.log('🔄 ImageEraser useEffect:', { isOpen, hasCanvas: !!canvasRef.current, imageUrl });
+    
+    if (!isOpen) {
+      console.log('⏸️ Модальное окно закрыто');
+      return;
+    }
+    
+    if (!imageUrl) {
+      console.log('❌ imageUrl отсутствует');
+      return;
+    }
+    
+    if (!canvasRef.current) {
+      console.log('❌ canvasRef.current отсутствует, ждём...');
+      // Даём React время отрисовать Dialog
+      const timer = setTimeout(() => {
+        if (canvasRef.current) {
+          console.log('✅ Canvas появился, повторяем попытку...');
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
+          if (!ctx) return;
+          
+          ctxRef.current = ctx;
+          loadImage(imageUrl, canvas, ctx);
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (!ctx) return;
+    if (!ctx) {
+      console.error('❌ Не удалось получить 2d context');
+      return;
+    }
 
     ctxRef.current = ctx;
+    loadImage(imageUrl, canvas, ctx);
+  }, [isOpen, imageUrl]);
 
+  const loadImage = (url: string, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+    console.log('📥 Загружаем изображение:', url);
+    
     const img = new Image();
     img.crossOrigin = 'anonymous';
     
     img.onload = () => {
+      console.log('✅ Изображение загружено, размеры:', img.width, 'x', img.height);
+      
       const maxWidth = 800;
       const maxHeight = 600;
       let scale = 1;
@@ -41,16 +78,18 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
       canvas.width = img.width * scale;
       canvas.height = img.height * scale;
 
+      console.log('🎨 Рисуем на canvas, размеры:', canvas.width, 'x', canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      console.log('✅ Изображение загружено на canvas');
+      console.log('✅ Изображение отрисовано на canvas');
     };
 
-    img.onerror = () => {
-      console.error('❌ Ошибка загрузки изображения');
+    img.onerror = (e) => {
+      console.error('❌ Ошибка загрузки изображения:', e);
+      console.error('URL:', url);
     };
 
-    img.src = imageUrl;
-  }, [isOpen, imageUrl]);
+    img.src = url;
+  };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isErasing) return;
@@ -85,32 +124,20 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   };
 
   const handleReset = () => {
-    if (!canvasRef.current || !imageUrl) return;
+    console.log('🔄 Сброс изображения');
+    if (!canvasRef.current || !imageUrl) {
+      console.error('❌ Нет canvas или imageUrl для сброса');
+      return;
+    }
     
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      console.error('❌ Нет 2d context для сброса');
+      return;
+    }
 
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    
-    img.onload = () => {
-      const maxWidth = 800;
-      const maxHeight = 600;
-      let scale = 1;
-
-      if (img.width > maxWidth || img.height > maxHeight) {
-        scale = Math.min(maxWidth / img.width, maxHeight / img.height);
-      }
-
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      console.log('✅ Изображение сброшено');
-    };
-
-    img.src = imageUrl;
+    loadImage(imageUrl, canvas, ctx);
   };
 
   return (
