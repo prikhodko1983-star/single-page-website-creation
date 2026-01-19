@@ -108,14 +108,24 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     img.src = proxiedUrl;
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isErasing) return;
+  // Функция для пересчёта координат с учётом масштаба canvas
+  const getCoords = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) return { x: 0, y: 0 };
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
+    };
+  };
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isErasing) return;
+    const { x, y } = getCoords(e);
 
     setIsDrawing(true);
     lastPosRef.current = { x, y };
@@ -123,13 +133,6 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
     // Обновляем позицию кастомного курсора - ВСЕГДА показываем когда ластик включен
     if (cursorRef.current && isErasing) {
       cursorRef.current.style.left = `${e.clientX}px`;
@@ -139,6 +142,8 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
     // Стираем только если нажата кнопка мыши
     if (!isDrawing) return;
+
+    const { x, y } = getCoords(e);
 
     // Интерполяция для плавного стирания
     if (lastPosRef.current) {
@@ -179,16 +184,27 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   };
 
   // Touch events для мобильных устройств
-  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isErasing) return;
-    e.preventDefault();
+  const getTouchCoords = (e: React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) return { x: 0, y: 0 };
 
     const touch = e.touches[0];
     const rect = canvas.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    return {
+      x: (touch.clientX - rect.left) * scaleX,
+      y: (touch.clientY - rect.top) * scaleY
+    };
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isErasing) return;
+    e.preventDefault();
+
+    const { x, y } = getTouchCoords(e);
+    const touch = e.touches[0];
 
     setIsDrawing(true);
     lastPosRef.current = { x, y };
@@ -205,13 +221,9 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDrawing || !isErasing) return;
     e.preventDefault();
-    const canvas = canvasRef.current;
-    if (!canvas) return;
 
+    const { x, y } = getTouchCoords(e);
     const touch = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
 
     // Обновляем позицию курсора
     if (cursorRef.current) {
