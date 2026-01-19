@@ -20,6 +20,13 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   const [isDrawing, setIsDrawing] = useState(false);
   const lastPosRef = useRef<{ x: number; y: number } | null>(null);
 
+  // Управление видимостью курсора
+  useEffect(() => {
+    if (cursorRef.current) {
+      cursorRef.current.style.display = isErasing ? 'block' : 'none';
+    }
+  }, [isErasing]);
+
   useEffect(() => {
     console.log('🔄 ImageEraser useEffect:', { isOpen, hasCanvas: !!canvasRef.current, imageUrl });
     
@@ -123,14 +130,15 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    // Обновляем позицию кастомного курсора
-    if (cursorRef.current) {
+    // Обновляем позицию кастомного курсора - ВСЕГДА показываем когда ластик включен
+    if (cursorRef.current && isErasing) {
       cursorRef.current.style.left = `${e.clientX}px`;
       cursorRef.current.style.top = `${e.clientY}px`;
       cursorRef.current.style.display = 'block';
     }
 
-    if (!isDrawing || !isErasing) return;
+    // Стираем только если нажата кнопка мыши
+    if (!isDrawing) return;
 
     // Интерполяция для плавного стирания
     if (lastPosRef.current) {
@@ -157,14 +165,15 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
   const handleMouseLeave = () => {
     setIsDrawing(false);
-    lastPosRef.current = null;
     if (cursorRef.current) {
       cursorRef.current.style.display = 'none';
     }
   };
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (cursorRef.current && isErasing) {
+      cursorRef.current.style.left = `${e.clientX}px`;
+      cursorRef.current.style.top = `${e.clientY}px`;
       cursorRef.current.style.display = 'block';
     }
   };
@@ -354,24 +363,22 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
               }}
             />
           </div>
-          {isErasing && (
-            <div
-              ref={cursorRef}
-              style={{
-                position: 'fixed',
-                pointerEvents: 'none',
-                border: '2px solid rgba(255,255,255,0.9)',
-                borderRadius: '50%',
-                width: `${brushSize}px`,
-                height: `${brushSize}px`,
-                transform: 'translate(-50%, -50%)',
-                display: 'none',
-                zIndex: 999999,
-                boxShadow: '0 0 0 1px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.3)',
-                background: 'rgba(255,255,255,0.05)',
-              }}
-            />
-          )}
+          <div
+            ref={cursorRef}
+            style={{
+              position: 'fixed',
+              pointerEvents: 'none',
+              border: '2px solid rgba(255,255,255,0.9)',
+              borderRadius: '50%',
+              width: `${brushSize}px`,
+              height: `${brushSize}px`,
+              transform: 'translate(-50%, -50%)',
+              display: 'none',
+              zIndex: 999999,
+              boxShadow: '0 0 0 1px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.3)',
+              background: 'rgba(255,255,255,0.05)',
+            }}
+          />
 
           <div className="flex justify-end gap-2 pt-4 border-t">
             <Button variant="outline" onClick={onClose}>
