@@ -18,11 +18,27 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   const [isErasing, setIsErasing] = useState(true);
   const [isReady, setIsReady] = useState(false);
 
-  // Проверяем, когда ref станет доступен
+  // Проверяем, когда ref станет доступен (используем таймер для гарантии)
   useEffect(() => {
-    if (isOpen && canvasContainerRef.current) {
-      console.log('✅ Ref готов, можно инициализировать canvas');
-      setIsReady(true);
+    if (isOpen) {
+      // Проверяем сразу
+      if (canvasContainerRef.current) {
+        console.log('✅ Ref готов сразу');
+        setIsReady(true);
+      } else {
+        // Если ref ещё не готов, ждём немного и проверяем снова
+        console.log('⏳ Ref не готов, ждём...');
+        const timer = setTimeout(() => {
+          if (canvasContainerRef.current) {
+            console.log('✅ Ref готов после задержки');
+            setIsReady(true);
+          } else {
+            console.error('❌ Ref так и не появился');
+          }
+        }, 50); // Минимальная задержка для рендера DOM
+        
+        return () => clearTimeout(timer);
+      }
     } else {
       setIsReady(false);
     }
