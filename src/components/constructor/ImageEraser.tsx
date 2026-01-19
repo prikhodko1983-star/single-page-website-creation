@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 
 interface ImageEraserProps {
   isOpen: boolean;
@@ -13,7 +13,7 @@ interface ImageEraserProps {
 
 export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserProps) {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
-  const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+  const fabricCanvasRef = useRef<any>(null);
   const [brushSize, setBrushSize] = useState(20);
   const [isErasing, setIsErasing] = useState(true);
 
@@ -25,36 +25,34 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
     console.log('🖼️ Инициализируем Fabric.js для:', imageUrl);
 
-    // Создаем canvas элемент
     const canvasEl = document.createElement('canvas');
     canvasEl.id = 'fabric-canvas';
     canvasContainerRef.current.appendChild(canvasEl);
 
-    // Инициализируем Fabric.js
-    const fabricCanvas = new fabric.Canvas(canvasEl, {
+    const Canvas = (fabric as any).Canvas;
+    const fabricCanvas = new Canvas(canvasEl, {
       isDrawingMode: true,
       backgroundColor: '#000000'
     });
 
     fabricCanvasRef.current = fabricCanvas;
 
-    // Загружаем изображение
-    fabric.Image.fromURL(imageUrl, (img) => {
+    const FabricImage = (fabric as any).Image;
+    FabricImage.fromURL(imageUrl, (img: any) => {
       if (!img || !fabricCanvas) return;
 
       console.log('✅ Изображение загружено:', img.width, 'x', img.height);
 
-      // Устанавливаем размеры canvas
       const maxWidth = 800;
       const maxHeight = 600;
       let scale = 1;
 
-      if (img.width! > maxWidth || img.height! > maxHeight) {
-        scale = Math.min(maxWidth / img.width!, maxHeight / img.height!);
+      if (img.width > maxWidth || img.height > maxHeight) {
+        scale = Math.min(maxWidth / img.width, maxHeight / img.height);
       }
 
-      const scaledWidth = img.width! * scale;
-      const scaledHeight = img.height! * scale;
+      const scaledWidth = img.width * scale;
+      const scaledHeight = img.height * scale;
 
       fabricCanvas.setWidth(scaledWidth);
       fabricCanvas.setHeight(scaledHeight);
@@ -66,8 +64,8 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
       fabricCanvas.add(img);
       fabricCanvas.sendToBack(img);
 
-      // Настраиваем кисть для стирания
-      fabricCanvas.freeDrawingBrush = new fabric.EraserBrush(fabricCanvas);
+      const EraserBrush = (fabric as any).EraserBrush;
+      fabricCanvas.freeDrawingBrush = new EraserBrush(fabricCanvas);
       fabricCanvas.freeDrawingBrush.width = brushSize;
     }, { crossOrigin: 'anonymous' });
 
@@ -79,14 +77,12 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     };
   }, [isOpen, imageUrl]);
 
-  // Обновление размера кисти
   useEffect(() => {
-    if (fabricCanvasRef.current && fabricCanvasRef.current.freeDrawingBrush) {
+    if (fabricCanvasRef.current?.freeDrawingBrush) {
       fabricCanvasRef.current.freeDrawingBrush.width = brushSize;
     }
   }, [brushSize]);
 
-  // Переключение режима рисования
   useEffect(() => {
     if (fabricCanvasRef.current) {
       fabricCanvasRef.current.isDrawingMode = isErasing;
@@ -121,10 +117,11 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     const fabricCanvas = fabricCanvasRef.current;
     fabricCanvas.clear();
 
-    fabric.Image.fromURL(imageUrl, (img) => {
+    const FabricImage = (fabric as any).Image;
+    FabricImage.fromURL(imageUrl, (img: any) => {
       if (!img || !fabricCanvas) return;
 
-      const scale = fabricCanvas.width! / img.width!;
+      const scale = fabricCanvas.width / img.width;
       img.scale(scale);
       img.selectable = false;
       img.evented = false;
@@ -143,7 +140,6 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Панель инструментов */}
           <div className="flex flex-wrap items-center gap-3 p-4 bg-secondary rounded-lg">
             <Button
               variant={isErasing ? "default" : "outline"}
@@ -178,12 +174,10 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
             </Button>
           </div>
 
-          {/* Canvas */}
           <div className="relative overflow-auto bg-muted/20 rounded-lg p-4 max-h-[60vh] flex items-center justify-center">
             <div ref={canvasContainerRef} />
           </div>
 
-          {/* Кнопки действий */}
           <div className="flex justify-end gap-2 pt-4 border-t">
             <Button variant="outline" onClick={onClose}>
               Отмена
