@@ -114,26 +114,10 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     if (!canvas) return { x: 0, y: 0 };
 
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
     
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
-    
-    console.log('🎯 getCoords:', {
-      clientX: e.clientX,
-      clientY: e.clientY,
-      'rect.left': rect.left,
-      'rect.top': rect.top,
-      'rect.width': rect.width,
-      'rect.height': rect.height,
-      'canvas.width': canvas.width,
-      'canvas.height': canvas.height,
-      scaleX,
-      scaleY,
-      resultX: x,
-      resultY: y
-    });
+    // Вычисляем реальное положение клика относительно canvas
+    const x = ((e.clientX - rect.left) / rect.width) * canvas.width;
+    const y = ((e.clientY - rect.top) / rect.height) * canvas.height;
     
     return { x, y };
   };
@@ -205,13 +189,11 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
     const touch = e.touches[0];
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
     
-    return {
-      x: (touch.clientX - rect.left) * scaleX,
-      y: (touch.clientY - rect.top) * scaleY
-    };
+    const x = ((touch.clientX - rect.left) / rect.width) * canvas.width;
+    const y = ((touch.clientY - rect.top) / rect.height) * canvas.height;
+    
+    return { x, y };
   };
 
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
