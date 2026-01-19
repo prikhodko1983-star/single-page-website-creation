@@ -27,6 +27,24 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     }
   }, [isErasing]);
 
+  // Глобальный обработчик mouseup для остановки рисования при отпускании кнопки мыши
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isDrawing) {
+        setIsDrawing(false);
+        lastPosRef.current = null;
+      }
+    };
+
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    window.addEventListener('touchend', handleGlobalMouseUp);
+
+    return () => {
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+      window.removeEventListener('touchend', handleGlobalMouseUp);
+    };
+  }, [isDrawing]);
+
   useEffect(() => {
     console.log('🔄 ImageEraser useEffect:', { isOpen, hasCanvas: !!canvasRef.current, imageUrl });
     
