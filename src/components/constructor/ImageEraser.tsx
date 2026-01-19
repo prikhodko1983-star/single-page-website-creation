@@ -15,6 +15,7 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const [brushSize, setBrushSize] = useState(20);
+  const [brushHardness, setBrushHardness] = useState(0.3);
   const [isErasing, setIsErasing] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const lastPosRef = useRef<{ x: number; y: number } | null>(null);
@@ -113,9 +114,11 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const x = e.nativeEvent.offsetX;
+    const y = e.nativeEvent.offsetY;
+
     // Обновляем позицию кастомного курсора
-    if (cursorRef.current && isErasing) {
-      const rect = canvas.getBoundingClientRect();
+    if (cursorRef.current) {
       cursorRef.current.style.left = `${e.clientX}px`;
       cursorRef.current.style.top = `${e.clientY}px`;
       cursorRef.current.style.display = 'block';
@@ -123,15 +126,12 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
     if (!isDrawing || !isErasing) return;
 
-    const x = e.nativeEvent.offsetX;
-    const y = e.nativeEvent.offsetY;
-
     // Интерполяция для плавного стирания
     if (lastPosRef.current) {
       const lastX = lastPosRef.current.x;
       const lastY = lastPosRef.current.y;
       const dist = Math.sqrt((x - lastX) ** 2 + (y - lastY) ** 2);
-      const steps = Math.max(Math.floor(dist / 2), 1);
+      const steps = Math.max(Math.ceil(dist / 2), 1);
 
       for (let i = 0; i <= steps; i++) {
         const t = i / steps;
@@ -167,9 +167,17 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
     const ctx = ctxRef.current;
     if (!ctx) return;
 
+    const radius = brushSize / 2;
+    
+    // Создаём радиальный градиент для мягких краёв
+    const gradient = ctx.createRadialGradient(x, y, radius * brushHardness, x, y, radius);
+    gradient.addColorStop(0, 'rgba(0,0,0,1)');
+    gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
     ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = gradient;
     ctx.beginPath();
-    ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fill();
   };
 
@@ -224,6 +232,19 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
                 step="5"
                 value={brushSize}
                 onChange={(e) => setBrushSize(parseInt(e.target.value))}
+                className="flex-1"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+              <span className="text-sm whitespace-nowrap">Жёсткость: {Math.round(brushHardness * 100)}%</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="10"
+                value={brushHardness * 100}
+                onChange={(e) => setBrushHardness(parseInt(e.target.value) / 100)}
                 className="flex-1"
               />
             </div>
