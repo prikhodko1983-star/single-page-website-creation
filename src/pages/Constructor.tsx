@@ -986,7 +986,8 @@ const Constructor = () => {
       return '';
     }
     
-    const url = element.processedSrc || element.src || '';
+    // ИСПРАВЛЕНИЕ: используем ТОЛЬКО оригинальный src (не processedSrc)
+    const url = element.src || '';
     console.log('🖼️ URL для ImageEraser:', url);
     return url;
   }, [editingImageId, elements]);

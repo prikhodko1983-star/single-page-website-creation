@@ -18,28 +18,43 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   const [isErasing, setIsErasing] = useState(true);
 
   useEffect(() => {
+    console.log('🔄 ImageEraser useEffect вызван');
+    console.log('  isOpen:', isOpen);
+    console.log('  canvasContainerRef.current:', !!canvasContainerRef.current);
+    console.log('  imageUrl:', imageUrl?.substring(0, 100) + '...');
+    
     if (!isOpen || !canvasContainerRef.current || !imageUrl) {
-      console.warn('⚠️ Редактор: isOpen =', isOpen, 'imageUrl =', imageUrl);
+      console.warn('⚠️ Редактор: isOpen =', isOpen, 'imageUrl =', imageUrl?.substring(0, 50));
       return;
     }
 
-    console.log('🖼️ Инициализируем Fabric.js для:', imageUrl);
+    console.log('🖼️ Инициализируем Fabric.js для:', imageUrl.substring(0, 100) + '...');
 
     const canvasEl = document.createElement('canvas');
     canvasEl.id = 'fabric-canvas';
     canvasContainerRef.current.appendChild(canvasEl);
+    console.log('✅ Canvas элемент создан');
 
     const Canvas = (fabric as any).Canvas;
     const fabricCanvas = new Canvas(canvasEl, {
       isDrawingMode: true,
       backgroundColor: '#000000'
     });
+    console.log('✅ Fabric Canvas инициализирован');
 
     fabricCanvasRef.current = fabricCanvas;
 
     const FabricImage = (fabric as any).Image;
+    console.log('📥 Начинаем загрузку изображения...');
     FabricImage.fromURL(imageUrl, (img: any) => {
-      if (!img || !fabricCanvas) return;
+      console.log('📥 FabricImage.fromURL callback вызван');
+      console.log('  img:', !!img);
+      console.log('  fabricCanvas:', !!fabricCanvas);
+      
+      if (!img || !fabricCanvas) {
+        console.error('❌ img или fabricCanvas отсутствует');
+        return;
+      }
 
       console.log('✅ Изображение загружено:', img.width, 'x', img.height);
 
