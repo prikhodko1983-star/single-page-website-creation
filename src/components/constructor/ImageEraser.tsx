@@ -16,15 +16,27 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   const fabricCanvasRef = useRef<any>(null);
   const [brushSize, setBrushSize] = useState(20);
   const [isErasing, setIsErasing] = useState(true);
+  const [isReady, setIsReady] = useState(false);
+
+  // Проверяем, когда ref станет доступен
+  useEffect(() => {
+    if (isOpen && canvasContainerRef.current) {
+      console.log('✅ Ref готов, можно инициализировать canvas');
+      setIsReady(true);
+    } else {
+      setIsReady(false);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     console.log('🔄 ImageEraser useEffect вызван');
     console.log('  isOpen:', isOpen);
+    console.log('  isReady:', isReady);
     console.log('  canvasContainerRef.current:', !!canvasContainerRef.current);
     console.log('  imageUrl:', imageUrl?.substring(0, 100) + '...');
     
-    if (!isOpen || !canvasContainerRef.current || !imageUrl) {
-      console.warn('⚠️ Редактор: isOpen =', isOpen, 'imageUrl =', imageUrl?.substring(0, 50));
+    if (!isOpen || !isReady || !canvasContainerRef.current || !imageUrl) {
+      console.warn('⚠️ Редактор: isOpen =', isOpen, 'isReady =', isReady, 'imageUrl =', imageUrl?.substring(0, 50));
       return;
     }
 
@@ -90,7 +102,7 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
         canvasContainerRef.current.innerHTML = '';
       }
     };
-  }, [isOpen, imageUrl]);
+  }, [isOpen, isReady, imageUrl]);
 
   useEffect(() => {
     if (fabricCanvasRef.current?.freeDrawingBrush) {
