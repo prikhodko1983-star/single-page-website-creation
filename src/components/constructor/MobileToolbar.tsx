@@ -26,19 +26,33 @@ interface CanvasElement {
 }
 
 interface MobileToolbarProps {
-  selectedEl: CanvasElement | undefined;
-  updateElement: (id: string, updates: Partial<CanvasElement>) => Promise<void>;
-  deleteElement: (id: string) => void;
-  fonts: Array<{id: string, name: string, style: string, weight: string, example: string, fullStyle: string}>;
-  onEditImage?: (id: string) => void;
+  onAddText?: () => void;
+  onAddImage?: () => void;
+  onDelete?: () => void;
+  onRotateToggle?: () => void;
+  rotateMode?: boolean;
+  hasSelection?: boolean;
+  onOpenEraser?: () => void;
+  canErase?: boolean;
+  selectedEl?: CanvasElement | undefined;
+  updateElement?: (id: string, updates: Partial<CanvasElement>) => Promise<void>;
+  deleteElement?: (id: string) => void;
+  fonts?: Array<{id: string, name: string, style: string, weight: string, example: string, fullStyle: string}>;
 }
 
 export const MobileToolbar = ({
+  onAddText,
+  onAddImage,
+  onDelete,
+  onRotateToggle,
+  rotateMode,
+  hasSelection,
+  onOpenEraser,
+  canErase,
   selectedEl,
   updateElement,
   deleteElement,
   fonts,
-  onEditImage,
 }: MobileToolbarProps) => {
   const [activePanel, setActivePanel] = useState<'fonts' | 'size' | 'color' | 'align' | 'rotate' | 'imageSize' | null>(null);
   const [rotationInput, setRotationInput] = useState<string>('');
@@ -65,7 +79,7 @@ export const MobileToolbar = ({
   const handleRotationInputChange = (value: string) => {
     setRotationInput(value);
     const numValue = parseInt(value);
-    if (!isNaN(numValue)) {
+    if (!isNaN(numValue) && selectedEl && updateElement) {
       const clampedValue = Math.max(-180, Math.min(180, numValue));
       updateElement(selectedEl.id, { rotation: clampedValue });
     }
@@ -74,8 +88,8 @@ export const MobileToolbar = ({
   const handleRotationInputBlur = () => {
     const numValue = parseInt(rotationInput);
     if (isNaN(numValue)) {
-      setRotationInput((selectedEl.rotation || 0).toString());
-    } else {
+      setRotationInput((selectedEl?.rotation || 0).toString());
+    } else if (selectedEl && updateElement) {
       const clampedValue = Math.max(-180, Math.min(180, numValue));
       setRotationInput(clampedValue.toString());
       updateElement(selectedEl.id, { rotation: clampedValue });
@@ -98,7 +112,9 @@ export const MobileToolbar = ({
               <button
                 key={font.id}
                 onClick={() => {
-                  updateElement(selectedEl.id, { fontFamily: font.fullStyle });
+                  if (selectedEl && updateElement) {
+                    updateElement(selectedEl.id, { fontFamily: font.fullStyle });
+                  }
                 }}
                 className={`p-2 rounded-lg border-2 transition-all ${
                   selectedEl.fontFamily === font.fullStyle
@@ -134,8 +150,12 @@ export const MobileToolbar = ({
             type="range"
             min="8"
             max="30"
-            value={selectedEl.fontSize || 24}
-            onChange={(e) => updateElement(selectedEl.id, { fontSize: parseInt(e.target.value) })}
+            value={selectedEl?.fontSize || 24}
+            onChange={(e) => {
+              if (selectedEl && updateElement) {
+                updateElement(selectedEl.id, { fontSize: parseInt(e.target.value) });
+              }
+            }}
             className="w-full mb-4"
           />
           
@@ -146,8 +166,12 @@ export const MobileToolbar = ({
               min="0.4"
               max="3"
               step="0.1"
-              value={selectedEl.lineHeight || 1.2}
-              onChange={(e) => updateElement(selectedEl.id, { lineHeight: parseFloat(e.target.value) })}
+              value={selectedEl?.lineHeight || 1.2}
+              onChange={(e) => {
+                if (selectedEl && updateElement) {
+                  updateElement(selectedEl.id, { lineHeight: parseFloat(e.target.value) });
+                }
+              }}
               className="w-full"
             />
           </div>
@@ -167,8 +191,10 @@ export const MobileToolbar = ({
               <button
                 key={color}
                 onClick={() => {
-                  updateElement(selectedEl.id, { color });
-                  setActivePanel(null);
+                  if (selectedEl && updateElement) {
+                    updateElement(selectedEl.id, { color });
+                    setActivePanel(null);
+                  }
                 }}
                 className={`w-full aspect-square rounded-lg border-2 ${
                   selectedEl.color === color ? 'border-primary ring-2 ring-primary/20' : 'border-border'
@@ -179,8 +205,12 @@ export const MobileToolbar = ({
           </div>
           <input
             type="color"
-            value={selectedEl.color || '#FFFFFF'}
-            onChange={(e) => updateElement(selectedEl.id, { color: e.target.value })}
+            value={selectedEl?.color || '#FFFFFF'}
+            onChange={(e) => {
+              if (selectedEl && updateElement) {
+                updateElement(selectedEl.id, { color: e.target.value });
+              }
+            }}
             className="w-full h-10 mt-2 rounded border"
           />
         </div>
@@ -196,30 +226,36 @@ export const MobileToolbar = ({
           </div>
           <div className="flex gap-2">
             <Button
-              variant={selectedEl.textAlign === 'left' ? 'default' : 'outline'}
+              variant={selectedEl?.textAlign === 'left' ? 'default' : 'outline'}
               onClick={() => {
-                updateElement(selectedEl.id, { textAlign: 'left' });
-                setActivePanel(null);
+                if (selectedEl && updateElement) {
+                  updateElement(selectedEl.id, { textAlign: 'left' });
+                  setActivePanel(null);
+                }
               }}
               className="flex-1 h-10"
             >
               <Icon name="AlignLeft" size={16} />
             </Button>
             <Button
-              variant={selectedEl.textAlign === 'center' || !selectedEl.textAlign ? 'default' : 'outline'}
+              variant={selectedEl?.textAlign === 'center' || !selectedEl?.textAlign ? 'default' : 'outline'}
               onClick={() => {
-                updateElement(selectedEl.id, { textAlign: 'center' });
-                setActivePanel(null);
+                if (selectedEl && updateElement) {
+                  updateElement(selectedEl.id, { textAlign: 'center' });
+                  setActivePanel(null);
+                }
               }}
               className="flex-1 h-10"
             >
               <Icon name="AlignCenter" size={16} />
             </Button>
             <Button
-              variant={selectedEl.textAlign === 'right' ? 'default' : 'outline'}
+              variant={selectedEl?.textAlign === 'right' ? 'default' : 'outline'}
               onClick={() => {
-                updateElement(selectedEl.id, { textAlign: 'right' });
-                setActivePanel(null);
+                if (selectedEl && updateElement) {
+                  updateElement(selectedEl.id, { textAlign: 'right' });
+                  setActivePanel(null);
+                }
               }}
               className="flex-1 h-10"
             >
@@ -247,11 +283,13 @@ export const MobileToolbar = ({
                 type="range" 
                 min="-180" 
                 max="180" 
-                value={selectedEl.rotation || 0}
+                value={selectedEl?.rotation || 0}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value);
-                  updateElement(selectedEl.id, { rotation: value });
-                  setRotationInput(value.toString());
+                  if (selectedEl && updateElement) {
+                    const value = parseInt(e.target.value);
+                    updateElement(selectedEl.id, { rotation: value });
+                    setRotationInput(value.toString());
+                  }
                 }}
                 className="rotation-slider-mobile"
               />
@@ -288,19 +326,21 @@ export const MobileToolbar = ({
           
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-muted-foreground">Ширина: {selectedEl.width}px</label>
+              <label className="text-xs text-muted-foreground">Ширина: {selectedEl?.width || 100}px</label>
               <input
                 type="range"
                 min="50"
                 max="400"
-                value={selectedEl.width}
+                value={selectedEl?.width || 100}
                 onChange={(e) => {
-                  const newWidth = parseInt(e.target.value);
-                  const aspectRatio = selectedEl.height / selectedEl.width;
-                  updateElement(selectedEl.id, { 
-                    width: newWidth,
-                    height: Math.round(newWidth * aspectRatio)
-                  });
+                  if (selectedEl && updateElement) {
+                    const newWidth = parseInt(e.target.value);
+                    const aspectRatio = selectedEl.height / selectedEl.width;
+                    updateElement(selectedEl.id, { 
+                      width: newWidth,
+                      height: Math.round(newWidth * aspectRatio)
+                    });
+                  }
                 }}
                 className="w-full mt-1"
               />
@@ -364,14 +404,14 @@ export const MobileToolbar = ({
                   e.stopPropagation();
                   console.log('🖱️🖱️🖱️ КЛИК НА ЛАСТИК!!! 🖱️🖱️🖱️');
                   console.log('selectedEl:', selectedEl);
-                  console.log('selectedEl.id:', selectedEl.id);
-                  console.log('selectedEl.src:', selectedEl.src);
-                  console.log('onEditImage функция:', typeof onEditImage);
-                  if (onEditImage) {
-                    console.log('✅ Вызываем onEditImage с ID:', selectedEl.id);
-                    onEditImage(selectedEl.id);
+                  console.log('selectedEl?.id:', selectedEl?.id);
+                  console.log('selectedEl?.src:', selectedEl?.src);
+                  console.log('onOpenEraser функция:', typeof onOpenEraser);
+                  if (onOpenEraser) {
+                    console.log('✅ Вызываем onOpenEraser');
+                    onOpenEraser();
                   } else {
-                    console.error('❌ onEditImage отсутствует!');
+                    console.error('❌ onOpenEraser отсутствует!');
                   }
                 }}
                 className="flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors hover:bg-primary/10 hover:text-primary bg-red-500"
@@ -381,7 +421,7 @@ export const MobileToolbar = ({
               </button>
 
               <button
-                onClick={() => updateElement(selectedEl.id, { flipHorizontal: !selectedEl.flipHorizontal })}
+                onClick={() => updateElement?.(selectedEl.id, { flipHorizontal: !selectedEl.flipHorizontal })}
                 className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors ${
                   selectedEl.flipHorizontal ? 'bg-primary/10 text-primary' : 'hover:bg-secondary'
                 }`}

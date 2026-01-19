@@ -2479,7 +2479,13 @@ const Constructor = () => {
         updateElement={updateElement}
         deleteElement={deleteElement}
         fonts={fonts}
-        onEditImage={handleEditImage}
+        onOpenEraser={() => {
+          if (selectedElement) {
+            console.log('📝 MobileToolbar вызвал onOpenEraser для элемента:', selectedElement);
+            handleEditImage(selectedElement);
+          }
+        }}
+        canErase={!!selectedEl && (selectedEl.type === 'image' || selectedEl.type === 'photo' || selectedEl.type === 'cross' || selectedEl.type === 'flower')}
       />
     </div>
   );
