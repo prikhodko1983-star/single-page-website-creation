@@ -322,7 +322,7 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
             </Button>
           </div>
 
-          <div className="relative overflow-auto bg-muted/20 rounded-lg p-4 max-h-[60vh] flex items-center justify-center">
+          <div className="relative bg-muted/20 rounded-lg p-4 flex items-center justify-center" style={{ minHeight: '400px' }}>
             <canvas
               ref={canvasRef}
               onMouseDown={handleMouseDown}
@@ -333,26 +333,26 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
-              style={{ cursor: isErasing ? 'none' : 'default', maxWidth: '100%', maxHeight: '100%', touchAction: 'none' }}
+              style={{ cursor: isErasing ? 'none' : 'default', maxWidth: '100%', maxHeight: '60vh', touchAction: 'none', display: 'block' }}
             />
-            {isErasing && (
-              <div
-                ref={cursorRef}
-                style={{
-                  position: 'fixed',
-                  pointerEvents: 'none',
-                  border: '2px solid #fff',
-                  borderRadius: '50%',
-                  width: `${brushSize}px`,
-                  height: `${brushSize}px`,
-                  transform: 'translate(-50%, -50%)',
-                  display: 'none',
-                  zIndex: 999999,
-                  boxShadow: '0 0 0 1px rgba(0,0,0,0.5)',
-                }}
-              />
-            )}
           </div>
+          {isErasing && (
+            <div
+              ref={cursorRef}
+              style={{
+                position: 'fixed',
+                pointerEvents: 'none',
+                border: '2px solid #fff',
+                borderRadius: '50%',
+                width: `${brushSize}px`,
+                height: `${brushSize}px`,
+                transform: 'translate(-50%, -50%)',
+                display: 'none',
+                zIndex: 999999,
+                boxShadow: '0 0 0 1px rgba(0,0,0,0.5)',
+              }}
+            />
+          )}
 
           <div className="flex justify-end gap-2 pt-4 border-t">
             <Button variant="outline" onClick={onClose}>
