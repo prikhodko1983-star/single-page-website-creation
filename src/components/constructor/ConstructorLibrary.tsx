@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface CanvasElement {
   id: string;
@@ -105,6 +106,7 @@ export const ConstructorLibrary = ({
   isLoadingFlowers,
   loadFlowers,
 }: ConstructorLibraryProps) => {
+  const navigate = useNavigate();
   const [imageCategories, setImageCategories] = useState<Array<{id: number, name: string, slug: string}>>([]);
   const [categoryImages, setCategoryImages] = useState<Array<{id: number, category_id: number, name: string, image_url: string, category_name: string}>>([]);
   const [selectedImageCategory, setSelectedImageCategory] = useState<number | null>(null);
@@ -506,7 +508,17 @@ export const ConstructorLibrary = ({
               
               <div className="mt-2 p-2 bg-muted/30 rounded text-xs text-muted-foreground">
                 <Icon name="Info" size={12} className="inline mr-1" />
-                Добавляйте и редактируйте изображения самостоятельно или <a href="/#retouch" className="text-primary hover:underline">закажите ретушь и композицию</a> у профессионалов.
+                Добавляйте и редактируйте изображения самостоятельно или <button 
+                  onClick={() => {
+                    navigate('/');
+                    setTimeout(() => {
+                      document.getElementById('retouch')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="text-primary hover:underline"
+                >
+                  закажите ретушь и композицию
+                </button> у профессионалов.
               </div>
             </div>
             
