@@ -498,11 +498,10 @@ export const ConstructorLibrary = ({
               />
               <Button 
                 onClick={() => photoInputRef.current?.click()} 
-                variant="outline" 
                 className="w-full mt-3"
               >
                 <Icon name="Upload" size={18} className="mr-2" />
-                Загрузить свой портрет
+                ЗАГРУЗИТЬ СВОЙ ПОРТРЕТ
               </Button>
             </div>
             
