@@ -267,13 +267,51 @@ const Constructor = () => {
 
   const addImageElement = async (src: string, type: 'image' | 'cross' | 'flower') => {
     const processedSrc = await applyScreenMode(src);
+    
+    // Для портретов используем реальные пропорции изображения
+    let width = 100;
+    let height = 100;
+    
+    // Загружаем изображение для определения его пропорций
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = src;
+    
+    await new Promise((resolve) => {
+      img.onload = () => {
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
+        
+        // Для портретов (вертикальные изображения)
+        if (aspectRatio < 1) {
+          height = 150;
+          width = Math.round(height * aspectRatio);
+        } 
+        // Для горизонтальных изображений
+        else if (aspectRatio > 1) {
+          width = 150;
+          height = Math.round(width / aspectRatio);
+        }
+        // Для квадратных
+        else {
+          width = 100;
+          height = 100;
+        }
+        
+        resolve(true);
+      };
+      img.onerror = () => {
+        // Если ошибка загрузки, оставляем дефолтные размеры
+        resolve(false);
+      };
+    });
+    
     const newElement: CanvasElement = {
       id: Date.now().toString(),
       type,
       x: 50,
       y: 50,
-      width: 100,
-      height: 100,
+      width,
+      height,
       src,
       rotation: 0,
       screenMode: true,
