@@ -148,7 +148,7 @@ export const ConstructorCanvas = ({
           transformOrigin: 'center top',
           cursor: canvasZoom > 1 ? 'move' : 'default',
           transition: 'none',
-          maxHeight: 'calc(100vh - 420px)',
+          maxHeight: 'calc(100vh - 200px)',
           zIndex: 10
         }}
         onMouseMove={handleMouseMove}
