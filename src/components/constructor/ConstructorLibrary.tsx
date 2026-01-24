@@ -465,11 +465,11 @@ export const ConstructorLibrary = ({
                 <TabsContent value="female" className="mt-3 space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <button
-                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/bdabcddc-8bda-4b18-bc89-839bc15b9cb6.jpg', 'image')}
+                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/e1a552a7-32c5-4385-99b6-143f6b05e8b7.jpg', 'image')}
                       className="relative overflow-hidden rounded border-2 border-border hover:border-primary transition-all aspect-[3/4] bg-black"
                     >
                       <img 
-                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/bdabcddc-8bda-4b18-bc89-839bc15b9cb6.jpg" 
+                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/e1a552a7-32c5-4385-99b6-143f6b05e8b7.jpg" 
                         alt="Женский портрет"
                         className="w-full h-full object-cover"
                       />
