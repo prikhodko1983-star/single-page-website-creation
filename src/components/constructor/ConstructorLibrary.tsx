@@ -506,7 +506,7 @@ export const ConstructorLibrary = ({
               
               <div className="mt-2 p-2 bg-muted/30 rounded text-xs text-muted-foreground">
                 <Icon name="Info" size={12} className="inline mr-1" />
-                Вы можете <a href="#retouch" className="text-primary hover:underline">заказать ретушь портрета</a> у нас и добавить в макет любое изображение или композицию
+                Добавляйте и редактируйте изображения самостоятельно или <a href="/#retouch" className="text-primary hover:underline">закажите ретушь и композицию</a> у профессионалов.
               </div>
             </div>
             
