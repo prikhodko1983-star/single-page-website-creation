@@ -128,10 +128,16 @@ export const ConstructorCanvas = ({
 
   return (
     <div className="flex flex-col items-center relative">
-      {/* Подсказка для мобильных */}
-      <div className="mb-2 md:hidden text-xs text-muted-foreground text-center">
-        <Icon name="Hand" size={12} className="inline mr-1" />
-        Два пальца для масштабирования макета
+      {/* Подсказки */}
+      <div className="mb-2 text-xs text-muted-foreground text-center">
+        <div className="hidden md:block">
+          <Icon name="MousePointerClick" size={12} className="inline mr-1" />
+          Двойной клик для увеличения макета
+        </div>
+        <div className="md:hidden">
+          <Icon name="Hand" size={12} className="inline mr-1" />
+          Два пальца для масштабирования макета
+        </div>
       </div>
       
       <div 
