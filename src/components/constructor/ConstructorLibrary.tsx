@@ -429,7 +429,65 @@ export const ConstructorLibrary = ({
               </Button>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-2 p-3 bg-secondary/20 rounded-lg">
+              <Label className="font-semibold">Портреты</Label>
+              <Tabs defaultValue="male" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="male">Мужские</TabsTrigger>
+                  <TabsTrigger value="female">Женские</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="male" className="mt-3 space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/25b06347-b759-4c5a-9e64-0752f27ac98d.jpg', 'image')}
+                      className="relative overflow-hidden rounded border-2 border-border hover:border-primary transition-all aspect-[3/4] bg-black"
+                    >
+                      <img 
+                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/25b06347-b759-4c5a-9e64-0752f27ac98d.jpg" 
+                        alt="Мужской портрет"
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                    <button
+                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/363f8d87-38cc-4670-905e-4e0c3e70f7d5.jpg', 'image')}
+                      className="relative overflow-hidden rounded border-2 border-border hover:border-primary transition-all aspect-[3/4] bg-black"
+                    >
+                      <img 
+                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/363f8d87-38cc-4670-905e-4e0c3e70f7d5.jpg" 
+                        alt="Мужской портрет контур"
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="female" className="mt-3 space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/bdabcddc-8bda-4b18-bc89-839bc15b9cb6.jpg', 'image')}
+                      className="relative overflow-hidden rounded border-2 border-border hover:border-primary transition-all aspect-[3/4] bg-black"
+                    >
+                      <img 
+                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/bdabcddc-8bda-4b18-bc89-839bc15b9cb6.jpg" 
+                        alt="Женский портрет"
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                    <button
+                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/8cd53895-8a5e-4eb4-991d-d16fcd78a06b.jpg', 'image')}
+                      className="relative overflow-hidden rounded border-2 border-border hover:border-primary transition-all aspect-[3/4] bg-black"
+                    >
+                      <img 
+                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/8cd53895-8a5e-4eb4-991d-d16fcd78a06b.jpg" 
+                        alt="Женский портрет контур"
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  </div>
+                </TabsContent>
+              </Tabs>
+              
               <input 
                 ref={photoInputRef}
                 type="file" 
@@ -440,11 +498,11 @@ export const ConstructorLibrary = ({
               />
               <Button 
                 onClick={() => photoInputRef.current?.click()} 
-                variant="default" 
-                className="w-full justify-start bg-primary"
+                variant="outline" 
+                className="w-full mt-3"
               >
-                <Icon name="Image" size={18} className="mr-2" />
-                Добавить фотографию
+                <Icon name="Upload" size={18} className="mr-2" />
+                Загрузить свой портрет
               </Button>
             </div>
             
