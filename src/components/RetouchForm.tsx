@@ -137,6 +137,14 @@ const RetouchForm = () => {
       const result = await response.json();
 
       if (response.ok && result.success) {
+        // GTM event
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: 'retouch_form_submit',
+            form_name: 'Заказ ретуши фото'
+          });
+        }
+        
         toast.success("Заявка отправлена! Мы свяжемся с вами в течение 30 минут");
         setFormData({ name: "", phone: "", comment: "" });
         setSelectedFile(null);

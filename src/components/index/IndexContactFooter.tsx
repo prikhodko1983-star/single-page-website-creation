@@ -93,6 +93,14 @@ export default function IndexContactFooter({
                     <a 
                       href="tel:+79960681168" 
                       className="flex items-center gap-2 text-2xl font-oswald font-bold hover:text-primary transition-colors"
+                      onClick={() => {
+                        if (window.dataLayer) {
+                          window.dataLayer.push({
+                            event: 'phone_click',
+                            button_name: 'Телефон футер'
+                          });
+                        }
+                      }}
                     >
                       <Icon name="Phone" size={28} />
                       8 (996) 068-11-68
@@ -105,6 +113,14 @@ export default function IndexContactFooter({
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 px-4 py-2 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-lg transition-colors"
+                        onClick={() => {
+                          if (window.dataLayer) {
+                            window.dataLayer.push({
+                              event: 'messenger_click',
+                              messenger_name: 'WhatsApp'
+                            });
+                          }
+                        }}
                       >
                         <Icon name="MessageCircle" size={20} />
                         <span className="font-medium">WhatsApp</span>
@@ -114,6 +130,14 @@ export default function IndexContactFooter({
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 px-4 py-2 bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors"
+                        onClick={() => {
+                          if (window.dataLayer) {
+                            window.dataLayer.push({
+                              event: 'messenger_click',
+                              messenger_name: 'Telegram'
+                            });
+                          }
+                        }}
                       >
                         <Icon name="Send" size={20} />
                         <span className="font-medium">Telegram</span>

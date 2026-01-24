@@ -166,7 +166,15 @@ export default function IndexHeroSections({
                 <Button 
                   size="sm" 
                   className="bg-[#f59f0a] hover:bg-[#d88a09] text-white font-oswald text-sm px-4 py-2 w-auto"
-                  onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => {
+                    if (window.dataLayer) {
+                      window.dataLayer.push({
+                        event: 'button_click',
+                        button_name: 'Каталог (Hero)'
+                      });
+                    }
+                    document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                 >
                   <Icon name="ShoppingBag" className="mr-2" size={16} />
                   КАТАЛОГ
@@ -174,7 +182,15 @@ export default function IndexHeroSections({
                 <Button 
                   size="sm" 
                   className="bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-sm px-4 py-2 w-auto"
-                  onClick={onNavigateConstructor}
+                  onClick={() => {
+                    if (window.dataLayer) {
+                      window.dataLayer.push({
+                        event: 'button_click',
+                        button_name: 'Создать проект (Hero)'
+                      });
+                    }
+                    onNavigateConstructor();
+                  }}
                 >
                   <Icon name="Wrench" className="mr-2" size={16} />
                   СОЗДАТЬ ПРОЕКТ
@@ -183,7 +199,15 @@ export default function IndexHeroSections({
                   size="sm"
                   variant="outline"
                   className="font-oswald text-sm px-4 py-2 w-auto"
-                  onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => {
+                    if (window.dataLayer) {
+                      window.dataLayer.push({
+                        event: 'button_click',
+                        button_name: 'Заказать консультацию (Hero)'
+                      });
+                    }
+                    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                 >
                   ЗАКАЗАТЬ КОНСУЛЬТАЦИЮ
                 </Button>

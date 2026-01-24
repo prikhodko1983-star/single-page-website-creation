@@ -233,6 +233,14 @@ const Index = () => {
       });
       
       if (response.ok) {
+        // GTM event
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: 'contact_form_submit',
+            form_name: 'Форма обратной связи'
+          });
+        }
+        
         alert('✅ Спасибо! Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.');
         setFormData({ name: "", phone: "", message: "" });
       } else {
