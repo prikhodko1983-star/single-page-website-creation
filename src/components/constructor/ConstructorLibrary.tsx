@@ -450,11 +450,11 @@ export const ConstructorLibrary = ({
                       />
                     </button>
                     <button
-                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/363f8d87-38cc-4670-905e-4e0c3e70f7d5.jpg', 'image')}
+                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/1a839d6b-b217-4729-bfc9-58961b033575.jpg', 'image')}
                       className="relative overflow-hidden rounded border-2 border-border hover:border-primary transition-all aspect-[3/4] bg-black"
                     >
                       <img 
-                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/363f8d87-38cc-4670-905e-4e0c3e70f7d5.jpg" 
+                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/1a839d6b-b217-4729-bfc9-58961b033575.jpg" 
                         alt="Мужской портрет контур"
                         className="w-full h-full object-cover"
                       />
