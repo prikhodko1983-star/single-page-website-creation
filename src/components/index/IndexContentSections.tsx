@@ -201,7 +201,7 @@ export default function IndexContentSections({
                   </div>
                 </div>
                 <div className="p-4">
-                  <div className="text-sm text-center text-muted-foreground">Реставрация и улучшение качества</div>
+                  <div className="text-sm text-center text-muted-foreground">создадим композицию поописанию</div>
                 </div>
               </CardContent>
             </Card>
