@@ -29,6 +29,7 @@ const TelegramChatButton = () => {
           #tg-chat-btn {
             width: 70px;
             height: 70px;
+            bottom: 140px;
           }
           #tg-chat-btn img {
             width: 35px;
