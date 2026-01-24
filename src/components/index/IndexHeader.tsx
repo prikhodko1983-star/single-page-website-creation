@@ -20,6 +20,7 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
           <div className="hidden md:flex items-center gap-6 text-sm">
             <a href="#shop" className="hover:text-primary transition-colors">Каталог</a>
             <a href="#portfolio" className="hover:text-primary transition-colors">Наши работы</a>
+            <a href="/constructor" className="hover:text-primary transition-colors">Конструктор</a>
             <a href="#services" className="hover:text-primary transition-colors">Услуги</a>
             <a href="#retouch" className="hover:text-primary transition-colors">Ретушь</a>
             <a href="#prices" className="hover:text-primary transition-colors">Цены</a>
@@ -81,6 +82,13 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Наши работы
+              </a>
+              <a 
+                href="/constructor" 
+                className="text-base hover:text-primary transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Конструктор
               </a>
               <a 
                 href="#services" 
