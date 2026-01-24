@@ -127,7 +127,7 @@ export const ConstructorCanvas = ({
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center relative">
       {/* Подсказка для мобильных */}
       <div className="mb-2 md:hidden text-xs text-muted-foreground text-center">
         <Icon name="Hand" size={12} className="inline mr-1" />
@@ -142,7 +142,8 @@ export const ConstructorCanvas = ({
           transformOrigin: 'center center',
           cursor: canvasZoom > 1 ? 'move' : 'default',
           transition: 'none',
-          maxHeight: 'calc(100vh - 280px)'
+          maxHeight: 'calc(100vh - 350px)',
+          zIndex: 10
         }}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
