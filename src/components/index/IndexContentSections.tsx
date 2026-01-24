@@ -192,7 +192,7 @@ export default function IndexContentSections({
               <CardContent className="p-0">
                 <div className="relative aspect-[3/4] bg-secondary">
                   <img 
-                    src="https://cdn.poehali.dev/files/a7e2b5c8-444e-4895-b70e-a11e197150b5.png"
+                    src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/78bc18ba-c4d0-4e12-9a5b-0bdaedcdc304.PNG"
                     alt="Ретушь мужского портрета"
                     className="w-full h-full object-contain"
                   />
