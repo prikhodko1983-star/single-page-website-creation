@@ -225,7 +225,7 @@ export default function IndexContentSections({
             </Card>
           </div>
 
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-3xl mx-auto" id="retouch-form">
             <RetouchForm />
           </div>
         </div>
