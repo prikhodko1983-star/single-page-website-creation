@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Icon from '@/components/ui/icon';
 
 interface GalleryItem {
   id: string;
@@ -13,6 +14,8 @@ const GALLERY_API = 'https://functions.poehali.dev/16b2bcd1-9c80-4d3e-96c6-0aaaa
 const GallerySection = () => {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const loadGallery = async () => {
@@ -75,14 +78,16 @@ const GallerySection = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 max-w-7xl mx-auto">
-            {galleryItems.map((item) => (
-              <div key={item.id} className="relative group overflow-hidden rounded-lg shadow-lg aspect-[4/3]">
+            {galleryItems.map((item, index) => (
+              <div 
+                key={item.id} 
+                className="relative group overflow-hidden rounded-lg shadow-lg aspect-[4/3] cursor-pointer"
+                onClick={() => openLightbox(index)}
+              >
                 {item.type === 'video' ? (
                   <video
                     src={item.url}
                     className="w-full h-full object-cover"
-                    controls
-                    playsInline
                     preload="metadata"
                   />
                 ) : (
@@ -115,6 +120,65 @@ const GallerySection = () => {
           </div>
         </div>
       </div>
+
+      {lightboxOpen && galleryItems[currentIndex] && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          <button
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            <Icon name="X" size={24} className="text-white" />
+          </button>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); goToPrevious(); }}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            <Icon name="ChevronLeft" size={32} className="text-white" />
+          </button>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); goToNext(); }}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            <Icon name="ChevronRight" size={32} className="text-white" />
+          </button>
+
+          <div 
+            className="max-w-7xl max-h-[90vh] w-full px-16 md:px-24"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {galleryItems[currentIndex].type === 'video' ? (
+              <video
+                src={galleryItems[currentIndex].url}
+                className="w-full h-full max-h-[90vh] object-contain"
+                controls
+                autoPlay
+                playsInline
+              />
+            ) : (
+              <img
+                src={galleryItems[currentIndex].url}
+                alt={galleryItems[currentIndex].title}
+                className="w-full h-full max-h-[90vh] object-contain"
+              />
+            )}
+
+            <div className="text-center mt-4 text-white">
+              <h3 className="font-oswald font-bold text-2xl mb-2">
+                {galleryItems[currentIndex].title}
+              </h3>
+              <p className="text-white/80">{galleryItems[currentIndex].desc}</p>
+              <p className="text-white/60 text-sm mt-2">
+                {currentIndex + 1} / {galleryItems.length}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
