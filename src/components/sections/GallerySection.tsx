@@ -45,6 +45,38 @@ const GallerySection = () => {
     };
   }, []);
 
+  const openLightbox = (index: number) => {
+    setCurrentIndex(index);
+    setLightboxOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+    document.body.style.overflow = 'auto';
+  };
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % galleryItems.length);
+  };
+
+  const goToPrevious = () => {
+    setCurrentIndex((prev) => (prev - 1 + galleryItems.length) % galleryItems.length);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!lightboxOpen) return;
+      
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') goToNext();
+      if (e.key === 'ArrowLeft') goToPrevious();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxOpen, galleryItems.length]);
+
   if (loading) {
     return (
       <section className="py-20 bg-secondary">
