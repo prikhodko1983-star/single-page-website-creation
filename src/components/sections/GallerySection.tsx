@@ -16,6 +16,8 @@ const GallerySection = () => {
   const [loading, setLoading] = useState(true);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
   useEffect(() => {
     const loadGallery = async () => {
@@ -62,6 +64,32 @@ const GallerySection = () => {
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev - 1 + galleryItems.length) % galleryItems.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    
+    if (isLeftSwipe) {
+      goToNext();
+    }
+    if (isRightSwipe) {
+      goToPrevious();
+    }
+    
+    setTouchStart(0);
+    setTouchEnd(0);
   };
 
   useEffect(() => {
@@ -182,6 +210,9 @@ const GallerySection = () => {
           <div 
             className="max-w-7xl max-h-[90vh] w-full px-16 md:px-24"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             {galleryItems[currentIndex].type === 'video' ? (
               <video
