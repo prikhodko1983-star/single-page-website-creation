@@ -185,6 +185,9 @@ const GallerySection = () => {
         <div 
           className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
           onClick={closeLightbox}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           <button
             onClick={closeLightbox}
@@ -210,9 +213,6 @@ const GallerySection = () => {
           <div 
             className="max-w-7xl max-h-[90vh] w-full px-16 md:px-24"
             onClick={(e) => e.stopPropagation()}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
           >
             {galleryItems[currentIndex].type === 'video' ? (
               <video
