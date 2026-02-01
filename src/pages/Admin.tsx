@@ -222,14 +222,7 @@ export default function Admin() {
   const [monuments, setMonuments] = useState<Monument[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([
-    { id: '1', type: 'image', url: 'https://cdn.poehali.dev/files/bbcac88c-6deb-429e-b227-40488c7c5273.jpg', title: 'Комплексное благоустройство', desc: 'Установка памятников и уход за территорией' },
-    { id: '2', type: 'image', url: 'https://cdn.poehali.dev/files/58ba923f-a428-4ebd-a17d-2cd8e5b523a8.jpg', title: 'Художественная гравировка', desc: 'Индивидуальный дизайн и качественное исполнение' },
-    { id: '3', type: 'image', url: 'https://cdn.poehali.dev/files/c80c1bd4-c413-425a-a1fc-91dbb36a8de4.jpg', title: 'Горизонтальные памятники', desc: 'Классический дизайн из чёрного гранита' },
-    { id: '4', type: 'image', url: 'https://cdn.poehali.dev/files/6f5b52e2-08d6-473f-838f-e3ffd77bc1cf.jpg', title: 'Вертикальные стелы', desc: 'С профессиональной гравировкой портрета' },
-    { id: '5', type: 'image', url: 'https://cdn.poehali.dev/files/a92e8f49-5be4-4b4b-939f-e97e69b14d55.jpg', title: 'Мемориальные комплексы', desc: 'С благоустройством и цветником' },
-    { id: '6', type: 'image', url: 'https://cdn.poehali.dev/files/e4f88cd9-b74c-4b96-bf11-ab78a26bc19a.jpg', title: 'Элитные памятники', desc: 'Эксклюзивный дизайн по индивидуальному проекту' }
-  ]);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
 
   const [editingMonument, setEditingMonument] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -335,8 +328,10 @@ export default function Admin() {
     loadGallery();
   }, []);
 
+  const [galleryLoaded, setGalleryLoaded] = useState(false);
+
   useEffect(() => {
-    if (galleryItems.length > 0) {
+    if (galleryLoaded && galleryItems.length > 0) {
       saveGallery();
     }
   }, [galleryItems]);
@@ -671,10 +666,13 @@ export default function Admin() {
         const data = await response.json();
         if (Array.isArray(data)) {
           setGalleryItems(data);
+          setGalleryLoaded(true);
         }
       }
     } catch (error) {
       console.error('Error loading gallery:', error);
+    } finally {
+      setGalleryLoaded(true);
     }
   };
 

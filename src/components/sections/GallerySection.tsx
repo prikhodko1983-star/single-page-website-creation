@@ -8,45 +8,29 @@ interface GalleryItem {
   desc: string;
 }
 
-const defaultGalleryItems: GalleryItem[] = [
-  { id: '1', type: 'image', url: 'https://cdn.poehali.dev/files/bbcac88c-6deb-429e-b227-40488c7c5273.jpg', title: 'Комплексное благоустройство', desc: 'Установка памятников и уход за территорией' },
-  { id: '2', type: 'image', url: 'https://cdn.poehali.dev/files/58ba923f-a428-4ebd-a17d-2cd8e5b523a8.jpg', title: 'Художественная гравировка', desc: 'Индивидуальный дизайн и качественное исполнение' },
-  { id: '3', type: 'image', url: 'https://cdn.poehali.dev/files/c80c1bd4-c413-425a-a1fc-91dbb36a8de4.jpg', title: 'Горизонтальные памятники', desc: 'Классический дизайн из чёрного гранита' },
-  { id: '4', type: 'image', url: 'https://cdn.poehali.dev/files/6f5b52e2-08d6-473f-838f-e3ffd77bc1cf.jpg', title: 'Вертикальные стелы', desc: 'С профессиональной гравировкой портрета' },
-  { id: '5', type: 'image', url: 'https://cdn.poehali.dev/files/a92e8f49-5be4-4b4b-939f-e97e69b14d55.jpg', title: 'Мемориальные комплексы', desc: 'С благоустройством и цветником' },
-  { id: '6', type: 'image', url: 'https://cdn.poehali.dev/files/e4f88cd9-b74c-4b96-bf11-ab78a26bc19a.jpg', title: 'Элитные памятники', desc: 'Эксклюзивный дизайн по индивидуальному проекту' }
-];
+const GALLERY_API = 'https://functions.poehali.dev/16b2bcd1-9c80-4d3e-96c6-0aaaac12c483';
 
 const GallerySection = () => {
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(defaultGalleryItems);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadGallery = () => {
-      const savedGallery = localStorage.getItem('galleryItems');
-      if (savedGallery) {
-        try {
-          const parsed = JSON.parse(savedGallery);
-          if (parsed.length > 0) {
-            setGalleryItems(parsed);
-          }
-        } catch (e) {
-          console.error('Error loading gallery items:', e);
+    const loadGallery = async () => {
+      try {
+        const response = await fetch(GALLERY_API);
+        if (response.ok) {
+          const items = await response.json();
+          setGalleryItems(items);
         }
+      } catch (e) {
+        console.error('Error loading gallery items:', e);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadGallery();
 
-    // Слушаем изменения localStorage
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'galleryItems') {
-        loadGallery();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Дополнительно слушаем кастомное событие для изменений в той же вкладке
     const handleCustomEvent = () => {
       loadGallery();
     };
@@ -54,10 +38,28 @@ const GallerySection = () => {
     window.addEventListener('galleryUpdated', handleCustomEvent);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('galleryUpdated', handleCustomEvent);
     };
   }, []);
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-secondary">
+        <div className="container mx-auto px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="font-oswald font-bold text-3xl md:text-5xl mb-4">
+                Наши работы
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Загрузка галереи...
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 bg-secondary">
