@@ -2206,6 +2206,9 @@ export default function Admin() {
 
                           try {
                             const token = localStorage.getItem('auth_token');
+                            console.log('Saving product:', editingProduct ? 'UPDATE' : 'CREATE');
+                            console.log('Product data:', productForm);
+                            console.log('Token exists:', !!token);
                             const url = editingProduct 
                               ? `${PRODUCTS_API}?id=${editingProduct.id}`
                               : PRODUCTS_API;
@@ -2247,6 +2250,7 @@ export default function Admin() {
                               throw new Error('Failed to save product');
                             }
                           } catch (error) {
+                            console.error('Product save error:', error);
                             toast({
                               title: '❌ Ошибка',
                               description: 'Не удалось сохранить товар',
