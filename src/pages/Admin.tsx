@@ -2205,7 +2205,7 @@ export default function Admin() {
                           }
 
                           try {
-                            const token = localStorage.getItem('admin_token');
+                            const token = localStorage.getItem('auth_token');
                             const url = editingProduct 
                               ? `${PRODUCTS_API}?id=${editingProduct.id}`
                               : PRODUCTS_API;
