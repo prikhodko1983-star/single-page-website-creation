@@ -260,34 +260,33 @@ const Index = () => {
         onNavigateAdmin={() => navigate('/admin')}
       />
 
-      <div className="stack-card z-10">
-        <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white py-4 px-4">
-          <div className="container mx-auto text-center">
-            <p className="text-lg font-semibold">
-              ⚠️ Сайт находится в разработке
-            </p>
-            <p className="text-sm mt-1 opacity-90">
-              Некоторые функции могут работать не полностью. Спасибо за понимание!
-            </p>
-          </div>
+      {/* Уведомление о разработке */}
+      <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white py-4 px-4">
+        <div className="container mx-auto text-center">
+          <p className="text-lg font-semibold">
+            ⚠️ Сайт находится в разработке
+          </p>
+          <p className="text-sm mt-1 opacity-90">
+            Некоторые функции могут работать не полностью. Спасибо за понимание!
+          </p>
         </div>
-
-        <IndexHeroSections 
-          onNavigateCatalog={() => navigate('/catalog')}
-          onNavigateConstructor={() => navigate('/constructor')}
-          activeCategory={activeCategory}
-          setActiveCategory={setActiveCategory}
-          filteredMonuments={filteredMonuments}
-          categories={categories}
-          designerSlideIndex={designerSlideIndex}
-          setDesignerSlideIndex={setDesignerSlideIndex}
-          designerSlides={designerSlides}
-        >
-          <IndexShopSection />
-        </IndexHeroSections>
       </div>
 
-      <div className="stack-card z-20">
+      <IndexHeroSections 
+        onNavigateCatalog={() => navigate('/catalog')}
+        onNavigateConstructor={() => navigate('/constructor')}
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
+        filteredMonuments={filteredMonuments}
+        categories={categories}
+        designerSlideIndex={designerSlideIndex}
+        setDesignerSlideIndex={setDesignerSlideIndex}
+        designerSlides={designerSlides}
+      >
+        <IndexShopSection />
+      </IndexHeroSections>
+
+      {/* Баннер конструктора */}
       <section className="py-4 md:py-12 bg-[#1a1a1a]">
         <div className="container mx-auto px-4">
           <div 
@@ -421,27 +420,22 @@ const Index = () => {
           </div>
         </div>
       </section>
-      </div>
 
-      <div className="stack-card z-30">
-        <IndexContentSections 
-          services={services}
-          advantages={advantages}
-          prices={prices}
-          portfolioImages={portfolioImages}
-          setSelectedImage={setSelectedImage}
-        />
-      </div>
+      <IndexContentSections 
+        services={services}
+        advantages={advantages}
+        prices={prices}
+        portfolioImages={portfolioImages}
+        setSelectedImage={setSelectedImage}
+      />
 
-      <div className="stack-card z-40">
-        <IndexContactFooter 
-          formData={formData}
-          setFormData={setFormData}
-          handleSubmit={handleSubmit}
-          selectedImage={selectedImage}
-          setSelectedImage={setSelectedImage}
-        />
-      </div>
+      <IndexContactFooter 
+        formData={formData}
+        setFormData={setFormData}
+        handleSubmit={handleSubmit}
+        selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
+      />
     </div>
   );
 };
