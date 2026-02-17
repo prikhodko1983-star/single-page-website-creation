@@ -2158,12 +2158,9 @@ const Constructor = () => {
           const allLines: string[] = [];
           
           paragraphs.forEach(paragraph => {
-            if (paragraph.trim() === '') {
-              allLines.push('');
-            } else {
-              const wrappedLines = wrapText(ctx, paragraph, scaledWidth);
-              allLines.push(...wrappedLines);
-            }
+            // Просто добавляем каждый параграф как отдельную строку
+            // НЕ делаем автоматический перенос по ширине
+            allLines.push(paragraph);
           });
           
           // Измеряем ширину строк и позиционируем
