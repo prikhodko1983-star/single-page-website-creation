@@ -2099,35 +2099,30 @@ const Constructor = () => {
       for (const element of elements) {
         ctx.save();
         
-        // Координаты элемента нормализуем к ВСЕМУ CANVAS, а не только к памятнику
-        const relativeX = element.x / rect.width;  // 0..1 от всей ширины canvas
-        const relativeY = element.y / rect.height; // 0..1 от всей высоты canvas
-        const relativeWidth = element.width / rect.width;
-        const relativeHeight = element.height / rect.height;
+        const relativeX = (element.x - screenOffsetX) / screenDrawWidth;
+        const relativeY = (element.y - screenOffsetY) / screenDrawHeight;
+        const relativeWidth = element.width / screenDrawWidth;
+        const relativeHeight = element.height / screenDrawHeight;
         
-        // Применяем проценты к ЭКСПОРТНОМУ canvas
         let scaledX, scaledY, scaledWidth, scaledHeight;
         
         if ((element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') && !element.autoSize) {
-          // Для текста с фиксированной шириной: позиционируем по центру контейнера
-          const relativeCenterX = (element.x + element.width / 2) / rect.width;
-          const relativeCenterY = (element.y + element.height / 2) / rect.height;
+          const relativeCenterX = (element.x - screenOffsetX + element.width / 2) / screenDrawWidth;
+          const relativeCenterY = (element.y - screenOffsetY + element.height / 2) / screenDrawHeight;
           
-          scaledWidth = Math.round(relativeWidth * exportWidth);
-          scaledHeight = Math.round(relativeHeight * exportHeight);
+          scaledWidth = Math.round(relativeWidth * drawWidth);
+          scaledHeight = Math.round(relativeHeight * drawHeight);
           
-          scaledX = Math.round(relativeCenterX * exportWidth - scaledWidth / 2);
-          scaledY = Math.round(relativeCenterY * exportHeight - scaledHeight / 2);
+          scaledX = Math.round(offsetX + relativeCenterX * drawWidth - scaledWidth / 2);
+          scaledY = Math.round(offsetY + relativeCenterY * drawHeight - scaledHeight / 2);
         } else {
-          // Для изображений и autoSize текста: позиционируем по левому краю
-          scaledX = Math.round(relativeX * exportWidth);
-          scaledY = Math.round(relativeY * exportHeight);
-          scaledWidth = Math.round(relativeWidth * exportWidth);
-          scaledHeight = Math.round(relativeHeight * exportHeight);
+          scaledX = Math.round(offsetX + relativeX * drawWidth);
+          scaledY = Math.round(offsetY + relativeY * drawHeight);
+          scaledWidth = Math.round(relativeWidth * drawWidth);
+          scaledHeight = Math.round(relativeHeight * drawHeight);
         }
         
-        // Масштабируем fontSize пропорционально изменению размера ВСЕГО canvas
-        const fontScale = exportWidth / rect.width;
+        const fontScale = drawWidth / screenDrawWidth;
         
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const parts = element.fontFamily?.split('|') || ['serif', '400'];
