@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ConstructorLibrary } from "@/components/constructor/ConstructorLibrary";
@@ -90,6 +90,7 @@ const Constructor = () => {
   
   const [isImageEraserOpen, setIsImageEraserOpen] = useState(false);
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
+  const prevCanvasSizeRef = useRef<{ width: number; height: number } | null>(null);
 
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
@@ -223,6 +224,46 @@ const Constructor = () => {
     }
     loadCustomFonts();
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+
+      const newWidth = entry.contentRect.width;
+      const newHeight = entry.contentRect.height;
+
+      if (newWidth === 0 || newHeight === 0) return;
+
+      const prev = prevCanvasSizeRef.current;
+      if (prev && (Math.abs(prev.width - newWidth) > 1 || Math.abs(prev.height - newHeight) > 1)) {
+        const scaleX = newWidth / prev.width;
+        const scaleY = newHeight / prev.height;
+
+        setElements(prevElements => prevElements.map(el => ({
+          ...el,
+          x: el.x * scaleX,
+          y: el.y * scaleY,
+          width: el.width * scaleX,
+          height: el.height * scaleY,
+          fontSize: el.fontSize ? el.fontSize * scaleX : el.fontSize,
+        })));
+      }
+
+      prevCanvasSizeRef.current = { width: newWidth, height: newHeight };
+    });
+
+    observer.observe(canvasRef.current);
+    const w = canvasRef.current.offsetWidth;
+    const h = canvasRef.current.offsetHeight;
+    if (w > 0 && h > 0) {
+      prevCanvasSizeRef.current = { width: w, height: h };
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const googleFonts = [
     { id: 'font1', name: '№ 1/1а', style: 'Playfair Display', weight: '400', example: 'Фамилия Имя Отчество', fullStyle: 'Playfair Display|400' },
@@ -1566,13 +1607,11 @@ const Constructor = () => {
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
       
-      const rect = canvasRef.current.getBoundingClientRect();
+      const rect = { width: canvasRef.current.offsetWidth, height: canvasRef.current.offsetHeight };
       
-      // Черный фон
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, previewWidth, previewHeight);
       
-      // Загружаем изображение памятника
       const monumentImg = await loadImageWithCORS(monumentImage);
       
       if (monumentImg) {
@@ -2005,8 +2044,8 @@ const Constructor = () => {
       // Загружаем шрифты перед экспортом
       await loadFonts(elements);
       
-      // Получаем реальные размеры canvas на экране
-      const rect = canvasRef.current.getBoundingClientRect();
+      const canvasEl = canvasRef.current;
+      const rect = { width: canvasEl.offsetWidth, height: canvasEl.offsetHeight };
       
       // Экспорт с увеличенным разрешением (3:4 пропорции)
       const exportWidth = 1200;
