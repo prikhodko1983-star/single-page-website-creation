@@ -172,24 +172,24 @@ export const ConstructorLibrary = ({
   };
 
   return (
-    <Card>
-      <CardContent className="p-4">
-        <h2 className="font-oswald font-bold text-lg mb-4">Библиотека элементов</h2>
+    <Card className="flex flex-col h-full">
+      <CardContent className="p-4 flex flex-col flex-1 min-h-0">
+        <h2 className="font-oswald font-bold text-lg mb-4 flex-shrink-0">Библиотека элементов</h2>
         
-        <Tabs defaultValue="catalog" className="w-full" onValueChange={(value) => {
+        <Tabs defaultValue="catalog" className="w-full flex flex-col flex-1 min-h-0" onValueChange={(value) => {
           if (value === 'catalog') loadCatalog();
           if (value === 'elements') {
             loadCrosses();
             loadFlowers();
           }
         }}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3 flex-shrink-0">
             <TabsTrigger value="catalog">Каталог</TabsTrigger>
             <TabsTrigger value="images">Изображения</TabsTrigger>
             <TabsTrigger value="elements">Элементы</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="catalog" className="space-y-3 mt-4">
+          <TabsContent value="catalog" className="space-y-3 mt-4 flex-1 overflow-y-auto min-h-0">
             <Label>Памятники из каталога магазина</Label>
             
             {isLoadingCatalog ? (
@@ -266,7 +266,7 @@ export const ConstructorLibrary = ({
             )}
           </TabsContent>
           
-          <TabsContent value="images" className="space-y-3 mt-4">
+          <TabsContent value="images" className="space-y-3 mt-4 flex-1 overflow-y-auto min-h-0">
             <Label>Изображения по категориям</Label>
             
             {isLoadingImages ? (
@@ -339,7 +339,7 @@ export const ConstructorLibrary = ({
             )}
           </TabsContent>
           
-          <TabsContent value="elements" className="space-y-3 mt-4">
+          <TabsContent value="elements" className="space-y-3 mt-4 flex-1 overflow-y-auto min-h-0">
             <div className="space-y-3 p-3 bg-secondary/20 rounded-lg">
               <Label className="font-semibold">ФИО с выбором шрифта</Label>
               <Input 
