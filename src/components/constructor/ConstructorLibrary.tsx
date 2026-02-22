@@ -173,9 +173,7 @@ export const ConstructorLibrary = ({
 
   return (
     <Card className="flex flex-col h-full">
-      <CardContent className="p-4 flex flex-col flex-1 min-h-0">
-        <h2 className="font-oswald font-bold text-lg mb-4 flex-shrink-0">Библиотека элементов</h2>
-        
+      <CardContent className="p-0 flex flex-col flex-1 min-h-0">
         <Tabs defaultValue="catalog" className="w-full flex flex-col flex-1 min-h-0" onValueChange={(value) => {
           if (value === 'catalog') loadCatalog();
           if (value === 'elements') {
@@ -183,13 +181,16 @@ export const ConstructorLibrary = ({
             loadFlowers();
           }
         }}>
-          <TabsList className="grid w-full grid-cols-3 flex-shrink-0">
-            <TabsTrigger value="catalog">Каталог</TabsTrigger>
-            <TabsTrigger value="images">Изображения</TabsTrigger>
-            <TabsTrigger value="elements">Элементы</TabsTrigger>
-          </TabsList>
+          <div className="sticky top-0 z-10 bg-card px-4 pt-4 pb-2">
+            <h2 className="font-oswald font-bold text-lg mb-3">Библиотека элементов</h2>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="catalog">Каталог</TabsTrigger>
+              <TabsTrigger value="images">Изображения</TabsTrigger>
+              <TabsTrigger value="elements">Элементы</TabsTrigger>
+            </TabsList>
+          </div>
           
-          <TabsContent value="catalog" className="space-y-3 mt-4 flex-1 overflow-y-auto min-h-0">
+          <TabsContent value="catalog" className="space-y-3 mt-2 flex-1 overflow-y-auto min-h-0 px-4 pb-4">
             <Label>Памятники из каталога магазина</Label>
             
             {isLoadingCatalog ? (
@@ -266,7 +267,7 @@ export const ConstructorLibrary = ({
             )}
           </TabsContent>
           
-          <TabsContent value="images" className="space-y-3 mt-4 flex-1 overflow-y-auto min-h-0">
+          <TabsContent value="images" className="space-y-3 mt-2 flex-1 overflow-y-auto min-h-0 px-4 pb-4">
             <Label>Изображения по категориям</Label>
             
             {isLoadingImages ? (
@@ -339,7 +340,7 @@ export const ConstructorLibrary = ({
             )}
           </TabsContent>
           
-          <TabsContent value="elements" className="space-y-3 mt-4 flex-1 overflow-y-auto min-h-0">
+          <TabsContent value="elements" className="space-y-3 mt-2 flex-1 overflow-y-auto min-h-0 px-4 pb-4">
             <div className="space-y-3 p-3 bg-secondary/20 rounded-lg">
               <Label className="font-semibold">ФИО с выбором шрифта</Label>
               <Input 
