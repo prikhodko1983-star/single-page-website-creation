@@ -181,7 +181,7 @@ export const ConstructorLibrary = ({
             loadFlowers();
           }
         }}>
-          <div className="sticky top-0 z-10 bg-card px-4 pt-4 pb-2">
+          <div className="px-4 pt-4 pb-2">
             <h2 className="font-oswald font-bold text-lg mb-3">Библиотека элементов</h2>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="catalog">Каталог</TabsTrigger>
