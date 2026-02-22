@@ -2473,7 +2473,7 @@ const Constructor = () => {
       <div className="lg:h-[calc(100vh-73px)] lg:overflow-hidden">
         <div className="container mx-auto px-4 py-4 h-full">
         <div className="grid lg:grid-cols-[320px,1fr,320px] gap-6 h-full pb-24 md:pb-0">
-          <div className="lg:h-full lg:overflow-y-auto pb-4">
+          <div className="h-[60vh] lg:h-full overflow-y-auto pb-4">
             <ConstructorLibrary
             monumentImage={monumentImage}
             setMonumentImage={setMonumentImage}
