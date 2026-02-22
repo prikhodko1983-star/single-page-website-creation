@@ -121,7 +121,7 @@ export default function IndexShopSection() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 md:gap-6">
-            {products.slice(0, 6).map((product) => (
+            {products.slice(0, 8).map((product) => (
               <Card key={product.id} className="group hover:shadow-xl transition-shadow overflow-hidden">
                 <Link to={`/product/${product.slug}`}>
                   <div className="aspect-square bg-secondary relative overflow-hidden">
