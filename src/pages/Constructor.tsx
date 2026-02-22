@@ -2472,7 +2472,7 @@ const Constructor = () => {
 
       <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
         <div className="grid lg:grid-cols-[320px,1fr,320px] gap-6 items-start">
-          <div className="lg:sticky lg:top-[76px] lg:h-[calc(100vh-84px)] lg:overflow-y-auto">
+          <div className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
             <ConstructorLibrary
             monumentImage={monumentImage}
             setMonumentImage={setMonumentImage}
@@ -2548,7 +2548,7 @@ const Constructor = () => {
             onCanvasMouseDown={handleCanvasMouseDown}
           />
 
-          <div className="lg:sticky lg:top-[76px] lg:h-[calc(100vh-84px)] lg:overflow-y-auto">
+          <div className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
             <ConstructorProperties
               selectedEl={selectedEl}
               updateElement={updateElement}
