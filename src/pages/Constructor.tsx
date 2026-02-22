@@ -2470,9 +2470,10 @@ const Constructor = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
-        <div className="grid lg:grid-cols-[320px,1fr,320px] gap-6 items-start">
-          <div className="lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)] lg:overflow-y-auto">
+      <div className="lg:h-[calc(100vh-73px)] lg:overflow-hidden">
+        <div className="container mx-auto px-4 py-4 h-full">
+        <div className="grid lg:grid-cols-[320px,1fr,320px] gap-6 h-full pb-24 md:pb-0">
+          <div className="lg:h-full lg:overflow-y-auto pb-4">
             <ConstructorLibrary
             monumentImage={monumentImage}
             setMonumentImage={setMonumentImage}
@@ -2548,7 +2549,7 @@ const Constructor = () => {
             onCanvasMouseDown={handleCanvasMouseDown}
           />
 
-          <div className="lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)] lg:overflow-y-auto">
+          <div className="lg:h-full lg:overflow-y-auto pb-4">
             <ConstructorProperties
               selectedEl={selectedEl}
               updateElement={updateElement}
@@ -2557,6 +2558,7 @@ const Constructor = () => {
               onEditImage={handleEditImage}
             />
           </div>
+        </div>
         </div>
       </div>
       
