@@ -586,33 +586,7 @@ export const ConstructorLibrary = ({
               )}
             </div>
             
-            <div className="space-y-2 p-3 bg-secondary/20 rounded-lg">
-              <Label className="font-semibold">Цветы</Label>
-              {isLoadingFlowers ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              ) : flowers.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-2">
-                  {flowers.map((flower) => (
-                    <button 
-                      key={flower.id}
-                      onClick={() => addImageElement(flower.image_url, 'flower')} 
-                      className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5 flex flex-col"
-                    >
-                      <div className="flex-1 flex items-center justify-center">
-                        <img src={flower.image_url} alt={flower.name} className="w-full h-full object-contain" />
-                      </div>
-                      <div className="text-xs text-center mt-2 text-muted-foreground">{flower.name}</div>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  Цветы не найдены
-                </p>
-              )}
-            </div>
+
           </TabsContent>
         </Tabs>
       </CardContent>
