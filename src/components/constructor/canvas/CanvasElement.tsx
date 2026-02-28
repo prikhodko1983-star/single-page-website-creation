@@ -85,7 +85,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   return (
     <div
       key={element.id}
-      className={`absolute cursor-move touch-none ${isSelected ? 'ring-2 ring-primary' : ''}`}
+      className={`absolute cursor-move touch-none ${isSelected ? 'ring-2 ring-inset ring-primary' : ''}`}
       style={{
         left: element.x,
         top: element.y,

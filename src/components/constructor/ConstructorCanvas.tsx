@@ -176,7 +176,7 @@ export const ConstructorCanvas = ({
         {elements.map(element => (
           <div
             key={element.id}
-            className={`absolute cursor-move touch-none ${selectedElement === element.id ? 'ring-2 ring-primary' : ''}`}
+            className={`absolute cursor-move touch-none ${selectedElement === element.id ? 'ring-2 ring-inset ring-primary' : ''}`}
             style={{
               left: element.x,
               top: element.y,
