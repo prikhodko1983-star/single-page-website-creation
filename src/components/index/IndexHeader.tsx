@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { CartSheet } from "@/components/CartSheet";
+import SearchBar from "@/components/SearchBar";
 
 interface IndexHeaderProps {
   mobileMenuOpen: boolean;
@@ -43,6 +44,7 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
             >
               <Icon name="Send" size={18} />
             </a>
+            <SearchBar />
             <div className="hidden md:block">
               <CartSheet />
             </div>

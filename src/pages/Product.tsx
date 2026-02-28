@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { CartSheet } from '@/components/CartSheet';
+import SearchBar from '@/components/SearchBar';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -204,10 +205,10 @@ export default function Product() {
           <Link to="/" className="flex items-center space-x-2">
             <span className="font-oswald font-bold text-2xl">Гранит Мастер</span>
           </Link>
-          <nav className="flex items-center gap-6">
-            <Link to="/" className="text-sm font-medium">Главная</Link>
-            <Link to="/catalog" className="text-sm font-medium">Каталог</Link>
-            <Link to="/admin" className="text-sm font-medium">Админ</Link>
+          <nav className="flex items-center gap-4">
+            <Link to="/" className="text-sm font-medium hidden sm:block">Главная</Link>
+            <Link to="/catalog" className="text-sm font-medium hidden sm:block">Каталог</Link>
+            <SearchBar />
             <CartSheet />
           </nav>
         </div>
