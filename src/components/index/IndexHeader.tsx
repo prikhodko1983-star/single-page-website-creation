@@ -48,12 +48,11 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
             </div>
             <Button
               variant="outline"
-              size="sm"
+              size="icon"
               onClick={onNavigateAdmin}
-              className="gap-2 hidden md:flex"
+              className="hidden md:flex"
             >
               <Icon name="Lock" size={16} />
-              <span className="hidden md:inline">Админ</span>
             </Button>
             <Button
               variant="ghost"
