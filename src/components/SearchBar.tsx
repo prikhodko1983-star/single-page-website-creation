@@ -81,8 +81,8 @@ export default function SearchBar() {
     const q = value.toLowerCase().trim();
     const filtered = products.filter(
       (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.category_name.toLowerCase().includes(q)
+        (p.name || "").toLowerCase().includes(q) ||
+        (p.category_name || "").toLowerCase().includes(q)
     );
     setResults(filtered.slice(0, 8));
   };
