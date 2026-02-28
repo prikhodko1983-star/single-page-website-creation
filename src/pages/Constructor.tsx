@@ -1733,20 +1733,21 @@ const Constructor = () => {
             const paragraphs = content.split('\n');
             const allLines: string[] = [];
             
+            const padding = 4 * fontScale;
+            const contentWidth = scaledWidth - padding * 2;
+            
             paragraphs.forEach(paragraph => {
               if (paragraph.trim() === '') {
                 allLines.push('');
               } else {
-                const wrappedLines = wrapText(ctx, paragraph, scaledWidth);
+                const wrappedLines = wrapText(ctx, paragraph, contentWidth);
                 allLines.push(...wrappedLines);
               }
             });
             
-            // Измеряем ширину строк и позиционируем
             const textAlign = element.textAlign || 'center';
             
-            // Для autoSize используем максимальную ширину строки
-            let effectiveWidth = scaledWidth;
+            let effectiveWidth = contentWidth;
             if (element.autoSize) {
               const maxLineWidth = Math.max(...allLines.map(line => ctx.measureText(line).width));
               effectiveWidth = maxLineWidth;
@@ -1757,15 +1758,14 @@ const Constructor = () => {
               let lineX = scaledX;
               
               if (textAlign === 'center') {
-                lineX = scaledX + (effectiveWidth - lineWidth) / 2;
+                lineX = scaledX + padding + (effectiveWidth - lineWidth) / 2;
               } else if (textAlign === 'right') {
-                lineX = scaledX + effectiveWidth - lineWidth;
+                lineX = scaledX + padding + effectiveWidth - lineWidth;
               }
               
               return { x: lineX, width: lineWidth };
             });
             
-            // Применяем вращение если есть
             if (element.rotation) {
               const centerX = scaledX + scaledWidth / 2;
               const centerY = scaledY + scaledHeight / 2;
@@ -1774,24 +1774,23 @@ const Constructor = () => {
               ctx.translate(-centerX, -centerY);
             }
             
-            // Рисуем строки с предварительно рассчитанными координатами
             ctx.textBaseline = 'alphabetic';
             
             const initialScale = element.initialScale || 1.0;
             
-            // Рисуем от верхнего края (контейнер уже отцентрован)
+            const metrics = ctx.measureText('ЙЦШЩФ');
+            const ascent = metrics.actualBoundingBoxAscent || scaledFontSize * 0.8;
+            const halfLeading = (lineHeight - scaledFontSize) / 2;
+            
             allLines.forEach((line, index) => {
-              // Для alphabetic baseline добавляем высоту шрифта к Y
-              const lineY = Math.round(scaledY + scaledFontSize + index * lineHeight);
+              const lineY = Math.round(scaledY + padding + halfLeading + ascent + index * lineHeight);
               let currentX = Math.round(linePositions[index].x);
               
-              // Если есть увеличение первой буквы (для FIO)
               if (element.type === 'fio' && initialScale > 1.0 && line.length > 0) {
                 const words = line.split(/\s+/);
                 
                 words.forEach((word, wordIdx) => {
                   if (wordIdx > 0) {
-                    // Рисуем пробел
                     const spaceWidth = ctx.measureText(' ').width;
                     currentX += spaceWidth;
                   }
@@ -1800,7 +1799,6 @@ const Constructor = () => {
                     const firstChar = word[0];
                     const rest = word.slice(1);
                     
-                    // Рисуем первую букву увеличенной
                     const originalFont = ctx.font;
                     const enlargedSize = scaledFontSize * initialScale;
                     ctx.font = `${fontStyle} ${fontWeight} ${enlargedSize}px "${fontFamily}"`;
@@ -1808,7 +1806,6 @@ const Constructor = () => {
                     const firstCharWidth = ctx.measureText(firstChar).width;
                     currentX += firstCharWidth;
                     
-                    // Возвращаем обычный размер для остального текста
                     ctx.font = originalFont;
                     ctx.fillText(rest, currentX, lineY);
                     const restWidth = ctx.measureText(rest).width;
@@ -1958,6 +1955,17 @@ const Constructor = () => {
     
     if (uniqueFonts.size === 0) return;
     
+    const neededVariants = new Set<string>();
+    elements.forEach(element => {
+      if (element.fontFamily && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
+        const parts = element.fontFamily.split('|');
+        const fontFamily = parts[0];
+        const fontWeight = parts[1] === 'custom' ? 'normal' : (parts[1] || '400');
+        const fontStyle = element.italic ? 'italic' : 'normal';
+        neededVariants.add(`${fontStyle}|${fontWeight}|${fontFamily}`);
+      }
+    });
+    
     const fontPromises = Array.from(uniqueFonts).map(async ([family, url]) => {
       try {
         if (url) {
@@ -1966,13 +1974,20 @@ const Constructor = () => {
           });
           await fontFace.load();
           document.fonts.add(fontFace);
-          console.log(`✅ Загружен кастомный шрифт с OpenType: ${family}`);
+          console.log(`Loaded custom font: ${family}`);
         } else {
-          await document.fonts.load(`400 24px "${family}"`);
-          console.log(`✅ Загружен системный шрифт: ${family}`);
+          const variants = Array.from(neededVariants)
+            .filter(v => v.endsWith(`|${family}`))
+            .map(v => {
+              const [style, weight] = v.split('|');
+              return `${style} ${weight} 24px "${family}"`;
+            });
+          if (variants.length === 0) variants.push(`400 24px "${family}"`);
+          await Promise.all(variants.map(v => document.fonts.load(v)));
+          console.log(`Loaded font: ${family} (${variants.length} variants)`);
         }
       } catch (error) {
-        console.warn(`⚠️ Не удалось загрузить шрифт ${family}:`, error);
+        console.warn(`Font load failed ${family}:`, error);
       }
     });
     
@@ -2187,7 +2202,9 @@ const Constructor = () => {
           const lh = element.lineHeight || defaultLineHeight;
           const lineHeight = scaledFontSize * lh;
           
-          // Обрабатываем многострочный текст с переносами
+          const padding = 4 * fontScale;
+          const contentWidth = scaledWidth - padding * 2;
+          
           const paragraphs = element.content?.split('\n') || [];
           const allLines: string[] = [];
           
@@ -2195,37 +2212,32 @@ const Constructor = () => {
             if (paragraph.trim() === '') {
               allLines.push('');
             } else {
-              const wrappedLines = wrapText(ctx, paragraph, scaledWidth);
+              const wrappedLines = wrapText(ctx, paragraph, contentWidth);
               allLines.push(...wrappedLines);
             }
           });
           
-          // Измеряем ширину строк и позиционируем
           const textAlign = element.textAlign || 'center';
           
-          // Используем максимальную ширину строки для выравнивания
           const maxLineWidth = Math.max(...allLines.map(line => ctx.measureText(line).width), 1);
-          const effectiveWidth = element.autoSize ? maxLineWidth : scaledWidth;
+          const effectiveWidth = element.autoSize ? maxLineWidth : contentWidth;
           
           const linePositions = allLines.map((line) => {
             const lineWidth = ctx.measureText(line).width;
             let lineX = scaledX;
             
             if (textAlign === 'center') {
-              lineX = scaledX + (effectiveWidth - lineWidth) / 2;
+              lineX = scaledX + padding + (effectiveWidth - lineWidth) / 2;
             } else if (textAlign === 'right') {
-              lineX = scaledX + effectiveWidth - lineWidth;
+              lineX = scaledX + padding + effectiveWidth - lineWidth;
             }
             
             return { x: lineX, width: lineWidth };
           });
           
-          // Рисуем строки с предварительно рассчитанными координатами
           ctx.textBaseline = 'alphabetic';
           
-          // Применяем вращение ПЕРЕД отрисовкой текста
           if (element.rotation) {
-            // Вращаем вокруг центра контейнера элемента
             const centerX = scaledX + scaledWidth / 2;
             const centerY = scaledY + scaledHeight / 2;
             ctx.translate(centerX, centerY);
@@ -2233,7 +2245,6 @@ const Constructor = () => {
             ctx.translate(-centerX, -centerY);
           }
           
-          // Применяем shadow ТОЛЬКО перед отрисовкой
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
           ctx.shadowBlur = 8 * fontScale;
           ctx.shadowOffsetX = 2 * fontScale;
@@ -2241,17 +2252,12 @@ const Constructor = () => {
           
           const initialScale = element.initialScale || 1.0;
           
-          // Измеряем метрики шрифта для точного позиционирования
           const metrics = ctx.measureText('ЙЦШЩФ');
           const ascent = metrics.actualBoundingBoxAscent || scaledFontSize * 0.8;
-          
-          // Браузер добавляет половину inter-line spacing сверху первой строки
           const halfLeading = (lineHeight - scaledFontSize) / 2;
           
-          // Рисуем строки с учетом реальных метрик DOM
           allLines.forEach((line, idx) => {
-            // Baseline = верх контейнера + половина leading + ascent + смещение на lineHeight для следующих строк
-            const lineY = Math.round(scaledY + halfLeading + ascent + idx * lineHeight);
+            const lineY = Math.round(scaledY + padding + halfLeading + ascent + idx * lineHeight);
             let currentX = Math.round(linePositions[idx].x);
             
             // Если есть увеличение первой буквы (для FIO)
