@@ -1731,11 +1731,12 @@ const Constructor = () => {
             const paragraphs = content.split('\n');
             const allLines: string[] = [];
             
+            const wrapWidth = element.autoSize ? Infinity : contentWidth;
             paragraphs.forEach(paragraph => {
               if (paragraph.trim() === '') {
                 allLines.push('');
               } else {
-                const wrappedLines = wrapText(ctx, paragraph, contentWidth);
+                const wrappedLines = wrapText(ctx, paragraph, wrapWidth);
                 allLines.push(...wrappedLines);
               }
             });
@@ -2223,11 +2224,12 @@ const Constructor = () => {
           const paragraphs = textContent.split('\n');
           const allLines: string[] = [];
           
+          const wrapWidth = element.autoSize ? Infinity : contentWidth;
           paragraphs.forEach(paragraph => {
             if (paragraph.trim() === '') {
               allLines.push('');
             } else {
-              const wrappedLines = wrapText(ctx, paragraph, contentWidth);
+              const wrappedLines = wrapText(ctx, paragraph, wrapWidth);
               allLines.push(...wrappedLines);
             }
           });
