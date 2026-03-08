@@ -2573,6 +2573,7 @@ const Constructor = () => {
             onCanvasTouchStart={handleCanvasTouchStart}
             canvasPan={canvasPan}
             onCanvasMouseDown={handleCanvasMouseDown}
+            updateElement={updateElement}
           />
 
           <div className="lg:h-full lg:overflow-y-auto pb-4">

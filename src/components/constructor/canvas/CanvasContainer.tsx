@@ -51,6 +51,7 @@ interface CanvasContainerProps {
   onCanvasTouchStart: (e: React.TouchEvent) => void;
   canvasPan: { x: number; y: number };
   onCanvasMouseDown: (e: React.MouseEvent) => void;
+  onUpdateElement?: (id: string, updates: Partial<CanvasElementData>) => void;
 }
 
 export const CanvasContainer: React.FC<CanvasContainerProps> = ({
@@ -78,6 +79,7 @@ export const CanvasContainer: React.FC<CanvasContainerProps> = ({
   onCanvasTouchStart,
   canvasPan,
   onCanvasMouseDown,
+  onUpdateElement,
 }) => {
   return (
     <div className="flex flex-col items-center">
@@ -131,6 +133,7 @@ export const CanvasContainer: React.FC<CanvasContainerProps> = ({
             onInlineTextChange={handleInlineTextChange}
             onInlineEditBlur={handleInlineEditBlur}
             rotateMode={rotateMode}
+            onUpdateElement={onUpdateElement}
           />
         ))}
       </div>

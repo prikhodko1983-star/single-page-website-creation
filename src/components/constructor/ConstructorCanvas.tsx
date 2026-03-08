@@ -60,6 +60,7 @@ interface ConstructorCanvasProps {
   onCanvasTouchStart: (e: React.TouchEvent) => void;
   canvasPan: { x: number; y: number };
   onCanvasMouseDown: (e: React.MouseEvent) => void;
+  updateElement?: (id: string, updates: Partial<CanvasElement>) => Promise<void>;
 }
 
 export const ConstructorCanvas = ({
@@ -96,6 +97,7 @@ export const ConstructorCanvas = ({
   onCanvasTouchStart,
   canvasPan,
   onCanvasMouseDown,
+  updateElement,
 }: ConstructorCanvasProps) => {
   // Функция для рендеринга текста с увеличенными первыми буквами
   const renderTextWithInitials = (text: string, initialScale?: number) => {
@@ -428,6 +430,32 @@ export const ConstructorCanvas = ({
               />
             )}
             
+            {selectedElement === element.id && ['text', 'epitaph', 'fio', 'dates'].includes(element.type) && updateElement && (
+              <div
+                className="absolute -top-9 left-1/2 flex gap-0.5 bg-background/90 backdrop-blur-sm rounded-md border border-border shadow-lg p-0.5"
+                style={{ transform: 'translateX(-50%)' }}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+              >
+                {(['left', 'center', 'right'] as const).map((align) => (
+                  <button
+                    key={align}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateElement(element.id, { textAlign: align });
+                    }}
+                    className={`w-7 h-7 flex items-center justify-center rounded transition-colors ${
+                      (element.textAlign || 'center') === align
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    <Icon name={align === 'left' ? 'AlignLeft' : align === 'center' ? 'AlignCenter' : 'AlignRight'} size={14} />
+                  </button>
+                ))}
+              </div>
+            )}
+
             {selectedElement === element.id && (
               <div 
                 className={`absolute bottom-0 right-0 w-4 h-4 bg-primary rounded-full hover:scale-125 transition-transform touch-none flex items-center justify-center shadow-lg border-2 border-background ${
