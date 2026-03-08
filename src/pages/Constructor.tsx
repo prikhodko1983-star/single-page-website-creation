@@ -1229,36 +1229,25 @@ const Constructor = () => {
         }
       }
       
-      // Fallback: обычная загрузка в папку Downloads
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = fileName;
-      
-      // Важно: добавляем в DOM для совместимости
+      link.style.display = 'none';
       document.body.appendChild(link);
+      link.click();
       
-      // Принудительный клик с задержкой для надежности
-      requestAnimationFrame(() => {
-        link.click();
-        console.log('✅ PNG: скачивание инициировано');
-        
-        // Даем браузеру время на скачивание, затем очищаем
-        setTimeout(() => {
-          if (document.body.contains(link)) {
-            document.body.removeChild(link);
-          }
-          URL.revokeObjectURL(url);
-          console.log('✅ PNG файл загружен, ресурсы очищены');
-        }, 1000);
-      });
+      setTimeout(() => {
+        if (document.body.contains(link)) {
+          document.body.removeChild(link);
+        }
+        URL.revokeObjectURL(url);
+      }, 3000);
       
       toast({
-        title: "PNG с метаданными готов",
-        description: "Данные встроены в изображение",
+        title: "Проект сохранён",
+        description: "PNG файл скачан на устройство",
       });
-      
-      console.log('🎉 Экспорт в PNG завершен');
     } catch (error) {
       console.error('❌ Export error:', error);
       toast({
