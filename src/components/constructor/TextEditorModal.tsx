@@ -27,12 +27,22 @@ interface CanvasElement {
   italic?: boolean;
 }
 
+interface FontOption {
+  id: string;
+  name: string;
+  style: string;
+  weight: string;
+  example: string;
+  fullStyle: string;
+}
+
 interface TextEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
   editingElement: CanvasElement | null;
   setEditingElement: (element: CanvasElement | null) => void;
   onApply: (updates: Partial<CanvasElement>) => void;
+  fonts?: FontOption[];
 }
 
 export const TextEditorModal = ({
@@ -41,6 +51,7 @@ export const TextEditorModal = ({
   editingElement,
   setEditingElement,
   onApply,
+  fonts = [],
 }: TextEditorModalProps) => {
   // Блокировка скролла body при открытии модального окна
   useEffect(() => {
@@ -63,11 +74,11 @@ export const TextEditorModal = ({
       letterSpacing: editingElement.letterSpacing,
       textAlign: editingElement.textAlign,
       italic: editingElement.italic,
+      fontFamily: editingElement.fontFamily,
     });
   }, [editingElement, onApply]);
 
   const handleCancel = useCallback(() => {
-    // Автоматически применяем изменения перед закрытием
     if (editingElement) {
       onApply({
         content: editingElement.content,
@@ -77,6 +88,7 @@ export const TextEditorModal = ({
         letterSpacing: editingElement.letterSpacing,
         textAlign: editingElement.textAlign,
         italic: editingElement.italic,
+        fontFamily: editingElement.fontFamily,
       });
     }
     onClose();
@@ -185,6 +197,31 @@ export const TextEditorModal = ({
                 </div>
               </div>
             
+              {fonts.length > 0 && (
+                <div>
+                  <Label className="text-sm sm:text-base font-semibold">Шрифт</Label>
+                  <div className="space-y-1.5 mt-2 max-h-40 overflow-y-auto rounded-lg border border-border p-1.5">
+                    {fonts.map(font => (
+                      <button
+                        key={font.id}
+                        onClick={() => setEditingElement({ ...editingElement, fontFamily: font.fullStyle })}
+                        className={`w-full text-left p-2 rounded transition-all ${
+                          editingElement.fontFamily === font.fullStyle ? 'border border-primary bg-primary/10' : 'border border-transparent hover:bg-muted'
+                        }`}
+                      >
+                        <div className="text-[10px] text-muted-foreground leading-tight">{font.name}</div>
+                        <div
+                          className="text-base sm:text-lg text-foreground"
+                          style={{ fontFamily: font.style, fontWeight: font.weight }}
+                        >
+                          {font.example}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div>
                 <Label className="text-sm sm:text-base font-semibold">Между строк: <span className="text-primary">{editingElement.lineHeight?.toFixed(1) || '1.2'}</span></Label>
                 <input

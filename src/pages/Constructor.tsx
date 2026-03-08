@@ -2603,6 +2603,7 @@ const Constructor = () => {
             setEditingElement(null);
           }
         }}
+        fonts={fonts}
       />
 
       <ImageEraser
