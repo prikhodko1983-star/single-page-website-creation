@@ -116,7 +116,7 @@ export const TextEditorModal = ({
                   className="w-full h-full min-h-[170px] sm:min-h-[250px] resize-none bg-transparent border-none outline-none"
                   placeholder="Введите текст..."
                   style={{
-                    fontSize: `${editingElement.fontSize || 24}px`,
+                    fontSize: `${Math.max(editingElement.fontSize || 24, 28)}px`,
                     color: editingElement.color || '#FFFFFF',
                     fontFamily: editingElement.fontFamily?.split('|')[0] || 'serif',
                     fontWeight: editingElement.fontFamily?.split('|')[1] || '400',
