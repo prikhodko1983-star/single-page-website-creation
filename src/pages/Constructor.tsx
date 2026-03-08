@@ -1207,24 +1207,21 @@ const Constructor = () => {
       const dateStr = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
       const fileName = `проект_${dateStr}.png`;
       
-      console.log('💾 Скачиваем PNG с метаданными:', fileName);
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       
-      // Пробуем Web Share API для мобильных (сохранение в галерею)
-      if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName)] })) {
+      if (isMobile && navigator.canShare && navigator.canShare({ files: [new File([blob], fileName)] })) {
         try {
           await navigator.share({
             files: [new File([blob], fileName, { type: 'image/png' })],
             title: 'Мой памятник',
             text: 'Сохраните это изображение'
           });
-          console.log('✅ Поделились через Share API');
           toast({
             title: "Готово!",
             description: "Сохраните изображение в галерею",
           });
           return;
-        } catch (shareError) {
-          console.log('⚠️ Share API отменен/недоступен:', shareError);
+        } catch {
           // Fallback на обычную загрузку
         }
       }
