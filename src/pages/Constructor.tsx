@@ -1692,52 +1692,58 @@ const Constructor = () => {
           if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
             const parts = element.fontFamily?.split('|') || ['serif', '400'];
             const fontFamily = parts[0];
-            const fontWeight = parts[1] === 'custom' ? 'normal' : (parts[1] || '400');
+            const isCustomFont = parts[1] === 'custom';
+            let fontWeight: string;
+            if (isCustomFont) {
+              fontWeight = 'normal';
+            } else if (element.type === 'text') {
+              fontWeight = parts[1] || 'bold';
+            } else {
+              fontWeight = parts[1] || '400';
+            }
             const scaledFontSize = (element.fontSize || 24) * fontScale;
             const fontStyle = element.italic ? 'italic' : 'normal';
             
-            const actualFontSize = scaledFontSize;
-            
-            ctx.font = `${fontStyle} ${fontWeight} ${actualFontSize}px "${fontFamily}"`;
+            ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px "${fontFamily}"`;
             ctx.fillStyle = element.color || '#FFFFFF';
             
-            // OpenType features для декоративных шрифтов
-            if (parts[1] === 'custom') {
+            if (isCustomFont) {
               (ctx as any).fontVariantLigatures = 'common-ligatures discretionary-ligatures';
               (ctx as any).fontFeatureSettings = "'ss01', 'calt', 'swsh', 'liga', 'dlig'";
             }
             
-            // Применяем letterSpacing
             if (element.letterSpacing) {
               ctx.letterSpacing = `${element.letterSpacing * fontScale}px`;
             } else {
               ctx.letterSpacing = '0px';
             }
             
-            // Поддержка выравнивания текста
-            // Тень для читаемости
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
             ctx.shadowBlur = 4 * fontScale;
             ctx.shadowOffsetX = 2 * fontScale;
             ctx.shadowOffsetY = 2 * fontScale;
             
-            // Поддержка многострочного текста с автопереносом
-            const content = element.content || '';
+            let content = element.content || '';
+            if (element.type === 'dates') {
+              content = content.toUpperCase();
+            }
             
-            // Разные дефолтные lineHeight для разных типов
             let defaultLineHeight = 1.2;
-            if (element.type === 'fio') defaultLineHeight = 1.05;
-            else if (element.type === 'epitaph') defaultLineHeight = 1.4;
+            if (element.type === 'fio') {
+              defaultLineHeight = isCustomFont ? 1.6 : 1.05;
+            } else if (element.type === 'epitaph') {
+              defaultLineHeight = 1.4;
+            }
             
             const lh = element.lineHeight || defaultLineHeight;
             const lineHeight = scaledFontSize * lh;
             
-            // Обрабатываем многострочный текст с переносами
+            const hasPadding = element.type !== 'fio';
+            const padding = hasPadding ? 4 * fontScale : 0;
+            const contentWidth = scaledWidth - padding * 2;
+            
             const paragraphs = content.split('\n');
             const allLines: string[] = [];
-            
-            const padding = 4 * fontScale;
-            const contentWidth = scaledWidth - padding * 2;
             
             paragraphs.forEach(paragraph => {
               if (paragraph.trim() === '') {
@@ -2185,31 +2191,50 @@ const Constructor = () => {
         if (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates') {
           const parts = element.fontFamily?.split('|') || ['serif', '400'];
           const fontFamily = parts[0];
-          const fontWeight = parts[1] === 'custom' ? 'normal' : (parts[1] || '400');
+          const isCustomFont = parts[1] === 'custom';
+          let fontWeight: string;
+          if (isCustomFont) {
+            fontWeight = 'normal';
+          } else if (element.type === 'text') {
+            fontWeight = parts[1] || 'bold';
+          } else {
+            fontWeight = parts[1] || '400';
+          }
           const scaledFontSize = (element.fontSize || 24) * fontScale;
           const fontStyle = element.italic ? 'italic' : 'normal';
           ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px "${fontFamily}"`;
           ctx.fillStyle = element.color || '#FFFFFF';
           
-          // Применяем letterSpacing
+          if (isCustomFont) {
+            (ctx as any).fontVariantLigatures = 'common-ligatures discretionary-ligatures';
+            (ctx as any).fontFeatureSettings = "'ss01', 'calt', 'swsh', 'liga', 'dlig'";
+          }
+          
           if (element.letterSpacing) {
             ctx.letterSpacing = `${element.letterSpacing * fontScale}px`;
           } else {
             ctx.letterSpacing = '0px';
           }
           
-          // Разные дефолтные lineHeight для разных типов
           let defaultLineHeight = 1.2;
-          if (element.type === 'fio') defaultLineHeight = 1.05;
-          else if (element.type === 'epitaph') defaultLineHeight = 1.4;
+          if (element.type === 'fio') {
+            defaultLineHeight = isCustomFont ? 1.6 : 1.05;
+          } else if (element.type === 'epitaph') {
+            defaultLineHeight = 1.4;
+          }
           
           const lh = element.lineHeight || defaultLineHeight;
           const lineHeight = scaledFontSize * lh;
           
-          const padding = 4 * fontScale;
+          const hasPadding = element.type !== 'fio';
+          const padding = hasPadding ? 4 * fontScale : 0;
           const contentWidth = scaledWidth - padding * 2;
           
-          const paragraphs = element.content?.split('\n') || [];
+          let textContent = element.content || '';
+          if (element.type === 'dates') {
+            textContent = textContent.toUpperCase();
+          }
+          const paragraphs = textContent.split('\n');
           const allLines: string[] = [];
           
           paragraphs.forEach(paragraph => {
@@ -2250,7 +2275,7 @@ const Constructor = () => {
           }
           
           ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 8 * fontScale;
+          ctx.shadowBlur = 4 * fontScale;
           ctx.shadowOffsetX = 2 * fontScale;
           ctx.shadowOffsetY = 2 * fontScale;
           
