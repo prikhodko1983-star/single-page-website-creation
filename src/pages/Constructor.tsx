@@ -91,6 +91,7 @@ const Constructor = () => {
   const [isImageEraserOpen, setIsImageEraserOpen] = useState(false);
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
   const prevCanvasSizeRef = useRef<{ width: number; height: number } | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
@@ -1154,6 +1155,7 @@ const Constructor = () => {
   };
 
   const exportDesignAsPNG = async () => {
+    if (isSaving) return;
     if (elements.length === 0) {
       toast({
         title: "Пустой дизайн",
@@ -1163,9 +1165,8 @@ const Constructor = () => {
       return;
     }
     
+    setIsSaving(true);
     try {
-      console.log('📦 Начинаем экспорт в PNG с метаданными (ComfyUI style)');
-      
       toast({
         title: "Создание PNG...",
         description: "Встраиваем данные в изображение",
@@ -1265,6 +1266,8 @@ const Constructor = () => {
         description: String(error),
         variant: "destructive",
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -1935,6 +1938,13 @@ const Constructor = () => {
     return lines;
   };
 
+  const withTimeout = <T,>(promise: Promise<T>, ms: number, fallback: T): Promise<T> => {
+    return Promise.race([
+      promise,
+      new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))
+    ]);
+  };
+
   const loadFonts = async (elements: CanvasElement[]): Promise<void> => {
     const uniqueFonts = new Map<string, string>();
     
@@ -1972,9 +1982,8 @@ const Constructor = () => {
           const fontFace = new FontFace(family, `url(${url})`, {
             featureSettings: "'ss01', 'calt', 'swsh', 'liga', 'dlig'"
           });
-          await fontFace.load();
+          await withTimeout(fontFace.load(), 5000, undefined as unknown as FontFace);
           document.fonts.add(fontFace);
-          console.log(`Loaded custom font: ${family}`);
         } else {
           const variants = Array.from(neededVariants)
             .filter(v => v.endsWith(`|${family}`))
@@ -1983,8 +1992,7 @@ const Constructor = () => {
               return `${style} ${weight} 24px "${family}"`;
             });
           if (variants.length === 0) variants.push(`400 24px "${family}"`);
-          await Promise.all(variants.map(v => document.fonts.load(v)));
-          console.log(`Loaded font: ${family} (${variants.length} variants)`);
+          await withTimeout(Promise.all(variants.map(v => document.fonts.load(v))), 5000, []);
         }
       } catch (error) {
         console.warn(`Font load failed ${family}:`, error);
@@ -1992,50 +2000,47 @@ const Constructor = () => {
     });
     
     await Promise.all(fontPromises);
-    console.log('✅ Все шрифты загружены для экспорта');
   };
 
   const loadImageWithCORS = async (src: string): Promise<HTMLImageElement | null> => {
-    if (src.startsWith('data:')) {
+    const loadImg = (imgSrc: string, useCors = false): Promise<HTMLImageElement | null> => {
       return new Promise((resolve) => {
         const img = new Image();
+        if (useCors) img.crossOrigin = 'anonymous';
         img.onload = () => resolve(img);
         img.onerror = () => resolve(null);
-        img.src = src;
+        img.src = imgSrc;
       });
+    };
+
+    if (src.startsWith('data:')) {
+      return withTimeout(loadImg(src), 10000, null);
     }
     
     if (src.includes('/bucket/')) {
       try {
-        const response = await fetch(src);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const response = await fetch(src, { signal: controller.signal });
+        clearTimeout(timeoutId);
         const blob = await response.blob();
-        const dataUrl = await new Promise<string>((resolve) => {
+        const dataUrl = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error('FileReader error'));
           reader.readAsDataURL(blob);
         });
-        
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.onerror = () => resolve(null);
-          img.src = dataUrl;
-        });
-      } catch (error) {
+        return withTimeout(loadImg(dataUrl), 10000, null);
+      } catch {
         return null;
       }
     }
     
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => resolve(img);
-      img.onerror = () => resolve(null);
-      img.src = src;
-    });
+    return withTimeout(loadImg(src, true), 10000, null);
   };
 
   const sendForCalculation = async () => {
+    if (isSaving) return;
     if (elements.length === 0) {
       toast({
         title: "Пустой дизайн",
@@ -2045,6 +2050,7 @@ const Constructor = () => {
       return;
     }
     
+    setIsSaving(true);
     try {
       toast({
         title: "Создание изображения...",
@@ -2052,11 +2058,9 @@ const Constructor = () => {
       });
 
       if (!canvasRef.current) {
-        console.error('❌ canvasRef не найден');
-        return;
+        throw new Error('Canvas не найден');
       }
       
-      // Загружаем шрифты перед экспортом
       await loadFonts(elements);
       
       const canvasEl = canvasRef.current;
@@ -2071,7 +2075,7 @@ const Constructor = () => {
       canvasElement.height = exportHeight;
       
       const ctx = canvasElement.getContext('2d');
-      if (!ctx) return;
+      if (!ctx) throw new Error('Не удалось создать контекст Canvas');
       
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, exportWidth, exportHeight);
@@ -2406,6 +2410,8 @@ const Constructor = () => {
         description: error instanceof Error ? error.message : "Попробуйте ещё раз",
         variant: "destructive",
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -2543,6 +2549,7 @@ const Constructor = () => {
             sendForCalculation={sendForCalculation}
             exportDesign={exportDesign}
             exportDesignAsPNG={exportDesignAsPNG}
+            isSaving={isSaving}
             importDesign={importDesign}
             importInputRef={importInputRef}
             inlineEditingId={inlineEditingId}

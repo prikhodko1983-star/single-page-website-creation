@@ -49,6 +49,7 @@ interface ConstructorCanvasProps {
   sendForCalculation: () => void;
   exportDesign: () => void;
   exportDesignAsPNG: () => void;
+  isSaving?: boolean;
   importDesign: (e: React.ChangeEvent<HTMLInputElement>) => void;
   importInputRef: React.RefObject<HTMLInputElement>;
   inlineEditingId: string | null;
@@ -84,6 +85,7 @@ export const ConstructorCanvas = ({
   sendForCalculation,
   exportDesign,
   exportDesignAsPNG,
+  isSaving,
   importDesign,
   importInputRef,
   inlineEditingId,
@@ -471,11 +473,11 @@ export const ConstructorCanvas = ({
         <Button 
           size="sm"
           onClick={sendForCalculation}
-          disabled={elements.length === 0}
+          disabled={elements.length === 0 || isSaving}
           className="flex-1 sm:flex-none"
         >
           <Icon name="Download" size={16} className="mr-2" />
-          Скачать
+          {isSaving ? 'Сохранение...' : 'Скачать'}
         </Button>
       </div>
       
@@ -492,11 +494,11 @@ export const ConstructorCanvas = ({
           <Button 
             variant="secondary" 
             onClick={exportDesignAsPNG}
-            disabled={elements.length === 0}
+            disabled={elements.length === 0 || isSaving}
             className="flex-1"
           >
             <Icon name="Image" size={18} className="mr-2" />
-            Сохранить проект
+            {isSaving ? 'Сохранение...' : 'Сохранить проект'}
           </Button>
           <label 
             htmlFor="import-design"
