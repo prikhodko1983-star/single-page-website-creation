@@ -159,12 +159,28 @@ export const TextEditorModal = ({
             
               <div>
                 <Label className="text-sm sm:text-base font-semibold">Цвет текста</Label>
-                <div className="mt-2">
+                <div className="flex gap-2 mt-2">
+                  {[
+                    { name: 'Золото', value: '#C9A84C' },
+                    { name: 'Серебро', value: '#C0C0C0' },
+                    { name: 'Белый', value: '#FFFFFF' },
+                  ].map((c) => (
+                    <button
+                      key={c.value}
+                      title={c.name}
+                      onClick={() => setEditingElement({ ...editingElement, color: c.value })}
+                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 transition-all ${
+                        editingElement.color === c.value ? 'border-primary scale-110' : 'border-muted-foreground/30'
+                      }`}
+                      style={{ backgroundColor: c.value }}
+                    />
+                  ))}
                   <input
                     type="color"
                     value={editingElement.color || '#FFFFFF'}
                     onChange={(e) => setEditingElement({ ...editingElement, color: e.target.value })}
-                    className="w-full h-10 sm:h-12 rounded-lg border-2 cursor-pointer"
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 cursor-pointer"
+                    title="Свой цвет"
                   />
                 </div>
               </div>
