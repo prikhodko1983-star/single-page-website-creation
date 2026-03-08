@@ -86,12 +86,23 @@ export const ConstructorProperties = ({
                 
                 <div>
                   <Label>Цвет</Label>
-                  <input 
-                    type="color" 
-                    value={selectedEl.color || '#FFFFFF'}
-                    onChange={(e) => updateElement(selectedEl.id, { color: e.target.value })}
-                    className="w-full h-10 mt-1 rounded border"
-                  />
+                  <div className="flex gap-2 mt-1">
+                    {[
+                      { name: 'Золото', value: '#C9A84C' },
+                      { name: 'Серебро', value: '#C0C0C0' },
+                      { name: 'Белый', value: '#FFFFFF' },
+                    ].map((c) => (
+                      <button
+                        key={c.value}
+                        title={c.name}
+                        onClick={() => updateElement(selectedEl.id, { color: c.value })}
+                        className={`w-10 h-10 rounded border-2 transition-all ${
+                          selectedEl.color === c.value ? 'border-primary scale-110' : 'border-muted-foreground/30'
+                        }`}
+                        style={{ backgroundColor: c.value }}
+                      />
+                    ))}
+                  </div>
                 </div>
                 
                 <div>
