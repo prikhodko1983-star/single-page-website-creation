@@ -391,11 +391,11 @@ const PrintOrder = () => {
           gap: 0;
           margin-bottom: 4px;
         }
-        .po-t-stone { flex: 1 1 55%; }
-        .po-t-art { width: 42%; }
+        .po-t-stone { flex: 1 1 50%; }
+        .po-t-art { width: 50%; }
 
         .po-sketch-wrap {
-          flex: 0 0 42%;
+          flex: 0 0 50%;
           margin-left: -1px;
           display: flex;
           flex-direction: column;
