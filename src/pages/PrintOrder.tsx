@@ -184,12 +184,13 @@ const PrintOrder = () => {
               ))}
             </tbody>
           </table>
-          <div className="po-sketch">
-            {sketchImage ? (
-              <img src={sketchImage} alt="Эскиз" />
-            ) : (
-              <span className="po-sketch-placeholder">место для эскиза</span>
-            )}
+          <div className="po-sketch-wrap">
+            <div className="po-sketch-label">место для эскиза</div>
+            <div className="po-sketch">
+              {sketchImage ? (
+                <img src={sketchImage} alt="Эскиз" />
+              ) : null}
+            </div>
           </div>
         </div>
 
@@ -390,30 +391,35 @@ const PrintOrder = () => {
           gap: 0;
           margin-bottom: 4px;
         }
-        .po-t-stone { flex: 1 1 60%; }
+        .po-t-stone { flex: 1 1 55%; }
         .po-t-art { width: 42%; }
 
-        .po-sketch {
-          flex: 0 0 35%;
-          min-height: 120px;
-          border: 1px solid #000;
+        .po-sketch-wrap {
+          flex: 0 0 42%;
           margin-left: -1px;
+          display: flex;
+          flex-direction: column;
+        }
+        .po-sketch-label {
+          font-size: clamp(9px, 1.5vw, 12px);
+          text-align: center;
+          padding: 2px 0;
+          border: 1px solid #000;
+          border-bottom: none;
+        }
+        .po-sketch {
+          flex: 1;
+          border: 1px solid #000;
           display: flex;
           align-items: center;
           justify-content: center;
+          min-height: 180px;
         }
         .po-sketch img {
           max-width: 100%;
           max-height: 100%;
           object-fit: contain;
           padding: 3px;
-        }
-        .po-sketch-placeholder {
-          font-size: clamp(8px, 1.4vw, 11px);
-          color: #999;
-          font-style: italic;
-          text-align: center;
-          padding: 6px;
         }
 
         /* Print */
