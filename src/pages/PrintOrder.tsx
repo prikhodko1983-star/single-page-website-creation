@@ -164,26 +164,59 @@ const PrintOrder = () => {
         <div className="po-field"><b><i>Телефон</i></b><I style={{ width: "calc(100% - 65px)", marginLeft: 4 }} value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
         <div className="po-field" style={{ marginBottom: 6 }}><b><i>Адрес</i></b><I style={{ width: "calc(100% - 45px)", marginLeft: 4 }} value={address} onChange={(e) => setAddress(e.target.value)} /></div>
 
-        {/* Таблица камень + эскиз */}
-        <div className="po-stone-area">
-          <table className="po-t po-t-stone">
-            <thead>
-              <tr>
-                <th className="po-t-name" style={{ textAlign: "left" }}>Работы по камню</th>
-                <th className="po-t-num">Размер</th>
-                <th className="po-t-num">Сумма</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stoneRows.map((row, i) => (
-                <tr key={i}>
-                  <td><I bold={row.bold} ital={row.italic} className="w-full" value={row.name} onChange={(e) => updateStoneRow(i, "name", e.target.value)} /></td>
-                  <td><I className="w-full text-center" value={row.size} onChange={(e) => updateStoneRow(i, "size", e.target.value)} /></td>
-                  <td><I className="w-full text-center" value={row.sum} onChange={(e) => updateStoneRow(i, "sum", e.target.value)} /></td>
+        {/* Таблицы + эскиз */}
+        <div className="po-tables-area">
+          <div className="po-tables-left">
+            <table className="po-t po-t-stone">
+              <thead>
+                <tr>
+                  <th className="po-t-name" style={{ textAlign: "left" }}>Работы по камню</th>
+                  <th className="po-t-num">Размер</th>
+                  <th className="po-t-num">Сумма</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {stoneRows.map((row, i) => (
+                  <tr key={i}>
+                    <td><I bold={row.bold} ital={row.italic} className="w-full" value={row.name} onChange={(e) => updateStoneRow(i, "name", e.target.value)} /></td>
+                    <td><I className="w-full text-center" value={row.size} onChange={(e) => updateStoneRow(i, "size", e.target.value)} /></td>
+                    <td><I className="w-full text-center" value={row.sum} onChange={(e) => updateStoneRow(i, "sum", e.target.value)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div style={{ marginTop: 6, marginBottom: 8 }}>
+              <b>Итого:</b>
+              <span className="po-underline" style={{ minWidth: "30%", marginLeft: 8 }}>
+                {stoneTotal > 0 ? stoneTotal.toLocaleString("ru-RU") : ""}
+              </span>
+            </div>
+
+            <table className="po-t po-t-art">
+              <thead>
+                <tr>
+                  <th className="po-t-name" style={{ textAlign: "left" }}>Художественные<br />работы</th>
+                  <th className="po-t-num">Кол-во</th>
+                  <th className="po-t-num">Сумма</th>
+                </tr>
+              </thead>
+              <tbody>
+                {artRows.map((row, i) => (
+                  <tr key={i}>
+                    <td><I bold={row.bold} ital={row.italic} className="w-full" value={row.name} onChange={(e) => updateArtRow(i, "name", e.target.value)} /></td>
+                    <td><I className="w-full text-center" value={row.qty} onChange={(e) => updateArtRow(i, "qty", e.target.value)} /></td>
+                    <td><I className="w-full text-center" value={row.sum} onChange={(e) => updateArtRow(i, "sum", e.target.value)} /></td>
+                  </tr>
+                ))}
+                <tr>
+                  <td colSpan={2}><b>Итого:</b></td>
+                  <td className="text-center"><b>{artTotal > 0 ? artTotal.toLocaleString("ru-RU") : ""}</b></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
           <div className="po-sketch-wrap">
             <div className="po-sketch-label">место для эскиза</div>
             <div className="po-sketch">
@@ -193,38 +226,6 @@ const PrintOrder = () => {
             </div>
           </div>
         </div>
-
-        {/* Итого камень */}
-        <div style={{ marginTop: 6, marginBottom: 8 }}>
-          <b>Итого:</b>
-          <span className="po-underline" style={{ minWidth: "30%", marginLeft: 8 }}>
-            {stoneTotal > 0 ? stoneTotal.toLocaleString("ru-RU") : ""}
-          </span>
-        </div>
-
-        {/* Таблица худ. работы */}
-        <table className="po-t po-t-art">
-          <thead>
-            <tr>
-              <th className="po-t-name" style={{ textAlign: "left" }}>Художественные<br />работы</th>
-              <th className="po-t-num">Кол-во</th>
-              <th className="po-t-num">Сумма</th>
-            </tr>
-          </thead>
-          <tbody>
-            {artRows.map((row, i) => (
-              <tr key={i}>
-                <td><I bold={row.bold} ital={row.italic} className="w-full" value={row.name} onChange={(e) => updateArtRow(i, "name", e.target.value)} /></td>
-                <td><I className="w-full text-center" value={row.qty} onChange={(e) => updateArtRow(i, "qty", e.target.value)} /></td>
-                <td><I className="w-full text-center" value={row.sum} onChange={(e) => updateArtRow(i, "sum", e.target.value)} /></td>
-              </tr>
-            ))}
-            <tr>
-              <td colSpan={2}><b>Итого:</b></td>
-              <td className="text-center"><b>{artTotal > 0 ? artTotal.toLocaleString("ru-RU") : ""}</b></td>
-            </tr>
-          </tbody>
-        </table>
 
         {/* ИТОГО общее */}
         <div style={{ marginTop: 12, marginBottom: 2 }}>
@@ -386,13 +387,16 @@ const PrintOrder = () => {
         .po-t-name { width: 55%; text-align: left !important; }
         .po-t-num { width: 22.5%; }
 
-        .po-stone-area {
+        .po-tables-area {
           display: flex;
           gap: 0;
           margin-bottom: 4px;
         }
-        .po-t-stone { flex: 1 1 50%; }
-        .po-t-art { width: 50%; }
+        .po-tables-left {
+          flex: 1 1 50%;
+        }
+        .po-t-stone { width: 100%; }
+        .po-t-art { width: 100%; }
 
         .po-sketch-wrap {
           flex: 0 0 50%;
@@ -413,7 +417,6 @@ const PrintOrder = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          min-height: 180px;
         }
         .po-sketch img {
           max-width: 100%;
