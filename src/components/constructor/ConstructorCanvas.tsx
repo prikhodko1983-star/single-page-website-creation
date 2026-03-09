@@ -61,6 +61,7 @@ interface ConstructorCanvasProps {
   canvasPan: { x: number; y: number };
   onCanvasMouseDown: (e: React.MouseEvent) => void;
   updateElement?: (id: string, updates: Partial<CanvasElement>) => Promise<void>;
+  onPrintOrder?: () => void;
 }
 
 export const ConstructorCanvas = ({
@@ -98,6 +99,7 @@ export const ConstructorCanvas = ({
   canvasPan,
   onCanvasMouseDown,
   updateElement,
+  onPrintOrder,
 }: ConstructorCanvasProps) => {
   // Функция для рендеринга текста с увеличенными первыми буквами
   const renderTextWithInitials = (text: string, initialScale?: number) => {
@@ -507,6 +509,18 @@ export const ConstructorCanvas = ({
           <Icon name="Download" size={16} className="mr-2" />
           {isSaving ? 'Сохранение...' : 'Скачать'}
         </Button>
+        {onPrintOrder && (
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={onPrintOrder}
+            disabled={elements.length === 0 || isSaving}
+            className="flex-1 sm:flex-none"
+          >
+            <Icon name="Printer" size={16} className="mr-2" />
+            Печать заказа
+          </Button>
+        )}
       </div>
       
       <div className="mt-4 w-full max-w-lg space-y-2">

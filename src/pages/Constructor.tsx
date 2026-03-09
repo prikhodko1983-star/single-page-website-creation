@@ -2032,6 +2032,19 @@ const Constructor = () => {
     return withTimeout(loadImg(src, true), 10000, null);
   };
 
+  const handlePrintOrder = async () => {
+    if (elements.length === 0) {
+      toast({
+        title: "Пустой дизайн",
+        description: "Добавьте элементы на памятник",
+        variant: "destructive",
+      });
+      return;
+    }
+    const previewDataUrl = await createPreviewImage();
+    navigate('/print-order', { state: { previewImage: previewDataUrl } });
+  };
+
   const sendForCalculation = async () => {
     if (isSaving) return;
     if (elements.length === 0) {
@@ -2574,6 +2587,7 @@ const Constructor = () => {
             canvasPan={canvasPan}
             onCanvasMouseDown={handleCanvasMouseDown}
             updateElement={updateElement}
+            onPrintOrder={handlePrintOrder}
           />
 
           <div className="lg:h-full lg:overflow-y-auto pb-4">

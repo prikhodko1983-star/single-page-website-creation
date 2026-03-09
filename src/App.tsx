@@ -18,6 +18,7 @@ import Product from "./pages/Product";
 import Legal from "./pages/Legal";
 import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
+import PrintOrder from "./pages/PrintOrder";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,7 @@ const NavigationBar = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   
-  if (location.pathname === '/login') {
+  if (location.pathname === '/login' || location.pathname === '/print-order') {
     return null;
   }
   
@@ -161,6 +162,7 @@ const AppContent = () => {
         <Route path="/admin" element={<Admin />} />
         <Route path="/legal" element={<Legal />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/print-order" element={<PrintOrder />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

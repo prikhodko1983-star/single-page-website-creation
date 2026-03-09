@@ -11,6 +11,7 @@ interface CanvasToolbarProps {
   exportDesignAsPNG: () => void;
   importDesign: (e: React.ChangeEvent<HTMLInputElement>) => void;
   importInputRef: React.RefObject<HTMLInputElement>;
+  onPrintOrder?: () => void;
 }
 
 export const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
@@ -22,6 +23,7 @@ export const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
   exportDesignAsPNG,
   importDesign,
   importInputRef,
+  onPrintOrder,
 }) => {
   return (
     <>
@@ -46,6 +48,12 @@ export const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
           <Icon name="Upload" size={16} className="mr-2" />
           Импорт
         </Button>
+        {onPrintOrder && (
+          <Button variant="outline" size="sm" onClick={onPrintOrder}>
+            <Icon name="Printer" size={16} className="mr-2" />
+            Печать заказа
+          </Button>
+        )}
       </div>
 
       <div className="hidden md:flex gap-2 mb-4 justify-center">
