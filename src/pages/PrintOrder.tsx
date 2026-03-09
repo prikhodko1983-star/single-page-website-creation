@@ -451,14 +451,6 @@ const PrintOrder = () => {
             background: transparent !important;
           }
           .po-i::placeholder { color: transparent !important; }
-          .po-sheet {
-            min-height: calc(297mm - 16mm);
-            display: flex;
-            flex-direction: column;
-          }
-          .po-footer {
-            margin-top: auto !important;
-          }
           @page { size: A4; margin: 0; }
         }
       `}</style>
