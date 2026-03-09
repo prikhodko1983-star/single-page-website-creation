@@ -19,6 +19,17 @@ interface ArtRow {
   sum: string;
 }
 
+const I = (props: React.InputHTMLAttributes<HTMLInputElement> & { bold?: boolean; ital?: boolean }) => {
+  const { bold, ital, className, style, ...rest } = props;
+  return (
+    <input
+      {...rest}
+      className={`po-i ${bold ? "font-bold" : ""} ${ital ? "italic" : ""} ${className || ""}`}
+      style={style}
+    />
+  );
+};
+
 const PrintOrder = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -99,17 +110,6 @@ const PrintOrder = () => {
     const reader = new FileReader();
     reader.onload = () => setSketchImage(reader.result as string);
     reader.readAsDataURL(file);
-  };
-
-  const I = (props: React.InputHTMLAttributes<HTMLInputElement> & { bold?: boolean; ital?: boolean }) => {
-    const { bold, ital, className, style, ...rest } = props;
-    return (
-      <input
-        {...rest}
-        className={`po-i ${bold ? "font-bold" : ""} ${ital ? "italic" : ""} ${className || ""}`}
-        style={style}
-      />
-    );
   };
 
   return (
@@ -444,11 +444,21 @@ const PrintOrder = () => {
           .po-hint, .po-sig-line { font-size: 9px; }
           .po-footer { font-size: 12px; margin-top: 10px; }
           .po-t th, .po-t td { padding: 1px 2px; }
-          .po-i {
+          .po-t .po-i {
             border-bottom-color: transparent !important;
+          }
+          .po-i {
             background: transparent !important;
           }
           .po-i::placeholder { color: transparent !important; }
+          .po-sheet {
+            min-height: calc(297mm - 16mm);
+            display: flex;
+            flex-direction: column;
+          }
+          .po-footer {
+            margin-top: auto !important;
+          }
           @page { size: A4; margin: 0; }
         }
       `}</style>
