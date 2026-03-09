@@ -432,18 +432,18 @@ const PrintOrder = () => {
           .po-sheet {
             max-width: none;
             margin: 0;
-            padding: 8mm 10mm;
+            padding: 6mm 8mm;
             box-shadow: none;
-            font-size: 12px;
-            line-height: 1.25;
+            font-size: 11px;
+            line-height: 1.2;
           }
-          .po-title { font-size: 20px; }
-          .po-title-input { font-size: 20px !important; }
-          .po-small { font-size: 10px; }
-          .po-grand { font-size: 14px; }
-          .po-hint, .po-sig-line { font-size: 9px; }
-          .po-footer { font-size: 12px; margin-top: 10px; }
-          .po-t th, .po-t td { padding: 1px 2px; }
+          .po-title { font-size: 18px; }
+          .po-title-input { font-size: 18px !important; }
+          .po-small { font-size: 9px; }
+          .po-grand { font-size: 13px; }
+          .po-hint, .po-sig-line { font-size: 8px; }
+          .po-footer { font-size: 11px; margin-top: 4px !important; }
+          .po-t th, .po-t td { padding: 0px 2px; }
           .po-t .po-i {
             border-bottom-color: transparent !important;
           }
@@ -452,12 +452,7 @@ const PrintOrder = () => {
           }
           .po-i::placeholder { color: transparent !important; }
           .po-sheet {
-            min-height: calc(297mm - 16mm);
-            display: flex;
-            flex-direction: column;
-          }
-          .po-footer {
-            margin-top: auto !important;
+            min-height: auto;
           }
           @page { size: A4; margin: 0; }
         }
