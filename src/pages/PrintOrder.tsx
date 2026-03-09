@@ -40,6 +40,7 @@ const PrintOrder = () => {
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [discount, setDiscount] = useState("");
   const [deadline, setDeadline] = useState("");
   const [advance, setAdvance] = useState("");
   const [sketchImage, setSketchImage] = useState<string | null>(null);
@@ -85,6 +86,8 @@ const PrintOrder = () => {
   const stoneTotal = stoneRows.reduce((s, r) => s + parseNum(r.sum), 0);
   const artTotal = artRows.reduce((s, r) => s + parseNum(r.sum), 0);
   const grandTotal = stoneTotal + artTotal;
+  const discountNum = parseNum(discount);
+  const finalTotal = grandTotal - discountNum;
 
   const updateStoneRow = (i: number, field: keyof StoneRow, value: string) => {
     setStoneRows((prev) => {
@@ -232,6 +235,16 @@ const PrintOrder = () => {
           <span className="po-grand">ИТОГО:</span>
           <span className="po-underline po-grand" style={{ minWidth: "30%", marginLeft: 8 }}>
             {grandTotal > 0 ? grandTotal.toLocaleString("ru-RU") : ""}
+          </span>
+        </div>
+        <div className="po-field" style={{ marginTop: 2 }}>
+          <b>Скидка:</b>
+          <I style={{ width: "20%", marginLeft: 8, textAlign: "center" }} value={discount} onChange={(e) => setDiscount(e.target.value)} />
+        </div>
+        <div style={{ marginTop: 2, marginBottom: 1 }}>
+          <span className="po-grand">К оплате:</span>
+          <span className="po-underline po-grand" style={{ minWidth: "30%", marginLeft: 8 }}>
+            {finalTotal > 0 ? finalTotal.toLocaleString("ru-RU") : ""}
           </span>
         </div>
         <div className="po-hint" style={{ marginLeft: "10%", width: "30%" }}>(общая стоимость заказа)</div>
