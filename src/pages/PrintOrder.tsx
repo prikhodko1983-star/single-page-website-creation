@@ -186,7 +186,7 @@ const PrintOrder = () => {
               </tbody>
             </table>
 
-            <div style={{ marginTop: 6, marginBottom: 8 }}>
+            <div style={{ marginTop: 3, marginBottom: 4 }}>
               <b>Итого:</b>
               <span className="po-underline" style={{ minWidth: "30%", marginLeft: 8 }}>
                 {stoneTotal > 0 ? stoneTotal.toLocaleString("ru-RU") : ""}
@@ -228,7 +228,7 @@ const PrintOrder = () => {
         </div>
 
         {/* ИТОГО общее */}
-        <div style={{ marginTop: 12, marginBottom: 2 }}>
+        <div style={{ marginTop: 6, marginBottom: 1 }}>
           <span className="po-grand">ИТОГО:</span>
           <span className="po-underline po-grand" style={{ minWidth: "30%", marginLeft: 8 }}>
             {grandTotal > 0 ? grandTotal.toLocaleString("ru-RU") : ""}
@@ -237,19 +237,19 @@ const PrintOrder = () => {
         <div className="po-hint" style={{ marginLeft: "10%", width: "30%" }}>(общая стоимость заказа)</div>
 
         {/* Сроки, аванс */}
-        <div className="po-field" style={{ marginTop: 10 }}>Срок изготовления<I style={{ flex: 1, marginLeft: 4 }} value={deadline} onChange={(e) => setDeadline(e.target.value)} /></div>
+        <div className="po-field" style={{ marginTop: 4 }}>Срок изготовления<I style={{ flex: 1, marginLeft: 4 }} value={deadline} onChange={(e) => setDeadline(e.target.value)} /></div>
         <div className="po-field">Аванс внесен<I style={{ flex: 1, marginLeft: 4 }} value={advance} onChange={(e) => setAdvance(e.target.value)} /></div>
         <div className="po-hint" style={{ marginLeft: "16%", width: "30%" }}>(сумма прописью)</div>
 
         {/* Подписи */}
-        <div style={{ borderTop: "1px solid #000", paddingTop: 4, marginTop: 10 }}>
-          <div style={{ marginBottom: 2 }}>С эскизом согласен(на), материал осмотрен, претензий не имею</div>
+        <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 4 }}>
+          <div style={{ marginBottom: 1 }}>С эскизом согласен(на), материал осмотрен, претензий не имею</div>
           <div style={{ textAlign: "right" }}>
             <span className="po-sig-line">(подпись заказчика)</span>
           </div>
         </div>
 
-        <div className="po-row" style={{ marginTop: 10 }}>
+        <div className="po-row" style={{ marginTop: 4 }}>
           <div>
             Аванс принял(а)
             <span className="po-underline" style={{ width: "40%", marginLeft: 4 }}>&nbsp;</span>
@@ -262,7 +262,7 @@ const PrintOrder = () => {
           </div>
         </div>
 
-        <div style={{ marginTop: 10 }}>
+        <div style={{ marginTop: 4 }}>
           Окончательный расчет произвел(а)
           <span className="po-underline" style={{ width: "15%", marginLeft: 8 }}>&nbsp;</span>
         </div>
@@ -302,7 +302,7 @@ const PrintOrder = () => {
           padding: 5vw;
           font-family: 'Times New Roman', Times, serif;
           font-size: clamp(10px, 1.7vw, 13px);
-          line-height: 1.4;
+          line-height: 1.3;
           color: #000;
         }
         @media (min-width: 840px) {
@@ -371,7 +371,7 @@ const PrintOrder = () => {
         }
         .po-footer {
           text-align: center;
-          margin-top: 20px;
+          margin-top: 12px;
           font-size: clamp(10px, 1.8vw, 14px);
         }
 
@@ -432,16 +432,18 @@ const PrintOrder = () => {
           .po-sheet {
             max-width: none;
             margin: 0;
-            padding: 10mm;
+            padding: 8mm 10mm;
             box-shadow: none;
-            font-size: 13px;
+            font-size: 12px;
+            line-height: 1.25;
           }
-          .po-title { font-size: 22px; }
-          .po-title-input { font-size: 22px !important; }
-          .po-small { font-size: 11px; }
-          .po-grand { font-size: 16px; }
-          .po-hint, .po-sig-line { font-size: 10px; }
-          .po-footer { font-size: 14px; }
+          .po-title { font-size: 20px; }
+          .po-title-input { font-size: 20px !important; }
+          .po-small { font-size: 10px; }
+          .po-grand { font-size: 14px; }
+          .po-hint, .po-sig-line { font-size: 9px; }
+          .po-footer { font-size: 12px; margin-top: 10px; }
+          .po-t th, .po-t td { padding: 1px 2px; }
           .po-i {
             border-bottom-color: transparent !important;
             background: transparent !important;
