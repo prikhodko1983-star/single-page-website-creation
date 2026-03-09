@@ -36,6 +36,9 @@ const TelegramChatButton = () => {
             height: 35px;
           }
         }
+        @media print {
+          #tg-chat-btn { display: none !important; }
+        }
       `}</style>
       <div
         id="tg-chat-btn"
