@@ -265,13 +265,19 @@ const PrintOrder = () => {
         </div>
 
         <div className="po-row" style={{ marginTop: 4 }}>
-          <div>
-            <div className="po-field">Аванс принял(а)<I style={{ width: "40%", marginLeft: 4 }} value={advanceAccepted} onChange={(e) => setAdvanceAccepted(e.target.value)} /></div>
-            <div className="po-hint" style={{ marginLeft: "50%" }}>(подпись)</div>
+          <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "baseline", whiteSpace: "nowrap" }}>
+              <span style={{ flexShrink: 0 }}>Аванс принял(а)</span>
+              <I style={{ flex: 1, marginLeft: 4 }} value={advanceAccepted} onChange={(e) => setAdvanceAccepted(e.target.value)} />
+            </div>
+            <div className="po-hint" style={{ marginLeft: "55%" }}>(подпись)</div>
           </div>
-          <div>
-            <div className="po-field">Заказ принял(а)<I style={{ width: "40%", marginLeft: 4 }} value={orderAccepted} onChange={(e) => setOrderAccepted(e.target.value)} /></div>
-            <div className="po-hint" style={{ marginLeft: "50%" }}>(подпись)</div>
+          <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "baseline", whiteSpace: "nowrap" }}>
+              <span style={{ flexShrink: 0 }}>Заказ принял(а)</span>
+              <I style={{ flex: 1, marginLeft: 4 }} value={orderAccepted} onChange={(e) => setOrderAccepted(e.target.value)} />
+            </div>
+            <div className="po-hint" style={{ marginLeft: "55%" }}>(подпись)</div>
           </div>
         </div>
 
