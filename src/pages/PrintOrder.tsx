@@ -43,6 +43,8 @@ const PrintOrder = () => {
   const [discount, setDiscount] = useState("");
   const [deadline, setDeadline] = useState("");
   const [advance, setAdvance] = useState("");
+  const [advanceAccepted, setAdvanceAccepted] = useState("");
+  const [orderAccepted, setOrderAccepted] = useState("");
   const [sketchImage, setSketchImage] = useState<string | null>(null);
 
   const [stoneRows, setStoneRows] = useState<StoneRow[]>([
@@ -264,13 +266,11 @@ const PrintOrder = () => {
 
         <div className="po-row" style={{ marginTop: 4 }}>
           <div>
-            Аванс принял(а)
-            <span className="po-underline" style={{ width: "40%", marginLeft: 4 }}>&nbsp;</span>
+            <div className="po-field">Аванс принял(а)<I style={{ width: "40%", marginLeft: 4 }} value={advanceAccepted} onChange={(e) => setAdvanceAccepted(e.target.value)} /></div>
             <div className="po-hint" style={{ marginLeft: "50%" }}>(подпись)</div>
           </div>
           <div>
-            Заказ принял(а)
-            <span className="po-underline" style={{ width: "40%", marginLeft: 4 }}>&nbsp;</span>
+            <div className="po-field">Заказ принял(а)<I style={{ width: "40%", marginLeft: 4 }} value={orderAccepted} onChange={(e) => setOrderAccepted(e.target.value)} /></div>
             <div className="po-hint" style={{ marginLeft: "50%" }}>(подпись)</div>
           </div>
         </div>
