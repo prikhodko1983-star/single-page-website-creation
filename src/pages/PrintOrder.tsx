@@ -281,13 +281,9 @@ const PrintOrder = () => {
           </div>
         </div>
 
-        <div style={{ marginTop: 4 }}>
-          Окончательный расчет произвел(а)
-          <span className="po-underline" style={{ width: "15%", marginLeft: 8 }}>&nbsp;</span>
-        </div>
-        <div style={{ display: "flex", gap: "5%", marginLeft: "35%" }}>
-          <span className="po-sig-line" style={{ width: "15%" }}>(дата)</span>
-          <span className="po-sig-line" style={{ width: "25%" }}>(подпись менеджера)</span>
+        <div style={{ marginTop: 4, display: "flex", alignItems: "baseline", whiteSpace: "nowrap" }}>
+          <span style={{ flexShrink: 0 }}>Окончательный расчет произвел(а)</span>
+          <I style={{ flex: 1, marginLeft: 8 }} />
         </div>
 
         {/* Footer */}
