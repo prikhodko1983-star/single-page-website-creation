@@ -481,12 +481,12 @@ export const ConstructorCanvas = ({
         ))}
       </div>
       
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 w-full max-w-lg flex flex-wrap gap-2">
         <Button 
           variant="outline" 
           size="sm"
           onClick={onCanvasDoubleClick}
-          className="hidden md:flex flex-1 sm:flex-none"
+          className="hidden md:flex flex-1 min-w-0"
         >
           <Icon name={canvasZoom === 1 ? "ZoomIn" : "ZoomOut"} size={16} className="mr-2" />
           {canvasZoom === 1 ? "Увеличить" : "Уменьшить"}
@@ -495,7 +495,7 @@ export const ConstructorCanvas = ({
           variant="outline" 
           size="sm"
           onClick={() => setElements([])}
-          className="flex-1 sm:flex-none"
+          className="flex-1 min-w-0"
         >
           <Icon name="Trash2" size={16} className="mr-2" />
           Очистить
@@ -504,7 +504,7 @@ export const ConstructorCanvas = ({
           size="sm"
           onClick={sendForCalculation}
           disabled={elements.length === 0 || isSaving}
-          className="flex-1 sm:flex-none"
+          className="flex-1 min-w-0"
         >
           <Icon name="Download" size={16} className="mr-2" />
           {isSaving ? 'Сохранение...' : 'Скачать'}
@@ -515,7 +515,7 @@ export const ConstructorCanvas = ({
             size="sm"
             onClick={onPrintOrder}
             disabled={elements.length === 0 || isSaving}
-            className="flex-1 sm:flex-none"
+            className="w-full"
           >
             <Icon name="Printer" size={16} className="mr-2" />
             Печать заказа
