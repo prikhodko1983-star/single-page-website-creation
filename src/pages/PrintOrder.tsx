@@ -311,20 +311,32 @@ const PrintOrder = () => {
           gap: 8px;
         }
         .po-sheet {
-          max-width: 800px;
+          width: 800px;
           margin: 0 auto;
           background: white;
-          padding: 5vw;
+          padding: 40px;
           font-family: 'Times New Roman', Times, serif;
-          font-size: clamp(10px, 1.7vw, 13px);
+          font-size: 13px;
           line-height: 1.3;
           color: #000;
+          transform-origin: top center;
         }
-        @media (min-width: 840px) {
+        @media (max-width: 840px) {
+          .po-sheet {
+            transform: scale(calc(100vw / 840));
+            margin-bottom: calc((100vw / 840 - 1) * 1100px);
+          }
+        }
+        @media (min-width: 841px) {
           .po-sheet {
             margin: 16px auto;
-            padding: 40px;
             box-shadow: 0 2px 12px rgba(0,0,0,.12);
+          }
+        }
+        @media (max-height: 900px) and (min-width: 841px) {
+          .po-sheet {
+            transform: scale(0.85);
+            margin-bottom: calc((0.85 - 1) * 1100px);
           }
         }
         .po-i {
