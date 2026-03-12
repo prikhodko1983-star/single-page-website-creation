@@ -128,10 +128,7 @@ const PrintOrder = () => {
         <div style={{ flex: 1 }} />
         <label className="cursor-pointer">
           <Button variant="outline" size="sm" asChild>
-            <span>
-              <Icon name="Image" size={16} className="mr-1" />
-              Эскиз
-            </span>
+            <span>Добавить эскиз</span>
           </Button>
           <input type="file" accept="image/*" className="hidden" onChange={handleSketchUpload} />
         </label>
