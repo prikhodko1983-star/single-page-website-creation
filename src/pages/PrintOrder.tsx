@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 interface StoneRow {
   name: string;
@@ -33,6 +35,9 @@ const I = (props: React.InputHTMLAttributes<HTMLInputElement> & { bold?: boolean
 const PrintOrder = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const loadInputRef = useRef<HTMLInputElement>(null);
+  const [isSavingPdf, setIsSavingPdf] = useState(false);
 
   const [orderNumber, setOrderNumber] = useState("");
   const [masterName, setMasterName] = useState("");
@@ -117,6 +122,85 @@ const PrintOrder = () => {
     reader.readAsDataURL(file);
   };
 
+  const getFormData = () => ({
+    orderNumber, masterName, orderDate, customerName, phone, address,
+    discount, deadline, advance, advanceAccepted, orderAccepted,
+    sketchImage, stoneRows, artRows,
+  });
+
+  const handleSavePdf = async () => {
+    if (!sheetRef.current) return;
+    setIsSavingPdf(true);
+    try {
+      const canvas = await html2canvas(sheetRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = pdf.internal.pageSize.getHeight();
+      const imgH = (canvas.height * pdfW) / canvas.width;
+      if (imgH <= pdfH) {
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfW, imgH);
+      } else {
+        let yOffset = 0;
+        while (yOffset < canvas.height) {
+          const sliceH = Math.min((pdfH / pdfW) * canvas.width, canvas.height - yOffset);
+          const sliceCanvas = document.createElement("canvas");
+          sliceCanvas.width = canvas.width;
+          sliceCanvas.height = sliceH;
+          sliceCanvas.getContext("2d")!.drawImage(canvas, 0, -yOffset);
+          pdf.addImage(sliceCanvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, pdfW, (sliceH * pdfW) / canvas.width);
+          yOffset += sliceH;
+          if (yOffset < canvas.height) pdf.addPage();
+        }
+      }
+      const jsonStr = JSON.stringify(getFormData());
+      pdf.setProperties({ subject: jsonStr });
+      pdf.save(`Заказ_${orderNumber || "новый"}.pdf`);
+    } finally {
+      setIsSavingPdf(false);
+    }
+  };
+
+  const handleSaveJson = () => {
+    const data = getFormData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Заказ_${orderNumber || "новый"}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleLoadJson = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result as string);
+        if (data.orderNumber !== undefined) setOrderNumber(data.orderNumber);
+        if (data.masterName !== undefined) setMasterName(data.masterName);
+        if (data.orderDate !== undefined) setOrderDate(data.orderDate);
+        if (data.customerName !== undefined) setCustomerName(data.customerName);
+        if (data.phone !== undefined) setPhone(data.phone);
+        if (data.address !== undefined) setAddress(data.address);
+        if (data.discount !== undefined) setDiscount(data.discount);
+        if (data.deadline !== undefined) setDeadline(data.deadline);
+        if (data.advance !== undefined) setAdvance(data.advance);
+        if (data.advanceAccepted !== undefined) setAdvanceAccepted(data.advanceAccepted);
+        if (data.orderAccepted !== undefined) setOrderAccepted(data.orderAccepted);
+        if (data.sketchImage !== undefined) setSketchImage(data.sketchImage);
+        if (data.stoneRows !== undefined) setStoneRows(data.stoneRows);
+        if (data.artRows !== undefined) setArtRows(data.artRows);
+      } catch (err) {
+        console.error("Ошибка загрузки файла", err);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
   return (
     <div className="po-page">
       {/* Toolbar */}
@@ -128,10 +212,30 @@ const PrintOrder = () => {
         <div style={{ flex: 1 }} />
         <label className="cursor-pointer">
           <Button variant="outline" size="sm" asChild>
-            <span>Добавить эскиз</span>
+            <span>
+              <Icon name="Image" size={16} className="mr-1" />
+              Эскиз
+            </span>
           </Button>
           <input type="file" accept="image/*" className="hidden" onChange={handleSketchUpload} />
         </label>
+        <label className="cursor-pointer">
+          <Button variant="outline" size="sm" asChild>
+            <span>
+              <Icon name="FolderOpen" size={16} className="mr-1" />
+              Загрузить
+            </span>
+          </Button>
+          <input ref={loadInputRef} type="file" accept=".json" className="hidden" onChange={handleLoadJson} />
+        </label>
+        <Button variant="outline" size="sm" onClick={handleSaveJson}>
+          <Icon name="Save" size={16} className="mr-1" />
+          Сохранить
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleSavePdf} disabled={isSavingPdf}>
+          <Icon name="FileDown" size={16} className="mr-1" />
+          {isSavingPdf ? "Создаю PDF..." : "PDF"}
+        </Button>
         <Button size="sm" onClick={handlePrint}>
           <Icon name="Printer" size={16} className="mr-1" />
           Печать
@@ -139,7 +243,7 @@ const PrintOrder = () => {
       </div>
 
       {/* A4 Form */}
-      <div className="po-sheet">
+      <div className="po-sheet" ref={sheetRef}>
         {/* Заказ № */}
         <div className="po-center" style={{ marginBottom: 2 }}>
           <span className="po-title">Заказ №</span>
