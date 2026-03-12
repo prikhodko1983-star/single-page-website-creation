@@ -2552,7 +2552,6 @@ const Constructor = () => {
             />
           </div>
 
-          <div className="lg:h-full lg:overflow-y-auto">
           <ConstructorCanvas
             canvasRef={canvasRef}
             monumentImage={monumentImage}
@@ -2590,7 +2589,6 @@ const Constructor = () => {
             updateElement={updateElement}
             onPrintOrder={handlePrintOrder}
           />
-          </div>
 
           <div className="lg:h-full lg:overflow-y-auto pb-4">
             <ConstructorProperties
