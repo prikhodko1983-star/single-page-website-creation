@@ -2554,8 +2554,8 @@ const Constructor = () => {
         </Button>
       </div>
 
-      {/* Мобильная панель категорий (только мобайл) */}
-      <div className="lg:hidden flex-shrink-0 bg-[#181818] border-b border-white/10 flex items-stretch h-11 z-30">
+      {/* Мобильная панель категорий (только мобайл) — fixed чтобы не сжимать canvas */}
+      <div className="lg:hidden fixed top-12 left-0 right-0 bg-[#181818] border-b border-white/10 flex items-stretch h-11 z-30">
         {[
           { key: 'catalog', label: 'Каталог', icon: 'LayoutGrid' },
           { key: 'images', label: 'Фото', icon: 'Image' },
@@ -2634,7 +2634,7 @@ const Constructor = () => {
       )}
 
       {/* Main workspace */}
-      <div className="flex flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-1 min-h-0 overflow-hidden pt-11 lg:pt-0">
         {/* Left panel */}
         <div className="hidden lg:flex flex-shrink-0 w-[300px] border-r border-white/10 bg-[#181818] flex-col overflow-hidden">
           <ConstructorLibrary
