@@ -63,6 +63,8 @@ const Constructor = () => {
   const [isTextEditorOpen, setIsTextEditorOpen] = useState(false);
   const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
   const [mobileLibraryTab, setMobileLibraryTab] = useState('catalog');
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  const canvasTopOffset = isMobile ? 92 : 48;
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
   const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
@@ -2715,6 +2717,7 @@ const Constructor = () => {
             onCanvasMouseDown={handleCanvasMouseDown}
             updateElement={updateElement}
             onPrintOrder={handlePrintOrder}
+            topOffset={canvasTopOffset}
           />
         </div>
 

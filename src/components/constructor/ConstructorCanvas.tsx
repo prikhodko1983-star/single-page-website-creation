@@ -62,6 +62,7 @@ interface ConstructorCanvasProps {
   onCanvasMouseDown: (e: React.MouseEvent) => void;
   updateElement?: (id: string, updates: Partial<CanvasElement>) => Promise<void>;
   onPrintOrder?: () => void;
+  topOffset?: number;
 }
 
 export const ConstructorCanvas = ({
@@ -100,6 +101,7 @@ export const ConstructorCanvas = ({
   onCanvasMouseDown,
   updateElement,
   onPrintOrder,
+  topOffset = 48,
 }: ConstructorCanvasProps) => {
   // Функция для рендеринга текста с увеличенными первыми буквами
   const renderTextWithInitials = (text: string, initialScale?: number) => {
@@ -142,9 +144,9 @@ export const ConstructorCanvas = ({
           transformOrigin: 'center center',
           cursor: canvasZoom > 1 ? 'move' : 'default',
           transition: 'none',
-          height: 'calc(100vh - 92px)',
-          width: 'calc((100vh - 92px) * 0.75)',
-          maxWidth: 'calc(100vw)',
+          height: `calc(100vh - ${topOffset}px)`,
+          width: `calc((100vh - ${topOffset}px) * 0.75)`,
+          maxWidth: '100vw',
           zIndex: 10
         }}
         onMouseMove={handleMouseMove}
