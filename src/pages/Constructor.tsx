@@ -2488,7 +2488,7 @@ const Constructor = () => {
   return (
     <div className="h-screen w-screen bg-[#111] text-foreground flex flex-col overflow-hidden">
       {/* Top toolbar */}
-      <div className="h-12 flex-shrink-0 bg-[#1a1a1a] border-b border-white/10 flex items-center px-3 gap-1 z-50 overflow-x-auto overflow-y-hidden">
+      <div className="h-12 flex-shrink-0 bg-[#1a1a1a] border-b border-white/10 flex items-center px-3 gap-1 z-50">
         <Button
           variant="ghost"
           size="sm"
@@ -2522,7 +2522,7 @@ const Constructor = () => {
           <Icon name="Image" size={14} />
           <span className="hidden sm:inline">{isSaving ? 'Создаю...' : 'Скачать изображение'}</span>
         </Button>
-        <label className="cursor-pointer flex-shrink-0" title="Загрузить проект">
+        <label className="cursor-pointer flex-shrink-0 hidden sm:block" title="Загрузить проект">
           <input
             ref={importInputRef}
             type="file"
@@ -2530,7 +2530,7 @@ const Constructor = () => {
             onChange={importDesign}
             className="hidden"
           />
-          <div className="h-8 px-2 sm:px-3 inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer">
+          <div className="h-8 px-3 inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer">
             <Icon name="Upload" size={14} />
             <span className="hidden sm:inline">Загрузить проект</span>
           </div>
