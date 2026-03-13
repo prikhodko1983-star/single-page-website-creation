@@ -100,11 +100,11 @@ export const MobileToolbar = ({
     <>
       {/* Выдвижные панели */}
       {isTextElement && activePanel === 'fonts' && (
-        <div className="fixed inset-x-0 bottom-12 bg-black/75 backdrop-blur-md border-t border-white/10 p-3 z-40 max-h-52 overflow-y-auto">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-xs">Выберите шрифт</h3>
-            <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={14} />
+        <div className="fixed inset-x-0 bottom-12 bg-black/60 backdrop-blur-md border-t border-white/10 px-3 py-2 z-40 max-h-52 overflow-y-auto">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-white/60">Шрифт</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={12} />
             </Button>
           </div>
           <div className="grid grid-cols-2 gap-2">
@@ -139,11 +139,11 @@ export const MobileToolbar = ({
       )}
 
       {isTextElement && activePanel === 'size' && (
-        <div className="fixed inset-x-0 bottom-12 bg-black/75 backdrop-blur-md border-t border-white/10 p-3 z-40 max-h-64 overflow-y-auto">
+        <div className="fixed inset-x-0 bottom-12 bg-black/60 backdrop-blur-md border-t border-white/10 px-3 py-2 z-40 max-h-64 overflow-y-auto">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-xs">Размер текста: {selectedEl.fontSize}px</h3>
-            <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={14} />
+            <span className="text-xs text-white/60">Размер текста: {selectedEl.fontSize}px</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={12} />
             </Button>
           </div>
           <input
@@ -156,11 +156,11 @@ export const MobileToolbar = ({
                 updateElement(selectedEl.id, { fontSize: parseInt(e.target.value) });
               }
             }}
-            className="w-full mb-4"
+            className="w-full mb-2"
           />
           
-          <div className="border-t border-border pt-3">
-            <h3 className="font-semibold text-xs mb-2">Межстрочное расстояние: {selectedEl.lineHeight || 1.2}</h3>
+          <div className="border-t border-white/10 pt-2 mt-1">
+            <span className="text-xs text-white/60">Межстрочное: {selectedEl.lineHeight || 1.2}</span>
             <input
               type="range"
               min="0.4"
@@ -172,18 +172,18 @@ export const MobileToolbar = ({
                   updateElement(selectedEl.id, { lineHeight: parseFloat(e.target.value) });
                 }
               }}
-              className="w-full"
+              className="w-full mt-1"
             />
           </div>
         </div>
       )}
 
       {isTextElement && activePanel === 'color' && (
-        <div className="fixed inset-x-0 bottom-12 bg-black/75 backdrop-blur-md border-t border-white/10 p-3 z-40">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-xs">Цвет текста</h3>
-            <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={14} />
+        <div className="fixed inset-x-0 bottom-12 bg-black/60 backdrop-blur-md border-t border-white/10 px-3 py-2 z-40">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-white/60">Цвет текста</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={12} />
             </Button>
           </div>
           <div className="grid grid-cols-6 gap-1.5">
@@ -211,17 +211,17 @@ export const MobileToolbar = ({
                 updateElement(selectedEl.id, { color: e.target.value });
               }
             }}
-            className="w-full h-10 mt-2 rounded border"
+            className="w-full h-8 mt-2 rounded border"
           />
         </div>
       )}
 
       {isTextElement && activePanel === 'align' && (
-        <div className="fixed inset-x-0 bottom-12 bg-black/75 backdrop-blur-md border-t border-white/10 p-3 z-40">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-xs">Выравнивание</h3>
-            <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={14} />
+        <div className="fixed inset-x-0 bottom-12 bg-black/60 backdrop-blur-md border-t border-white/10 px-3 py-2 z-40">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-white/60">Выравнивание</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={12} />
             </Button>
           </div>
           <div className="flex gap-2">
@@ -233,7 +233,7 @@ export const MobileToolbar = ({
                   setActivePanel(null);
                 }
               }}
-              className="flex-1 h-10"
+              className="flex-1 h-8"
             >
               <Icon name="AlignLeft" size={16} />
             </Button>
@@ -245,7 +245,7 @@ export const MobileToolbar = ({
                   setActivePanel(null);
                 }
               }}
-              className="flex-1 h-10"
+              className="flex-1 h-8"
             >
               <Icon name="AlignCenter" size={16} />
             </Button>
@@ -257,7 +257,7 @@ export const MobileToolbar = ({
                   setActivePanel(null);
                 }
               }}
-              className="flex-1 h-10"
+              className="flex-1 h-8"
             >
               <Icon name="AlignRight" size={16} />
             </Button>
@@ -266,18 +266,18 @@ export const MobileToolbar = ({
       )}
 
       {activePanel === 'rotate' && (
-        <div className="fixed inset-x-0 bottom-12 bg-black/75 backdrop-blur-md border-t border-white/10 p-3 z-40">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-xs">Поворот</h3>
-            <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={14} />
-            </Button>
+        <div className="fixed inset-x-0 bottom-12 bg-black/60 backdrop-blur-md border-t border-white/10 px-3 py-2 z-40">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-white/60">Поворот</span>
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold text-white">{selectedEl.rotation || 0}°</span>
+              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
+                <Icon name="X" size={12} />
+              </Button>
+            </div>
           </div>
           
           <div className="slider-wrapper-mobile">
-            <div className="text-2xl font-bold text-center mb-2">
-              {selectedEl.rotation || 0}°
-            </div>
             <div className="track-mobile">
               <input 
                 type="range" 
@@ -316,15 +316,15 @@ export const MobileToolbar = ({
       )}
 
       {isImageElement && activePanel === 'imageSize' && (
-        <div className="fixed inset-x-0 bottom-12 bg-black/75 backdrop-blur-md border-t border-white/10 p-3 z-40">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-xs">Размер изображения</h3>
-            <Button variant="ghost" size="sm" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={14} />
+        <div className="fixed inset-x-0 bottom-12 bg-black/60 backdrop-blur-md border-t border-white/10 px-3 py-2 z-40">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-white/60">Размер изображения</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={12} />
             </Button>
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div>
               <label className="text-xs text-muted-foreground">Ширина: {selectedEl?.width || 100}px</label>
               <input
