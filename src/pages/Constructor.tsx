@@ -2504,30 +2504,21 @@ const Constructor = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={saveDesign}
-          className="h-8 px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
+          onClick={exportDesign}
+          className="h-8 px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5 whitespace-nowrap"
         >
           <Icon name="Save" size={14} />
-          Сохранить
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={exportDesign}
-          className="h-8 px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
-        >
-          <Icon name="Download" size={14} />
-          JSON
+          Сохранить проект
         </Button>
         <Button
           variant="ghost"
           size="sm"
           onClick={exportDesignAsPNG}
           disabled={isSaving}
-          className="h-8 px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
+          className="h-8 px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5 whitespace-nowrap"
         >
           <Icon name="Image" size={14} />
-          PNG
+          {isSaving ? 'Создаю...' : 'Скачать изображение'}
         </Button>
         <label className="cursor-pointer flex-shrink-0">
           <input
@@ -2539,7 +2530,7 @@ const Constructor = () => {
           />
           <div className="h-8 px-3 inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer whitespace-nowrap">
             <Icon name="Upload" size={14} />
-            Загрузить
+            Загрузить проект
           </div>
         </label>
         <div className="w-px h-5 bg-white/10 mx-1 flex-shrink-0" />
