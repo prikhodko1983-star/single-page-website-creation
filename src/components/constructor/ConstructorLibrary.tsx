@@ -114,9 +114,6 @@ export const ConstructorLibrary = ({
   const [isLoadingImages, setIsLoadingImages] = useState(false);
 
   useEffect(() => {
-    loadCatalog();
-    loadCrosses();
-    loadFlowers();
     loadImageCategories();
   }, []);
 
@@ -174,13 +171,7 @@ export const ConstructorLibrary = ({
 
   return (
     <div className="flex flex-col h-full bg-[#181818] text-white">
-        <Tabs defaultValue={defaultTab} className="w-full flex flex-col flex-1 min-h-0" onValueChange={(value) => {
-          if (value === 'catalog') loadCatalog();
-          if (value === 'elements') {
-            loadCrosses();
-            loadFlowers();
-          }
-        }}>
+        <Tabs defaultValue={defaultTab} className="w-full flex flex-col flex-1 min-h-0">
           <div className="px-3 pt-3 pb-2 border-b border-white/10 hidden lg:block">
             <p className="text-[10px] font-semibold text-white/40 uppercase tracking-widest mb-2">Библиотека</p>
             <TabsList className="grid w-full grid-cols-3 bg-white/5 h-8">

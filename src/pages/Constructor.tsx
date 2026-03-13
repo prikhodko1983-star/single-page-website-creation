@@ -229,6 +229,12 @@ const Constructor = () => {
   }, [searchParams]);
 
   useEffect(() => {
+    loadCatalog();
+    loadCrosses();
+    loadFlowers();
+  }, []);
+
+  useEffect(() => {
     if (!canvasRef.current) return;
 
     const observer = new ResizeObserver((entries) => {
