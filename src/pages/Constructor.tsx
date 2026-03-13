@@ -65,6 +65,7 @@ const Constructor = () => {
   const [mobileLibraryTab, setMobileLibraryTab] = useState('catalog');
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
   const canvasTopOffset = isMobile ? 104 : 48;
+  const workspaceTop = isMobile ? 104 : 48;
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
   const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
@@ -2498,7 +2499,7 @@ const Constructor = () => {
   return (
     <div className="h-screen w-screen bg-[#111] text-foreground flex flex-col overflow-hidden">
       {/* Top toolbar */}
-      <div className="h-12 flex-shrink-0 bg-[#1a1a1a] border-b border-white/10 flex items-center px-3 gap-1 z-50">
+      <div className="fixed top-0 left-0 right-0 h-12 flex-shrink-0 bg-[#1a1a1a] border-b border-white/10 flex items-center px-3 gap-1 z-50">
         <Button
           variant="ghost"
           size="sm"
@@ -2635,8 +2636,8 @@ const Constructor = () => {
         </>
       )}
 
-      {/* Main workspace */}
-      <div className="flex flex-1 min-h-0 overflow-hidden pt-14 lg:pt-0">
+      {/* Main workspace — fixed под топбар+панель */}
+      <div className="flex overflow-hidden fixed left-0 right-0 bottom-0" style={{ top: workspaceTop }}>
         {/* Left panel */}
         <div className="hidden lg:flex flex-shrink-0 w-[300px] border-r border-white/10 bg-[#181818] flex-col overflow-hidden">
           <ConstructorLibrary
