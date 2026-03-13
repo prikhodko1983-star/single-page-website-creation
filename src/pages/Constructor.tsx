@@ -2579,9 +2579,11 @@ const Constructor = () => {
         ))}
       </div>
 
-      {/* Мобильный drawer с библиотекой (привязан к панели) */}
+      {/* Мобильный drawer с библиотекой (fixed, не сжимает canvas) */}
       {isMobileLibraryOpen && (
-        <div className="lg:hidden flex-shrink-0 bg-[#181818] border-b border-white/10 overflow-y-auto" style={{ maxHeight: 'calc(60vh)' }}>
+        <>
+          <div className="lg:hidden fixed inset-0 z-30" style={{ top: '92px' }} onClick={() => setIsMobileLibraryOpen(false)} />
+          <div className="lg:hidden fixed left-0 right-0 z-40 bg-[#181818] border-b border-white/10 overflow-y-auto shadow-2xl" style={{ top: '92px', maxHeight: '55vh' }}>
           <ConstructorLibrary
             defaultTab={mobileLibraryTab}
             monumentImage={monumentImage}
@@ -2622,6 +2624,7 @@ const Constructor = () => {
             loadFlowers={loadFlowers}
           />
         </div>
+        </>
       )}
 
       {/* Main workspace */}
