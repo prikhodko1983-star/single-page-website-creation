@@ -204,37 +204,37 @@ const PrintOrder = () => {
   return (
     <div className="po-page">
       {/* Toolbar */}
-      <div className="po-toolbar print:hidden">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-          <Icon name="ArrowLeft" size={16} className="mr-1" />
+      <div className="po-toolbar print:hidden flex flex-wrap gap-1 items-center px-2 py-1">
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => navigate(-1)}>
+          <Icon name="ArrowLeft" size={14} className="mr-1" />
           Назад
         </Button>
         <div style={{ flex: 1 }} />
         <label className="cursor-pointer">
-          <Button variant="outline" size="sm" asChild>
-            <span>Добавить эскиз</span>
+          <Button variant="outline" size="sm" className="h-7 px-2 text-xs" asChild>
+            <span>Эскиз</span>
           </Button>
           <input type="file" accept="image/*" className="hidden" onChange={handleSketchUpload} />
         </label>
         <label className="cursor-pointer">
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="outline" size="sm" className="h-7 px-2 text-xs" asChild>
             <span>
-              <Icon name="FolderOpen" size={16} className="mr-1" />
+              <Icon name="FolderOpen" size={13} className="mr-1" />
               Загрузить
             </span>
           </Button>
           <input ref={loadInputRef} type="file" accept=".json" className="hidden" onChange={handleLoadJson} />
         </label>
-        <Button variant="outline" size="sm" onClick={handleSaveJson}>
-          <Icon name="Save" size={16} className="mr-1" />
+        <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={handleSaveJson}>
+          <Icon name="Save" size={13} className="mr-1" />
           Сохранить
         </Button>
-        <Button variant="outline" size="sm" onClick={handleSavePdf} disabled={isSavingPdf}>
-          <Icon name="FileDown" size={16} className="mr-1" />
-          {isSavingPdf ? "Создаю PDF..." : "PDF"}
+        <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={handleSavePdf} disabled={isSavingPdf}>
+          <Icon name="FileDown" size={13} className="mr-1" />
+          {isSavingPdf ? "PDF..." : "PDF"}
         </Button>
-        <Button size="sm" onClick={handlePrint}>
-          <Icon name="Printer" size={16} className="mr-1" />
+        <Button size="sm" className="h-7 px-2 text-xs" onClick={handlePrint}>
+          <Icon name="Printer" size={13} className="mr-1" />
           Печать
         </Button>
       </div>
