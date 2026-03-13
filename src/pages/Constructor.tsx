@@ -64,7 +64,7 @@ const Constructor = () => {
   const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
   const [mobileLibraryTab, setMobileLibraryTab] = useState('catalog');
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
-  const canvasTopOffset = isMobile ? 92 : 48;
+  const canvasTopOffset = isMobile ? 104 : 48;
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
   const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
@@ -2557,7 +2557,7 @@ const Constructor = () => {
       </div>
 
       {/* Мобильная панель категорий (только мобайл) — fixed чтобы не сжимать canvas */}
-      <div className="lg:hidden fixed top-12 left-0 right-0 bg-[#181818] border-b border-white/10 flex items-stretch h-11 z-30">
+      <div className="lg:hidden fixed top-12 left-0 right-0 bg-[#181818] border-b border-white/10 flex items-stretch h-14 z-30">
         {[
           { key: 'catalog', label: 'Каталог', icon: 'LayoutGrid' },
           { key: 'images', label: 'Фото', icon: 'Image' },
@@ -2590,8 +2590,8 @@ const Constructor = () => {
       {/* Мобильный drawer с библиотекой (fixed, не сжимает canvas) */}
       {isMobileLibraryOpen && (
         <>
-          <div className="lg:hidden fixed inset-0 z-30" style={{ top: '92px' }} onClick={() => setIsMobileLibraryOpen(false)} />
-          <div className="lg:hidden fixed left-0 right-0 z-40 bg-[#181818] border-b border-white/10 overflow-y-auto shadow-2xl" style={{ top: '92px', maxHeight: '55vh' }}>
+          <div className="lg:hidden fixed inset-0 z-30" style={{ top: '104px' }} onClick={() => setIsMobileLibraryOpen(false)} />
+          <div className="lg:hidden fixed left-0 right-0 z-40 bg-[#181818] border-b border-white/10 overflow-y-auto shadow-2xl" style={{ top: '104px', maxHeight: '55vh' }}>
           <ConstructorLibrary
             defaultTab={mobileLibraryTab}
             monumentImage={monumentImage}
@@ -2636,7 +2636,7 @@ const Constructor = () => {
       )}
 
       {/* Main workspace */}
-      <div className="flex flex-1 min-h-0 overflow-hidden pt-11 lg:pt-0">
+      <div className="flex flex-1 min-h-0 overflow-hidden pt-14 lg:pt-0">
         {/* Left panel */}
         <div className="hidden lg:flex flex-shrink-0 w-[300px] border-r border-white/10 bg-[#181818] flex-col overflow-hidden">
           <ConstructorLibrary
