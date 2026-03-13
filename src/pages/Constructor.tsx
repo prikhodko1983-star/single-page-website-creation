@@ -62,6 +62,7 @@ const Constructor = () => {
   
   const [isTextEditorOpen, setIsTextEditorOpen] = useState(false);
   const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
+  const [mobileLibraryTab, setMobileLibraryTab] = useState('catalog');
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
   const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
@@ -2547,6 +2548,82 @@ const Constructor = () => {
         </Button>
       </div>
 
+      {/* Мобильная панель категорий (только мобайл) */}
+      <div className="lg:hidden flex-shrink-0 bg-[#181818] border-b border-white/10 flex items-stretch h-11 z-30">
+        {[
+          { key: 'catalog', label: 'Каталог', icon: 'LayoutGrid' },
+          { key: 'images', label: 'Фото', icon: 'Image' },
+          { key: 'elements', label: 'Элементы', icon: 'Shapes' },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => {
+              if (isMobileLibraryOpen && mobileLibraryTab === tab.key) {
+                setIsMobileLibraryOpen(false);
+              } else {
+                setMobileLibraryTab(tab.key);
+                setIsMobileLibraryOpen(true);
+                if (tab.key === 'catalog') loadCatalog();
+                if (tab.key === 'elements') { loadCrosses(); loadFlowers(); }
+              }
+            }}
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors ${
+              isMobileLibraryOpen && mobileLibraryTab === tab.key
+                ? 'text-primary bg-white/5 border-b-2 border-primary'
+                : 'text-white/50 hover:text-white/80'
+            }`}
+          >
+            <Icon name={tab.icon as Parameters<typeof Icon>[0]['name']} size={16} />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Мобильный drawer с библиотекой (привязан к панели) */}
+      {isMobileLibraryOpen && (
+        <div className="lg:hidden flex-shrink-0 bg-[#181818] border-b border-white/10 overflow-y-auto" style={{ maxHeight: 'calc(60vh)' }}>
+          <ConstructorLibrary
+            defaultTab={mobileLibraryTab}
+            monumentImage={monumentImage}
+            setMonumentImage={(src) => { setMonumentImage(src); setIsMobileLibraryOpen(false); }}
+            addTextElement={() => { addTextElement(); setIsMobileLibraryOpen(false); }}
+            addEpitaphElement={(text) => { addEpitaphElement(text); setIsMobileLibraryOpen(false); }}
+            addImageElement={(src, type) => { addImageElement(src, type); setIsMobileLibraryOpen(false); }}
+            addFIOElement={() => { addFIOElement(); setIsMobileLibraryOpen(false); }}
+            addDatesElement={() => { addDatesElement(); setIsMobileLibraryOpen(false); }}
+            handlePhotoUpload={handlePhotoUpload}
+            photoInputRef={photoInputRef}
+            surname={surname}
+            setSurname={setSurname}
+            name={name}
+            setName={setName}
+            patronymic={patronymic}
+            setPatronymic={setPatronymic}
+            selectedFont={selectedFont}
+            setSelectedFont={setSelectedFont}
+            birthDate={birthDate}
+            setBirthDate={setBirthDate}
+            deathDate={deathDate}
+            setDeathDate={setDeathDate}
+            selectedDateFont={selectedDateFont}
+            setSelectedDateFont={setSelectedDateFont}
+            catalogCategories={catalogCategories}
+            catalogProducts={catalogProducts}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            isLoadingCatalog={isLoadingCatalog}
+            loadCatalog={loadCatalog}
+            fonts={fonts}
+            crosses={crosses}
+            isLoadingCrosses={isLoadingCrosses}
+            loadCrosses={loadCrosses}
+            flowers={flowers}
+            isLoadingFlowers={isLoadingFlowers}
+            loadFlowers={loadFlowers}
+          />
+        </div>
+      )}
+
       {/* Main workspace */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Left panel */}
@@ -2685,68 +2762,6 @@ const Constructor = () => {
         canErase={!!selectedEl && (selectedEl.type === 'image' || selectedEl.type === 'photo' || selectedEl.type === 'cross' || selectedEl.type === 'flower')}
       />
 
-      {/* Мобильная кнопка открытия библиотеки */}
-      <button
-        onClick={() => setIsMobileLibraryOpen(true)}
-        className="fixed left-3 bottom-3 z-40 lg:hidden h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center"
-      >
-        <Icon name="Plus" size={24} />
-      </button>
-
-      {/* Мобильный drawer с библиотекой */}
-      {isMobileLibraryOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex flex-col">
-          <div className="flex-1 bg-black/50" onClick={() => setIsMobileLibraryOpen(false)} />
-          <div className="bg-[#181818] h-[75vh] flex flex-col rounded-t-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 flex-shrink-0">
-              <span className="text-sm font-semibold text-white">Добавить элемент</span>
-              <button onClick={() => setIsMobileLibraryOpen(false)} className="text-white/60 hover:text-white">
-                <Icon name="X" size={20} />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              <ConstructorLibrary
-                monumentImage={monumentImage}
-                setMonumentImage={(src) => { setMonumentImage(src); setIsMobileLibraryOpen(false); }}
-                addTextElement={() => { addTextElement(); setIsMobileLibraryOpen(false); }}
-                addEpitaphElement={(text) => { addEpitaphElement(text); setIsMobileLibraryOpen(false); }}
-                addImageElement={(src, type) => { addImageElement(src, type); setIsMobileLibraryOpen(false); }}
-                addFIOElement={() => { addFIOElement(); setIsMobileLibraryOpen(false); }}
-                addDatesElement={() => { addDatesElement(); setIsMobileLibraryOpen(false); }}
-                handlePhotoUpload={handlePhotoUpload}
-                photoInputRef={photoInputRef}
-                surname={surname}
-                setSurname={setSurname}
-                name={name}
-                setName={setName}
-                patronymic={patronymic}
-                setPatronymic={setPatronymic}
-                selectedFont={selectedFont}
-                setSelectedFont={setSelectedFont}
-                birthDate={birthDate}
-                setBirthDate={setBirthDate}
-                deathDate={deathDate}
-                setDeathDate={setDeathDate}
-                selectedDateFont={selectedDateFont}
-                setSelectedDateFont={setSelectedDateFont}
-                catalogCategories={catalogCategories}
-                catalogProducts={catalogProducts}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                isLoadingCatalog={isLoadingCatalog}
-                loadCatalog={loadCatalog}
-                fonts={fonts}
-                crosses={crosses}
-                isLoadingCrosses={isLoadingCrosses}
-                loadCrosses={loadCrosses}
-                flowers={flowers}
-                isLoadingFlowers={isLoadingFlowers}
-                loadFlowers={loadFlowers}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
