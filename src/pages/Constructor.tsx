@@ -2505,22 +2505,24 @@ const Constructor = () => {
           variant="ghost"
           size="sm"
           onClick={exportDesign}
-          className="h-8 px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5 whitespace-nowrap"
+          title="Сохранить проект"
+          className="h-8 px-2 sm:px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
         >
           <Icon name="Save" size={14} />
-          Сохранить проект
+          <span className="hidden sm:inline">Сохранить проект</span>
         </Button>
         <Button
           variant="ghost"
           size="sm"
           onClick={exportDesignAsPNG}
           disabled={isSaving}
-          className="h-8 px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5 whitespace-nowrap"
+          title="Скачать изображение"
+          className="h-8 px-2 sm:px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
         >
           <Icon name="Image" size={14} />
-          {isSaving ? 'Создаю...' : 'Скачать изображение'}
+          <span className="hidden sm:inline">{isSaving ? 'Создаю...' : 'Скачать изображение'}</span>
         </Button>
-        <label className="cursor-pointer flex-shrink-0">
+        <label className="cursor-pointer flex-shrink-0" title="Загрузить проект">
           <input
             ref={importInputRef}
             type="file"
@@ -2528,19 +2530,19 @@ const Constructor = () => {
             onChange={importDesign}
             className="hidden"
           />
-          <div className="h-8 px-3 inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer whitespace-nowrap">
+          <div className="h-8 px-2 sm:px-3 inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer">
             <Icon name="Upload" size={14} />
-            Загрузить проект
+            <span className="hidden sm:inline">Загрузить проект</span>
           </div>
         </label>
         <div className="w-px h-5 bg-white/10 mx-1 flex-shrink-0" />
         <Button
           size="sm"
           onClick={handlePrintOrder}
-          className="h-8 px-3 flex-shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground text-xs gap-1.5 whitespace-nowrap"
+          className="h-8 px-2 sm:px-3 flex-shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground text-xs gap-1.5"
         >
           <Icon name="FileText" size={14} />
-          Оформить заказ
+          <span className="hidden sm:inline">Оформить заказ</span>
         </Button>
       </div>
 
