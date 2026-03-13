@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Icon from "@/components/ui/icon";
@@ -47,12 +46,16 @@ export const ConstructorProperties = ({
   const [isProcessing, setIsProcessing] = useState(false);
   
   return (
-    <Card>
-      <CardContent className="p-4">
-        <h2 className="font-oswald font-bold text-lg mb-4">Свойства элемента</h2>
-        
+    <div className="flex flex-col h-full bg-[#181818] text-white overflow-y-auto">
+      <div className="px-3 pt-3 pb-2 border-b border-white/10 flex-shrink-0">
+        <p className="text-[10px] font-semibold text-white/40 uppercase tracking-widest">Свойства</p>
+      </div>
+      <div className="p-3 flex-1">
         {!selectedEl && (
-          <p className="text-sm text-muted-foreground">Выберите элемент для редактирования</p>
+          <div className="flex flex-col items-center justify-center h-40 text-center">
+            <Icon name="MousePointer2" size={28} className="text-white/20 mb-2" />
+            <p className="text-xs text-white/40">Выберите элемент на холсте</p>
+          </div>
         )}
         
         {selectedEl && (
@@ -312,7 +315,7 @@ export const ConstructorProperties = ({
             </Button>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

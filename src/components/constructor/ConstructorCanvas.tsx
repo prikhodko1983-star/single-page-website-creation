@@ -133,29 +133,18 @@ export const ConstructorCanvas = ({
   };
 
   return (
-    <div className="flex flex-col items-center relative">
-      {/* Подсказки */}
-      <div className="mb-2 text-xs text-muted-foreground text-center">
-        <div className="hidden md:block">
-          <Icon name="MousePointerClick" size={12} className="inline mr-1" />
-          Двойной клик для увеличения макета
-        </div>
-        <div className="md:hidden">
-          <Icon name="Hand" size={12} className="inline mr-1" />
-          Два пальца для масштабирования макета
-        </div>
-      </div>
-      
+    <div className="flex flex-col items-center justify-center w-full h-full relative">
       <div 
         ref={canvasRef}
-        className="relative w-full aspect-[3/4] bg-secondary rounded-lg overflow-hidden shadow-2xl ring-4 ring-border touch-none select-none"
+        className="relative bg-[#0a0a0a] overflow-hidden touch-none select-none"
         style={{ 
           transform: `scale(${canvasZoom}) translate(${canvasPan.x / canvasZoom}px, ${canvasPan.y / canvasZoom}px)`,
-          transformOrigin: 'center top',
+          transformOrigin: 'center center',
           cursor: canvasZoom > 1 ? 'move' : 'default',
           transition: 'none',
-          maxHeight: 'calc(100vh - 200px)',
-          maxWidth: 'min(32rem, calc((100vh - 200px) * 0.75))',
+          height: 'calc(100vh - 48px)',
+          width: 'calc((100vh - 48px) * 0.75)',
+          maxWidth: '100%',
           zIndex: 10
         }}
         onMouseMove={handleMouseMove}
@@ -481,87 +470,22 @@ export const ConstructorCanvas = ({
         ))}
       </div>
       
-      <div className="mt-4 w-full max-w-lg flex flex-wrap gap-2">
-        <Button 
-          variant="outline" 
-          size="sm"
+      {/* Zoom controls - overlay bottom center */}
+      <div className="absolute bottom-3 right-3 flex gap-1 z-20">
+        <button
           onClick={onCanvasDoubleClick}
-          className="hidden md:flex flex-1 min-w-0"
+          className="h-7 w-7 rounded bg-black/60 hover:bg-black/80 text-white/70 hover:text-white flex items-center justify-center transition-colors"
+          title={canvasZoom === 1 ? "Увеличить" : "Уменьшить"}
         >
-          <Icon name={canvasZoom === 1 ? "ZoomIn" : "ZoomOut"} size={16} className="mr-2" />
-          {canvasZoom === 1 ? "Увеличить" : "Уменьшить"}
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm"
+          <Icon name={canvasZoom === 1 ? "ZoomIn" : "ZoomOut"} size={14} />
+        </button>
+        <button
           onClick={() => setElements([])}
-          className="flex-1 min-w-0"
+          className="h-7 w-7 rounded bg-black/60 hover:bg-red-900/80 text-white/70 hover:text-white flex items-center justify-center transition-colors"
+          title="Очистить холст"
         >
-          <Icon name="Trash2" size={16} className="mr-2" />
-          Очистить
-        </Button>
-        <Button 
-          size="sm"
-          onClick={sendForCalculation}
-          disabled={elements.length === 0 || isSaving}
-          className="flex-1 min-w-0"
-        >
-          <Icon name="Download" size={16} className="mr-2" />
-          {isSaving ? 'Сохранение...' : 'Скачать'}
-        </Button>
-        {onPrintOrder && (
-          <Button 
-            variant="outline"
-            size="sm"
-            onClick={onPrintOrder}
-            disabled={elements.length === 0 || isSaving}
-            className="w-full"
-          >
-            <Icon name="Printer" size={16} className="mr-2" />
-            Печать заказа
-          </Button>
-        )}
-      </div>
-      
-      <div className="mt-4 w-full max-w-lg space-y-2">
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input
-            ref={importInputRef}
-            type="file"
-            accept=".json,.png,application/json,image/png"
-            onChange={importDesign}
-            className="hidden"
-            id="import-design"
-          />
-          <Button 
-            variant="secondary" 
-            onClick={exportDesignAsPNG}
-            disabled={elements.length === 0 || isSaving}
-            className="flex-1"
-          >
-            <Icon name="Image" size={18} className="mr-2" />
-            {isSaving ? 'Сохранение...' : 'Сохранить проект'}
-          </Button>
-          <label 
-            htmlFor="import-design"
-            className="flex-1"
-          >
-            <Button 
-              variant="secondary" 
-              className="w-full"
-              type="button"
-              asChild
-            >
-              <span>
-                <Icon name="Upload" size={18} className="mr-2" />
-                Загрузить
-              </span>
-            </Button>
-          </label>
-        </div>
-        <p className="text-xs text-muted-foreground text-center px-2">
-          💡 Сохраните проект на устройство и загрузите позже, чтобы продолжить работу
-        </p>
+          <Icon name="Trash2" size={14} />
+        </button>
       </div>
     </div>
   );

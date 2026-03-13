@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -172,8 +171,7 @@ export const ConstructorLibrary = ({
   };
 
   return (
-    <Card className="flex flex-col h-full">
-      <CardContent className="p-0 flex flex-col flex-1 min-h-0">
+    <div className="flex flex-col h-full bg-[#181818] text-white">
         <Tabs defaultValue="catalog" className="w-full flex flex-col flex-1 min-h-0" onValueChange={(value) => {
           if (value === 'catalog') loadCatalog();
           if (value === 'elements') {
@@ -181,16 +179,16 @@ export const ConstructorLibrary = ({
             loadFlowers();
           }
         }}>
-          <div className="px-4 pt-4 pb-2">
-            <h2 className="font-oswald font-bold text-lg mb-3">Библиотека элементов</h2>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="catalog">Каталог</TabsTrigger>
-              <TabsTrigger value="images">Изображения</TabsTrigger>
-              <TabsTrigger value="elements">Элементы</TabsTrigger>
+          <div className="px-3 pt-3 pb-2 border-b border-white/10">
+            <p className="text-[10px] font-semibold text-white/40 uppercase tracking-widest mb-2">Библиотека</p>
+            <TabsList className="grid w-full grid-cols-3 bg-white/5 h-8">
+              <TabsTrigger value="catalog" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Каталог</TabsTrigger>
+              <TabsTrigger value="images" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Изображения</TabsTrigger>
+              <TabsTrigger value="elements" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Элементы</TabsTrigger>
             </TabsList>
           </div>
           
-          <TabsContent value="catalog" className="space-y-3 mt-2 flex-1 overflow-y-auto min-h-0 px-4 pb-4">
+          <TabsContent value="catalog" className="space-y-3 mt-2 flex-1 overflow-y-auto min-h-0 px-3 pb-4">
             <Label>Памятники из каталога магазина</Label>
             
             {isLoadingCatalog ? (
@@ -589,7 +587,6 @@ export const ConstructorLibrary = ({
 
           </TabsContent>
         </Tabs>
-      </CardContent>
-    </Card>
+    </div>
   );
 };

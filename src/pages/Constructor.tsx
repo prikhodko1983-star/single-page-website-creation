@@ -2486,33 +2486,78 @@ const Constructor = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigate('/')}
-              >
-                <Icon name="ArrowLeft" size={20} className="mr-2" />
-                Назад
-              </Button>
-              <div>
-                <h1 className="font-oswald font-bold text-xl text-primary">КОНСТРУКТОР ПАМЯТНИКА</h1>
-                <p className="text-xs text-muted-foreground">Создайте уникальный дизайн</p>
-              </div>
-            </div>
+    <div className="h-screen w-screen bg-[#111] text-foreground flex flex-col overflow-hidden">
+      {/* Top toolbar */}
+      <div className="h-12 flex-shrink-0 bg-[#1a1a1a] border-b border-white/10 flex items-center px-3 gap-2 z-50">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/')}
+          className="h-8 px-2 text-white/70 hover:text-white hover:bg-white/10"
+        >
+          <Icon name="ArrowLeft" size={16} className="mr-1" />
+          <span className="text-xs">Назад</span>
+        </Button>
+        <div className="w-px h-5 bg-white/10 mx-1" />
+        <span className="text-xs font-semibold text-primary tracking-widest uppercase hidden sm:block">Конструктор памятника</span>
+        <div className="flex-1" />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={saveDesign}
+          className="h-8 px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
+        >
+          <Icon name="Save" size={14} />
+          Сохранить
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={exportDesign}
+          className="h-8 px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
+        >
+          <Icon name="Download" size={14} />
+          JSON
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={exportDesignAsPNG}
+          disabled={isSaving}
+          className="h-8 px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
+        >
+          <Icon name="Image" size={14} />
+          PNG
+        </Button>
+        <label className="cursor-pointer">
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".json,.png"
+            onChange={importDesign}
+            className="hidden"
+          />
+          <div className="h-8 px-3 inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer">
+            <Icon name="Upload" size={14} />
+            Загрузить
           </div>
-        </div>
-      </header>
+        </label>
+        <div className="w-px h-5 bg-white/10 mx-1" />
+        <Button
+          size="sm"
+          onClick={sendForCalculation}
+          className="h-8 px-3 bg-primary hover:bg-primary/90 text-primary-foreground text-xs gap-1.5"
+        >
+          <Icon name="FileText" size={14} />
+          Оформить заказ
+        </Button>
+      </div>
 
-      <div className="lg:h-[calc(100vh-73px)]">
-        <div className="container mx-auto px-4 py-4 h-full">
-        <div className="grid lg:grid-cols-[320px,1fr,320px] gap-6 h-full pb-24 md:pb-0">
-          <div className="lg:h-full lg:overflow-y-auto pb-4">
-            <ConstructorLibrary
+      {/* Main workspace */}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        {/* Left panel */}
+        <div className="hidden lg:flex flex-shrink-0 w-[300px] border-r border-white/10 bg-[#181818] flex-col overflow-hidden">
+          <ConstructorLibrary
             monumentImage={monumentImage}
             setMonumentImage={setMonumentImage}
             addTextElement={addTextElement}
@@ -2549,9 +2594,11 @@ const Constructor = () => {
             flowers={flowers}
             isLoadingFlowers={isLoadingFlowers}
             loadFlowers={loadFlowers}
-            />
-          </div>
+          />
+        </div>
 
+        {/* Canvas area */}
+        <div className="flex-1 min-w-0 flex items-center justify-center bg-[#111] overflow-hidden relative">
           <ConstructorCanvas
             canvasRef={canvasRef}
             monumentImage={monumentImage}
@@ -2589,17 +2636,17 @@ const Constructor = () => {
             updateElement={updateElement}
             onPrintOrder={handlePrintOrder}
           />
-
-          <div className="lg:h-full lg:overflow-y-auto pb-4">
-            <ConstructorProperties
-              selectedEl={selectedEl}
-              updateElement={updateElement}
-              deleteElement={deleteElement}
-              fonts={fonts}
-              onEditImage={handleEditImage}
-            />
-          </div>
         </div>
+
+        {/* Right panel */}
+        <div className="hidden lg:flex flex-shrink-0 w-[280px] border-l border-white/10 bg-[#181818] flex-col overflow-hidden">
+          <ConstructorProperties
+            selectedEl={selectedEl}
+            updateElement={updateElement}
+            deleteElement={deleteElement}
+            fonts={fonts}
+            onEditImage={handleEditImage}
+          />
         </div>
       </div>
       
