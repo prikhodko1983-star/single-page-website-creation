@@ -136,17 +136,14 @@ export const ConstructorLibrary = ({
   const loadAllCategoryImages = async (categories: Array<{id: number, name: string, slug: string}>) => {
     setIsLoadingImages(true);
     try {
-      const allImages: Array<{id: number, category_id: number, name: string, image_url: string, category_name: string}> = [];
-      
-      for (const category of categories) {
-        const response = await fetch(`https://functions.poehali.dev/dee0114f-9dc3-4783-87b7-346a133d7c73?type=images&category_id=${category.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          allImages.push(...data);
-        }
-      }
-      
-      setCategoryImages(allImages);
+      const results = await Promise.all(
+        categories.map(async (category) => {
+          const response = await fetch(`https://functions.poehali.dev/dee0114f-9dc3-4783-87b7-346a133d7c73?type=images&category_id=${category.id}`);
+          if (response.ok) return response.json();
+          return [];
+        })
+      );
+      setCategoryImages(results.flat());
     } catch (error) {
       console.error('Error loading category images:', error);
     } finally {
