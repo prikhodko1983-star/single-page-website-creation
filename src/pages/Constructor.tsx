@@ -2545,7 +2545,7 @@ const Constructor = () => {
         <div className="w-px h-5 bg-white/10 mx-1" />
         <Button
           size="sm"
-          onClick={sendForCalculation}
+          onClick={handlePrintOrder}
           className="h-8 px-3 bg-primary hover:bg-primary/90 text-primary-foreground text-xs gap-1.5"
         >
           <Icon name="FileText" size={14} />
