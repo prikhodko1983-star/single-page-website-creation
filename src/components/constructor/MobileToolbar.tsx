@@ -57,17 +57,12 @@ export const MobileToolbar = ({
   const [activePanel, setActivePanel] = useState<'fonts' | 'size' | 'color' | 'align' | 'rotate' | 'imageSize' | null>(null);
   const [rotationInput, setRotationInput] = useState<string>('');
 
-  if (!selectedEl) {
-    console.log('⚠️ MobileToolbar: selectedEl пустой');
+  if (!selectedEl || window.innerWidth >= 1024) {
     return null;
   }
 
-  console.log('✅ MobileToolbar: selectedEl =', selectedEl);
-  
   const isTextElement = ['text', 'epitaph', 'fio', 'dates'].includes(selectedEl.type);
   const isImageElement = ['image', 'cross', 'flower', 'photo'].includes(selectedEl.type);
-  
-  console.log('isImageElement:', isImageElement, 'type:', selectedEl.type);
 
   const togglePanel = (panel: 'fonts' | 'size' | 'color' | 'align' | 'rotate' | 'imageSize') => {
     if (panel === 'rotate' && activePanel !== 'rotate') {
@@ -350,7 +345,7 @@ export const MobileToolbar = ({
       )}
 
       {/* Нижняя панель инструментов */}
-      <div className="fixed inset-x-0 bottom-0 bg-black/60 backdrop-blur-md border-t border-white/10 px-2 py-1 z-50 md:hidden">
+      <div className="fixed inset-x-0 bottom-0 bg-black/60 backdrop-blur-md border-t border-white/10 px-2 py-1 z-50 lg:hidden">
         <div className="flex items-center justify-around gap-0.5">
           {isTextElement && (
             <>
