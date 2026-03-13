@@ -61,6 +61,7 @@ const Constructor = () => {
   const [deathDate, setDeathDate] = useState('');
   
   const [isTextEditorOpen, setIsTextEditorOpen] = useState(false);
+  const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
   const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
@@ -2678,12 +2679,74 @@ const Constructor = () => {
         fonts={fonts}
         onOpenEraser={() => {
           if (selectedElement) {
-            console.log('📝 MobileToolbar вызвал onOpenEraser для элемента:', selectedElement);
             handleEditImage(selectedElement);
           }
         }}
         canErase={!!selectedEl && (selectedEl.type === 'image' || selectedEl.type === 'photo' || selectedEl.type === 'cross' || selectedEl.type === 'flower')}
       />
+
+      {/* Мобильная кнопка открытия библиотеки */}
+      <button
+        onClick={() => setIsMobileLibraryOpen(true)}
+        className="fixed left-3 bottom-3 z-40 lg:hidden h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center"
+      >
+        <Icon name="Plus" size={24} />
+      </button>
+
+      {/* Мобильный drawer с библиотекой */}
+      {isMobileLibraryOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex flex-col">
+          <div className="flex-1 bg-black/50" onClick={() => setIsMobileLibraryOpen(false)} />
+          <div className="bg-[#181818] h-[75vh] flex flex-col rounded-t-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 flex-shrink-0">
+              <span className="text-sm font-semibold text-white">Добавить элемент</span>
+              <button onClick={() => setIsMobileLibraryOpen(false)} className="text-white/60 hover:text-white">
+                <Icon name="X" size={20} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <ConstructorLibrary
+                monumentImage={monumentImage}
+                setMonumentImage={(src) => { setMonumentImage(src); setIsMobileLibraryOpen(false); }}
+                addTextElement={() => { addTextElement(); setIsMobileLibraryOpen(false); }}
+                addEpitaphElement={(text) => { addEpitaphElement(text); setIsMobileLibraryOpen(false); }}
+                addImageElement={(src, type) => { addImageElement(src, type); setIsMobileLibraryOpen(false); }}
+                addFIOElement={() => { addFIOElement(); setIsMobileLibraryOpen(false); }}
+                addDatesElement={() => { addDatesElement(); setIsMobileLibraryOpen(false); }}
+                handlePhotoUpload={handlePhotoUpload}
+                photoInputRef={photoInputRef}
+                surname={surname}
+                setSurname={setSurname}
+                name={name}
+                setName={setName}
+                patronymic={patronymic}
+                setPatronymic={setPatronymic}
+                selectedFont={selectedFont}
+                setSelectedFont={setSelectedFont}
+                birthDate={birthDate}
+                setBirthDate={setBirthDate}
+                deathDate={deathDate}
+                setDeathDate={setDeathDate}
+                selectedDateFont={selectedDateFont}
+                setSelectedDateFont={setSelectedDateFont}
+                catalogCategories={catalogCategories}
+                catalogProducts={catalogProducts}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                isLoadingCatalog={isLoadingCatalog}
+                loadCatalog={loadCatalog}
+                fonts={fonts}
+                crosses={crosses}
+                isLoadingCrosses={isLoadingCrosses}
+                loadCrosses={loadCrosses}
+                flowers={flowers}
+                isLoadingFlowers={isLoadingFlowers}
+                loadFlowers={loadFlowers}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
