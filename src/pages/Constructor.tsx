@@ -2488,7 +2488,7 @@ const Constructor = () => {
   return (
     <div className="h-screen w-screen bg-[#111] text-foreground flex flex-col overflow-hidden">
       {/* Top toolbar */}
-      <div className="h-12 flex-shrink-0 bg-[#1a1a1a] border-b border-white/10 flex items-center px-3 gap-2 z-50">
+      <div className="h-12 flex-shrink-0 bg-[#1a1a1a] border-b border-white/10 flex items-center px-3 gap-1 z-50 overflow-x-auto overflow-y-hidden">
         <Button
           variant="ghost"
           size="sm"
@@ -2505,7 +2505,7 @@ const Constructor = () => {
           variant="ghost"
           size="sm"
           onClick={saveDesign}
-          className="h-8 px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
+          className="h-8 px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
         >
           <Icon name="Save" size={14} />
           Сохранить
@@ -2514,7 +2514,7 @@ const Constructor = () => {
           variant="ghost"
           size="sm"
           onClick={exportDesign}
-          className="h-8 px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
+          className="h-8 px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
         >
           <Icon name="Download" size={14} />
           JSON
@@ -2524,12 +2524,12 @@ const Constructor = () => {
           size="sm"
           onClick={exportDesignAsPNG}
           disabled={isSaving}
-          className="h-8 px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
+          className="h-8 px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
         >
           <Icon name="Image" size={14} />
           PNG
         </Button>
-        <label className="cursor-pointer">
+        <label className="cursor-pointer flex-shrink-0">
           <input
             ref={importInputRef}
             type="file"
@@ -2537,16 +2537,16 @@ const Constructor = () => {
             onChange={importDesign}
             className="hidden"
           />
-          <div className="h-8 px-3 inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer">
+          <div className="h-8 px-3 inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer whitespace-nowrap">
             <Icon name="Upload" size={14} />
             Загрузить
           </div>
         </label>
-        <div className="w-px h-5 bg-white/10 mx-1" />
+        <div className="w-px h-5 bg-white/10 mx-1 flex-shrink-0" />
         <Button
           size="sm"
           onClick={handlePrintOrder}
-          className="h-8 px-3 bg-primary hover:bg-primary/90 text-primary-foreground text-xs gap-1.5"
+          className="h-8 px-3 flex-shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground text-xs gap-1.5 whitespace-nowrap"
         >
           <Icon name="FileText" size={14} />
           Оформить заказ
