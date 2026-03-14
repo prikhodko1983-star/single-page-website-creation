@@ -2681,7 +2681,7 @@ const Constructor = () => {
         </div>
 
         {/* Canvas area */}
-        <div className="flex-1 min-w-0 flex items-center justify-center bg-[#111] overflow-hidden relative">
+        <div className="flex-1 min-w-0 flex items-start justify-center bg-[#111] overflow-y-auto overflow-x-hidden relative">
           <ConstructorCanvas
             canvasRef={canvasRef}
             monumentImage={monumentImage}
