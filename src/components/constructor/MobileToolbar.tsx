@@ -95,14 +95,14 @@ export const MobileToolbar = ({
     <>
       {/* Выдвижные панели */}
       {isTextElement && activePanel === 'fonts' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-2 z-40 max-h-52 overflow-y-auto">
+        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-2 py-1.5 z-40 max-h-36 overflow-y-auto">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-white/60">Шрифт</span>
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={12} />
+            <span className="text-[10px] text-white/60">Шрифт</span>
+            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={10} />
             </Button>
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-1">
             {fonts.map((font) => (
               <button
                 key={font.id}
@@ -111,19 +111,16 @@ export const MobileToolbar = ({
                     updateElement(selectedEl.id, { fontFamily: font.fullStyle });
                   }
                 }}
-                className={`p-2 rounded-lg border-2 transition-all ${
+                className={`px-1.5 py-1 rounded border transition-all ${
                   selectedEl.fontFamily === font.fullStyle
                     ? 'border-primary bg-primary/10'
                     : 'border-border hover:border-primary/50'
                 }`}
               >
-                <div className="text-[10px] text-muted-foreground mb-0.5">{font.name}</div>
+                <div className="text-[9px] text-muted-foreground truncate">{font.name}</div>
                 <div
-                  className="text-sm truncate"
-                  style={{
-                    fontFamily: font.style,
-                    fontWeight: font.weight,
-                  }}
+                  className="text-xs truncate"
+                  style={{ fontFamily: font.style, fontWeight: font.weight }}
                 >
                   {font.example}
                 </div>
@@ -134,11 +131,11 @@ export const MobileToolbar = ({
       )}
 
       {isTextElement && activePanel === 'size' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-2 z-40 max-h-64 overflow-y-auto">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-white/60">Размер текста: {selectedEl.fontSize}px</span>
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={12} />
+        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-40">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] text-white/60">Размер: {selectedEl.fontSize}px</span>
+            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={10} />
             </Button>
           </div>
           <input
@@ -151,11 +148,10 @@ export const MobileToolbar = ({
                 updateElement(selectedEl.id, { fontSize: parseInt(e.target.value) });
               }
             }}
-            className="w-full mb-2"
+            className="w-full mb-1"
           />
-          
-          <div className="border-t border-white/10 pt-2 mt-1">
-            <span className="text-xs text-white/60">Межстрочное: {selectedEl.lineHeight || 1.2}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-white/60 whitespace-nowrap">Строки: {selectedEl.lineHeight || 1.2}</span>
             <input
               type="range"
               min="0.4"
@@ -167,56 +163,58 @@ export const MobileToolbar = ({
                   updateElement(selectedEl.id, { lineHeight: parseFloat(e.target.value) });
                 }
               }}
-              className="w-full mt-1"
+              className="w-full"
             />
           </div>
         </div>
       )}
 
       {isTextElement && activePanel === 'color' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-2 z-40">
+        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-40">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-white/60">Цвет текста</span>
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={12} />
+            <span className="text-[10px] text-white/60">Цвет текста</span>
+            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={10} />
             </Button>
           </div>
-          <div className="grid grid-cols-6 gap-1.5">
-            {['#FFFFFF', '#000000', '#FFD700', '#C0C0C0', '#8B4513', '#4A4A4A'].map(color => (
-              <button
-                key={color}
-                onClick={() => {
-                  if (selectedEl && updateElement) {
-                    updateElement(selectedEl.id, { color });
-                    setActivePanel(null);
-                  }
-                }}
-                className={`w-full aspect-square rounded-lg border-2 ${
-                  selectedEl.color === color ? 'border-primary ring-2 ring-primary/20' : 'border-border'
-                }`}
-                style={{ backgroundColor: color }}
-              />
-            ))}
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1.5">
+              {['#FFFFFF', '#000000', '#FFD700', '#C0C0C0', '#8B4513', '#4A4A4A'].map(color => (
+                <button
+                  key={color}
+                  onClick={() => {
+                    if (selectedEl && updateElement) {
+                      updateElement(selectedEl.id, { color });
+                      setActivePanel(null);
+                    }
+                  }}
+                  className={`w-7 h-7 rounded-lg border-2 flex-shrink-0 ${
+                    selectedEl.color === color ? 'border-primary ring-2 ring-primary/20' : 'border-border'
+                  }`}
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+            <input
+              type="color"
+              value={selectedEl?.color || '#FFFFFF'}
+              onChange={(e) => {
+                if (selectedEl && updateElement) {
+                  updateElement(selectedEl.id, { color: e.target.value });
+                }
+              }}
+              className="w-8 h-7 rounded border flex-shrink-0"
+            />
           </div>
-          <input
-            type="color"
-            value={selectedEl?.color || '#FFFFFF'}
-            onChange={(e) => {
-              if (selectedEl && updateElement) {
-                updateElement(selectedEl.id, { color: e.target.value });
-              }
-            }}
-            className="w-full h-8 mt-2 rounded border"
-          />
         </div>
       )}
 
       {isTextElement && activePanel === 'align' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-2 z-40">
+        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-40">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-white/60">Выравнивание</span>
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={12} />
+            <span className="text-[10px] text-white/60">Выравнивание</span>
+            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={10} />
             </Button>
           </div>
           <div className="flex gap-2">
@@ -261,13 +259,13 @@ export const MobileToolbar = ({
       )}
 
       {activePanel === 'rotate' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-2 z-40">
+        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-40">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-white/60">Поворот</span>
+            <span className="text-[10px] text-white/60">Поворот</span>
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-white">{selectedEl.rotation || 0}°</span>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
-                <Icon name="X" size={12} />
+              <span className="text-sm font-bold text-white">{selectedEl.rotation || 0}°</span>
+              <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
+                <Icon name="X" size={10} />
               </Button>
             </div>
           </div>
@@ -311,35 +309,33 @@ export const MobileToolbar = ({
       )}
 
       {isImageElement && activePanel === 'imageSize' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-2 z-40">
+        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-40">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-white/60">Размер изображения</span>
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setActivePanel(null)}>
-              <Icon name="X" size={12} />
+            <span className="text-[10px] text-white/60">Размер изображения</span>
+            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
+              <Icon name="X" size={10} />
             </Button>
           </div>
           
-          <div className="space-y-2">
-            <div>
-              <label className="text-xs text-muted-foreground">Ширина: {selectedEl?.width || 100}px</label>
-              <input
-                type="range"
-                min="50"
-                max="400"
-                value={selectedEl?.width || 100}
-                onChange={(e) => {
-                  if (selectedEl && updateElement) {
-                    const newWidth = parseInt(e.target.value);
-                    const aspectRatio = selectedEl.height / selectedEl.width;
-                    updateElement(selectedEl.id, { 
-                      width: newWidth,
-                      height: Math.round(newWidth * aspectRatio)
-                    });
-                  }
-                }}
-                className="w-full mt-1"
-              />
-            </div>
+          <div className="flex items-center gap-2">
+            <label className="text-[10px] text-muted-foreground whitespace-nowrap">Ширина: {selectedEl?.width || 100}px</label>
+            <input
+              type="range"
+              min="50"
+              max="400"
+              value={selectedEl?.width || 100}
+              onChange={(e) => {
+                if (selectedEl && updateElement) {
+                  const newWidth = parseInt(e.target.value);
+                  const aspectRatio = selectedEl.height / selectedEl.width;
+                  updateElement(selectedEl.id, { 
+                    width: newWidth,
+                    height: Math.round(newWidth * aspectRatio)
+                  });
+                }
+              }}
+              className="w-full"
+            />
           </div>
         </div>
       )}
