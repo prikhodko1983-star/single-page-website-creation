@@ -134,18 +134,19 @@ export const ConstructorCanvas = ({
     });
   };
 
-  const baseHeight = `calc(100vh - ${topOffset}px)`;
-  const scaledHeight = canvasZoom === 1 ? baseHeight : `calc((100vh - ${topOffset}px) * ${canvasZoom})`;
-  const scaledWidth = canvasZoom === 1 ? `calc((100vh - ${topOffset}px) * 0.75)` : `calc((100vh - ${topOffset}px) * 0.75 * ${canvasZoom})`;
-
   return (
-    <div className="flex flex-col items-center justify-start w-full h-full overflow-auto relative">
+    <div className="flex flex-col items-center justify-center w-full h-full relative">
       <div 
         ref={canvasRef}
-        className="relative bg-[#0a0a0a] overflow-hidden touch-none select-none flex-shrink-0"
+        className="relative bg-[#0a0a0a] overflow-hidden touch-none select-none"
         style={{ 
-          height: scaledHeight,
-          width: scaledWidth,
+          transform: `scale(${canvasZoom}) translate(${canvasPan.x / canvasZoom}px, ${canvasPan.y / canvasZoom}px)`,
+          transformOrigin: 'center center',
+          cursor: canvasZoom > 1 ? 'move' : 'default',
+          transition: 'none',
+          height: `calc(100vh - ${topOffset}px)`,
+          width: `calc((100vh - ${topOffset}px) * 0.75)`,
+          maxWidth: '100vw',
           zIndex: 10
         }}
         onMouseMove={handleMouseMove}

@@ -64,9 +64,8 @@ const Constructor = () => {
   const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
   const [mobileLibraryTab, setMobileLibraryTab] = useState('catalog');
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
-  const canvasTopOffset = isMobile ? 104 + 48 : 48;
+  const canvasTopOffset = isMobile ? 104 : 48;
   const workspaceTop = isMobile ? 104 : 48;
-  const [isMobileToolbarPanelOpen, setIsMobileToolbarPanelOpen] = useState(false);
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
   const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
@@ -2638,10 +2637,7 @@ const Constructor = () => {
       )}
 
       {/* Main workspace — fixed под топбар+панель */}
-      <div
-        className="flex overflow-hidden fixed left-0 right-0"
-        style={{ top: workspaceTop, bottom: isMobile ? (isMobileToolbarPanelOpen ? '280px' : '48px') : '0px' }}
-      >
+      <div className="flex overflow-hidden fixed left-0 right-0 bottom-0" style={{ top: workspaceTop }}>
         {/* Left panel */}
         <div className="hidden lg:flex flex-shrink-0 w-[300px] border-r border-white/10 bg-[#181818] flex-col overflow-hidden">
           <ConstructorLibrary
@@ -2685,7 +2681,7 @@ const Constructor = () => {
         </div>
 
         {/* Canvas area */}
-        <div className="flex-1 min-w-0 flex items-center justify-start bg-[#111] overflow-hidden relative">
+        <div className="flex-1 min-w-0 flex items-center justify-center bg-[#111] overflow-hidden relative">
           <ConstructorCanvas
             canvasRef={canvasRef}
             monumentImage={monumentImage}
@@ -2777,7 +2773,6 @@ const Constructor = () => {
           }
         }}
         canErase={!!selectedEl && (selectedEl.type === 'image' || selectedEl.type === 'photo' || selectedEl.type === 'cross' || selectedEl.type === 'flower')}
-        onPanelChange={setIsMobileToolbarPanelOpen}
       />
 
     </div>
