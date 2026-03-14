@@ -64,7 +64,7 @@ const Constructor = () => {
   const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
   const [mobileLibraryTab, setMobileLibraryTab] = useState('catalog');
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
-  const canvasTopOffset = isMobile ? 104 : 48;
+  const canvasTopOffset = isMobile ? 104 + 48 : 48;
   const workspaceTop = isMobile ? 104 : 48;
   const [isMobileToolbarPanelOpen, setIsMobileToolbarPanelOpen] = useState(false);
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
@@ -2685,7 +2685,7 @@ const Constructor = () => {
         </div>
 
         {/* Canvas area */}
-        <div className="flex-1 min-w-0 flex items-center justify-center bg-[#111] overflow-hidden relative">
+        <div className="flex-1 min-w-0 flex items-center justify-start bg-[#111] overflow-hidden relative">
           <ConstructorCanvas
             canvasRef={canvasRef}
             monumentImage={monumentImage}
