@@ -2558,7 +2558,7 @@ const Constructor = () => {
       </div>
 
       {/* Мобильная панель категорий (только мобайл) — fixed чтобы не сжимать canvas */}
-      <div className="lg:hidden fixed top-12 left-0 right-0 bg-[#181818] flex items-stretch h-14 z-30">
+      <div className="lg:hidden fixed top-12 left-0 right-0 bg-[#181818] border-b border-white/10 flex items-stretch h-14 z-30">
         {[
           { key: 'catalog', label: 'Каталог', icon: 'LayoutGrid' },
           { key: 'images', label: 'Фото', icon: 'Image' },
@@ -2567,15 +2567,19 @@ const Constructor = () => {
           <button
             key={tab.key}
             onClick={() => {
-              setMobileLibraryTab(tab.key);
-              setIsMobileLibraryOpen(true);
-              if (tab.key === 'catalog') loadCatalog();
-              if (tab.key === 'elements') { loadCrosses(); loadFlowers(); }
+              if (isMobileLibraryOpen && mobileLibraryTab === tab.key) {
+                setIsMobileLibraryOpen(false);
+              } else {
+                setMobileLibraryTab(tab.key);
+                setIsMobileLibraryOpen(true);
+                if (tab.key === 'catalog') loadCatalog();
+                if (tab.key === 'elements') { loadCrosses(); loadFlowers(); }
+              }
             }}
             className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors ${
-              mobileLibraryTab === tab.key
-                ? 'text-primary border-b-2 border-primary'
-                : 'text-white/50 hover:text-white/80 border-b border-white/10'
+              isMobileLibraryOpen && mobileLibraryTab === tab.key
+                ? 'text-primary bg-white/5 border-b-2 border-primary'
+                : 'text-white/50 hover:text-white/80'
             }`}
           >
             <Icon name={tab.icon as Parameters<typeof Icon>[0]['name']} size={16} />
