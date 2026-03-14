@@ -134,19 +134,26 @@ export const ConstructorCanvas = ({
     });
   };
 
+  const isMobileView = typeof window !== 'undefined' && window.innerWidth < 1024;
+  const canvasHeight = isMobileView
+    ? `calc(95vw / 0.75)`
+    : `calc(100vh - ${topOffset}px)`;
+  const canvasWidth = isMobileView
+    ? `95vw`
+    : `calc((100vh - ${topOffset}px) * 0.75)`;
+
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full relative">
+    <div className="flex flex-col items-center justify-start w-full relative" style={{ paddingBottom: isMobileView ? '16px' : '0px' }}>
       <div 
         ref={canvasRef}
         className="relative bg-[#0a0a0a] overflow-hidden touch-none select-none"
         style={{ 
           transform: `scale(${canvasZoom}) translate(${canvasPan.x / canvasZoom}px, ${canvasPan.y / canvasZoom}px)`,
-          transformOrigin: 'center center',
+          transformOrigin: 'top center',
           cursor: canvasZoom > 1 ? 'move' : 'default',
           transition: 'none',
-          height: `calc(100vh - ${topOffset}px)`,
-          width: `calc((100vh - ${topOffset}px) * 0.75)`,
-          maxWidth: '100vw',
+          height: canvasHeight,
+          width: canvasWidth,
           zIndex: 10
         }}
         onMouseMove={handleMouseMove}
