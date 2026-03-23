@@ -466,8 +466,8 @@ const Constructor = () => {
             const data = pixels.data;
             
             for (let i = 0; i < data.length; i += 4) {
-              // Пропускаем прозрачные пиксели (стёртые ластиком)
-              if (data[i + 3] === 0) continue;
+              const origAlpha = data[i + 3];
+              if (origAlpha === 0) continue;
 
               const r = data[i];
               const g = data[i + 1];
@@ -476,6 +476,7 @@ const Constructor = () => {
               const rNorm = r / 255;
               const gNorm = g / 255;
               const bNorm = b / 255;
+              const alphaNorm = origAlpha / 255;
               
               const luminance = 0.299 * rNorm + 0.587 * gNorm + 0.114 * bNorm;
               
@@ -487,7 +488,7 @@ const Constructor = () => {
               data[i + 1] = screenG * 255;
               data[i + 2] = screenB * 255;
               
-              data[i + 3] = Math.pow(luminance, 0.7) * 255;
+              data[i + 3] = Math.pow(luminance, 0.7) * alphaNorm * 255;
             }
             
             ctx.putImageData(pixels, 0, 0);
