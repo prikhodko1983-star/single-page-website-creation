@@ -108,14 +108,23 @@ export const ConstructorLibrary = ({
   loadFlowers,
 }: ConstructorLibraryProps) => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(defaultTab);
   const [imageCategories, setImageCategories] = useState<Array<{id: number, name: string, slug: string}>>([]);
   const [categoryImages, setCategoryImages] = useState<Array<{id: number, category_id: number, name: string, image_url: string, category_name: string}>>([]);
   const [selectedImageCategory, setSelectedImageCategory] = useState<number | null>(null);
   const [isLoadingImages, setIsLoadingImages] = useState(false);
 
   useEffect(() => {
+    if (defaultTab) setActiveTab(defaultTab);
+  }, [defaultTab]);
+
+  useEffect(() => {
     loadImageCategories();
   }, []);
+
+  useEffect(() => {
+    setActiveTab(defaultTab);
+  }, [defaultTab]);
 
   const loadImageCategories = async () => {
     try {
@@ -168,7 +177,7 @@ export const ConstructorLibrary = ({
 
   return (
     <div className="flex flex-col h-full bg-[#181818] text-white">
-        <Tabs defaultValue={defaultTab} className="w-full flex flex-col flex-1 min-h-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col flex-1 min-h-0">
           <div className="px-3 pt-3 pb-2 border-b border-white/10 hidden lg:block">
             <p className="text-[10px] font-semibold text-white/40 uppercase tracking-widest mb-2">Библиотека</p>
             <TabsList className="grid w-full grid-cols-3 bg-white/5 h-8">
