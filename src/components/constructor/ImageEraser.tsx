@@ -86,8 +86,8 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
       
       canvas.width = Math.floor(img.width * scale);
       canvas.height = Math.floor(img.height * scale);
-      canvas.style.width = `${canvas.width}px`;
-      canvas.style.height = `${canvas.height}px`;
+      canvas.style.width = '100%';
+      canvas.style.height = 'auto';
 
       ctx.globalCompositeOperation = 'source-over';
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -303,7 +303,7 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-5xl max-h-[90vh] overflow-hidden p-3 sm:p-6">
+      <DialogContent className="w-[95vw] max-w-5xl max-h-[92vh] overflow-y-auto p-3 sm:p-6">
         <DialogHeader>
           <DialogTitle className="text-sm sm:text-base">Редактор — Ластик</DialogTitle>
         </DialogHeader>
@@ -353,8 +353,7 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
           </div>
 
           <div 
-            className="relative bg-muted/20 rounded-lg p-1 sm:p-4 flex items-center justify-center overflow-hidden" 
-            style={{ minHeight: '200px', maxHeight: '60vh' }}
+            className="relative bg-muted/20 rounded-lg p-1 flex items-center justify-center w-full"
           >
             <canvas
               ref={canvasRef}
@@ -370,6 +369,8 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
                 cursor: isErasing ? 'none' : 'default',
                 touchAction: 'none', 
                 display: 'block',
+                maxWidth: '100%',
+                height: 'auto',
                 border: '2px solid rgba(255,255,255,0.1)',
                 borderRadius: '4px'
               }}
