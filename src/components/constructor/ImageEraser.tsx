@@ -46,89 +46,51 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   }, [isDrawing]);
 
   useEffect(() => {
-    console.log('🔄 ImageEraser useEffect:', { isOpen, hasCanvas: !!canvasRef.current, imageUrl });
-    
-    if (!isOpen) {
-      console.log('⏸️ Модальное окно закрыто');
-      return;
-    }
-    
-    if (!imageUrl) {
-      console.log('❌ imageUrl отсутствует');
-      return;
-    }
-    
-    if (!canvasRef.current) {
-      console.log('❌ canvasRef.current отсутствует, ждём...');
-      // Даём React время отрисовать Dialog
-      const timer = setTimeout(() => {
-        if (canvasRef.current) {
-          console.log('✅ Canvas появился, повторяем попытку...');
-          const canvas = canvasRef.current;
-          const ctx = canvas.getContext('2d', { willReadFrequently: true });
-          if (!ctx) return;
-          
-          ctxRef.current = ctx;
-          loadImage(imageUrl, canvas, ctx);
-        }
-      }, 100);
+    if (!isOpen || !imageUrl) return;
+
+    // Сбрасываем состояние при каждом открытии
+    setIsErasing(false);
+    setIsDrawing(false);
+    lastPosRef.current = null;
+
+    const tryLoad = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return false;
+
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (!ctx) return false;
+
+      ctxRef.current = ctx;
+      loadImage(imageUrl, canvas, ctx);
+      return true;
+    };
+
+    if (!tryLoad()) {
+      const timer = setTimeout(tryLoad, 150);
       return () => clearTimeout(timer);
     }
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (!ctx) {
-      console.error('❌ Не удалось получить 2d context');
-      return;
-    }
-
-    ctxRef.current = ctx;
-    loadImage(imageUrl, canvas, ctx);
+   
   }, [isOpen, imageUrl]);
 
   const loadImage = (url: string, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
-    console.log('📥 Загружаем изображение:', url);
-    
-    // Используем прокси для обхода CORS
     const PROXY_URL = 'https://functions.poehali.dev/a333157a-6afc-488c-a133-697f8cff0e15';
     const proxiedUrl = `${PROXY_URL}?url=${encodeURIComponent(url)}`;
-    
-    console.log('🔄 Используем прокси:', proxiedUrl);
     
     const img = new Image();
     img.crossOrigin = 'anonymous';
     
     img.onload = () => {
-      console.log('✅ Изображение загружено, размеры:', img.width, 'x', img.height);
-      
-      // Максимальные размеры контейнера
       const maxWidth = 1000;
       const maxHeight = 700;
+      const scale = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
       
-      // Вычисляем масштаб с сохранением пропорций
-      const scale = Math.min(
-        maxWidth / img.width,
-        maxHeight / img.height,
-        1 // Не увеличиваем изображение больше оригинала
-      );
-      
-      // Canvas размер = точный размер изображения после масштабирования
       canvas.width = Math.floor(img.width * scale);
       canvas.height = Math.floor(img.height * scale);
-      
-      // CSS размер canvas = внутреннему размеру (1:1 mapping для точных координат)
       canvas.style.width = `${canvas.width}px`;
       canvas.style.height = `${canvas.height}px`;
 
-      console.log('🎨 Canvas:', canvas.width, 'x', canvas.height, 'scale:', scale.toFixed(3));
+      ctx.globalCompositeOperation = 'source-over';
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      console.log('✅ Изображение отрисовано');
-    };
-
-    img.onerror = (e) => {
-      console.error('❌ Ошибка загрузки изображения:', e);
-      console.error('Оригинальный URL:', url);
-      console.error('Прокси URL:', proxiedUrl);
     };
 
     img.src = proxiedUrl;
@@ -333,19 +295,9 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   };
 
   const handleReset = () => {
-    console.log('🔄 Сброс изображения');
-    if (!canvasRef.current || !imageUrl) {
-      console.error('❌ Нет canvas или imageUrl для сброса');
-      return;
-    }
-    
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      console.error('❌ Нет 2d context для сброса');
-      return;
-    }
-
+    const ctx = ctxRef.current;
+    if (!canvas || !ctx || !imageUrl) return;
     loadImage(imageUrl, canvas, ctx);
   };
 
