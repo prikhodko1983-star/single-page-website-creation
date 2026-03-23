@@ -2757,28 +2757,6 @@ const Constructor = () => {
         canErase={!!selectedEl && (selectedEl.type === 'image' || selectedEl.type === 'photo' || selectedEl.type === 'cross' || selectedEl.type === 'flower')}
       />
 
-      {/* Мобильная кнопка скачать эскиз — только когда ничего не выбрано */}
-      {!selectedElement && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-[#181818]/95 border-t border-white/10 flex gap-2">
-          <Button
-            variant="outline"
-            className="flex-1 h-11 text-sm gap-2 border-white/20 text-white/80 hover:text-white hover:bg-white/10"
-            onClick={exportDesignAsPNG}
-            disabled={isSaving}
-          >
-            <Icon name="Download" size={18} />
-            {isSaving ? 'Создаю...' : 'Скачать эскиз'}
-          </Button>
-          <Button
-            className="flex-1 h-11 text-sm gap-2 bg-primary hover:bg-primary/90"
-            onClick={handlePrintOrder}
-          >
-            <Icon name="FileText" size={18} />
-            Оформить заказ
-          </Button>
-        </div>
-      )}
-
     </div>
   );
 };
