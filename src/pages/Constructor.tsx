@@ -1074,18 +1074,31 @@ const Constructor = () => {
     }
   };
 
-  const handleSaveEditedImage = (editedImageUrl: string) => {
-    if (editingImageId) {
-      setElements(elements.map(el => 
-        el.id === editingImageId 
+  const handleSaveEditedImage = async (editedImageUrl: string) => {
+    if (!editingImageId) return;
+
+    const element = elements.find(el => el.id === editingImageId);
+    const wasScreenMode = element?.screenMode ?? false;
+
+    if (wasScreenMode) {
+      const processed = await applyScreenMode(editedImageUrl);
+      setElements(elements.map(el =>
+        el.id === editingImageId
+          ? { ...el, src: editedImageUrl, processedSrc: processed, screenMode: true }
+          : el
+      ));
+    } else {
+      setElements(elements.map(el =>
+        el.id === editingImageId
           ? { ...el, src: editedImageUrl, processedSrc: undefined }
           : el
       ));
-      toast({
-        title: "Изображение обновлено",
-        description: "Отредактированное изображение применено",
-      });
     }
+
+    toast({
+      title: "Изображение обновлено",
+      description: "Отредактированное изображение применено",
+    });
   };
 
   const editingImageUrl = useMemo(() => {
