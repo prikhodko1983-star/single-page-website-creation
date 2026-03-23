@@ -2592,7 +2592,7 @@ const Constructor = () => {
       {isMobileLibraryOpen && (
         <>
           <div className="lg:hidden fixed inset-0 z-30" style={{ top: '104px' }} onClick={() => setIsMobileLibraryOpen(false)} />
-          <div className="lg:hidden fixed left-0 right-0 z-40 bg-[#181818] border-b border-white/10 overflow-y-auto shadow-2xl" style={{ top: '104px', maxHeight: '55vh' }}>
+          <div className="lg:hidden fixed left-0 right-0 z-40 bg-[#181818] border-b border-white/10 overflow-y-auto shadow-2xl" style={{ top: '104px', height: 'calc(100vh - 104px)' }}>
           <ConstructorLibrary
             defaultTab={mobileLibraryTab}
             monumentImage={monumentImage}
