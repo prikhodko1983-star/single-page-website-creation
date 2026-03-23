@@ -506,7 +506,7 @@ const Constructor = () => {
     
     // Если это URL - используем бэкенд для обработки (избегаем CORS)
     try {
-      console.log('📡 Отправляем на бэкенд для обработки:', imageData);
+
       const response = await fetch('https://functions.poehali.dev/7984fbed-b9d7-47d1-aa0d-cf674fc696d8', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -518,7 +518,7 @@ const Constructor = () => {
       }
       
       const result = await response.json();
-      console.log('✅ Получили обработанное изображение');
+
       return result.processed_image;
     } catch (error) {
       console.error('❌ Ошибка обработки через бэкенд:', error);
@@ -1067,18 +1067,10 @@ const Constructor = () => {
   };
 
   const handleEditImage = (id: string) => {
-    console.log('📝 [NEW CODE] Открываем редактор для элемента:', id);
-    console.log('📝 [NEW CODE] Текущие elements:', elements);
-    
     const element = elements.find(el => el.id === id);
-    console.log('📝 [NEW CODE] Найденный элемент:', element);
-    
     if (element && element.src) {
-      console.log('✅ [NEW CODE] Элемент найден, src:', element.src);
       setEditingImageId(id);
       setIsImageEraserOpen(true);
-    } else {
-      console.error('❌ [NEW CODE] Элемент не найден или нет src');
     }
   };
 
@@ -1096,29 +1088,10 @@ const Constructor = () => {
     }
   };
 
-  // Вычисляем URL изображения для редактора
   const editingImageUrl = useMemo(() => {
-    console.log('🔍 useMemo: Вычисляем imageUrl');
-    console.log('editingImageId:', editingImageId);
-    console.log('Все элементы:', elements.map(e => ({ id: e.id, type: e.type, hasSrc: !!e.src })));
-    
-    if (!editingImageId) {
-      console.log('❌ editingImageId пустой');
-      return '';
-    }
-    
+    if (!editingImageId) return '';
     const element = elements.find(el => el.id === editingImageId);
-    console.log('Найденный элемент:', element);
-    
-    if (!element) {
-      console.log('❌ Элемент не найден в массиве elements');
-      return '';
-    }
-    
-    // ИСПРАВЛЕНИЕ: используем ТОЛЬКО оригинальный src (не processedSrc)
-    const url = element.src || '';
-    console.log('🖼️ URL для ImageEraser:', url);
-    return url;
+    return element?.src || '';
   }, [editingImageId, elements]);
 
   const saveDesign = () => {
@@ -1138,18 +1111,18 @@ const Constructor = () => {
         timestamp: Date.now(),
       };
       
-      console.log('💾 Сохраняем дизайн:', designData);
+
       
       const saved = JSON.parse(localStorage.getItem('monumentDesigns') || '[]');
       saved.push(designData);
       
       const jsonString = JSON.stringify(saved);
-      console.log(`📦 Размер данных: ${(jsonString.length / 1024).toFixed(2)} KB`);
+
       
       localStorage.setItem('monumentDesigns', jsonString);
       setSavedDesigns(saved);
       
-      console.log('✅ Дизайн успешно сохранен');
+
       
       toast({
         title: "Дизайн сохранен",
@@ -1324,7 +1297,7 @@ const Constructor = () => {
     newPNG.set(crcBytes, offset); offset += crcBytes.length;
     newPNG.set(pngData.slice(iendPos), offset); // IEND chunk
     
-    console.log('✅ tEXt chunk добавлен, новый размер:', newPNG.length);
+
     return newPNG;
   };
 
