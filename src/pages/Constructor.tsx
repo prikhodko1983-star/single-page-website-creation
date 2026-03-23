@@ -2034,14 +2034,6 @@ const Constructor = () => {
   };
 
   const handlePrintOrder = async () => {
-    if (elements.length === 0) {
-      toast({
-        title: "Пустой дизайн",
-        description: "Добавьте элементы на памятник",
-        variant: "destructive",
-      });
-      return;
-    }
     const previewDataUrl = await createPreviewImage();
     navigate('/print-order', { state: { previewImage: previewDataUrl } });
   };
