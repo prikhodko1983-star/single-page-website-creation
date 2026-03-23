@@ -1086,7 +1086,7 @@ const Constructor = () => {
     if (editingImageId) {
       setElements(elements.map(el => 
         el.id === editingImageId 
-          ? { ...el, src: editedImageUrl, processedSrc: undefined, screenMode: false }
+          ? { ...el, src: editedImageUrl, processedSrc: undefined }
           : el
       ));
       toast({
