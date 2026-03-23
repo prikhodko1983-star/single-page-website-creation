@@ -351,24 +351,30 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="w-full max-w-5xl max-h-[90vh] overflow-hidden p-3 sm:p-6">
         <DialogHeader>
-          <DialogTitle>Редактор изображения — Ластик</DialogTitle>
+          <DialogTitle className="text-sm sm:text-base">Редактор — Ластик</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center gap-3 p-4 bg-secondary rounded-lg">
-            <Button
-              variant={isErasing ? "default" : "outline"}
-              size="sm"
-              onClick={() => setIsErasing(!isErasing)}
-            >
-              <Icon name="Eraser" size={18} className="mr-2" />
-              Ластик {isErasing ? 'ВКЛ' : 'ВЫКЛ'}
-            </Button>
+        <div className="space-y-3">
+          <div className="flex flex-col gap-2 p-3 bg-secondary rounded-lg">
+            <div className="flex items-center gap-2">
+              <Button
+                variant={isErasing ? "default" : "outline"}
+                size="sm"
+                onClick={() => setIsErasing(!isErasing)}
+                className="shrink-0"
+              >
+                <Icon name="Eraser" size={16} className="mr-1" />
+                Ластик {isErasing ? 'ВКЛ' : 'ВЫКЛ'}
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleReset} className="shrink-0 ml-auto">
+                <Icon name="RotateCcw" size={16} />
+              </Button>
+            </div>
 
-            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
-              <span className="text-sm whitespace-nowrap">Размер: {brushSize}px</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs whitespace-nowrap w-24 shrink-0">Размер: {brushSize}px</span>
               <input
                 type="range"
                 min="5"
@@ -376,12 +382,12 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
                 step="5"
                 value={brushSize}
                 onChange={(e) => setBrushSize(parseInt(e.target.value))}
-                className="flex-1"
+                className="flex-1 min-w-0"
               />
             </div>
 
-            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
-              <span className="text-sm whitespace-nowrap">Жёсткость: {Math.round(brushHardness * 100)}%</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs whitespace-nowrap w-24 shrink-0">Жёсткость: {Math.round(brushHardness * 100)}%</span>
               <input
                 type="range"
                 min="0"
@@ -389,19 +395,14 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
                 step="5"
                 value={brushHardness * 100}
                 onChange={(e) => setBrushHardness(parseInt(e.target.value) / 100)}
-                className="flex-1"
+                className="flex-1 min-w-0"
               />
             </div>
-
-            <Button variant="outline" size="sm" onClick={handleReset}>
-              <Icon name="RotateCcw" size={18} className="mr-2" />
-              Сбросить
-            </Button>
           </div>
 
           <div 
-            className="relative bg-muted/20 rounded-lg p-4 flex items-center justify-center overflow-hidden" 
-            style={{ minHeight: '300px', maxHeight: '75vh' }}
+            className="relative bg-muted/20 rounded-lg p-1 sm:p-4 flex items-center justify-center overflow-hidden" 
+            style={{ minHeight: '200px', maxHeight: '60vh' }}
           >
             <canvas
               ref={canvasRef}
