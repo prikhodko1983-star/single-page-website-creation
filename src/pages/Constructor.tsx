@@ -1214,16 +1214,14 @@ const Constructor = () => {
         try {
           await navigator.share({
             files: [new File([blob], fileName, { type: 'image/png' })],
-            title: 'Мой памятник',
-            text: 'Сохраните это изображение'
-          });
-          toast({
-            title: "Готово!",
-            description: "Сохраните изображение в галерею",
+            title: 'Эскиз памятника',
+            text: 'Нажмите «Сохранить изображение» чтобы добавить в галерею',
           });
           return;
-        } catch {
-          // Fallback на обычную загрузку
+        } catch (e: unknown) {
+          // Пользователь закрыл меню — делаем обычную загрузку
+          if (e instanceof Error && e.name === 'AbortError') return;
+          // Другая ошибка — fallback на скачивание
         }
       }
       
