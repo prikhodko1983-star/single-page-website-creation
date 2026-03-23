@@ -73,17 +73,18 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
   }, [isOpen, imageUrl]);
 
   const loadImage = (url: string, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+    const isDataUrl = url.startsWith('data:');
     const PROXY_URL = 'https://functions.poehali.dev/a333157a-6afc-488c-a133-697f8cff0e15';
-    const proxiedUrl = `${PROXY_URL}?url=${encodeURIComponent(url)}`;
-    
+    const src = isDataUrl ? url : `${PROXY_URL}?url=${encodeURIComponent(url)}`;
+
     const img = new Image();
-    img.crossOrigin = 'anonymous';
-    
+    if (!isDataUrl) img.crossOrigin = 'anonymous';
+
     img.onload = () => {
       const maxWidth = 1000;
       const maxHeight = 700;
       const scale = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
-      
+
       canvas.width = Math.floor(img.width * scale);
       canvas.height = Math.floor(img.height * scale);
       canvas.style.width = '100%';
@@ -93,7 +94,7 @@ export function ImageEraser({ isOpen, onClose, imageUrl, onSave }: ImageEraserPr
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
 
-    img.src = proxiedUrl;
+    img.src = src;
   };
 
   // Функция для пересчёта координат с учётом масштаба canvas
