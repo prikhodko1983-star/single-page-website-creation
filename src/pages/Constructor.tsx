@@ -466,6 +466,9 @@ const Constructor = () => {
             const data = pixels.data;
             
             for (let i = 0; i < data.length; i += 4) {
+              // Пропускаем прозрачные пиксели (стёртые ластиком)
+              if (data[i + 3] === 0) continue;
+
               const r = data[i];
               const g = data[i + 1];
               const b = data[i + 2];
