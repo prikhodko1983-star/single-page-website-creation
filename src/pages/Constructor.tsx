@@ -535,8 +535,9 @@ const Constructor = () => {
     if (!file) return;
     
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const photoUrl = event.target?.result as string;
+      const processedSrc = await applyScreenMode(photoUrl);
       const newElement: CanvasElement = {
         id: Date.now().toString(),
         type: 'photo',
@@ -546,6 +547,8 @@ const Constructor = () => {
         height: 200,
         src: photoUrl,
         rotation: 0,
+        screenMode: true,
+        processedSrc,
       };
       setElements([...elements, newElement]);
     };
