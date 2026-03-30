@@ -179,29 +179,49 @@ export const ConstructorProperties = ({
               </>
             )}
             
-            <div>
-              <Label>Ширина: {selectedEl.width}px</Label>
-              <input 
-                type="range" 
-                min="50" 
-                max="500" 
-                value={selectedEl.width}
-                onChange={(e) => updateElement(selectedEl.id, { width: parseInt(e.target.value) })}
-                className="w-full mt-1"
-              />
-            </div>
-            
-            <div>
-              <Label>Высота: {selectedEl.height}px</Label>
-              <input 
-                type="range" 
-                min="30" 
-                max="400" 
-                value={selectedEl.height}
-                onChange={(e) => updateElement(selectedEl.id, { height: parseInt(e.target.value) })}
-                className="w-full mt-1"
-              />
-            </div>
+            {(selectedEl.type === 'image' || selectedEl.type === 'cross' || selectedEl.type === 'flower' || selectedEl.type === 'photo') ? (
+              <div>
+                <Label>Размер: {selectedEl.width}px</Label>
+                <input
+                  type="range"
+                  min="30"
+                  max="500"
+                  value={selectedEl.width}
+                  onChange={(e) => {
+                    const newWidth = parseInt(e.target.value);
+                    const aspectRatio = selectedEl.height / selectedEl.width;
+                    updateElement(selectedEl.id, { width: newWidth, height: Math.round(newWidth * aspectRatio) });
+                  }}
+                  className="w-full mt-1"
+                />
+              </div>
+            ) : (
+              <>
+                <div>
+                  <Label>Ширина: {selectedEl.width}px</Label>
+                  <input 
+                    type="range" 
+                    min="50" 
+                    max="500" 
+                    value={selectedEl.width}
+                    onChange={(e) => updateElement(selectedEl.id, { width: parseInt(e.target.value) })}
+                    className="w-full mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label>Высота: {selectedEl.height}px</Label>
+                  <input 
+                    type="range" 
+                    min="30" 
+                    max="400" 
+                    value={selectedEl.height}
+                    onChange={(e) => updateElement(selectedEl.id, { height: parseInt(e.target.value) })}
+                    className="w-full mt-1"
+                  />
+                </div>
+              </>
+            )}
             
             <div>
               <Label>Поворот: {selectedEl.rotation || 0}°</Label>
