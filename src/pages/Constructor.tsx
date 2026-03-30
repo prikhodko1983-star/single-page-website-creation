@@ -538,20 +538,36 @@ const Constructor = () => {
     reader.onload = async (event) => {
       const photoUrl = event.target?.result as string;
       const processedSrc = await applyScreenMode(photoUrl);
-      const newElement: CanvasElement = {
-        id: Date.now().toString(),
-        type: 'photo',
-        x: 100,
-        y: 50,
-        width: 150,
-        height: 200,
-        src: photoUrl,
-        rotation: 0,
-        screenMode: true,
-        processedSrc,
+
+      const img = new Image();
+      img.onload = () => {
+        const MAX_SIZE = 200;
+        const ratio = img.naturalWidth / img.naturalHeight;
+        let w: number;
+        let h: number;
+        if (ratio >= 1) {
+          w = MAX_SIZE;
+          h = Math.round(MAX_SIZE / ratio);
+        } else {
+          h = MAX_SIZE;
+          w = Math.round(MAX_SIZE * ratio);
+        }
+        const newElement: CanvasElement = {
+          id: Date.now().toString(),
+          type: 'photo',
+          x: 100,
+          y: 50,
+          width: w,
+          height: h,
+          src: photoUrl,
+          rotation: 0,
+          screenMode: true,
+          processedSrc,
+        };
+        setElements(prev => [...prev, newElement]);
+        setIsMobileLibraryOpen(false);
       };
-      setElements([...elements, newElement]);
-      setIsMobileLibraryOpen(false);
+      img.src = photoUrl;
     };
     reader.readAsDataURL(file);
     
