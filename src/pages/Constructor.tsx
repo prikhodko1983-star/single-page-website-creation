@@ -315,7 +315,7 @@ const Constructor = () => {
       rotation: 0,
       autoSize: true,
     };
-    setElements([...elements, newElement]);
+    setElements(prev => [...prev, newElement]);
   };
 
   const addImageElement = async (src: string, type: 'image' | 'cross' | 'flower') => {
@@ -370,7 +370,7 @@ const Constructor = () => {
       screenMode: true,
       processedSrc,
     };
-    setElements([...elements, newElement]);
+    setElements(prev => [...prev, newElement]);
   };
 
   const addEpitaphElement = (customText?: string) => {
@@ -387,7 +387,7 @@ const Constructor = () => {
       rotation: 0,
       autoSize: true,
     };
-    setElements([...elements, newElement]);
+    setElements(prev => [...prev, newElement]);
   };
 
   const addFIOElement = () => {
@@ -411,7 +411,7 @@ const Constructor = () => {
       autoSize: true,
       lineHeight: 1.05,
     };
-    setElements([...elements, newElement]);
+    setElements(prev => [...prev, newElement]);
     
     setSurname('');
     setName('');
@@ -437,7 +437,7 @@ const Constructor = () => {
       rotation: 0,
       fontFamily: selectedFontData?.fullStyle || 'serif',
     };
-    setElements([...elements, newElement]);
+    setElements(prev => [...prev, newElement]);
     
     setBirthDate('');
     setDeathDate('');
@@ -591,7 +591,7 @@ const Constructor = () => {
   };
 
   const handleInlineTextChange = (elementId: string, newContent: string, textareaElement?: HTMLTextAreaElement) => {
-    setElements(elements.map(el => {
+    setElements(prev => prev.map(el => {
       if (el.id === elementId) {
         return { ...el, content: newContent };
       }
@@ -701,7 +701,7 @@ const Constructor = () => {
       // Делим на 3 для более медленного и точного поворота
       const rotation = rotateStart.rotation + (angle - startAngle) / 3;
       
-      setElements(elements.map(el => 
+      setElements(prev => prev.map(el => 
         el.id === selectedElement 
           ? { ...el, rotation: Math.round(rotation) }
           : el
@@ -713,37 +713,32 @@ const Constructor = () => {
       const element = elements.find(el => el.id === selectedElement);
       
       if (element && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
-        // Для текста: свободное изменение размера с масштабированием шрифта
         const newWidth = Math.max(50, resizeStart.width + deltaX);
         const newHeight = Math.max(30, resizeStart.height + deltaY);
         const scaleRatio = Math.min(newWidth / resizeStart.width, newHeight / resizeStart.height);
         const newFontSize = Math.max(8, Math.min(72, Math.round(resizeStart.fontSize * scaleRatio)));
         
-        setElements(elements.map(el => 
+        setElements(prev => prev.map(el => 
           el.id === selectedElement 
             ? { ...el, width: newWidth, height: newHeight, fontSize: newFontSize }
             : el
         ));
       } else if (element && (element.type === 'image' || element.type === 'photo' || element.type === 'cross' || element.type === 'flower')) {
-        // Для изображений: сохраняем пропорции (aspect ratio)
         const aspectRatio = resizeStart.width / resizeStart.height;
-        
-        // Берём наибольшее изменение (по X или по Y)
         const delta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY * aspectRatio;
         const newWidth = Math.max(30, resizeStart.width + delta);
         const newHeight = Math.max(30, newWidth / aspectRatio);
         
-        setElements(elements.map(el => 
+        setElements(prev => prev.map(el => 
           el.id === selectedElement 
             ? { ...el, width: newWidth, height: newHeight }
             : el
         ));
       } else {
-        // Остальные элементы: свободное изменение
         const newWidth = Math.max(50, resizeStart.width + deltaX);
         const newHeight = Math.max(30, resizeStart.height + deltaY);
         
-        setElements(elements.map(el => 
+        setElements(prev => prev.map(el => 
           el.id === selectedElement 
             ? { ...el, width: newWidth, height: newHeight }
             : el
@@ -752,16 +747,14 @@ const Constructor = () => {
     } else if (isDragging) {
       const canvasRect = canvasRef.current.getBoundingClientRect();
       
-      // Учитываем zoom и pan при расчёте координат
       const mouseX = (e.clientX - canvasRect.left - canvasRect.width / 2) / canvasZoom - canvasPan.x / canvasZoom + canvasRect.width / 2;
       const mouseY = (e.clientY - canvasRect.top - canvasRect.height / 2) / canvasZoom - canvasPan.y / canvasZoom + canvasRect.height / 2;
       
       const newX = mouseX - dragOffset.x;
       const newY = mouseY - dragOffset.y;
       
-      setElements(elements.map(el => {
+      setElements(prev => prev.map(el => {
         if (el.id === selectedElement) {
-          // Для элементов с autoSize не ограничиваем по ширине
           const maxX = el.autoSize ? canvasRect.width : canvasRect.width - el.width;
           const maxY = el.autoSize ? canvasRect.height : canvasRect.height - el.height;
           return { 
@@ -830,13 +823,13 @@ const Constructor = () => {
       const element = elements.find(el => el.id === selectedElement);
       if (element && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
         const newFontSize = Math.max(8, Math.min(72, touchPinchStart.fontSize * scale));
-        setElements(elements.map(el => 
+        setElements(prev => prev.map(el => 
           el.id === selectedElement 
             ? { ...el, rotation: Math.round(newRotation), width: newWidth, height: newHeight, fontSize: newFontSize }
             : el
         ));
       } else {
-        setElements(elements.map(el => 
+        setElements(prev => prev.map(el => 
           el.id === selectedElement 
             ? { ...el, rotation: Math.round(newRotation), width: newWidth, height: newHeight }
             : el
@@ -864,7 +857,7 @@ const Constructor = () => {
       // Делим на 3 для более медленного и точного поворота
       const rotation = rotateStart.rotation + (angle - startAngle) / 3;
       
-      setElements(elements.map(el => 
+      setElements(prev => prev.map(el => 
         el.id === selectedElement 
           ? { ...el, rotation: Math.round(rotation) }
           : el
@@ -876,37 +869,32 @@ const Constructor = () => {
       const element = elements.find(el => el.id === selectedElement);
       
       if (element && (element.type === 'text' || element.type === 'epitaph' || element.type === 'fio' || element.type === 'dates')) {
-        // Для текста: свободное изменение размера с масштабированием шрифта
         const newWidth = Math.max(50, resizeStart.width + deltaX);
         const newHeight = Math.max(30, resizeStart.height + deltaY);
         const scaleRatio = Math.min(newWidth / resizeStart.width, newHeight / resizeStart.height);
         const newFontSize = Math.max(8, Math.min(72, Math.round(resizeStart.fontSize * scaleRatio)));
         
-        setElements(elements.map(el => 
+        setElements(prev => prev.map(el => 
           el.id === selectedElement 
             ? { ...el, width: newWidth, height: newHeight, fontSize: newFontSize }
             : el
         ));
       } else if (element && (element.type === 'image' || element.type === 'photo' || element.type === 'cross' || element.type === 'flower')) {
-        // Для изображений: сохраняем пропорции (aspect ratio)
         const aspectRatio = resizeStart.width / resizeStart.height;
-        
-        // Берём наибольшее изменение (по X или по Y)
         const delta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY * aspectRatio;
         const newWidth = Math.max(30, resizeStart.width + delta);
         const newHeight = Math.max(30, newWidth / aspectRatio);
         
-        setElements(elements.map(el => 
+        setElements(prev => prev.map(el => 
           el.id === selectedElement 
             ? { ...el, width: newWidth, height: newHeight }
             : el
         ));
       } else {
-        // Остальные элементы: свободное изменение
         const newWidth = Math.max(50, resizeStart.width + deltaX);
         const newHeight = Math.max(30, resizeStart.height + deltaY);
         
-        setElements(elements.map(el => 
+        setElements(prev => prev.map(el => 
           el.id === selectedElement 
             ? { ...el, width: newWidth, height: newHeight }
             : el
@@ -915,16 +903,14 @@ const Constructor = () => {
     } else if (isDragging) {
       const canvasRect = canvasRef.current.getBoundingClientRect();
       
-      // Учитываем zoom и pan при расчёте координат
       const touchX = (touch.clientX - canvasRect.left - canvasRect.width / 2) / canvasZoom - canvasPan.x / canvasZoom + canvasRect.width / 2;
       const touchY = (touch.clientY - canvasRect.top - canvasRect.height / 2) / canvasZoom - canvasPan.y / canvasZoom + canvasRect.height / 2;
       
       const newX = touchX - dragOffset.x;
       const newY = touchY - dragOffset.y;
       
-      setElements(elements.map(el => {
+      setElements(prev => prev.map(el => {
         if (el.id === selectedElement) {
-          // Для элементов с autoSize не ограничиваем по ширине
           const maxX = el.autoSize ? canvasRect.width : canvasRect.width - el.width;
           const maxY = el.autoSize ? canvasRect.height : canvasRect.height - el.height;
           return { 
@@ -1081,7 +1067,7 @@ const Constructor = () => {
   };
 
   const deleteElement = (id: string) => {
-    setElements(elements.filter(el => el.id !== id));
+    setElements(prev => prev.filter(el => el.id !== id));
     if (selectedElement === id) setSelectedElement(null);
   };
 
@@ -1101,13 +1087,13 @@ const Constructor = () => {
 
     if (wasScreenMode) {
       const processed = await applyScreenMode(editedImageUrl);
-      setElements(elements.map(el =>
+      setElements(prev => prev.map(el =>
         el.id === editingImageId
           ? { ...el, src: editedImageUrl, processedSrc: processed, screenMode: true }
           : el
       ));
     } else {
-      setElements(elements.map(el =>
+      setElements(prev => prev.map(el =>
         el.id === editingImageId
           ? { ...el, src: editedImageUrl, processedSrc: undefined }
           : el
