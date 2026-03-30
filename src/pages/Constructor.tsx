@@ -1064,25 +1064,20 @@ const Constructor = () => {
     // Обработка режима "Экран" для изображений
     if ('screenMode' in updates && (element.type === 'photo' || element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src) {
       if (updates.screenMode === true) {
-        // Включение режима
         if (!element.processedSrc) {
-          // Нужно создать обработанную версию
           const processed = await applyScreenMode(element.src);
-          setElements(elements.map(el => el.id === id ? { ...el, screenMode: true, processedSrc: processed } : el));
+          setElements(prev => prev.map(el => el.id === id ? { ...el, screenMode: true, processedSrc: processed } : el));
         } else {
-          // Обработанная версия уже есть, просто включаем флаг
-          setElements(elements.map(el => el.id === id ? { ...el, screenMode: true } : el));
+          setElements(prev => prev.map(el => el.id === id ? { ...el, screenMode: true } : el));
         }
         return;
       } else if (updates.screenMode === false) {
-        // Выключение режима - удалить обработанную версию
-        setElements(elements.map(el => el.id === id ? { ...el, screenMode: false, processedSrc: undefined } : el));
+        setElements(prev => prev.map(el => el.id === id ? { ...el, screenMode: false, processedSrc: undefined } : el));
         return;
       }
     }
     
-    // Все остальные обновления
-    setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
+    setElements(prev => prev.map(el => el.id === id ? { ...el, ...updates } : el));
   };
 
   const deleteElement = (id: string) => {
