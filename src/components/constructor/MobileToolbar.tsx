@@ -55,6 +55,7 @@ export const MobileToolbar = ({
   fonts,
 }: MobileToolbarProps) => {
   const [activePanel, setActivePanel] = useState<'fonts' | 'size' | 'color' | 'align' | 'rotate' | 'imageSize' | null>(null);
+  const [isScreenProcessing, setIsScreenProcessing] = useState(false);
   const [rotationInput, setRotationInput] = useState<string>('');
 
   if (!selectedEl || window.innerWidth >= 1024) {
@@ -429,6 +430,22 @@ export const MobileToolbar = ({
               >
                 <Icon name="Maximize2" size={16} />
                 <span className="text-[9px]">Размер</span>
+              </button>
+
+              <button
+                disabled={isScreenProcessing}
+                onClick={async () => {
+                  if (!selectedEl || !updateElement) return;
+                  setIsScreenProcessing(true);
+                  await updateElement(selectedEl.id, { screenMode: !selectedEl.screenMode });
+                  setIsScreenProcessing(false);
+                }}
+                className={`flex flex-col items-center gap-0 px-2 py-1 rounded-lg transition-colors ${
+                  selectedEl.screenMode ? 'text-primary' : 'text-white/70'
+                } ${isScreenProcessing ? 'opacity-50' : ''}`}
+              >
+                <Icon name={isScreenProcessing ? 'Loader2' : 'Layers'} size={16} className={isScreenProcessing ? 'animate-spin' : ''} />
+                <span className="text-[9px]">Экран</span>
               </button>
             </>
           )}
