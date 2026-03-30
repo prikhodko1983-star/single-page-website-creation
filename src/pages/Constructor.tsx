@@ -110,26 +110,26 @@ const Constructor = () => {
       const productsData = await productsResponse.json();
       
       // Фильтруем только продукты с изображениями
-      const productsWithImages = productsData.filter((p: any) => p.image_url);
+      const productsWithImages = productsData.filter((p: { image_url?: string }) => p.image_url);
       
       // Создаем карту категорий для быстрого доступа
-      const categoryMap = new Map();
-      categoriesData.forEach((cat: any) => {
+      const categoryMap = new Map<number, string>();
+      categoriesData.forEach((cat: { id: number; name: string }) => {
         categoryMap.set(cat.id, cat.name);
       });
       
       // Преобразуем продукты в нужный формат
-      const formattedProducts = productsWithImages.map((p: any) => ({
+      const formattedProducts = productsWithImages.map((p: { id: number; name: string; category_id?: number; image_url: string }) => ({
         id: p.id,
         name: p.name,
         category_id: p.category_id || 0,
-        category_name: categoryMap.get(p.category_id) || 'Без категории',
+        category_name: categoryMap.get(p.category_id ?? 0) || 'Без категории',
         image_url: p.image_url
       }));
       
       // Получаем уникальные категории из продуктов
-      const uniqueCategories = new Map();
-      formattedProducts.forEach((p: any) => {
+      const uniqueCategories = new Map<number, { id: number; name: string }>();
+      formattedProducts.forEach((p: { category_id: number; category_name: string }) => {
         if (!uniqueCategories.has(p.category_id)) {
           uniqueCategories.set(p.category_id, {
             id: p.category_id,
@@ -1713,8 +1713,8 @@ const Constructor = () => {
             ctx.fillStyle = element.color || '#FFFFFF';
             
             if (isCustomFont) {
-              (ctx as any).fontVariantLigatures = 'common-ligatures discretionary-ligatures';
-              (ctx as any).fontFeatureSettings = "'ss01', 'calt', 'swsh', 'liga', 'dlig'";
+              (ctx as unknown as Record<string, string>).fontVariantLigatures = 'common-ligatures discretionary-ligatures';
+              (ctx as unknown as Record<string, string>).fontFeatureSettings = "'ss01', 'calt', 'swsh', 'liga', 'dlig'";
             }
             
             if (element.letterSpacing) {
@@ -2217,8 +2217,8 @@ const Constructor = () => {
           ctx.fillStyle = element.color || '#FFFFFF';
           
           if (isCustomFont) {
-            (ctx as any).fontVariantLigatures = 'common-ligatures discretionary-ligatures';
-            (ctx as any).fontFeatureSettings = "'ss01', 'calt', 'swsh', 'liga', 'dlig'";
+            (ctx as unknown as Record<string, string>).fontVariantLigatures = 'common-ligatures discretionary-ligatures';
+            (ctx as unknown as Record<string, string>).fontFeatureSettings = "'ss01', 'calt', 'swsh', 'liga', 'dlig'";
           }
           
           if (element.letterSpacing) {
