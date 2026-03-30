@@ -551,6 +551,7 @@ const Constructor = () => {
         processedSrc,
       };
       setElements([...elements, newElement]);
+      setIsMobileLibraryOpen(false);
     };
     reader.readAsDataURL(file);
     
