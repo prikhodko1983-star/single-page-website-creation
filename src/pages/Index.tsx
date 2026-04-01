@@ -474,7 +474,7 @@ const Index = () => {
           </div>
 
           <div className="text-center mt-8">
-            <button
+            <button className="inline-flex items-center gap-2 hover:bg-[#C49745] text-black font-oswald font-semibold px-6 py-3 rounded-lg text-sm md:text-base transition-all bg-[#f59f0a]"
               onClick={() => navigate('/constructor')}
               className="inline-flex items-center gap-2 bg-[#D4A855] hover:bg-[#C49745] text-black font-oswald font-semibold px-6 py-3 rounded-lg text-sm md:text-base transition-all"
             >
