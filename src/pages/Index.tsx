@@ -421,6 +421,87 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Примеры работ конструктора */}
+      <section className="py-8 md:py-14 bg-[#111111]">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-6 md:mb-10">
+            <h2 className="font-oswald font-bold text-2xl md:text-4xl text-white mb-2">
+              Примеры гравировки на памятниках
+            </h2>
+            <p className="text-white/60 text-sm md:text-base max-w-2xl mx-auto">
+              Посмотрите, что можно создать с помощью нашего онлайн-конструктора
+            </p>
+          </div>
+
+          {/* Сетка изображений — минимум 4 в ряд */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto">
+            {[
+              {
+                url: "https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/25e1a37e-5458-40f9-b36e-e82fb51897c3.jpeg",
+                label: "Портрет с пейзажем"
+              },
+              {
+                url: "https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/78bc18ba-c4d0-4e12-9a5b-0bdaedcdc304.PNG",
+                label: "Художественная композиция"
+              },
+              {
+                url: "https://cdn.poehali.dev/files/7112f930-700c-4c99-a122-56bf0dbc2b2c.png",
+                label: "Портрет с цветами"
+              },
+              {
+                url: "https://cdn.poehali.dev/files/ed11db8d-2e82-4c44-a219-2b25cbe05cd3.jpg",
+                label: "Реставрация фото"
+              },
+              {
+                url: "https://cdn.poehali.dev/files/ff61127a-f19b-45fb-a0b0-0de645b1e942.jpg",
+                label: "Классический памятник"
+              },
+              {
+                url: "https://cdn.poehali.dev/files/a2c6a92c-4a27-4268-a9b2-25eac2f8dad9.jpg",
+                label: "Эксклюзивный дизайн"
+              },
+              {
+                url: "https://cdn.poehali.dev/files/a3bce19f-dfe6-4d50-b322-ddd2ed85257a.jpg",
+                label: "Комплекс с оградой"
+              },
+              {
+                url: "https://cdn.poehali.dev/files/3e19395b-495c-4eef-91ce-74b56fbffe66.jpg",
+                label: "Портрет до обработки"
+              }
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="relative group overflow-hidden rounded-xl border border-white/10 bg-black cursor-pointer hover:border-[#D4A855]/50 transition-all duration-300"
+                onClick={() => setSelectedImage(item.url)}
+              >
+                <div className="aspect-[3/4] overflow-hidden">
+                  <img
+                    src={item.url}
+                    alt={item.label}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                  <span className="text-white text-xs md:text-sm font-oswald px-3 pb-3">{item.label}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <button
+              onClick={() => navigate('/constructor')}
+              className="inline-flex items-center gap-2 bg-[#D4A855] hover:bg-[#C49745] text-black font-oswald font-semibold px-6 py-3 rounded-lg text-sm md:text-base transition-all"
+            >
+              <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+              СОЗДАТЬ СВОЙ МАКЕТ
+            </button>
+          </div>
+        </div>
+      </section>
+
       <IndexContentSections 
         services={services}
         advantages={advantages}
