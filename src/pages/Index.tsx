@@ -452,22 +452,7 @@ const Index = () => {
                 url: "https://cdn.poehali.dev/files/ed11db8d-2e82-4c44-a219-2b25cbe05cd3.jpg",
                 label: "Реставрация фото"
               },
-              {
-                url: "https://cdn.poehali.dev/files/ff61127a-f19b-45fb-a0b0-0de645b1e942.jpg",
-                label: "Классический памятник"
-              },
-              {
-                url: "https://cdn.poehali.dev/files/a2c6a92c-4a27-4268-a9b2-25eac2f8dad9.jpg",
-                label: "Эксклюзивный дизайн"
-              },
-              {
-                url: "https://cdn.poehali.dev/files/a3bce19f-dfe6-4d50-b322-ddd2ed85257a.jpg",
-                label: "Комплекс с оградой"
-              },
-              {
-                url: "https://cdn.poehali.dev/files/3e19395b-495c-4eef-91ce-74b56fbffe66.jpg",
-                label: "Портрет до обработки"
-              }
+
             ].map((item, idx) => (
               <div
                 key={idx}
