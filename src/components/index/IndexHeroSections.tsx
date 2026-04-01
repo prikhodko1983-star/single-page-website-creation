@@ -181,7 +181,7 @@ export default function IndexHeroSections({
                 </Button>
                 <Button 
                   size="sm" 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-sm px-4 py-2 w-auto"
+                  className="bg-[#f59f0a] hover:bg-[#f59f0a]/90 text-primary-foreground font-oswald text-sm px-4 py-2 w-auto"
                   onClick={() => {
                     if (window.dataLayer) {
                       window.dataLayer.push({
