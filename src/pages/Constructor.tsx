@@ -1257,6 +1257,107 @@ const Constructor = () => {
     }
   };
 
+  const exportDesignAsJPG = async () => {
+    if (isSaving) return;
+    if (elements.length === 0) {
+      toast({
+        title: "Пустой дизайн",
+        description: "Добавьте элементы на памятник",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      toast({
+        title: "Создание JPG...",
+        description: "Экспортируем изображение без сжатия",
+      });
+
+      const previewDataUrl = await createPreviewImage();
+
+      if (!previewDataUrl) {
+        throw new Error('Не удалось создать превью');
+      }
+
+      // Перерисовываем PNG-превью в JPG без потери качества (quality=1.0)
+      const img = new Image();
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = reject;
+        img.src = previewDataUrl;
+      });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+
+      const jpgDataUrl = canvas.toDataURL('image/jpeg', 1.0);
+
+      const base64Data = jpgDataUrl.split(',')[1];
+      const binaryData = atob(base64Data);
+      const uint8Array = new Uint8Array(binaryData.length);
+      for (let i = 0; i < binaryData.length; i++) {
+        uint8Array[i] = binaryData.charCodeAt(i);
+      }
+
+      const blob = new Blob([uint8Array], { type: 'image/jpeg' });
+
+      const date = new Date();
+      const dateStr = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+      const fileName = `проект_${dateStr}.jpg`;
+
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      if (isMobile && navigator.canShare && navigator.canShare({ files: [new File([blob], fileName)] })) {
+        try {
+          await navigator.share({
+            files: [new File([blob], fileName, { type: 'image/jpeg' })],
+            title: 'Эскиз памятника',
+            text: 'Нажмите «Сохранить изображение» чтобы добавить в галерею',
+          });
+          return;
+        } catch (e: unknown) {
+          if (e instanceof Error && e.name === 'AbortError') return;
+        }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+
+      setTimeout(() => {
+        if (document.body.contains(link)) {
+          document.body.removeChild(link);
+        }
+        URL.revokeObjectURL(url);
+      }, 3000);
+
+      toast({
+        title: "JPG сохранён",
+        description: "Файл скачан на устройство",
+      });
+    } catch (error) {
+      console.error('❌ Export JPG error:', error);
+      toast({
+        title: "Ошибка экспорта JPG",
+        description: String(error),
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const addPNGTextChunk = (pngData: Uint8Array, keyword: string, text: string): Uint8Array => {
     // PNG signature: 8 байт
     const signature = pngData.slice(0, 8);
@@ -2508,11 +2609,22 @@ const Constructor = () => {
           size="sm"
           onClick={exportDesignAsPNG}
           disabled={isSaving}
-          title="Скачать изображение"
+          title="Скачать PNG (с метаданными проекта)"
           className="h-8 px-2 sm:px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
         >
           <Icon name="Image" size={14} />
-          <span className="hidden sm:inline">{isSaving ? 'Создаю...' : 'Скачать изображение'}</span>
+          <span className="hidden sm:inline">{isSaving ? 'Создаю...' : 'Скачать PNG'}</span>
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={exportDesignAsJPG}
+          disabled={isSaving}
+          title="Скачать JPG (максимальное качество)"
+          className="h-8 px-2 sm:px-3 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5"
+        >
+          <Icon name="FileImage" size={14} />
+          <span className="hidden sm:inline">{isSaving ? 'Создаю...' : 'Скачать JPG'}</span>
         </Button>
         <label className="cursor-pointer flex-shrink-0" title="Загрузить эскиз">
           <input
