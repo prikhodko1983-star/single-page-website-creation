@@ -340,7 +340,7 @@ const Index = () => {
                     </div>
                   </div>
                   
-                  <button className="bg-[#D4A855] hover:bg-[#C49745] text-black font-medium px-5 py-3 rounded-lg text-sm transition-all flex items-center gap-2">
+                  <button className="hover:bg-[#C49745] text-black font-medium px-5 py-3 rounded-lg text-sm transition-all flex items-center gap-2 bg-[#f59f0a]">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
