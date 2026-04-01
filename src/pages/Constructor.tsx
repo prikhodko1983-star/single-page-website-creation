@@ -2064,9 +2064,9 @@ const Constructor = () => {
       const canvasEl = canvasRef.current;
       const rect = { width: canvasEl.offsetWidth, height: canvasEl.offsetHeight };
       
-      // Экспорт с высоким разрешением (3:4 пропорции, 300 DPI для печати)
-      const exportWidth = 3600;
-      const exportHeight = 4800;
+      // Экспорт с увеличенным разрешением (3:4 пропорции)
+      const exportWidth = 1200;
+      const exportHeight = 1600;
       
       const canvasElement = document.createElement('canvas');
       canvasElement.width = exportWidth;
