@@ -5,14 +5,14 @@ interface MaxIconProps {
   className?: string;
 }
 
-const MaxIcon: React.FC<MaxIconProps> = ({ size = 18, className }) => (
+const MaxIcon: React.FC<MaxIconProps> = ({ size = 34, className }) => (
   <img
-    src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/a38359c5-a2ae-4a29-8839-2118b6dfda0c.png"
+    src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/49f69673-b992-4df7-a400-76c90cfdb859.png"
     alt="Max"
     width={size}
     height={size}
     className={className}
-    style={{ objectFit: 'contain', display: 'block', flexShrink: 0 }}
+    style={{ objectFit: 'cover', display: 'block', flexShrink: 0, borderRadius: '8px' }}
   />
 );
 
