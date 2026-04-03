@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Icon from "@/components/ui/icon";
+import MaxIcon from "@/components/ui/MaxIcon";
 import { useState } from "react";
 
 const ContactSection = () => {
@@ -136,7 +137,9 @@ const ContactSection = () => {
 
               <Card className="bg-card border-border">
                 <CardContent className="p-6 text-center">
-                  <Icon name="MessageSquare" size={32} className="text-[#0077FF] mx-auto mb-3" />
+                  <div className="flex justify-center mb-3">
+                    <MaxIcon size={32} />
+                  </div>
                   <div className="font-oswald font-bold mb-1">Max</div>
                   <a href="https://max.ru/im?phone=89960681168" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                     Написать в Max

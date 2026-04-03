@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import MaxIcon from "@/components/ui/MaxIcon";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -30,8 +31,8 @@ const Header = () => {
             <a href="https://t.me/79960681168" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors">
               <Icon name="Send" size={18} />
             </a>
-            <a href="https://max.ru/im?phone=89960681168" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#0077FF] hover:bg-[#0060CC] text-white rounded-lg transition-colors" title="Написать в Max">
-              <Icon name="MessageSquare" size={18} />
+            <a href="https://max.ru/im?phone=89960681168" target="_blank" rel="noopener noreferrer" className="p-1.5 bg-gradient-to-br from-[#6B7FFF] to-[#8B3FC8] hover:opacity-90 rounded-lg transition-opacity" title="Написать в Max">
+              <MaxIcon size={20} />
             </a>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import MaxIcon from "@/components/ui/MaxIcon";
 import { CartSheet } from "@/components/CartSheet";
 import SearchBar from "@/components/SearchBar";
 
@@ -48,10 +49,10 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
               href="https://max.ru/im?phone=89960681168" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="p-2 bg-[#0077FF] hover:bg-[#0060CC] text-white rounded-lg transition-colors"
+              className="p-1.5 bg-gradient-to-br from-[#6B7FFF] to-[#8B3FC8] hover:opacity-90 text-white rounded-lg transition-opacity"
               title="Написать в Max"
             >
-              <Icon name="MessageSquare" size={18} />
+              <MaxIcon size={20} />
             </a>
             <SearchBar />
             <div className="hidden md:block">
