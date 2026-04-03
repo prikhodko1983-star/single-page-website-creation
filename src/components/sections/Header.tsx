@@ -32,7 +32,7 @@ const Header = () => {
               <Icon name="Send" size={18} />
             </a>
             <a href="https://max.ru/im?phone=89960681168" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity" title="Написать в Max">
-              <MaxIcon size={34} />
+              <MaxIcon size={52} />
             </a>
           </div>
         </div>

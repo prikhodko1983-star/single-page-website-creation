@@ -52,7 +52,7 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
               className="hover:opacity-80 transition-opacity"
               title="Написать в Max"
             >
-              <MaxIcon size={34} />
+              <MaxIcon size={52} />
             </a>
             <SearchBar />
             <div className="hidden md:block">
