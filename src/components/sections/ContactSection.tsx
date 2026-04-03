@@ -133,6 +133,16 @@ const ContactSection = () => {
                   </a>
                 </CardContent>
               </Card>
+
+              <Card className="bg-card border-border">
+                <CardContent className="p-6 text-center">
+                  <Icon name="MessageSquare" size={32} className="text-[#0077FF] mx-auto mb-3" />
+                  <div className="font-oswald font-bold mb-1">Max</div>
+                  <a href="https://max.ru/im?phone=89960681168" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Написать в Max
+                  </a>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

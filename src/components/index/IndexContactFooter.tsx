@@ -142,6 +142,23 @@ export default function IndexContactFooter({
                         <Icon name="Send" size={20} />
                         <span className="font-medium">Telegram</span>
                       </a>
+                      <a 
+                        href="https://max.ru/im?phone=89960681168" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#0077FF] hover:bg-[#0060CC] text-white rounded-lg transition-colors"
+                        onClick={() => {
+                          if (window.dataLayer) {
+                            window.dataLayer.push({
+                              event: 'messenger_click',
+                              messenger_name: 'Max'
+                            });
+                          }
+                        }}
+                      >
+                        <Icon name="MessageSquare" size={20} />
+                        <span className="font-medium">Max</span>
+                      </a>
                     </div>
                     
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">

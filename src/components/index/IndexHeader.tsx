@@ -44,6 +44,15 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
             >
               <Icon name="Send" size={18} />
             </a>
+            <a 
+              href="https://max.ru/im?phone=89960681168" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="p-2 bg-[#0077FF] hover:bg-[#0060CC] text-white rounded-lg transition-colors"
+              title="Написать в Max"
+            >
+              <Icon name="MessageSquare" size={18} />
+            </a>
             <SearchBar />
             <div className="hidden md:block">
               <CartSheet />
