@@ -31,8 +31,8 @@ const Header = () => {
             <a href="https://t.me/79960681168" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors">
               <Icon name="Send" size={18} />
             </a>
-            <a href="https://max.ru/im?phone=89960681168" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity" title="Написать в Max">
-              <MaxIcon size={52} />
+            <a href="https://max.ru/im?phone=89960681168" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-gradient-to-br from-[#4B8EF5] via-[#5B5BD6] to-[#9B3FC8] hover:opacity-80 transition-opacity" title="Написать в Max">
+              <MaxIcon size={18} />
             </a>
           </div>
         </div>

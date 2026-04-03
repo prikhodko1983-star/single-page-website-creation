@@ -49,10 +49,10 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
               href="https://max.ru/im?phone=89960681168" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="hover:opacity-80 transition-opacity"
+              className="p-2 rounded-lg bg-gradient-to-br from-[#4B8EF5] via-[#5B5BD6] to-[#9B3FC8] hover:opacity-80 transition-opacity"
               title="Написать в Max"
             >
-              <MaxIcon size={52} />
+              <MaxIcon size={18} />
             </a>
             <SearchBar />
             <div className="hidden md:block">
