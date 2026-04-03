@@ -7,7 +7,7 @@ interface MaxIconProps {
 
 const MaxIcon: React.FC<MaxIconProps> = ({ size = 18, className }) => (
   <img
-    src="https://logo-teka.com/wp-content/uploads/2025/07/max-messenger-sign-logo.svg"
+    src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/8ded17ea-3683-476c-9b11-acec4e37df65.png"
     alt="Max"
     width={size}
     height={size}
