@@ -96,7 +96,7 @@ export const MobileToolbar = ({
     <>
       {/* Выдвижные панели */}
       {isTextElement && activePanel === 'fonts' && (
-        <div className="fixed left-12 right-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-2 py-1.5 z-40 max-h-36 overflow-y-auto">
+        <div className="fixed left-0 right-0 bottom-10 bg-[#1a1a1a] backdrop-blur-sm border-t border-white/10 px-2 py-1.5 z-[55] max-h-36 overflow-y-auto">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-white/60">Шрифт</span>
             <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
@@ -132,7 +132,7 @@ export const MobileToolbar = ({
       )}
 
       {isTextElement && activePanel === 'size' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-40">
+        <div className="fixed left-0 right-0 bottom-10 bg-[#1a1a1a] backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-[55]">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-white/60">Размер: {selectedEl.fontSize}px</span>
             <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
@@ -171,7 +171,7 @@ export const MobileToolbar = ({
       )}
 
       {isTextElement && activePanel === 'color' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-40">
+        <div className="fixed left-0 right-0 bottom-10 bg-[#1a1a1a] backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-[55]">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-white/60">Цвет текста</span>
             <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
@@ -211,7 +211,7 @@ export const MobileToolbar = ({
       )}
 
       {isTextElement && activePanel === 'align' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-40">
+        <div className="fixed left-0 right-0 bottom-10 bg-[#1a1a1a] backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-[55]">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-white/60">Выравнивание</span>
             <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
@@ -260,7 +260,7 @@ export const MobileToolbar = ({
       )}
 
       {activePanel === 'rotate' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-40">
+        <div className="fixed left-0 right-0 bottom-10 bg-[#1a1a1a] backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-[55]">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-white/60">Поворот</span>
             <div className="flex items-center gap-2">
@@ -310,7 +310,7 @@ export const MobileToolbar = ({
       )}
 
       {isImageElement && activePanel === 'imageSize' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-40">
+        <div className="fixed left-0 right-0 bottom-10 bg-[#1a1a1a] backdrop-blur-sm border-t border-white/10 px-3 py-1.5 z-[55]">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-white/60">Размер изображения</span>
             <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
@@ -342,7 +342,7 @@ export const MobileToolbar = ({
       )}
 
       {/* Нижняя панель инструментов */}
-      <div className="fixed inset-x-0 bottom-0 bg-black/30 backdrop-blur-sm border-t border-white/10 px-2 py-0.5 z-50 lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 bg-black/80 backdrop-blur-sm border-t border-white/10 px-2 py-0.5 z-[60] lg:hidden">
         <div className="flex items-center justify-around gap-0.5">
           {isTextElement && (
             <>
