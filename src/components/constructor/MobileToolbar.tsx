@@ -96,7 +96,7 @@ export const MobileToolbar = ({
     <>
       {/* Выдвижные панели */}
       {isTextElement && activePanel === 'fonts' && (
-        <div className="fixed inset-x-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-2 py-1.5 z-40 max-h-36 overflow-y-auto">
+        <div className="fixed left-12 right-0 bottom-10 bg-black/40 backdrop-blur-sm border-t border-white/10 px-2 py-1.5 z-40 max-h-36 overflow-y-auto">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-white/60">Шрифт</span>
             <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setActivePanel(null)}>
