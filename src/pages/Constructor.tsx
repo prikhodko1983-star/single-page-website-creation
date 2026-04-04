@@ -8,6 +8,7 @@ import { ConstructorCanvas } from "@/components/constructor/ConstructorCanvas";
 import { ConstructorProperties } from "@/components/constructor/ConstructorProperties";
 import { TextEditorModal } from "@/components/constructor/TextEditorModal";
 import { MobileToolbar } from "@/components/constructor/MobileToolbar";
+import { MobileElementsToolbar } from "@/components/constructor/MobileElementsToolbar";
 import { ImageEraser } from "@/components/constructor/ImageEraser";
 
 interface CanvasElement {
@@ -2651,11 +2652,10 @@ const Constructor = () => {
       </div>
 
       {/* Мобильная панель категорий (только мобайл) — fixed чтобы не сжимать canvas */}
-      <div className="lg:hidden fixed top-12 left-0 right-0 bg-[#181818] border-b border-white/10 flex items-stretch h-14 z-30">
+      <div className="lg:hidden fixed top-12 left-12 right-0 bg-[#181818] border-b border-white/10 flex items-stretch h-14 z-30">
         {[
           { key: 'catalog', label: 'Каталог', icon: 'LayoutGrid' },
           { key: 'images', label: 'Фото', icon: 'Image' },
-          { key: 'elements', label: 'Элементы', icon: 'Shapes' },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -2666,7 +2666,6 @@ const Constructor = () => {
                 setMobileLibraryTab(tab.key);
                 setIsMobileLibraryOpen(true);
                 if (tab.key === 'catalog') loadCatalog();
-                if (tab.key === 'elements') { loadCrosses(); loadFlowers(); }
               }
             }}
             className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors ${
@@ -2684,8 +2683,8 @@ const Constructor = () => {
       {/* Мобильный drawer с библиотекой (fixed, не сжимает canvas) */}
       {isMobileLibraryOpen && (
         <>
-          <div className="lg:hidden fixed inset-0 z-30" style={{ top: '104px' }} onClick={() => setIsMobileLibraryOpen(false)} />
-          <div className="lg:hidden fixed left-0 right-0 z-40 bg-[#181818] border-b border-white/10 overflow-y-auto shadow-2xl" style={{ top: '104px', height: 'calc(100vh - 104px)' }}>
+          <div className="lg:hidden fixed z-30" style={{ top: '104px', left: '48px', right: 0, bottom: 0 }} onClick={() => setIsMobileLibraryOpen(false)} />
+          <div className="lg:hidden fixed right-0 z-40 bg-[#181818] border-b border-white/10 overflow-y-auto shadow-2xl" style={{ top: '104px', left: '48px', height: 'calc(100vh - 104px)' }}>
           <ConstructorLibrary
             defaultTab={mobileLibraryTab}
             monumentImage={monumentImage}
@@ -2730,7 +2729,7 @@ const Constructor = () => {
       )}
 
       {/* Main workspace — fixed под топбар+панель */}
-      <div className="flex overflow-hidden fixed left-0 right-0 bottom-0" style={{ top: workspaceTop }}>
+      <div className="flex overflow-hidden fixed right-0 bottom-0" style={{ top: workspaceTop, left: isMobile ? '48px' : '0' }}>
         {/* Left panel */}
         <div className="hidden lg:flex flex-shrink-0 w-[300px] border-r border-white/10 bg-[#181818] flex-col overflow-hidden">
           <ConstructorLibrary
@@ -2866,6 +2865,35 @@ const Constructor = () => {
           }
         }}
         canErase={!!selectedEl && (selectedEl.type === 'image' || selectedEl.type === 'photo' || selectedEl.type === 'cross' || selectedEl.type === 'flower')}
+      />
+
+      <MobileElementsToolbar
+        addTextElement={addTextElement}
+        addEpitaphElement={addEpitaphElement}
+        addFIOElement={addFIOElement}
+        addDatesElement={addDatesElement}
+        handlePhotoUpload={handlePhotoUpload}
+        photoInputRef={photoInputRef}
+        surname={surname}
+        setSurname={setSurname}
+        name={name}
+        setName={setName}
+        patronymic={patronymic}
+        setPatronymic={setPatronymic}
+        selectedFont={selectedFont}
+        setSelectedFont={setSelectedFont}
+        birthDate={birthDate}
+        setBirthDate={setBirthDate}
+        deathDate={deathDate}
+        setDeathDate={setDeathDate}
+        selectedDateFont={selectedDateFont}
+        setSelectedDateFont={setSelectedDateFont}
+        fonts={fonts}
+        crosses={crosses}
+        isLoadingCrosses={isLoadingCrosses}
+        flowers={flowers}
+        isLoadingFlowers={isLoadingFlowers}
+        addImageElement={addImageElement}
       />
 
     </div>
