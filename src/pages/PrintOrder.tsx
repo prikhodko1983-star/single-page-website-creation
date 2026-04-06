@@ -286,10 +286,7 @@ const PrintOrder = () => {
         </label>
         <label className="cursor-pointer">
           <Button variant="outline" size="sm" className="h-7 px-2 text-xs" asChild>
-            <span>
-              <Icon name="FolderOpen" size={13} className="mr-1" />
-              Загрузить
-            </span>
+            <span>Загрузить бланк</span>
           </Button>
           <input ref={loadInputRef} type="file" accept=".json" className="hidden" onChange={handleLoadJson} />
         </label>
