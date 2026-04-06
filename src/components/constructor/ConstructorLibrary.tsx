@@ -189,8 +189,8 @@ export const ConstructorLibrary = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#181818] text-white">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col flex-1 min-h-0">
+    <div className="flex flex-col bg-[#181818] text-white" style={{ height: '100%' }}>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col" style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
           <div className="px-3 pt-3 pb-2 border-b border-white/10 hidden lg:block">
             <p className="text-[10px] font-semibold text-white/40 uppercase tracking-widest mb-2">Библиотека</p>
             <TabsList className="grid w-full grid-cols-3 bg-white/5 h-8">
@@ -200,7 +200,7 @@ export const ConstructorLibrary = ({
             </TabsList>
           </div>
           
-          <TabsContent value="catalog" className="mt-2 flex-1 min-h-0 px-3 pb-4" style={{ overflow: 'hidden', display: activeTab === 'catalog' ? 'flex' : 'none', flexDirection: 'column' }}>
+          <TabsContent value="catalog" className="px-3 pb-4" style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: activeTab === 'catalog' ? 'flex' : 'none', flexDirection: 'column', marginTop: '8px' }}>
             <Label className="shrink-0 mb-2">Памятники из каталога магазина</Label>
             
             {isLoadingCatalog ? (
