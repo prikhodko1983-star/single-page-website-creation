@@ -200,8 +200,8 @@ export const ConstructorLibrary = ({
             </TabsList>
           </div>
           
-          <TabsContent value="catalog" className="space-y-3 mt-2 flex-1 overflow-y-auto min-h-0 px-3 pb-4">
-            <Label>Памятники из каталога магазина</Label>
+          <TabsContent value="catalog" className="mt-2 flex-1 min-h-0 flex flex-col px-3 pb-4">
+            <Label className="shrink-0 mb-2">Памятники из каталога магазина</Label>
             
             {isLoadingCatalog ? (
               <div className="flex items-center justify-center py-8">
@@ -210,8 +210,8 @@ export const ConstructorLibrary = ({
             ) : (
               <>
                 {catalogCategories.length > 0 && (
-                  <Tabs value={selectedCategory?.toString()} onValueChange={(val) => setSelectedCategory(parseInt(val))} className="w-full">
-                    <TabsList className="w-full flex-wrap h-auto gap-1">
+                  <Tabs value={selectedCategory?.toString()} onValueChange={(val) => setSelectedCategory(parseInt(val))} className="w-full flex flex-col flex-1 min-h-0">
+                    <TabsList className="w-full flex-wrap h-auto gap-1 shrink-0">
                       {catalogCategories.map(cat => {
                         const count = catalogProducts.filter(p => p.category_id === cat.id && p.image_url).length;
                         return (
@@ -232,7 +232,7 @@ export const ConstructorLibrary = ({
                     {catalogCategories.map(cat => {
                       const categoryProducts = catalogProducts.filter(p => p.category_id === cat.id && p.image_url);
                       return (
-                        <TabsContent key={cat.id} value={cat.id.toString()} className="mt-3">
+                        <TabsContent key={cat.id} value={cat.id.toString()} className="mt-3 flex-1 overflow-y-auto min-h-0">
                           {categoryProducts.length > 0 ? (
                             <div className="grid grid-cols-2 gap-2">
                               {categoryProducts.map(product => (
