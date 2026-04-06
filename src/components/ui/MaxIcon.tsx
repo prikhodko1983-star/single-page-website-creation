@@ -12,7 +12,7 @@ const MaxIcon: React.FC<MaxIconProps> = ({ size = 18, className }) => (
     width={size}
     height={size}
     className={className}
-    style={{ display: 'block', flexShrink: 0 }}
+    style={{ display: 'block', flexShrink: 0, objectFit: 'contain' }}
   />
 );
 
