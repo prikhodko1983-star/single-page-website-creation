@@ -428,7 +428,7 @@ export const MobileToolbar = ({
                   activePanel === 'imageSize' ? 'text-primary' : 'text-white/70'
                 }`}
               >
-                <Icon name="Maximize2" size={16} />
+                <Icon name="Scaling" size={16} />
                 <span className="text-[9px]">Размер</span>
               </button>
 
