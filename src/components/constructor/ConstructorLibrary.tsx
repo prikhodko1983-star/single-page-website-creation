@@ -200,7 +200,7 @@ export const ConstructorLibrary = ({
             </TabsList>
           </div>
           
-          <TabsContent value="catalog" className="mt-2 flex-1 min-h-0 flex flex-col px-3 pb-4">
+          <TabsContent value="catalog" className="mt-2 flex-1 min-h-0 px-3 pb-4" style={{ overflow: 'hidden', display: activeTab === 'catalog' ? 'flex' : 'none', flexDirection: 'column' }}>
             <Label className="shrink-0 mb-2">Памятники из каталога магазина</Label>
             
             {isLoadingCatalog ? (
@@ -208,62 +208,67 @@ export const ConstructorLibrary = ({
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
             ) : (
-              <div className="flex flex-col flex-1 min-h-0">
+              <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
                 {catalogCategories.length > 0 && (
-                  <Tabs value={selectedCategory?.toString()} onValueChange={(val) => setSelectedCategory(parseInt(val))} className="w-full flex flex-col flex-1 min-h-0">
-                    <TabsList className="w-full flex-wrap h-auto gap-1 shrink-0">
+                  <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                    {/* Кнопки категорий */}
+                    <div className="flex flex-wrap gap-1 shrink-0 mb-3 bg-white/5 rounded-lg p-1">
                       {catalogCategories.map(cat => {
                         const count = catalogProducts.filter(p => p.category_id === cat.id && p.image_url).length;
+                        const isActive = selectedCategory === cat.id;
                         return (
-                          <TabsTrigger 
-                            key={cat.id} 
-                            value={cat.id.toString()} 
-                            className="text-xs flex-1 min-w-[100px]"
+                          <button
+                            key={cat.id}
+                            onClick={() => setSelectedCategory(cat.id)}
+                            className={`flex-1 min-w-[100px] px-2 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1 ${
+                              isActive
+                                ? 'bg-primary text-primary-foreground'
+                                : 'text-white/50 hover:text-white hover:bg-white/10'
+                            }`}
                           >
                             <span className="truncate">{cat.name}</span>
-                            <Badge variant="secondary" className="ml-1 h-4 text-[10px] px-1">
+                            <Badge variant="secondary" className="ml-1 h-4 text-[10px] px-1 shrink-0">
                               {count}
                             </Badge>
-                          </TabsTrigger>
+                          </button>
                         );
                       })}
-                    </TabsList>
+                    </div>
                     
-                    {catalogCategories.map(cat => {
-                      const categoryProducts = catalogProducts.filter(p => p.category_id === cat.id && p.image_url);
-                      return (
-                        <TabsContent key={cat.id} value={cat.id.toString()} className="mt-3 flex-1 overflow-y-auto min-h-0">
-                          {categoryProducts.length > 0 ? (
-                            <div className="grid grid-cols-2 gap-2">
-                              {categoryProducts.map(product => (
-                                <button
-                                  key={product.id}
-                                  onClick={() => setMonumentImage(product.image_url!)}
-                                  className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all bg-secondary ${
-                                    monumentImage === product.image_url ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
-                                  }`}
-                                >
-                                  <img src={product.image_url!} alt={product.name} className="w-full h-full object-contain p-2" />
-                                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-xs p-2 text-center">
-                                    <div className="font-medium">{product.name}</div>
+                    {/* Сетка памятников — прокручивается */}
+                    <div className="flex-1 overflow-y-auto min-h-0">
+                      {(() => {
+                        const categoryProducts = catalogProducts.filter(p => p.category_id === selectedCategory && p.image_url);
+                        return categoryProducts.length > 0 ? (
+                          <div className="grid grid-cols-2 gap-2 pb-2">
+                            {categoryProducts.map(product => (
+                              <button
+                                key={product.id}
+                                onClick={() => setMonumentImage(product.image_url!)}
+                                className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all bg-secondary ${
+                                  monumentImage === product.image_url ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
+                                }`}
+                              >
+                                <img src={product.image_url!} alt={product.name} className="w-full h-full object-contain p-2" />
+                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-xs p-2 text-center">
+                                  <div className="font-medium">{product.name}</div>
+                                </div>
+                                {monumentImage === product.image_url && (
+                                  <div className="absolute top-2 right-2 bg-primary rounded-full p-1">
+                                    <Icon name="Check" size={12} className="text-primary-foreground" />
                                   </div>
-                                  {monumentImage === product.image_url && (
-                                    <div className="absolute top-2 right-2 bg-primary rounded-full p-1">
-                                      <Icon name="Check" size={12} className="text-primary-foreground" />
-                                    </div>
-                                  )}
-                                </button>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center py-8 text-muted-foreground">
-                              <p className="text-sm">Нет памятников в этой категории</p>
-                            </div>
-                          )}
-                        </TabsContent>
-                      );
-                    })}
-                  </Tabs>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8 text-muted-foreground">
+                            <p className="text-sm">Нет памятников в этой категории</p>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
                 )}
                 
                 {catalogCategories.length === 0 && catalogProducts.length === 0 && !isLoadingCatalog && (
