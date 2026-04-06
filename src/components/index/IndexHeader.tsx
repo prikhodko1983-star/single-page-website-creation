@@ -17,7 +17,7 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
         <div className="flex justify-between items-center">
           <div>
             <h1 className="font-oswald font-bold text-2xl text-primary">ГРАНИТНЫЕ ПАМЯТНИКИ</h1>
-            <p className="text-xs text-muted-foreground">Производство с 2008 года</p>
+            <p className="text-xs text-muted-foreground">Опыт с 2008 года</p>
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm">
             <a href="#shop" className="hover:text-primary transition-colors">Каталог</a>
