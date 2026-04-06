@@ -208,7 +208,7 @@ export const ConstructorLibrary = ({
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
             ) : (
-              <>
+              <div className="flex flex-col flex-1 min-h-0">
                 {catalogCategories.length > 0 && (
                   <Tabs value={selectedCategory?.toString()} onValueChange={(val) => setSelectedCategory(parseInt(val))} className="w-full flex flex-col flex-1 min-h-0">
                     <TabsList className="w-full flex-wrap h-auto gap-1 shrink-0">
@@ -273,7 +273,7 @@ export const ConstructorLibrary = ({
                     <p className="text-xs mt-1">Добавьте памятники в магазин через админ-панель</p>
                   </div>
                 )}
-              </>
+              </div>
             )}
           </TabsContent>
           
