@@ -189,18 +189,27 @@ export const ConstructorLibrary = ({
   };
 
   return (
-    <div className="flex flex-col bg-[#181818] text-white" style={{ height: '100%' }}>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col" style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
-          <div className="px-3 pt-3 pb-2 border-b border-white/10 hidden lg:block">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#181818', color: 'white' }}>
+          <div className="px-3 pt-3 pb-2 border-b border-white/10">
             <p className="text-[10px] font-semibold text-white/40 uppercase tracking-widest mb-2">Библиотека</p>
-            <TabsList className="grid w-full grid-cols-3 bg-white/5 h-8">
-              <TabsTrigger value="catalog" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Каталог</TabsTrigger>
-              <TabsTrigger value="images" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Изображения</TabsTrigger>
-              <TabsTrigger value="elements" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Элементы</TabsTrigger>
-            </TabsList>
+            <div className="grid grid-cols-3 bg-white/5 h-8 rounded-md p-0.5 gap-0.5">
+              {(['catalog', 'images', 'elements'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`text-xs rounded transition-all font-medium ${
+                    activeTab === tab
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-white/50 hover:text-white'
+                  }`}
+                >
+                  {tab === 'catalog' ? 'Каталог' : tab === 'images' ? 'Изображения' : 'Элементы'}
+                </button>
+              ))}
+            </div>
           </div>
           
-          <TabsContent value="catalog" className="px-3 pb-4" style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: activeTab === 'catalog' ? 'flex' : 'none', flexDirection: 'column', marginTop: '8px' }}>
+          <div style={{ display: activeTab === 'catalog' ? 'flex' : 'none', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', padding: '8px 12px 16px' }}>
             <Label className="shrink-0 mb-2">Памятники из каталога магазина</Label>
             
             {isLoadingCatalog ? (
@@ -208,9 +217,9 @@ export const ConstructorLibrary = ({
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
             ) : (
-              <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
                 {catalogCategories.length > 0 && (
-                  <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                  <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
                     {/* Кнопки категорий */}
                     <div className="flex flex-wrap gap-1 shrink-0 mb-3 bg-white/5 rounded-lg p-1">
                       {catalogCategories.map(cat => {
@@ -236,7 +245,7 @@ export const ConstructorLibrary = ({
                     </div>
                     
                     {/* Сетка памятников — прокручивается */}
-                    <div className="flex-1 overflow-y-auto min-h-0">
+                    <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
                       {(() => {
                         const categoryProducts = catalogProducts.filter(p => p.category_id === selectedCategory && p.image_url);
                         return categoryProducts.length > 0 ? (
@@ -280,82 +289,67 @@ export const ConstructorLibrary = ({
                 )}
               </div>
             )}
-          </TabsContent>
-          
-          <TabsContent value="images" className="space-y-3 mt-2 flex-1 overflow-y-auto min-h-0 px-4 pb-4">
-            <Label>Изображения по категориям</Label>
-            
+          </div>
+
+          <div style={{ display: activeTab === 'images' ? 'flex' : 'none', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', padding: '8px 16px 16px' }}>
+            <Label className="shrink-0 mb-2">Изображения по категориям</Label>
             {isLoadingImages ? (
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
+            ) : imageCategories.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+                <div className="flex flex-wrap gap-1 shrink-0 mb-2 bg-white/5 rounded-lg p-1">
+                  {imageCategories.map(cat => {
+                    const count = categoryImages.filter(img => img.category_id === cat.id).length;
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => setSelectedImageCategory(cat.id)}
+                        className={`flex-1 min-w-[80px] px-2 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1 ${
+                          selectedImageCategory === cat.id
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-white/50 hover:text-white hover:bg-white/10'
+                        }`}
+                      >
+                        <span className="truncate">{cat.name}</span>
+                        <Badge variant="secondary" className="ml-1 h-4 text-[10px] px-1 shrink-0">{count}</Badge>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+                  {(() => {
+                    const images = categoryImages.filter(img => img.category_id === selectedImageCategory);
+                    return images.length > 0 ? (
+                      <div className="grid grid-cols-3 gap-2 pb-2">
+                        {images.map(image => (
+                          <button key={image.id} onClick={() => addImageElement(image.image_url, 'image')}
+                            className="relative aspect-square rounded-lg overflow-hidden border-2 border-border hover:border-primary/50 transition-all bg-secondary">
+                            <img src={image.image_url} alt={image.name} className="w-full h-full object-contain p-1" />
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-[10px] p-1 text-center">
+                              <div className="font-medium truncate">{image.name}</div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <p className="text-sm">Нет изображений в этой категории</p>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
             ) : (
-              <>
-                {imageCategories.length > 0 && (
-                  <Tabs value={selectedImageCategory?.toString()} onValueChange={(val) => {
-                    const catId = parseInt(val);
-                    setSelectedImageCategory(catId);
-                  }} className="w-full">
-                    <TabsList className="w-full flex-wrap h-auto gap-1">
-                      {imageCategories.map(cat => {
-                        const count = categoryImages.filter(img => img.category_id === cat.id).length;
-                        return (
-                          <TabsTrigger 
-                            key={cat.id} 
-                            value={cat.id.toString()} 
-                            className="text-xs flex-1 min-w-[80px]"
-                          >
-                            <span className="truncate">{cat.name}</span>
-                            <Badge variant="secondary" className="ml-1 h-4 text-[10px] px-1">
-                              {count}
-                            </Badge>
-                          </TabsTrigger>
-                        );
-                      })}
-                    </TabsList>
-                    
-                    {imageCategories.map(cat => {
-                      const images = categoryImages.filter(img => img.category_id === cat.id);
-                      return (
-                        <TabsContent key={cat.id} value={cat.id.toString()} className="mt-3">
-                          {images.length > 0 ? (
-                            <div className="grid grid-cols-3 gap-2">
-                              {images.map(image => (
-                                <button
-                                  key={image.id}
-                                  onClick={() => addImageElement(image.image_url, 'image')}
-                                  className="relative aspect-square rounded-lg overflow-hidden border-2 border-border hover:border-primary/50 transition-all bg-secondary"
-                                >
-                                  <img src={image.image_url} alt={image.name} className="w-full h-full object-contain p-1" />
-                                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-[10px] p-1 text-center">
-                                    <div className="font-medium truncate">{image.name}</div>
-                                  </div>
-                                </button>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center py-8 text-muted-foreground">
-                              <p className="text-sm">Нет изображений в этой категории</p>
-                            </div>
-                          )}
-                        </TabsContent>
-                      );
-                    })}
-                  </Tabs>
-                )}
-                
-                {imageCategories.length === 0 && (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <Icon name="Image" size={48} className="mx-auto mb-4 opacity-20" />
-                    <p className="text-sm font-medium">Нет категорий</p>
-                    <p className="text-xs mt-1">Добавьте категории изображений через админ-панель</p>
-                  </div>
-                )}
-              </>
+              <div className="text-center py-12 text-muted-foreground">
+                <Icon name="Image" size={48} className="mx-auto mb-4 opacity-20" />
+                <p className="text-sm font-medium">Нет категорий</p>
+              </div>
             )}
-          </TabsContent>
-          
-          <TabsContent value="elements" className="mt-0 flex-1 min-h-0 flex flex-col">
+          </div>
+
+          <div style={{ display: activeTab === 'elements' ? 'flex' : 'none', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
             {/* Иконочная панель инструментов в стиле Фотошопа */}
             <div className="flex flex-1 min-h-0">
               {/* Вертикальная панель иконок */}
@@ -572,8 +566,7 @@ export const ConstructorLibrary = ({
                 )}
               </div>
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
     </div>
   );
 };
