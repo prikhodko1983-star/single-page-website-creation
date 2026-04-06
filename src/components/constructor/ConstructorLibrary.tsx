@@ -68,6 +68,18 @@ interface ConstructorLibraryProps {
   loadFlowers: () => void;
 }
 
+type DesktopToolPanel = 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'flower' | null;
+
+const DESKTOP_TOOLS = [
+  { key: 'fio' as DesktopToolPanel, icon: 'User', label: 'ФИО' },
+  { key: 'dates' as DesktopToolPanel, icon: 'Calendar', label: 'Даты' },
+  { key: 'epitaph' as DesktopToolPanel, icon: 'Quote', label: 'Эпитафия' },
+  { key: 'text' as DesktopToolPanel, icon: 'Type', label: 'Текст' },
+  { key: 'photo' as DesktopToolPanel, icon: 'Camera', label: 'Портрет' },
+  { key: 'cross' as DesktopToolPanel, icon: 'Cross', label: 'Крест' },
+  { key: 'flower' as DesktopToolPanel, icon: 'Flower2', label: 'Цветок' },
+];
+
 export const ConstructorLibrary = ({
   defaultTab = 'catalog',
   monumentImage,
@@ -109,6 +121,7 @@ export const ConstructorLibrary = ({
 }: ConstructorLibraryProps) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const [activeToolPanel, setActiveToolPanel] = useState<DesktopToolPanel>(null);
   const [imageCategories, setImageCategories] = useState<Array<{id: number, name: string, slug: string}>>([]);
   const [categoryImages, setCategoryImages] = useState<Array<{id: number, category_id: number, name: string, image_url: string, category_name: string}>>([]);
   const [selectedImageCategory, setSelectedImageCategory] = useState<number | null>(null);
@@ -337,253 +350,223 @@ export const ConstructorLibrary = ({
             )}
           </TabsContent>
           
-          <TabsContent value="elements" className="space-y-3 mt-2 flex-1 overflow-y-auto min-h-0 px-4 pb-4">
-            <div className="space-y-3 p-3 bg-secondary/20 rounded-lg">
-              <Label className="font-semibold">ФИО с выбором шрифта</Label>
-              <Input 
-                placeholder="Фамилия" 
-                value={surname}
-                onChange={(e) => setSurname(e.target.value)}
-              />
-              <Input 
-                placeholder="Имя" 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <Input 
-                placeholder="Отчество" 
-                value={patronymic}
-                onChange={(e) => setPatronymic(e.target.value)}
-              />
-              
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {fonts.map(font => (
+          <TabsContent value="elements" className="mt-0 flex-1 min-h-0 flex flex-col">
+            {/* Иконочная панель инструментов в стиле Фотошопа */}
+            <div className="flex flex-1 min-h-0">
+              {/* Вертикальная панель иконок */}
+              <div className="flex flex-col items-center gap-1 py-2 bg-[#141414] border-r border-white/10 shrink-0" style={{ width: '52px' }}>
+                {DESKTOP_TOOLS.map((tool) => (
                   <button
-                    key={font.id}
-                    onClick={() => setSelectedFont(font.id)}
-                    className={`w-full text-left p-2 rounded border transition-all ${
-                      selectedFont === font.id ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
+                    key={tool.key}
+                    onClick={() => setActiveToolPanel(prev => prev === tool.key ? null : tool.key)}
+                    className={`w-10 h-10 flex flex-col items-center justify-center rounded transition-colors gap-0.5 ${
+                      activeToolPanel === tool.key
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-white/50 hover:text-white hover:bg-white/10'
                     }`}
+                    title={tool.label}
                   >
-                    <div className="text-xs text-muted-foreground">{font.name}</div>
-                    <div 
-                      className="text-base"
-                      style={{ fontFamily: font.style, fontWeight: font.weight }}
-                    >
-                      {font.example}
-                    </div>
+                    <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={17} />
+                    <span className="text-[7px] leading-none">{tool.label}</span>
                   </button>
                 ))}
               </div>
-              
-              <Button 
-                onClick={addFIOElement} 
-                className="w-full"
-                disabled={!surname && !name && !patronymic}
-              >
-                <Icon name="ArrowRight" size={18} className="mr-2" />
-                ДОБАВИТЬ
-              </Button>
-            </div>
-            
-            <div className="space-y-3 p-3 bg-secondary/20 rounded-lg">
-              <Label className="font-semibold">Даты жизни</Label>
-              <Input 
-                placeholder="Дата рождения (01.01.1950)" 
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-              />
-              <Input 
-                placeholder="Дата смерти (01.01.2020)" 
-                value={deathDate}
-                onChange={(e) => setDeathDate(e.target.value)}
-              />
-              
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {fonts.map(font => (
-                  <button
-                    key={font.id}
-                    onClick={() => setSelectedDateFont(font.id)}
-                    className={`w-full text-left p-2 rounded border transition-all ${
-                      selectedDateFont === font.id ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <div className="text-xs text-muted-foreground">{font.name}</div>
-                    <div 
-                      className="text-base"
-                      style={{ fontFamily: font.style, fontWeight: font.weight }}
-                    >
-                      01.01.1950 — 01.01.2020
-                    </div>
-                  </button>
-                ))}
-              </div>
-              
-              <Button 
-                onClick={addDatesElement} 
-                className="w-full"
-                disabled={!birthDate && !deathDate}
-              >
-                <Icon name="Calendar" size={18} className="mr-2" />
-                ДОБАВИТЬ ДАТЫ
-              </Button>
-            </div>
-            
-            <div className="space-y-2 p-3 bg-secondary/20 rounded-lg">
-              <Label className="font-semibold">Портреты</Label>
-              <Tabs defaultValue="male" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="male">Мужские</TabsTrigger>
-                  <TabsTrigger value="female">Женские</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="male" className="mt-3 space-y-2">
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/5be3255b-1f30-4759-8daf-1c364342e4e7.jpg', 'image')}
-                      className="relative overflow-hidden rounded border-2 border-border hover:border-primary transition-all aspect-[3/4] bg-black"
-                    >
-                      <img 
-                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/5be3255b-1f30-4759-8daf-1c364342e4e7.jpg" 
-                        alt="Мужской портрет"
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                    <button
-                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/1a839d6b-b217-4729-bfc9-58961b033575.jpg', 'image')}
-                      className="relative overflow-hidden rounded border-2 border-border hover:border-primary transition-all aspect-[3/4] bg-black"
-                    >
-                      <img 
-                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/1a839d6b-b217-4729-bfc9-58961b033575.jpg" 
-                        alt="Мужской портрет контур"
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="female" className="mt-3 space-y-2">
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/e1a552a7-32c5-4385-99b6-143f6b05e8b7.jpg', 'image')}
-                      className="relative overflow-hidden rounded border-2 border-border hover:border-primary transition-all aspect-[3/4] bg-black"
-                    >
-                      <img 
-                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/e1a552a7-32c5-4385-99b6-143f6b05e8b7.jpg" 
-                        alt="Женский портрет"
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                    <button
-                      onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/81e2b99f-4600-4a07-8bd0-9387efad0f57.jpg', 'image')}
-                      className="relative overflow-hidden rounded border-2 border-border hover:border-primary transition-all aspect-[3/4] bg-black"
-                    >
-                      <img 
-                        src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/81e2b99f-4600-4a07-8bd0-9387efad0f57.jpg" 
-                        alt="Женский портрет контур"
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  </div>
-                </TabsContent>
-              </Tabs>
-              
-              <input 
-                ref={photoInputRef}
-                type="file" 
-                accept="image/*"
-                onChange={handlePhotoUpload}
-                className="hidden"
-                id="photo-upload"
-              />
-              <Button 
-                onClick={() => photoInputRef.current?.click()} 
-                className="w-full mt-3"
-              >
-                <Icon name="Upload" size={18} className="mr-2" />
-                ЗАГРУЗИТЬ СВОЙ ПОРТРЕТ
-              </Button>
-              
-              <div className="mt-2 p-2 bg-muted/30 rounded text-xs text-muted-foreground">
-                <Icon name="Info" size={12} className="inline mr-1" />
-                Добавляйте и редактируйте изображения самостоятельно или <button 
-                  onClick={() => {
-                    navigate('/');
-                    setTimeout(() => {
-                      document.getElementById('retouch')?.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="text-primary hover:underline"
-                >
-                  закажите ретушь и композицию
-                </button> у профессионалов.
-              </div>
-            </div>
-            
-            <Button onClick={addTextElement} variant="outline" className="w-full justify-start">
-              <Icon name="Type" size={18} className="mr-2" />
-              Добавить текст
-            </Button>
-            
-            <div className="space-y-2 p-3 bg-secondary/20 rounded-lg">
-              <Label className="font-semibold">Готовые эпитафии</Label>
-              <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
-                {[
-                  'Помним. Любим. Скорбим.',
-                  'Ты всегда в нашей памяти.',
-                  'Спасибо за все.',
-                  'Вечная память о тебе в сердцах близких.',
-                  'Покойся с миром в Царствии Небесном.',
-                  'Вечная память.',
-                  'Помним, скорбим…',
-                  'Опустела без тебя земля.',
-                  'Любим и помним.',
-                  'Память сильнее смерти.',
-                  'Рождение – не начало, смерть – не конец.',
-                ].map((text, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => addEpitaphElement(text)}
-                    className="w-full text-left p-3 rounded border-2 border-border hover:border-primary transition-all bg-background hover:bg-primary/5"
-                  >
-                    <p className="text-sm italic text-muted-foreground">{text}</p>
-                  </button>
-                ))}
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Выберите готовый текст или добавьте свой. После добавления можно отредактировать.
-              </p>
-            </div>
-            
-            <div className="space-y-2 p-3 bg-secondary/20 rounded-lg">
-              <Label className="font-semibold">Кресты</Label>
-              {isLoadingCrosses ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              ) : crosses.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-2">
-                  {crosses.map((cross) => (
-                    <button 
-                      key={cross.id}
-                      onClick={() => addImageElement(cross.image_url, 'cross')} 
-                      className="aspect-square rounded border-2 border-border hover:border-primary transition-all p-3 bg-background hover:bg-primary/5 flex flex-col"
-                    >
-                      <div className="flex-1 flex items-center justify-center">
-                        <img src={cross.image_url} alt={cross.name} className="w-full h-full object-contain" />
-                      </div>
-                      <div className="text-xs text-center mt-2 text-muted-foreground">{cross.name}</div>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  Кресты не найдены
-                </p>
-              )}
-            </div>
-            
 
+              {/* Панель содержимого инструмента */}
+              <div className="flex-1 overflow-y-auto min-h-0 bg-[#181818]">
+                {!activeToolPanel && (
+                  <div className="flex flex-col items-center justify-center h-full text-white/20 gap-2 p-4 text-center">
+                    <Icon name="MousePointer2" size={32} />
+                    <p className="text-xs">Выберите инструмент</p>
+                  </div>
+                )}
+
+                {/* ФИО */}
+                {activeToolPanel === 'fio' && (
+                  <div className="p-3 space-y-2">
+                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">ФИО</p>
+                    <Input placeholder="Фамилия" value={surname} onChange={(e) => setSurname(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
+                    <Input placeholder="Имя" value={name} onChange={(e) => setName(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
+                    <Input placeholder="Отчество" value={patronymic} onChange={(e) => setPatronymic(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
+                    <p className="text-[10px] text-white/40 pt-1">Шрифт</p>
+                    <div className="grid grid-cols-2 gap-1 max-h-40 overflow-y-auto">
+                      {fonts.map(font => (
+                        <button key={font.id} onClick={() => setSelectedFont(font.id)}
+                          className={`px-2 py-1.5 rounded border text-left transition-all ${selectedFont === font.id ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 hover:border-primary/50 text-white/70'}`}>
+                          <div className="text-[9px] text-white/40 truncate">{font.name}</div>
+                          <div className="text-xs truncate" style={{ fontFamily: font.style, fontWeight: font.weight }}>{font.example.slice(0, 8)}</div>
+                        </button>
+                      ))}
+                    </div>
+                    <Button className="w-full h-8 text-xs mt-1" onClick={() => { addFIOElement(); }} disabled={!surname && !name && !patronymic}>
+                      <Icon name="Plus" size={14} className="mr-1" /> Добавить ФИО
+                    </Button>
+                  </div>
+                )}
+
+                {/* Даты */}
+                {activeToolPanel === 'dates' && (
+                  <div className="p-3 space-y-2">
+                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Даты жизни</p>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] text-white/40">Дата рождения</Label>
+                      <Input placeholder="01.01.1950" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] text-white/40">Дата смерти</Label>
+                      <Input placeholder="01.01.2020" value={deathDate} onChange={(e) => setDeathDate(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
+                    </div>
+                    <p className="text-[10px] text-white/40 pt-1">Шрифт</p>
+                    <div className="grid grid-cols-2 gap-1 max-h-40 overflow-y-auto">
+                      {fonts.map(font => (
+                        <button key={font.id} onClick={() => setSelectedDateFont(font.id)}
+                          className={`px-2 py-1.5 rounded border text-left transition-all ${selectedDateFont === font.id ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 hover:border-primary/50 text-white/70'}`}>
+                          <div className="text-[9px] text-white/40 truncate">{font.name}</div>
+                          <div className="text-xs truncate" style={{ fontFamily: font.style, fontWeight: font.weight }}>01.01—01.01</div>
+                        </button>
+                      ))}
+                    </div>
+                    <Button className="w-full h-8 text-xs mt-1" onClick={() => { addDatesElement(); }} disabled={!birthDate && !deathDate}>
+                      <Icon name="Calendar" size={14} className="mr-1" /> Добавить даты
+                    </Button>
+                  </div>
+                )}
+
+                {/* Эпитафия */}
+                {activeToolPanel === 'epitaph' && (
+                  <div className="p-3 space-y-1">
+                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Эпитафии</p>
+                    {[
+                      'Помним. Любим. Скорбим.',
+                      'Ты всегда в нашей памяти.',
+                      'Спасибо за все.',
+                      'Вечная память о тебе в сердцах близких.',
+                      'Покойся с миром в Царствии Небесном.',
+                      'Вечная память.',
+                      'Помним, скорбим…',
+                      'Опустела без тебя земля.',
+                      'Любим и помним.',
+                      'Память сильнее смерти.',
+                      'Рождение – не начало, смерть – не конец.',
+                    ].map((text, idx) => (
+                      <button key={idx} onClick={() => addEpitaphElement(text)}
+                        className="w-full text-left px-2 py-2 rounded border border-white/10 hover:border-primary transition-all bg-white/5 hover:bg-primary/10">
+                        <p className="text-xs italic text-white/70">{text}</p>
+                      </button>
+                    ))}
+                    <p className="text-[10px] text-white/30 pt-1">После добавления можно отредактировать</p>
+                  </div>
+                )}
+
+                {/* Текст */}
+                {activeToolPanel === 'text' && (
+                  <div className="p-3 space-y-2 flex flex-col items-center justify-center h-full">
+                    <Icon name="Type" size={36} className="text-white/20 mb-2" />
+                    <p className="text-xs text-white/50 text-center">Добавить произвольный текстовый блок на холст</p>
+                    <Button className="w-full h-8 text-xs mt-2" onClick={() => { addTextElement(); }}>
+                      <Icon name="Plus" size={14} className="mr-1" /> Добавить текст
+                    </Button>
+                  </div>
+                )}
+
+                {/* Портрет */}
+                {activeToolPanel === 'photo' && (
+                  <div className="p-3 space-y-2">
+                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Портреты</p>
+                    <Tabs defaultValue="male" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2 h-7 bg-white/5">
+                        <TabsTrigger value="male" className="text-xs">Мужские</TabsTrigger>
+                        <TabsTrigger value="female" className="text-xs">Женские</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="male" className="mt-2">
+                        <div className="grid grid-cols-2 gap-1.5">
+                          <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/5be3255b-1f30-4759-8daf-1c364342e4e7.jpg', 'image')}
+                            className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
+                            <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/5be3255b-1f30-4759-8daf-1c364342e4e7.jpg" alt="Мужской портрет" className="w-full h-full object-cover" />
+                          </button>
+                          <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/1a839d6b-b217-4729-bfc9-58961b033575.jpg', 'image')}
+                            className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
+                            <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/1a839d6b-b217-4729-bfc9-58961b033575.jpg" alt="Мужской портрет контур" className="w-full h-full object-cover" />
+                          </button>
+                        </div>
+                      </TabsContent>
+                      <TabsContent value="female" className="mt-2">
+                        <div className="grid grid-cols-2 gap-1.5">
+                          <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/e1a552a7-32c5-4385-99b6-143f6b05e8b7.jpg', 'image')}
+                            className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
+                            <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/e1a552a7-32c5-4385-99b6-143f6b05e8b7.jpg" alt="Женский портрет" className="w-full h-full object-cover" />
+                          </button>
+                          <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/81e2b99f-4600-4a07-8bd0-9387efad0f57.jpg', 'image')}
+                            className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
+                            <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/81e2b99f-4600-4a07-8bd0-9387efad0f57.jpg" alt="Женский портрет контур" className="w-full h-full object-cover" />
+                          </button>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                    <input ref={photoInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" id="photo-upload" />
+                    <Button onClick={() => photoInputRef.current?.click()} className="w-full h-8 text-xs mt-2">
+                      <Icon name="Upload" size={14} className="mr-1" /> Загрузить свой портрет
+                    </Button>
+                    <div className="mt-1 p-2 bg-white/5 rounded text-[10px] text-white/30">
+                      <Icon name="Info" size={10} className="inline mr-1" />
+                      Или <button onClick={() => { navigate('/'); setTimeout(() => document.getElementById('retouch')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="text-primary hover:underline">закажите ретушь</button> у профессионалов.
+                    </div>
+                  </div>
+                )}
+
+                {/* Крест */}
+                {activeToolPanel === 'cross' && (
+                  <div className="p-3 space-y-2">
+                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Кресты</p>
+                    {isLoadingCrosses ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+                      </div>
+                    ) : crosses.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {crosses.map((cross) => (
+                          <button key={cross.id} onClick={() => addImageElement(cross.image_url, 'cross')}
+                            className="aspect-square rounded border border-white/10 hover:border-primary transition-all p-2 bg-white/5 hover:bg-primary/10 flex flex-col">
+                            <div className="flex-1 flex items-center justify-center">
+                              <img src={cross.image_url} alt={cross.name} className="w-full h-full object-contain" />
+                            </div>
+                            <div className="text-[9px] text-center mt-1 text-white/40 truncate">{cross.name}</div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-white/30 text-center py-4">Кресты не найдены</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Цветок */}
+                {activeToolPanel === 'flower' && (
+                  <div className="p-3 space-y-2">
+                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Цветы</p>
+                    {isLoadingFlowers ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+                      </div>
+                    ) : flowers.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {flowers.map((flower) => (
+                          <button key={flower.id} onClick={() => addImageElement(flower.image_url, 'flower')}
+                            className="aspect-square rounded border border-white/10 hover:border-primary transition-all p-2 bg-white/5 hover:bg-primary/10 flex flex-col">
+                            <div className="flex-1 flex items-center justify-center">
+                              <img src={flower.image_url} alt={flower.name} className="w-full h-full object-contain" />
+                            </div>
+                            <div className="text-[9px] text-center mt-1 text-white/40 truncate">{flower.name}</div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-white/30 text-center py-4">Цветы не найдены</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
     </div>
