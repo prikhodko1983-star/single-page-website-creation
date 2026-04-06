@@ -25,13 +25,13 @@ const Header = () => {
               <Icon name="Phone" size={18} />
               8 (996) 068-11-68
             </a>
-            <a href="https://wa.me/79960681168" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-lg transition-colors">
+            <a href="https://wa.me/79960681168" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-lg transition-colors">
               <Icon name="MessageCircle" size={18} />
             </a>
-            <a href="https://t.me/79960681168" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors">
+            <a href="https://t.me/79960681168" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors">
               <Icon name="Send" size={18} />
             </a>
-            <a href="https://max.ru/im?phone=89960681168" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-gradient-to-br from-[#4B8EF5] via-[#5B5BD6] to-[#9B3FC8] hover:opacity-80 transition-opacity" title="Написать в Max">
+            <a href="https://max.ru/im?phone=89960681168" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#4B8EF5] via-[#5B5BD6] to-[#9B3FC8] hover:opacity-80 transition-opacity" title="Написать в Max">
               <MaxIcon size={18} />
             </a>
           </div>
