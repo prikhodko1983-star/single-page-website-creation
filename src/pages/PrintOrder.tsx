@@ -21,6 +21,13 @@ interface ArtRow {
   sum: string;
 }
 
+interface ExtraBlock {
+  id: string;
+  type: "text" | "image";
+  content: string;
+  label: string;
+}
+
 const I = (props: React.InputHTMLAttributes<HTMLInputElement> & { bold?: boolean; ital?: boolean }) => {
   const { bold, ital, className, style, ...rest } = props;
   return (
@@ -51,6 +58,9 @@ const PrintOrder = () => {
   const [advanceAccepted, setAdvanceAccepted] = useState("");
   const [orderAccepted, setOrderAccepted] = useState("");
   const [sketchImage, setSketchImage] = useState<string | null>(null);
+  const [showExtraSheet, setShowExtraSheet] = useState(false);
+  const [extraBlocks, setExtraBlocks] = useState<ExtraBlock[]>([]);
+  const extraSheetRef = useRef<HTMLDivElement>(null);
 
   const [stoneRows, setStoneRows] = useState<StoneRow[]>([
     { name: "Памятник (название)", bold: true, size: "", sum: "" },
@@ -122,10 +132,67 @@ const PrintOrder = () => {
     reader.readAsDataURL(file);
   };
 
+  const addExtraBlock = (type: "text" | "image") => {
+    const id = Date.now().toString();
+    setExtraBlocks((prev) => [
+      ...prev,
+      { id, type, content: "", label: type === "text" ? "Текстовый блок" : "Изображение" },
+    ]);
+    setShowExtraSheet(true);
+  };
+
+  const updateExtraBlock = (id: string, field: keyof ExtraBlock, value: string) => {
+    setExtraBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, [field]: value } : b)));
+  };
+
+  const removeExtraBlock = (id: string) => {
+    setExtraBlocks((prev) => prev.filter((b) => b.id !== id));
+  };
+
+  const handleExtraImageUpload = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => updateExtraBlock(id, "content", reader.result as string);
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleSaveExtraPdf = async () => {
+    if (!extraSheetRef.current) return;
+    setIsSavingPdf(true);
+    try {
+      const canvas = await html2canvas(extraSheetRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = pdf.internal.pageSize.getHeight();
+      const imgH = (canvas.height * pdfW) / canvas.width;
+      if (imgH <= pdfH) {
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfW, imgH);
+      } else {
+        let yOffset = 0;
+        while (yOffset < canvas.height) {
+          const sliceH = Math.min((pdfH / pdfW) * canvas.width, canvas.height - yOffset);
+          const sliceCanvas = document.createElement("canvas");
+          sliceCanvas.width = canvas.width;
+          sliceCanvas.height = sliceH;
+          sliceCanvas.getContext("2d")!.drawImage(canvas, 0, -yOffset);
+          pdf.addImage(sliceCanvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, pdfW, (sliceH * pdfW) / canvas.width);
+          yOffset += sliceH;
+          if (yOffset < canvas.height) pdf.addPage();
+        }
+      }
+      pdf.save(`Заказ_${orderNumber || "новый"}_доп.pdf`);
+    } finally {
+      setIsSavingPdf(false);
+    }
+  };
+
   const getFormData = () => ({
     orderNumber, masterName, orderDate, customerName, phone, address,
     discount, deadline, advance, advanceAccepted, orderAccepted,
-    sketchImage, stoneRows, artRows,
+    sketchImage, stoneRows, artRows, extraBlocks,
   });
 
   const handleSavePdf = async () => {
@@ -193,6 +260,7 @@ const PrintOrder = () => {
         if (data.sketchImage !== undefined) setSketchImage(data.sketchImage);
         if (data.stoneRows !== undefined) setStoneRows(data.stoneRows);
         if (data.artRows !== undefined) setArtRows(data.artRows);
+        if (data.extraBlocks !== undefined) { setExtraBlocks(data.extraBlocks); if (data.extraBlocks.length > 0) setShowExtraSheet(true); }
       } catch (err) {
         console.error("Ошибка загрузки файла", err);
       }
@@ -237,6 +305,27 @@ const PrintOrder = () => {
           <Icon name="Printer" size={13} className="mr-1" />
           Печать
         </Button>
+        <div className="w-px h-5 bg-gray-200 mx-1" />
+        <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={() => addExtraBlock("text")}>
+          <Icon name="AlignLeft" size={13} className="mr-1" />
+          + Текст
+        </Button>
+        <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={() => addExtraBlock("image")}>
+          <Icon name="Image" size={13} className="mr-1" />
+          + Фото
+        </Button>
+        {extraBlocks.length > 0 && (
+          <>
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => setShowExtraSheet((v) => !v)}>
+              <Icon name={showExtraSheet ? "ChevronUp" : "ChevronDown"} size={13} className="mr-1" />
+              Доп. лист ({extraBlocks.length})
+            </Button>
+            <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={handleSaveExtraPdf} disabled={isSavingPdf}>
+              <Icon name="FileDown" size={13} className="mr-1" />
+              PDF доп.
+            </Button>
+          </>
+        )}
       </div>
 
       {/* A4 Form */}
@@ -392,6 +481,71 @@ const PrintOrder = () => {
         </div>
       </div>
 
+      {/* Дополнительный лист */}
+      {showExtraSheet && extraBlocks.length > 0 && (
+        <div className="po-sheet po-extra-sheet" ref={extraSheetRef}>
+          <div className="po-center" style={{ marginBottom: 12 }}>
+            <span className="po-title">Доп. лист к заказу №</span>
+            <span className="po-title" style={{ marginLeft: 4 }}>{orderNumber || "___"}</span>
+          </div>
+          <div className="po-field" style={{ marginBottom: 12, fontSize: "inherit" }}>
+            <b>Заказчик:</b> <span style={{ marginLeft: 6 }}>{customerName || "___"}</span>
+          </div>
+
+          <div className="po-extra-blocks">
+            {extraBlocks.map((block) => (
+              <div key={block.id} className="po-extra-block">
+                <div className="po-extra-block-header print:hidden">
+                  <input
+                    className="po-i po-extra-label"
+                    value={block.label}
+                    onChange={(e) => updateExtraBlock(block.id, "label", e.target.value)}
+                    placeholder="Подпись блока"
+                  />
+                  <button className="po-extra-remove" onClick={() => removeExtraBlock(block.id)}>×</button>
+                </div>
+                <div className="po-extra-label-print print:block hidden">{block.label}</div>
+
+                {block.type === "text" ? (
+                  <textarea
+                    className="po-extra-textarea print:hidden"
+                    value={block.content}
+                    onChange={(e) => updateExtraBlock(block.id, "content", e.target.value)}
+                    placeholder="Введите текст / информацию..."
+                    rows={5}
+                  />
+                ) : (
+                  <div className="po-extra-img-wrap">
+                    {block.content ? (
+                      <img src={block.content} alt={block.label} className="po-extra-img" />
+                    ) : (
+                      <label className="po-extra-img-placeholder print:hidden">
+                        <Icon name="Upload" size={24} />
+                        <span>Загрузить изображение</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleExtraImageUpload(block.id, e)} />
+                      </label>
+                    )}
+                    {block.content && (
+                      <button className="po-extra-img-remove print:hidden" onClick={() => updateExtraBlock(block.id, "content", "")}>
+                        <Icon name="X" size={14} />
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {block.type === "text" && block.content && (
+                  <div className="po-extra-text-print print:block hidden" style={{ whiteSpace: "pre-wrap" }}>{block.content}</div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="po-footer" style={{ marginTop: 16 }}>
+            <div style={{ fontWeight: 700 }}>+7 (996) 068-11-68</div>
+          </div>
+        </div>
+      )}
+
       <style>{`
         .po-page {
           min-height: 100vh;
@@ -538,6 +692,98 @@ const PrintOrder = () => {
           padding: 3px;
         }
 
+        /* Extra sheet */
+        .po-extra-sheet {
+          margin-top: 24px;
+        }
+        .po-extra-blocks {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .po-extra-block {
+          border: 1px solid #000;
+          padding: 8px 10px;
+          page-break-inside: avoid;
+        }
+        .po-extra-block-header {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-bottom: 6px;
+        }
+        .po-extra-label {
+          flex: 1;
+          font-weight: 700;
+          font-size: inherit;
+          width: auto !important;
+        }
+        .po-extra-label-print {
+          font-weight: 700;
+          margin-bottom: 6px;
+        }
+        .po-extra-remove {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #999;
+          font-size: 18px;
+          line-height: 1;
+          padding: 0 4px;
+        }
+        .po-extra-remove:hover { color: #e00; }
+        .po-extra-textarea {
+          width: 100%;
+          border: 1px solid #ccc;
+          font-family: inherit;
+          font-size: inherit;
+          padding: 4px 6px;
+          resize: vertical;
+          outline: none;
+          box-sizing: border-box;
+        }
+        .po-extra-textarea:focus { border-color: #2563eb; }
+        .po-extra-text-print { padding: 2px 0; }
+        .po-extra-img-wrap {
+          position: relative;
+          min-height: 120px;
+          border: 1px dashed #ccc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .po-extra-img {
+          max-width: 100%;
+          max-height: 400px;
+          object-fit: contain;
+          display: block;
+          margin: 0 auto;
+        }
+        .po-extra-img-placeholder {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          color: #999;
+          padding: 24px;
+          font-size: clamp(10px, 1.6vw, 13px);
+        }
+        .po-extra-img-placeholder:hover { color: #2563eb; }
+        .po-extra-img-remove {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          background: white;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          cursor: pointer;
+          padding: 2px 4px;
+          display: flex;
+          align-items: center;
+        }
+        .po-extra-img-remove:hover { border-color: #e00; color: #e00; }
+
         /* Print */
         @media print {
           .po-page { background: white; }
@@ -565,6 +811,14 @@ const PrintOrder = () => {
           }
           .po-i::placeholder { color: transparent !important; }
           @page { size: A4; margin: 0; }
+          .po-extra-sheet { margin-top: 0; page-break-before: always; }
+          .po-extra-block { page-break-inside: avoid; }
+          .po-extra-textarea { display: none !important; }
+          .po-extra-text-print { display: block !important; }
+          .po-extra-label-print { display: block !important; }
+          .po-extra-block-header { display: none !important; }
+          .po-extra-img-placeholder { display: none !important; }
+          .po-extra-img-remove { display: none !important; }
         }
       `}</style>
     </div>
