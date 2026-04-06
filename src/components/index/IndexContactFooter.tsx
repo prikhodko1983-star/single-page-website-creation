@@ -108,12 +108,12 @@ export default function IndexContactFooter({
                     </a>
                     <div className="text-sm text-muted-foreground">Звоните ежедневно с 9:00 до 20:00</div>
                     
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <a 
                         href="https://wa.me/79960681168" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 px-4 py-2 min-w-[130px] bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-lg transition-colors"
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-lg transition-colors"
                         onClick={() => {
                           if (window.dataLayer) {
                             window.dataLayer.push({
@@ -123,14 +123,14 @@ export default function IndexContactFooter({
                           }
                         }}
                       >
-                        <Icon name="MessageCircle" size={20} />
+                        <Icon name="MessageCircle" size={16} />
                         <span className="font-medium">WhatsApp</span>
                       </a>
                       <a 
                         href="https://t.me/79960681168" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 px-4 py-2 min-w-[130px] bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors"
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors"
                         onClick={() => {
                           if (window.dataLayer) {
                             window.dataLayer.push({
@@ -140,14 +140,14 @@ export default function IndexContactFooter({
                           }
                         }}
                       >
-                        <Icon name="Send" size={20} />
+                        <Icon name="Send" size={16} />
                         <span className="font-medium">Telegram</span>
                       </a>
                       <a 
                         href="https://max.ru/im?phone=89960681168" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 px-4 py-2 min-w-[130px] bg-gradient-to-br from-[#6B7FFF] to-[#8B3FC8] hover:opacity-90 text-white rounded-lg transition-opacity"
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm bg-gradient-to-br from-[#6B7FFF] to-[#8B3FC8] hover:opacity-90 text-white rounded-lg transition-opacity"
                         onClick={() => {
                           if (window.dataLayer) {
                             window.dataLayer.push({
@@ -157,7 +157,7 @@ export default function IndexContactFooter({
                           }
                         }}
                       >
-                        <MaxIcon size={20} />
+                        <MaxIcon size={16} />
                         <span className="font-medium">Max</span>
                       </a>
                     </div>
