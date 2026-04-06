@@ -329,9 +329,9 @@ export const MobileElementsToolbar = ({
                   {fonts.map((font) => (
                     <button
                       key={font.id}
-                      onClick={() => setMobileCustomTextFont(font.id)}
+                      onClick={() => setMobileCustomTextFont(font.fullStyle)}
                       className={`px-2 py-1.5 rounded border text-left transition-all ${
-                        mobileCustomTextFont === font.id
+                        mobileCustomTextFont === font.fullStyle
                           ? 'border-primary bg-primary/10 text-primary'
                           : 'border-white/10 hover:border-primary/50 text-white/70'
                       }`}
