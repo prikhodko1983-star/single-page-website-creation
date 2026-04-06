@@ -302,7 +302,7 @@ const Constructor = () => {
     }))
   ];
 
-  const addTextElement = () => {
+  const addTextElement = (customText?: string, customFont?: string) => {
     const newElement: CanvasElement = {
       id: Date.now().toString(),
       type: 'text',
@@ -310,11 +310,12 @@ const Constructor = () => {
       y: 50,
       width: 200,
       height: 40,
-      content: 'Текст',
+      content: customText || 'Текст',
       fontSize: 24,
       color: '#FFFFFF',
       rotation: 0,
       autoSize: true,
+      fontFamily: customFont,
     };
     setElements(prev => [...prev, newElement]);
   };

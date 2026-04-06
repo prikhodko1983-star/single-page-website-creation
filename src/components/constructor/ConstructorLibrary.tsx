@@ -32,7 +32,7 @@ interface ConstructorLibraryProps {
   defaultTab?: string;
   monumentImage: string;
   setMonumentImage: (src: string) => void;
-  addTextElement: () => void;
+  addTextElement: (customText?: string, customFont?: string) => void;
   addEpitaphElement: (customText?: string) => void;
   addImageElement: (src: string, type: 'image' | 'cross' | 'flower') => void;
   addFIOElement: () => void;
@@ -126,6 +126,8 @@ export const ConstructorLibrary = ({
   const [categoryImages, setCategoryImages] = useState<Array<{id: number, category_id: number, name: string, image_url: string, category_name: string}>>([]);
   const [selectedImageCategory, setSelectedImageCategory] = useState<number | null>(null);
   const [isLoadingImages, setIsLoadingImages] = useState(false);
+  const [customText, setCustomText] = useState('');
+  const [customTextFont, setCustomTextFont] = useState('');
 
   useEffect(() => {
     if (defaultTab) setActiveTab(defaultTab);
@@ -459,10 +461,29 @@ export const ConstructorLibrary = ({
 
                 {/* Текст */}
                 {activeToolPanel === 'text' && (
-                  <div className="p-3 space-y-2 flex flex-col items-center justify-center h-full">
-                    <Icon name="Type" size={36} className="text-white/20 mb-2" />
-                    <p className="text-xs text-white/50 text-center">Добавить произвольный текстовый блок на холст</p>
-                    <Button className="w-full h-8 text-xs mt-2" onClick={() => { addTextElement(); }}>
+                  <div className="p-3 space-y-3">
+                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider">Текст</p>
+                    <textarea
+                      placeholder="Введите текст..."
+                      value={customText}
+                      onChange={(e) => setCustomText(e.target.value)}
+                      rows={4}
+                      className="w-full bg-white/5 border border-white/10 rounded text-white placeholder:text-white/30 text-sm p-2 resize-none focus:outline-none focus:border-primary"
+                    />
+                    <p className="text-[10px] text-white/40">Шрифт</p>
+                    <div className="grid grid-cols-2 gap-1 max-h-36 overflow-y-auto">
+                      {fonts.map(font => (
+                        <button key={font.id} onClick={() => setCustomTextFont(font.id)}
+                          className={`px-2 py-1.5 rounded border text-left transition-all ${customTextFont === font.id ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 hover:border-primary/50 text-white/70'}`}>
+                          <div className="text-[9px] text-white/40 truncate">{font.name}</div>
+                          <div className="text-xs truncate" style={{ fontFamily: font.style, fontWeight: font.weight }}>{font.example.slice(0, 8)}</div>
+                        </button>
+                      ))}
+                    </div>
+                    <Button className="w-full h-8 text-xs" onClick={() => {
+                      addTextElement(customText || undefined, customTextFont || undefined);
+                      setCustomText('');
+                    }}>
                       <Icon name="Plus" size={14} className="mr-1" /> Добавить текст
                     </Button>
                   </div>

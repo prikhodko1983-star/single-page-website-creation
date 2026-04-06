@@ -22,7 +22,7 @@ interface CanvasElement {
 }
 
 interface MobileElementsToolbarProps {
-  addTextElement: () => void;
+  addTextElement: (customText?: string, customFont?: string) => void;
   addEpitaphElement: (customText?: string) => void;
   addFIOElement: () => void;
   addDatesElement: () => void;
@@ -91,6 +91,8 @@ export const MobileElementsToolbar = ({
   addImageElement,
 }: MobileElementsToolbarProps) => {
   const [activePanel, setActivePanel] = useState<ToolPanel>(null);
+  const [mobileCustomText, setMobileCustomText] = useState('');
+  const [mobileCustomTextFont, setMobileCustomTextFont] = useState('');
 
   const toggle = (key: ToolPanel) => {
     setActivePanel(prev => prev === key ? null : key);
@@ -314,10 +316,41 @@ export const MobileElementsToolbar = ({
                   <Icon name="X" size={16} />
                 </button>
               </div>
-              <p className="text-xs text-white/40">Добавляет произвольный текстовый блок на памятник</p>
+              <textarea
+                placeholder="Введите текст..."
+                value={mobileCustomText}
+                onChange={(e) => setMobileCustomText(e.target.value)}
+                rows={3}
+                className="w-full bg-white/5 border border-white/10 rounded text-white placeholder:text-white/30 text-sm p-2 resize-none focus:outline-none focus:border-primary"
+              />
+              <div className="space-y-1">
+                <Label className="text-xs text-white/50">Шрифт</Label>
+                <div className="grid grid-cols-3 gap-1.5 max-h-28 overflow-y-auto">
+                  {fonts.map((font) => (
+                    <button
+                      key={font.id}
+                      onClick={() => setMobileCustomTextFont(font.id)}
+                      className={`px-2 py-1.5 rounded border text-left transition-all ${
+                        mobileCustomTextFont === font.id
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-white/10 hover:border-primary/50 text-white/70'
+                      }`}
+                    >
+                      <div className="text-[9px] text-white/40 truncate">{font.name}</div>
+                      <div className="text-xs truncate" style={{ fontFamily: font.style, fontWeight: font.weight }}>
+                        {font.example.slice(0, 8)}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
               <Button
                 className="w-full"
-                onClick={() => { addTextElement(); close(); }}
+                onClick={() => {
+                  addTextElement(mobileCustomText || undefined, mobileCustomTextFont || undefined);
+                  setMobileCustomText('');
+                  close();
+                }}
               >
                 <Icon name="Plus" size={16} className="mr-2" />
                 Добавить текст
