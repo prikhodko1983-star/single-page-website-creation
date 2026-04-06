@@ -190,7 +190,7 @@ export const ConstructorLibrary = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#181818', color: 'white' }}>
-          <div className="px-3 pt-3 pb-2 border-b border-white/10">
+          <div className="hidden lg:block px-3 pt-3 pb-2 border-b border-white/10">
             <p className="text-[10px] font-semibold text-white/40 uppercase tracking-widest mb-2">Библиотека</p>
             <div className="grid grid-cols-3 bg-white/5 h-8 rounded-md p-0.5 gap-0.5">
               {(['catalog', 'images', 'elements'] as const).map((tab) => (
