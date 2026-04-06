@@ -201,7 +201,7 @@ export const ConstructorLibrary = ({
           </div>
           
           <TabsContent value="catalog" className="mt-2 flex-1 min-h-0 flex flex-col px-3 pb-4">
-            <Label className="shrink-0 mb-2">Памятники из каталога магазина</Label>
+            <Label className="mb-2 shrink-0">Памятники из каталога магазина</Label>
             
             {isLoadingCatalog ? (
               <div className="flex items-center justify-center py-8">
