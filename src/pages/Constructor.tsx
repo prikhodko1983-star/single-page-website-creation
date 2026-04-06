@@ -2654,7 +2654,7 @@ const Constructor = () => {
       {/* Мобильная панель категорий (только мобайл) — fixed чтобы не сжимать canvas */}
       <div className="lg:hidden fixed top-12 left-12 right-0 bg-[#181818] border-b border-white/10 flex items-stretch h-14 z-30">
         {[
-          { key: 'catalog', label: 'Каталог', icon: 'LayoutGrid' },
+          { key: 'catalog', label: 'Каталог памятников', icon: 'LayoutGrid' },
           { key: 'images', label: 'Каталог изображений', icon: 'Image' },
         ].map((tab) => (
           <button
