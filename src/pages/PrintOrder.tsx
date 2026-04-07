@@ -375,9 +375,9 @@ const PrintOrder = () => {
               </tbody>
             </table>
 
-            <div style={{ marginTop: 3, marginBottom: 4 }}>
+            <div style={{ marginTop: 3, marginBottom: 4, fontSize: "1.25em" }}>
               <b>Итого:</b>
-              <span className="po-underline" style={{ minWidth: "30%", marginLeft: 8 }}>
+              <span className="po-underline" style={{ minWidth: "30%", marginLeft: 8, fontWeight: "bold" }}>
                 {stoneTotal > 0 ? stoneTotal.toLocaleString("ru-RU") : ""}
               </span>
             </div>
