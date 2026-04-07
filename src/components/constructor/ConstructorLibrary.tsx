@@ -508,7 +508,7 @@ export const ConstructorLibrary = ({
                 {activeToolPanel === 'photo' && (
                   <div className="p-3 space-y-2">
                     <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Портреты</p>
-                    <Tabs defaultValue="male" className="w-full">
+                    <Tabs defaultValue="female" className="w-full">
                       <TabsList className="grid w-full grid-cols-2 h-7 bg-white/5">
                         <TabsTrigger value="male" className="text-xs">Мужские</TabsTrigger>
                         <TabsTrigger value="female" className="text-xs">Женские</TabsTrigger>
