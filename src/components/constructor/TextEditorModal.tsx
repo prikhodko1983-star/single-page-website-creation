@@ -128,7 +128,7 @@ export const TextEditorModal = ({
                   className="w-full h-full min-h-[170px] sm:min-h-[250px] resize-none bg-transparent border-none outline-none"
                   placeholder="Введите текст..."
                   style={{
-                    fontSize: `${Math.max(editingElement.fontSize || 24, 28)}px`,
+                    fontSize: `${editingElement.fontSize || 24}px`,
                     color: editingElement.color || '#FFFFFF',
                     fontFamily: editingElement.fontFamily?.split('|')[0] || 'serif',
                     fontWeight: editingElement.fontFamily?.split('|')[1] || '400',
@@ -138,7 +138,8 @@ export const TextEditorModal = ({
                     textAlign: editingElement.textAlign || 'center',
                     textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                     whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
+                    wordBreak: 'keep-all',
+                    overflowWrap: 'normal',
                     touchAction: 'manipulation',
                   }}
                 />
