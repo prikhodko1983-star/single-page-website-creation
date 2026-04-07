@@ -119,7 +119,17 @@ export const MobileElementsToolbar = ({
             }`}
             title={tool.label}
           >
-            <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={18} />
+            {tool.key === 'cross' ? (
+              <svg width="18" height="18" viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+                <rect x="42" y="0" width="16" height="160" fill="currentColor"/>
+                <rect x="15" y="28" width="70" height="14" fill="currentColor"/>
+                <rect x="20" y="55" width="60" height="12" fill="currentColor"/>
+                <rect x="55" y="110" width="35" height="10" transform="rotate(-20 55 110)" fill="currentColor"/>
+                <rect x="10" y="118" width="35" height="10" transform="rotate(-20 10 118)" fill="currentColor"/>
+              </svg>
+            ) : (
+              <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={18} />
+            )}
             <span className="text-[7px] leading-none">{tool.label}</span>
           </button>
         ))}
