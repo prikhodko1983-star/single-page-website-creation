@@ -193,7 +193,7 @@ export const ConstructorCanvas = ({
             onMouseDown={(e) => handleMouseDown(e, element.id)}
             onTouchStart={(e) => handleTouchStart(e, element.id)}
             onClick={() => handleSingleClick(element.id)}
-            onDoubleClick={() => handleDoubleClick(element.id)}
+            onDoubleClick={(e) => { e.stopPropagation(); handleDoubleClick(element.id); }}
           >
             {element.type === 'text' && (
               <div 

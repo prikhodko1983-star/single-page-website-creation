@@ -2840,6 +2840,8 @@ const Constructor = () => {
             updateElement(editingElement.id, updates);
             setIsTextEditorOpen(false);
             setEditingElement(null);
+            setCanvasZoom(1);
+            setCanvasPan({ x: 0, y: 0 });
           }
         }}
         fonts={fonts}
