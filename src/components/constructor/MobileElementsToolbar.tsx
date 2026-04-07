@@ -120,15 +120,16 @@ export const MobileElementsToolbar = ({
             title={tool.label}
           >
             {tool.key === 'cross' ? (
-              <svg width="18" height="18" viewBox="0 0 80 140" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 90 160" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
                 {/* Вертикальная стойка */}
-                <rect x="34" y="0" width="12" height="140" fill="currentColor"/>
-                {/* Верхняя короткая перекладина */}
-                <rect x="22" y="12" width="36" height="11" fill="currentColor"/>
+                <rect x="38" y="0" width="14" height="160" fill="currentColor"/>
+                {/* Верхняя перекладина (квадратная, короткая) */}
+                <rect x="28" y="8" width="34" height="14" fill="currentColor"/>
                 {/* Средняя длинная перекладина */}
-                <rect x="2" y="42" width="76" height="13" fill="currentColor"/>
-                {/* Нижняя косая перекладина (левый конец выше) */}
-                <polygon points="4,95 4,107 76,118 76,106" fill="currentColor"/>
+                <rect x="0" y="44" width="90" height="14" fill="currentColor"/>
+                {/* Нижняя косая: левый конец выше, правый ниже, с выступами */}
+                <polygon points="10,98 10,112 38,118 38,106" fill="currentColor"/>
+                <polygon points="52,106 52,118 80,112 80,98" fill="currentColor"/>
               </svg>
             ) : (
               <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={18} />
