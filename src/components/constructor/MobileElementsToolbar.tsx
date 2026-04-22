@@ -536,17 +536,17 @@ export const MobileElementsToolbar = ({
                   </div>
                   <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto pb-2">
                     {categoryImages.filter(img => img.category_id === selectedImageCategory).map(image => (
-                      <button
-                        key={image.id}
-                        onClick={() => { addImageElement(image.image_url, 'image'); close(); }}
-                        className="relative rounded border-2 border-white/10 hover:border-primary transition-all bg-white/5 hover:bg-primary/5 overflow-hidden"
-                        style={{ aspectRatio: '1/1' }}
-                      >
-                        <img src={image.image_url} alt={image.name} className="absolute inset-0 w-full h-full object-contain p-1" />
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-[9px] px-1 py-0.5 text-center truncate">
-                          {image.name}
-                        </div>
-                      </button>
+                      <div key={image.id} style={{ height: '90px', position: 'relative' }}>
+                        <button
+                          onClick={() => { addImageElement(image.image_url, 'image'); close(); }}
+                          className="absolute inset-0 rounded border-2 border-white/10 hover:border-primary transition-all bg-white/5 hover:bg-primary/5 overflow-hidden w-full h-full"
+                        >
+                          <img src={image.image_url} alt={image.name} className="absolute inset-0 w-full h-full object-cover" />
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-[9px] px-1 py-0.5 text-center truncate">
+                            {image.name}
+                          </div>
+                        </button>
+                      </div>
                     ))}
                     {categoryImages.filter(img => img.category_id === selectedImageCategory).length === 0 && (
                       <p className="col-span-3 text-sm text-white/40 text-center py-6">Нет изображений</p>
