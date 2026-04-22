@@ -136,7 +136,7 @@ export const MobileElementsToolbar = ({
   return (
     <>
       {/* Вертикальная панель иконок слева */}
-      <div className="lg:hidden fixed left-0 z-50 flex flex-col items-center gap-1 py-2 bg-[#1a1a1a] border-r border-white/10 shadow-lg"
+      <div className="lg:hidden fixed left-0 z-40 flex flex-col items-center gap-1 py-2 bg-[#1a1a1a] border-r border-white/10 shadow-lg"
         style={{ top: '104px', bottom: '40px', width: '48px' }}
       >
         {TOOLS.map((tool) => (
@@ -181,7 +181,7 @@ export const MobileElementsToolbar = ({
 
       {/* Bottom sheet панель */}
       {activePanel && (
-        <div className="lg:hidden fixed left-0 right-0 bottom-10 z-50 bg-[#1e1e1e] border-t border-white/10 rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto">
+        <div className="lg:hidden fixed left-0 right-0 bottom-10 z-50 bg-[#1e1e1e] border-t border-white/10 rounded-t-2xl shadow-2xl max-h-[65vh] overflow-y-auto">
           {/* Хэндл */}
           <div className="flex items-center justify-center pt-3 pb-1">
             <div className="w-10 h-1 rounded-full bg-white/20" />
@@ -541,7 +541,7 @@ export const MobileElementsToolbar = ({
                           onClick={() => { addImageElement(image.image_url, 'image'); close(); }}
                           className="absolute inset-0 rounded border-2 border-white/10 hover:border-primary transition-all bg-white/5 hover:bg-primary/5 overflow-hidden w-full h-full"
                         >
-                          <img src={image.image_url} alt={image.name} className="absolute inset-0 w-full h-full object-contain p-1" />
+                          <img src={image.image_url} alt={image.name} className="absolute inset-0 w-full h-full object-cover" />
                           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-[9px] px-1 py-0.5 text-center truncate">
                             {image.name}
                           </div>
