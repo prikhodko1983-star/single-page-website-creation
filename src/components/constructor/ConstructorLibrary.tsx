@@ -68,7 +68,7 @@ interface ConstructorLibraryProps {
   loadFlowers: () => void;
 }
 
-type DesktopToolPanel = 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'flower' | null;
+type DesktopToolPanel = 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'flower' | 'imageCatalog' | null;
 
 const DESKTOP_TOOLS = [
   { key: 'fio' as DesktopToolPanel, icon: 'User', label: 'ФИО' },
@@ -78,6 +78,7 @@ const DESKTOP_TOOLS = [
   { key: 'photo' as DesktopToolPanel, icon: 'Camera', label: 'Портрет' },
   { key: 'cross' as DesktopToolPanel, icon: 'Cross', label: 'Крест' },
   { key: 'flower' as DesktopToolPanel, icon: 'Flower2', label: 'Цветок' },
+  { key: 'imageCatalog' as DesktopToolPanel, icon: 'Images', label: 'Картинки' },
 ];
 
 export const ConstructorLibrary = ({
@@ -597,6 +598,61 @@ export const ConstructorLibrary = ({
                       </div>
                     ) : (
                       <p className="text-xs text-white/30 text-center py-4">Цветы не найдены</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Каталог изображений */}
+                {activeToolPanel === 'imageCatalog' && (
+                  <div className="p-3 space-y-2">
+                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Каталог изображений</p>
+                    {isLoadingImages ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                      </div>
+                    ) : imageCategories.length > 0 ? (
+                      <>
+                        <div className="grid grid-cols-3 gap-1 bg-white/5 rounded-lg p-1 shrink-0">
+                          {imageCategories.map(cat => {
+                            const count = categoryImages.filter(img => img.category_id === cat.id).length;
+                            return (
+                              <button
+                                key={cat.id}
+                                onClick={() => setSelectedImageCategory(cat.id)}
+                                className={`px-1.5 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1 w-full ${
+                                  selectedImageCategory === cat.id
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'text-white/50 hover:text-white hover:bg-white/10'
+                                }`}
+                              >
+                                <span className="truncate">{cat.name}</span>
+                                <span className="shrink-0 bg-white/20 rounded-full text-[10px] px-1 leading-4">{count}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 pb-2">
+                          {categoryImages.filter(img => img.category_id === selectedImageCategory).map(image => (
+                            <button
+                              key={image.id}
+                              onClick={() => addImageElement(image.image_url, 'image')}
+                              className="rounded border-2 border-white/10 hover:border-primary transition-all bg-black/40 hover:bg-primary/5 overflow-hidden flex flex-col"
+                            >
+                              <div className="flex items-center justify-center p-2" style={{ height: '90px' }}>
+                                <img src={image.image_url} alt={image.name} className="max-w-full max-h-full object-contain" />
+                              </div>
+                              <div className="bg-black/60 text-white text-[9px] px-1 py-1 text-center truncate w-full">
+                                {image.name}
+                              </div>
+                            </button>
+                          ))}
+                          {categoryImages.filter(img => img.category_id === selectedImageCategory).length === 0 && (
+                            <p className="col-span-2 text-xs text-white/40 text-center py-6">Нет изображений</p>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-xs text-white/30 text-center py-4">Категории не найдены</p>
                     )}
                   </div>
                 )}
