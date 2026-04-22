@@ -181,7 +181,7 @@ export const MobileElementsToolbar = ({
 
       {/* Bottom sheet панель */}
       {activePanel && (
-        <div className="lg:hidden fixed left-0 right-0 bottom-10 z-50 bg-[#1e1e1e] border-t border-white/10 rounded-t-2xl shadow-2xl max-h-[65vh] overflow-y-auto">
+        <div className="lg:hidden fixed left-0 right-0 bottom-10 z-50 bg-[#1e1e1e] border-t border-white/10 rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto">
           {/* Хэндл */}
           <div className="flex items-center justify-center pt-3 pb-1">
             <div className="w-10 h-1 rounded-full bg-white/20" />
