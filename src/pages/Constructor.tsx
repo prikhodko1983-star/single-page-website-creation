@@ -2737,7 +2737,7 @@ const Constructor = () => {
       {/* Main workspace — fixed под топбар+панель */}
       <div className="flex overflow-hidden fixed right-0 bottom-0" style={{ top: workspaceTop, left: isMobile ? '48px' : '0' }}>
         {/* Left panel */}
-        <div className="hidden lg:flex flex-shrink-0 w-[300px] border-r border-white/10 bg-[#181818] flex-col overflow-hidden">
+        <div className="hidden lg:flex flex-shrink-0 w-[380px] border-r border-white/10 bg-[#181818] flex-col overflow-hidden">
           <ConstructorLibrary
             monumentImage={monumentImage}
             setMonumentImage={setMonumentImage}
