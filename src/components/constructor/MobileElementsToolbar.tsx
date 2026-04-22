@@ -211,7 +211,7 @@ export const MobileElementsToolbar = ({
       {/* Bottom sheet панель */}
       {activePanel && (
         <div
-          className="lg:hidden fixed left-0 right-0 bottom-10 z-50 bg-[#1e1e1e] border-t border-white/10 rounded-t-2xl shadow-2xl overflow-y-auto"
+          className="lg:hidden fixed left-0 right-0 bottom-10 z-50 bg-[#1e1e1e] border-t border-white/10 rounded-t-2xl shadow-2xl flex flex-col"
           style={{ height: `${sheetHeight}vh`, transition: dragStartY.current !== null ? 'none' : 'height 0.25s ease' }}
         >
           {/* Хэндл — тяни для изменения размера */}
@@ -226,13 +226,14 @@ export const MobileElementsToolbar = ({
 
           {/* ФИО */}
           {activePanel === 'fio' && (
-            <div className="px-4 py-3 space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="flex flex-col flex-1 min-h-0">
+              <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
                 <span className="text-sm font-semibold text-white">ФИО</span>
                 <button onClick={close} className="text-white/40 hover:text-white">
                   <Icon name="X" size={16} />
                 </button>
               </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3">
               <div className="space-y-2">
                 <Input
                   placeholder="Фамилия"
@@ -282,18 +283,20 @@ export const MobileElementsToolbar = ({
                 <Icon name="Plus" size={16} className="mr-2" />
                 Добавить ФИО
               </Button>
+              </div>
             </div>
           )}
 
           {/* Даты */}
           {activePanel === 'dates' && (
-            <div className="px-4 py-3 space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="flex flex-col flex-1 min-h-0">
+              <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
                 <span className="text-sm font-semibold text-white">Даты жизни</span>
                 <button onClick={close} className="text-white/40 hover:text-white">
                   <Icon name="X" size={16} />
                 </button>
               </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3">
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
                   <Label className="text-xs text-white/50">Дата рождения</Label>
@@ -342,20 +345,23 @@ export const MobileElementsToolbar = ({
                 <Icon name="Plus" size={16} className="mr-2" />
                 Добавить даты
               </Button>
+              </div>
             </div>
           )}
 
           {/* Эпитафия */}
           {activePanel === 'epitaph' && (
-            <div className="px-4 py-3 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-white">Эпитафия</span>
+            <div className="flex flex-col flex-1 min-h-0">
+              <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
+                <div>
+                  <span className="text-sm font-semibold text-white">Эпитафия</span>
+                  <p className="text-xs text-white/40">Выберите готовый текст или добавьте свой</p>
+                </div>
                 <button onClick={close} className="text-white/40 hover:text-white">
                   <Icon name="X" size={16} />
                 </button>
               </div>
-              <p className="text-xs text-white/40">Выберите готовый текст или добавьте свой</p>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2">
                 {[
                   'Помним. Любим. Скорбим.',
                   'Ты всегда в нашей памяти.',
@@ -377,27 +383,28 @@ export const MobileElementsToolbar = ({
                     <p className="text-sm italic text-white/70">{text}</p>
                   </button>
                 ))}
+                <Button
+                  variant="outline"
+                  className="w-full border-white/20 text-white hover:bg-white/10"
+                  onClick={() => { addEpitaphElement(); close(); }}
+                >
+                  <Icon name="Edit3" size={16} className="mr-2" />
+                  Написать свою эпитафию
+                </Button>
               </div>
-              <Button
-                variant="outline"
-                className="w-full border-white/20 text-white hover:bg-white/10"
-                onClick={() => { addEpitaphElement(); close(); }}
-              >
-                <Icon name="Edit3" size={16} className="mr-2" />
-                Написать свою эпитафию
-              </Button>
             </div>
           )}
 
           {/* Текст */}
           {activePanel === 'text' && (
-            <div className="px-4 py-3 space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="flex flex-col flex-1 min-h-0">
+              <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
                 <span className="text-sm font-semibold text-white">Свободный текст</span>
                 <button onClick={close} className="text-white/40 hover:text-white">
                   <Icon name="X" size={16} />
                 </button>
               </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3">
               <textarea
                 placeholder="Введите текст..."
                 value={mobileCustomText}
@@ -437,19 +444,23 @@ export const MobileElementsToolbar = ({
                 <Icon name="Plus" size={16} className="mr-2" />
                 Добавить текст
               </Button>
+              </div>
             </div>
           )}
 
           {/* Портрет */}
           {activePanel === 'photo' && (
-            <div className="px-4 py-3 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-white">Портрет</span>
+            <div className="flex flex-col flex-1 min-h-0">
+              <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
+                <div>
+                  <span className="text-sm font-semibold text-white">Портрет</span>
+                  <p className="text-xs text-white/40">Загрузите фото или выберите шаблон</p>
+                </div>
                 <button onClick={close} className="text-white/40 hover:text-white">
                   <Icon name="X" size={16} />
                 </button>
               </div>
-              <p className="text-xs text-white/40">Загрузите фотографию или выберите шаблон</p>
+              <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3">
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
                   <p className="text-[10px] text-white/40 text-center">Мужские</p>
@@ -500,18 +511,20 @@ export const MobileElementsToolbar = ({
                 <Icon name="Upload" size={16} className="mr-2" />
                 Загрузить свой портрет
               </Button>
+              </div>
             </div>
           )}
 
           {/* Кресты */}
           {activePanel === 'cross' && (
-            <div className="px-4 py-3 space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="flex flex-col flex-1 min-h-0">
+              <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
                 <span className="text-sm font-semibold text-white">Кресты</span>
                 <button onClick={close} className="text-white/40 hover:text-white">
                   <Icon name="X" size={16} />
                 </button>
               </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-4">
               {isLoadingCrosses ? (
                 <div className="flex justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -534,18 +547,20 @@ export const MobileElementsToolbar = ({
               ) : (
                 <p className="text-sm text-white/40 text-center py-6">Кресты не найдены</p>
               )}
+              </div>
             </div>
           )}
 
           {/* Каталог изображений */}
           {activePanel === 'imageCatalog' && (
-            <div className="px-4 py-3 space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="flex flex-col flex-1 min-h-0">
+              <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
                 <span className="text-sm font-semibold text-white">Каталог изображений</span>
                 <button onClick={close} className="text-white/40 hover:text-white">
                   <Icon name="X" size={16} />
                 </button>
               </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3">
               {isLoadingImages ? (
                 <div className="flex justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -593,6 +608,7 @@ export const MobileElementsToolbar = ({
               ) : (
                 <p className="text-sm text-white/40 text-center py-6">Категории не найдены</p>
               )}
+              </div>
             </div>
           )}
         </div>
