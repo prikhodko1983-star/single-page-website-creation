@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -125,11 +125,40 @@ export const MobileElementsToolbar = ({
     loadImages();
   }, []);
 
+  const [sheetHeight, setSheetHeight] = useState(65);
+  const dragStartY = useRef<number | null>(null);
+  const dragStartHeight = useRef<number>(65);
+
   const toggle = (key: ToolPanel) => {
-    setActivePanel(prev => prev === key ? null : key);
+    setActivePanel(prev => {
+      if (prev !== key) setSheetHeight(65);
+      return prev === key ? null : key;
+    });
   };
 
-  const close = () => setActivePanel(null);
+  const close = () => { setActivePanel(null); setSheetHeight(65); };
+
+  const onHandleTouchStart = (e: React.TouchEvent) => {
+    dragStartY.current = e.touches[0].clientY;
+    dragStartHeight.current = sheetHeight;
+  };
+
+  const onHandleTouchMove = (e: React.TouchEvent) => {
+    if (dragStartY.current === null) return;
+    const dy = dragStartY.current - e.touches[0].clientY;
+    const newH = Math.min(92, Math.max(25, dragStartHeight.current + (dy / window.innerHeight) * 100));
+    setSheetHeight(newH);
+  };
+
+  const onHandleTouchEnd = () => {
+    dragStartY.current = null;
+    setSheetHeight(prev => {
+      if (prev < 35) { close(); return 65; }
+      if (prev < 55) return 40;
+      if (prev < 75) return 65;
+      return 90;
+    });
+  };
 
   if (typeof window !== 'undefined' && window.innerWidth >= 1024) return null;
 
@@ -181,10 +210,18 @@ export const MobileElementsToolbar = ({
 
       {/* Bottom sheet панель */}
       {activePanel && (
-        <div className="lg:hidden fixed left-0 right-0 bottom-10 z-50 bg-[#1e1e1e] border-t border-white/10 rounded-t-2xl shadow-2xl max-h-[65vh] overflow-y-auto">
-          {/* Хэндл */}
-          <div className="flex items-center justify-center pt-3 pb-1">
-            <div className="w-10 h-1 rounded-full bg-white/20" />
+        <div
+          className="lg:hidden fixed left-0 right-0 bottom-10 z-50 bg-[#1e1e1e] border-t border-white/10 rounded-t-2xl shadow-2xl overflow-y-auto"
+          style={{ height: `${sheetHeight}vh`, transition: dragStartY.current !== null ? 'none' : 'height 0.25s ease' }}
+        >
+          {/* Хэндл — тяни для изменения размера */}
+          <div
+            className="flex items-center justify-center pt-3 pb-1 touch-none cursor-grab active:cursor-grabbing"
+            onTouchStart={onHandleTouchStart}
+            onTouchMove={onHandleTouchMove}
+            onTouchEnd={onHandleTouchEnd}
+          >
+            <div className="w-12 h-1.5 rounded-full bg-white/30" />
           </div>
 
           {/* ФИО */}

@@ -64,7 +64,12 @@ const Constructor = () => {
   const [isTextEditorOpen, setIsTextEditorOpen] = useState(false);
   const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
   const [mobileLibraryTab, setMobileLibraryTab] = useState('catalog');
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 1024);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
   const canvasTopOffset = isMobile ? 104 : 48;
   const workspaceTop = isMobile ? 104 : 48;
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
