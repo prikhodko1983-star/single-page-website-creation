@@ -404,7 +404,7 @@ export const ConstructorLibrary = ({
                     <Input placeholder="Имя" value={name} onChange={(e) => setName(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
                     <Input placeholder="Отчество" value={patronymic} onChange={(e) => setPatronymic(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
                     <p className="text-[10px] text-white/40 pt-1">Шрифт</p>
-                    <div className="grid grid-cols-2 gap-1">
+                    <div className="grid grid-cols-2 gap-1 max-h-40 overflow-y-auto">
                       {fonts.map(font => (
                         <button key={font.id} onClick={() => setSelectedFont(font.id)}
                           className={`px-2 py-1.5 rounded border text-left transition-all ${selectedFont === font.id ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 hover:border-primary/50 text-white/70'}`}>
@@ -432,7 +432,7 @@ export const ConstructorLibrary = ({
                       <Input placeholder="01.01.2020" value={deathDate} onChange={(e) => setDeathDate(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
                     </div>
                     <p className="text-[10px] text-white/40 pt-1">Шрифт</p>
-                    <div className="grid grid-cols-2 gap-1">
+                    <div className="grid grid-cols-2 gap-1 max-h-40 overflow-y-auto">
                       {fonts.map(font => (
                         <button key={font.id} onClick={() => setSelectedDateFont(font.id)}
                           className={`px-2 py-1.5 rounded border text-left transition-all ${selectedDateFont === font.id ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 hover:border-primary/50 text-white/70'}`}>
@@ -485,7 +485,7 @@ export const ConstructorLibrary = ({
                       className="w-full bg-white/5 border border-white/10 rounded text-white placeholder:text-white/30 text-sm p-2 resize-none focus:outline-none focus:border-primary"
                     />
                     <p className="text-[10px] text-white/40">Шрифт</p>
-                    <div className="grid grid-cols-2 gap-1">
+                    <div className="grid grid-cols-2 gap-1 max-h-36 overflow-y-auto">
                       {fonts.map(font => (
                         <button key={font.id} onClick={() => setCustomTextFont(font.fullStyle)}
                           className={`px-2 py-1.5 rounded border text-left transition-all ${customTextFont === font.fullStyle ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 hover:border-primary/50 text-white/70'}`}>
