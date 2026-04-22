@@ -515,34 +515,35 @@ export const MobileElementsToolbar = ({
                 </div>
               ) : imageCategories.length > 0 ? (
                 <>
-                  <div className="flex flex-wrap gap-1 bg-white/5 rounded-lg p-1">
+                  <div className="grid grid-cols-3 gap-1 bg-white/5 rounded-lg p-1">
                     {imageCategories.map(cat => {
                       const count = categoryImages.filter(img => img.category_id === cat.id).length;
                       return (
                         <button
                           key={cat.id}
                           onClick={() => setSelectedImageCategory(cat.id)}
-                          className={`flex-1 min-w-[70px] px-2 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1 ${
+                          className={`px-1.5 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1 w-full ${
                             selectedImageCategory === cat.id
                               ? 'bg-primary text-primary-foreground'
                               : 'text-white/50 hover:text-white hover:bg-white/10'
                           }`}
                         >
-                          <span className="truncate">{cat.name}</span>
-                          <Badge variant="secondary" className="ml-1 h-4 text-[10px] px-1 shrink-0">{count}</Badge>
+                          <span className="truncate max-w-[60px]">{cat.name}</span>
+                          <span className="shrink-0 bg-white/20 rounded-full text-[10px] px-1 leading-4">{count}</span>
                         </button>
                       );
                     })}
                   </div>
-                  <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                  <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto pb-2">
                     {categoryImages.filter(img => img.category_id === selectedImageCategory).map(image => (
                       <button
                         key={image.id}
                         onClick={() => { addImageElement(image.image_url, 'image'); close(); }}
-                        className="relative aspect-square rounded border-2 border-white/10 hover:border-primary transition-all bg-white/5 hover:bg-primary/5 flex flex-col overflow-hidden"
+                        className="relative rounded border-2 border-white/10 hover:border-primary transition-all bg-white/5 hover:bg-primary/5 overflow-hidden"
+                        style={{ aspectRatio: '1/1' }}
                       >
-                        <img src={image.image_url} alt={image.name} className="w-full h-full object-contain p-1" />
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-[9px] p-1 text-center truncate">
+                        <img src={image.image_url} alt={image.name} className="absolute inset-0 w-full h-full object-contain p-1" />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-[9px] px-1 py-0.5 text-center truncate">
                           {image.name}
                         </div>
                       </button>
