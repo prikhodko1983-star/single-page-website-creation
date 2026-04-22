@@ -329,7 +329,7 @@ const PrintOrder = () => {
       <div className="po-sheet" ref={sheetRef}>
         {/* Заказ № */}
         <div className="po-center" style={{ marginBottom: 2 }}>
-          <span className="po-title">Заказ №</span>
+          <span className="po-title">Наряд заказ №</span>
           <I style={{ width: "8%", fontSize: "2.8vw" }} className="po-title-input" value={orderNumber} onChange={(e) => setOrderNumber(e.target.value)} />
         </div>
 
