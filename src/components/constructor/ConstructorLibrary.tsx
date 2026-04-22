@@ -612,20 +612,20 @@ export const ConstructorLibrary = ({
                       </div>
                     ) : imageCategories.length > 0 ? (
                       <>
-                        <div className="flex flex-wrap gap-1 bg-white/5 rounded-lg p-1 shrink-0">
+                        <div className="grid grid-cols-3 gap-1 bg-white/5 rounded-lg p-1 shrink-0">
                           {imageCategories.map(cat => {
                             const count = categoryImages.filter(img => img.category_id === cat.id).length;
                             return (
                               <button
                                 key={cat.id}
                                 onClick={() => setSelectedImageCategory(cat.id)}
-                                className={`px-2 py-1 rounded text-xs font-medium transition-all flex items-center gap-1 ${
+                                className={`px-1.5 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1 w-full ${
                                   selectedImageCategory === cat.id
                                     ? 'bg-primary text-primary-foreground'
                                     : 'text-white/50 hover:text-white hover:bg-white/10'
                                 }`}
                               >
-                                <span>{cat.name}</span>
+                                <span className="truncate">{cat.name}</span>
                                 <span className="shrink-0 bg-white/20 rounded-full text-[10px] px-1 leading-4">{count}</span>
                               </button>
                             );
