@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
 interface CanvasElement {
   id: string;
@@ -50,7 +51,7 @@ interface MobileElementsToolbarProps {
   addImageElement: (src: string, type: 'image' | 'cross' | 'flower') => void;
 }
 
-type ToolPanel = 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'flower' | null;
+type ToolPanel = 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'imageCatalog' | null;
 
 const TOOLS = [
   { key: 'fio' as ToolPanel, icon: 'User', label: 'ФИО' },
@@ -59,7 +60,7 @@ const TOOLS = [
   { key: 'text' as ToolPanel, icon: 'Type', label: 'Текст' },
   { key: 'photo' as ToolPanel, icon: 'Camera', label: 'Портрет' },
   { key: 'cross' as ToolPanel, icon: 'Cross', label: 'Крест' },
-  { key: 'flower' as ToolPanel, icon: 'Flower2', label: 'Цветок' },
+  { key: 'imageCatalog' as ToolPanel, icon: 'Images', label: 'Картинки' },
 ];
 
 export const MobileElementsToolbar = ({
@@ -93,6 +94,36 @@ export const MobileElementsToolbar = ({
   const [activePanel, setActivePanel] = useState<ToolPanel>(null);
   const [mobileCustomText, setMobileCustomText] = useState('');
   const [mobileCustomTextFont, setMobileCustomTextFont] = useState('');
+  const [imageCategories, setImageCategories] = useState<Array<{id: number, name: string, slug: string}>>([]);
+  const [categoryImages, setCategoryImages] = useState<Array<{id: number, category_id: number, name: string, image_url: string}>>([]);
+  const [selectedImageCategory, setSelectedImageCategory] = useState<number | null>(null);
+  const [isLoadingImages, setIsLoadingImages] = useState(false);
+
+  useEffect(() => {
+    const loadImages = async () => {
+      try {
+        const res = await fetch('https://functions.poehali.dev/dee0114f-9dc3-4783-87b7-346a133d7c73?type=categories');
+        if (!res.ok) return;
+        const cats = await res.json();
+        setImageCategories(cats);
+        if (cats.length > 0) {
+          setSelectedImageCategory(cats[0].id);
+          setIsLoadingImages(true);
+          const results = await Promise.all(
+            cats.map(async (c: {id: number}) => {
+              const r = await fetch(`https://functions.poehali.dev/dee0114f-9dc3-4783-87b7-346a133d7c73?type=images&category_id=${c.id}`);
+              return r.ok ? r.json() : [];
+            })
+          );
+          setCategoryImages(results.flat());
+          setIsLoadingImages(false);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadImages();
+  }, []);
 
   const toggle = (key: ToolPanel) => {
     setActivePanel(prev => prev === key ? null : key);
@@ -469,36 +500,60 @@ export const MobileElementsToolbar = ({
             </div>
           )}
 
-          {/* Цветы */}
-          {activePanel === 'flower' && (
+          {/* Каталог изображений */}
+          {activePanel === 'imageCatalog' && (
             <div className="px-4 py-3 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-white">Цветы</span>
+                <span className="text-sm font-semibold text-white">Каталог изображений</span>
                 <button onClick={close} className="text-white/40 hover:text-white">
                   <Icon name="X" size={16} />
                 </button>
               </div>
-              {isLoadingFlowers ? (
+              {isLoadingImages ? (
                 <div className="flex justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
                 </div>
-              ) : flowers.length > 0 ? (
-                <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
-                  {flowers.map((flower) => (
-                    <button
-                      key={flower.id}
-                      onClick={() => { addImageElement(flower.image_url, 'flower'); close(); }}
-                      className="aspect-square rounded border-2 border-white/10 hover:border-primary transition-all p-2 bg-white/5 hover:bg-primary/5 flex flex-col"
-                    >
-                      <div className="flex-1 flex items-center justify-center">
-                        <img src={flower.image_url} alt={flower.name} className="w-full h-full object-contain" />
-                      </div>
-                      <div className="text-[9px] text-center mt-1 text-white/40 truncate">{flower.name}</div>
-                    </button>
-                  ))}
-                </div>
+              ) : imageCategories.length > 0 ? (
+                <>
+                  <div className="flex flex-wrap gap-1 bg-white/5 rounded-lg p-1">
+                    {imageCategories.map(cat => {
+                      const count = categoryImages.filter(img => img.category_id === cat.id).length;
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => setSelectedImageCategory(cat.id)}
+                          className={`flex-1 min-w-[70px] px-2 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1 ${
+                            selectedImageCategory === cat.id
+                              ? 'bg-primary text-primary-foreground'
+                              : 'text-white/50 hover:text-white hover:bg-white/10'
+                          }`}
+                        >
+                          <span className="truncate">{cat.name}</span>
+                          <Badge variant="secondary" className="ml-1 h-4 text-[10px] px-1 shrink-0">{count}</Badge>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                    {categoryImages.filter(img => img.category_id === selectedImageCategory).map(image => (
+                      <button
+                        key={image.id}
+                        onClick={() => { addImageElement(image.image_url, 'image'); close(); }}
+                        className="relative aspect-square rounded border-2 border-white/10 hover:border-primary transition-all bg-white/5 hover:bg-primary/5 flex flex-col overflow-hidden"
+                      >
+                        <img src={image.image_url} alt={image.name} className="w-full h-full object-contain p-1" />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-[9px] p-1 text-center truncate">
+                          {image.name}
+                        </div>
+                      </button>
+                    ))}
+                    {categoryImages.filter(img => img.category_id === selectedImageCategory).length === 0 && (
+                      <p className="col-span-3 text-sm text-white/40 text-center py-6">Нет изображений</p>
+                    )}
+                  </div>
+                </>
               ) : (
-                <p className="text-sm text-white/40 text-center py-6">Цветы не найдены</p>
+                <p className="text-sm text-white/40 text-center py-6">Категории не найдены</p>
               )}
             </div>
           )}
