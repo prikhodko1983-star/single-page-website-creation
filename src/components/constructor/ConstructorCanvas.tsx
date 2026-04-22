@@ -136,10 +136,10 @@ export const ConstructorCanvas = ({
 
   const isMobileView = typeof window !== 'undefined' && window.innerWidth < 1024;
   const canvasHeight = isMobileView
-    ? `calc(95vw / 0.75)`
+    ? `calc((100vw - 48px) / 0.75)`
     : `calc(100vh - ${topOffset}px)`;
   const canvasWidth = isMobileView
-    ? `95vw`
+    ? `calc(100vw - 48px)`
     : `calc((100vh - ${topOffset}px) * 0.75)`;
 
   return (
