@@ -541,7 +541,7 @@ export const MobileElementsToolbar = ({
                           onClick={() => { addImageElement(image.image_url, 'image'); close(); }}
                           className="absolute inset-0 rounded border-2 border-white/10 hover:border-primary transition-all bg-white/5 hover:bg-primary/5 overflow-hidden w-full h-full"
                         >
-                          <img src={image.image_url} alt={image.name} className="absolute inset-0 w-full h-full object-cover" />
+                          <img src={image.image_url} alt={image.name} className="absolute inset-0 w-full h-full object-contain p-1" />
                           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-[9px] px-1 py-0.5 text-center truncate">
                             {image.name}
                           </div>
