@@ -77,7 +77,6 @@ const DESKTOP_TOOLS = [
   { key: 'text' as DesktopToolPanel, icon: 'Type', label: 'Текст' },
   { key: 'photo' as DesktopToolPanel, icon: 'Camera', label: 'Портрет' },
   { key: 'cross' as DesktopToolPanel, icon: 'Cross', label: 'Крест' },
-  { key: 'flower' as DesktopToolPanel, icon: 'Flower2', label: 'Цветок' },
   { key: 'imageCatalog' as DesktopToolPanel, icon: 'Images', label: 'Картинки' },
 ];
 
