@@ -104,6 +104,7 @@ export const CanvasContainer: React.FC<CanvasContainerProps> = ({
         onTouchEnd={handleTouchEnd}
         onTouchStart={onCanvasTouchStart}
         onDoubleClick={onCanvasDoubleClick}
+        onContextMenu={(e) => e.preventDefault()}
         onMouseDown={(e) => {
           if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'IMG') {
             setSelectedElement(null);
