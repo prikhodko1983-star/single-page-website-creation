@@ -1,6 +1,58 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import React from "react";
+import React, { useState, useCallback } from "react";
+
+interface ImageWithBorderProps {
+  src: string;
+  alt: string;
+  flipHorizontal?: boolean;
+  isSelected: boolean;
+  containerWidth: number;
+  containerHeight: number;
+}
+
+const ImageWithBorder: React.FC<ImageWithBorderProps> = ({ src, alt, flipHorizontal, isSelected, containerWidth, containerHeight }) => {
+  const [imgSize, setImgSize] = useState<{ w: number; h: number; x: number; y: number } | null>(null);
+
+  const onLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    const natW = img.naturalWidth;
+    const natH = img.naturalHeight;
+    const cW = containerWidth;
+    const cH = containerHeight;
+    const scale = Math.min(cW / natW, cH / natH);
+    const rW = natW * scale;
+    const rH = natH * scale;
+    const rX = (cW - rW) / 2;
+    const rY = (cH - rH) / 2;
+    setImgSize({ w: rW, h: rH, x: rX, y: rY });
+  }, [containerWidth, containerHeight]);
+
+  return (
+    <div className="relative w-full h-full">
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-contain select-none"
+        style={{ transform: flipHorizontal ? 'scaleX(-1)' : 'none', pointerEvents: 'none' }}
+        draggable={false}
+        onLoad={onLoad}
+      />
+      {isSelected && imgSize && (
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: imgSize.x,
+            top: imgSize.y,
+            width: imgSize.w,
+            height: imgSize.h,
+            outline: '2px solid hsl(var(--primary))',
+          }}
+        />
+      )}
+    </div>
+  );
+};
 
 interface CanvasElement {
   id: string;
@@ -422,16 +474,13 @@ export const ConstructorCanvas = ({
             )}
             
             {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && (
-              <img 
-                src={element.screenMode && element.processedSrc ? element.processedSrc : element.src} 
+              <ImageWithBorder
+                src={element.screenMode && element.processedSrc ? element.processedSrc : element.src}
                 alt={element.type}
-                className="w-full h-full object-fill select-none"
-                style={{
-                  transform: element.flipHorizontal ? 'scaleX(-1)' : 'none',
-                  outline: selectedElement === element.id ? '2px solid hsl(var(--primary))' : 'none',
-                  outlineOffset: '0px',
-                }}
-                draggable={false}
+                flipHorizontal={element.flipHorizontal}
+                isSelected={selectedElement === element.id}
+                containerWidth={element.width}
+                containerHeight={element.height}
               />
             )}
             

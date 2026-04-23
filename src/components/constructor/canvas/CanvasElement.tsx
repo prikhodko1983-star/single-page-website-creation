@@ -193,7 +193,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
         <img 
           src={element.screenMode && element.processedSrc ? element.processedSrc : element.src}
           alt="Элемент" 
-          className="w-full h-full object-fill select-none"
+          className="w-full h-full object-contain select-none"
           style={{
             transform: element.flipHorizontal ? 'scaleX(-1)' : 'none',
             pointerEvents: 'none',
