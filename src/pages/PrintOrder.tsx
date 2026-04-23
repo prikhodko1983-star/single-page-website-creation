@@ -484,7 +484,7 @@ const PrintOrder = () => {
       {showExtraSheet && extraBlocks.length > 0 && (
         <div className="po-sheet po-extra-sheet" ref={extraSheetRef}>
           <div className="po-center" style={{ marginBottom: 12 }}>
-            <span className="po-title">Доп. лист к заказу №</span>
+            <span className="po-title">Доп. лист к наряд-заказу №</span>
             <span className="po-title" style={{ marginLeft: 4 }}>{orderNumber || "___"}</span>
           </div>
           <div className="po-field" style={{ marginBottom: 12, fontSize: "inherit" }}>
