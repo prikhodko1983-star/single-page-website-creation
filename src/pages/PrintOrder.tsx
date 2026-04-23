@@ -70,6 +70,8 @@ const PrintOrder = () => {
     { name: "полировка", italic: true, size: "", sum: "" },
     { name: "Цветник", bold: true, size: "", sum: "" },
     { name: "полировка", italic: true, size: "", sum: "" },
+    { name: "Плита", bold: true, size: "", sum: "" },
+    { name: "полировка", italic: true, size: "", sum: "" },
   ]);
 
   const [artRows, setArtRows] = useState<ArtRow[]>([
