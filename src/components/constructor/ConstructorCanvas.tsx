@@ -428,9 +428,8 @@ export const ConstructorCanvas = ({
                 className="w-full h-full object-contain select-none"
                 style={{
                   transform: element.flipHorizontal ? 'scaleX(-1)' : 'none',
-                  filter: selectedElement === element.id
-                    ? 'drop-shadow(1px 0 0 hsl(var(--primary))) drop-shadow(-1px 0 0 hsl(var(--primary))) drop-shadow(0 1px 0 hsl(var(--primary))) drop-shadow(0 -1px 0 hsl(var(--primary)))'
-                    : 'none'
+                  outline: selectedElement === element.id ? '2px solid hsl(var(--primary))' : 'none',
+                  outlineOffset: '0px',
                 }}
                 draggable={false}
               />

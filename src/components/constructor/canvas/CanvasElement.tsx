@@ -197,9 +197,8 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
           style={{
             transform: element.flipHorizontal ? 'scaleX(-1)' : 'none',
             pointerEvents: 'none',
-            filter: isSelected
-              ? 'drop-shadow(1px 0 0 hsl(var(--primary))) drop-shadow(-1px 0 0 hsl(var(--primary))) drop-shadow(0 1px 0 hsl(var(--primary))) drop-shadow(0 -1px 0 hsl(var(--primary)))'
-              : 'none',
+            outline: isSelected ? '2px solid hsl(var(--primary))' : 'none',
+            outlineOffset: '0px',
           }}
           draggable={false}
         />
