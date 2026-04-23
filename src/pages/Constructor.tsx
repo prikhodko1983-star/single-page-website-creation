@@ -760,10 +760,13 @@ const Constructor = () => {
       const newX = mouseX - dragOffset.x;
       const newY = mouseY - dragOffset.y;
       
+      const logicalW = canvasRect.width / canvasZoom;
+      const logicalH = canvasRect.height / canvasZoom;
       setElements(prev => prev.map(el => {
         if (el.id === selectedElement) {
-          const maxX = el.autoSize ? canvasRect.width : canvasRect.width - el.width;
-          const maxY = el.autoSize ? canvasRect.height : canvasRect.height - el.height;
+          const isImgEl = ['image', 'cross', 'flower'].includes(el.type);
+          const maxX = (el.autoSize || isImgEl) ? logicalW : logicalW - el.width;
+          const maxY = (el.autoSize || isImgEl) ? logicalH : logicalH - el.height;
           return { 
             ...el, 
             x: Math.max(0, Math.min(newX, maxX)), 
@@ -916,11 +919,13 @@ const Constructor = () => {
       const newX = touchX - dragOffset.x;
       const newY = touchY - dragOffset.y;
       
+      const logicalW = canvasRect.width / canvasZoom;
+      const logicalH = canvasRect.height / canvasZoom;
       setElements(prev => prev.map(el => {
         if (el.id === selectedElement) {
           const isImgEl = ['image', 'cross', 'flower'].includes(el.type);
-          const maxX = (el.autoSize || isImgEl) ? canvasRect.width : canvasRect.width - el.width;
-          const maxY = (el.autoSize || isImgEl) ? canvasRect.height : canvasRect.height - el.height;
+          const maxX = (el.autoSize || isImgEl) ? logicalW : logicalW - el.width;
+          const maxY = (el.autoSize || isImgEl) ? logicalH : logicalH - el.height;
           return { 
             ...el, 
             x: Math.max(0, Math.min(newX, maxX)), 
