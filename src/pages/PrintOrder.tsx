@@ -105,7 +105,10 @@ const PrintOrder = () => {
   const stoneTotal = stoneRows.reduce((s, r) => s + parseNum(r.sum), 0);
   const artTotal = artRows.reduce((s, r) => s + parseNum(r.sum), 0);
   const grandTotal = stoneTotal + artTotal;
-  const discountNum = parseNum(discount);
+  const isPercentDiscount = discount.trim().endsWith("%");
+  const discountNum = isPercentDiscount
+    ? grandTotal * (parseNum(discount) / 100)
+    : parseNum(discount);
   const finalTotal = grandTotal - discountNum;
 
   const updateStoneRow = (i: number, field: keyof StoneRow, value: string) => {
