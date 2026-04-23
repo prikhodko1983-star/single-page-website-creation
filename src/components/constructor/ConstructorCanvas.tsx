@@ -425,7 +425,7 @@ export const ConstructorCanvas = ({
               <img 
                 src={element.screenMode && element.processedSrc ? element.processedSrc : element.src} 
                 alt={element.type}
-                className="w-full h-full object-contain select-none"
+                className="w-full h-full object-fill select-none"
                 style={{
                   transform: element.flipHorizontal ? 'scaleX(-1)' : 'none',
                   outline: selectedElement === element.id ? '2px solid hsl(var(--primary))' : 'none',
