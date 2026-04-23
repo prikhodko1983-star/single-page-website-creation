@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import React, { useState, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface ImageWithBorderProps {
   src: string;
@@ -11,21 +11,27 @@ interface ImageWithBorderProps {
   containerHeight: number;
 }
 
-const ImageWithBorder: React.FC<ImageWithBorderProps> = ({ src, alt, flipHorizontal, isSelected, containerWidth, containerHeight }) => {
-  const [imgSize, setImgSize] = useState<{ w: number; h: number; x: number; y: number } | null>(null);
+const calcImgRect = (natW: number, natH: number, cW: number, cH: number) => {
+  const scale = Math.min(cW / natW, cH / natH);
+  const rW = natW * scale;
+  const rH = natH * scale;
+  return { w: rW, h: rH, x: (cW - rW) / 2, y: (cH - rH) / 2 };
+};
 
-  const onLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+const ImageWithBorder: React.FC<ImageWithBorderProps> = ({ src, alt, flipHorizontal, isSelected, containerWidth, containerHeight }) => {
+  const natRef = useRef<{ w: number; h: number } | null>(null);
+  const [imgRect, setImgRect] = useState<{ w: number; h: number; x: number; y: number } | null>(null);
+
+  const onLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
-    const natW = img.naturalWidth;
-    const natH = img.naturalHeight;
-    const cW = containerWidth;
-    const cH = containerHeight;
-    const scale = Math.min(cW / natW, cH / natH);
-    const rW = natW * scale;
-    const rH = natH * scale;
-    const rX = (cW - rW) / 2;
-    const rY = (cH - rH) / 2;
-    setImgSize({ w: rW, h: rH, x: rX, y: rY });
+    natRef.current = { w: img.naturalWidth, h: img.naturalHeight };
+    setImgRect(calcImgRect(img.naturalWidth, img.naturalHeight, containerWidth, containerHeight));
+  };
+
+  useEffect(() => {
+    if (natRef.current) {
+      setImgRect(calcImgRect(natRef.current.w, natRef.current.h, containerWidth, containerHeight));
+    }
   }, [containerWidth, containerHeight]);
 
   return (
@@ -38,14 +44,14 @@ const ImageWithBorder: React.FC<ImageWithBorderProps> = ({ src, alt, flipHorizon
         draggable={false}
         onLoad={onLoad}
       />
-      {isSelected && imgSize && (
+      {isSelected && imgRect && (
         <div
           className="absolute pointer-events-none"
           style={{
-            left: imgSize.x,
-            top: imgSize.y,
-            width: imgSize.w,
-            height: imgSize.h,
+            left: imgRect.x,
+            top: imgRect.y,
+            width: imgRect.w,
+            height: imgRect.h,
             outline: '2px solid hsl(var(--primary))',
           }}
         />
