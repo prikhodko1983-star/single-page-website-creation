@@ -178,10 +178,12 @@ export const ConstructorCanvas = ({
           draggable={false}
         />
         
-        {elements.map(element => (
+        {elements.map(element => {
+          const isImageElement = ['image', 'cross', 'flower'].includes(element.type);
+          return (
           <div
             key={element.id}
-            className={`absolute cursor-move touch-none ${selectedElement === element.id ? 'ring-2 ring-inset ring-primary' : ''}`}
+            className={`absolute cursor-move touch-none ${selectedElement === element.id && !isImageElement ? 'ring-2 ring-inset ring-primary' : ''}`}
             style={{
               left: element.x,
               top: element.y,
@@ -425,7 +427,10 @@ export const ConstructorCanvas = ({
                 alt={element.type}
                 className="w-full h-full object-contain select-none"
                 style={{
-                  transform: element.flipHorizontal ? 'scaleX(-1)' : 'none'
+                  transform: element.flipHorizontal ? 'scaleX(-1)' : 'none',
+                  filter: selectedElement === element.id
+                    ? 'drop-shadow(1px 0 0 hsl(var(--primary))) drop-shadow(-1px 0 0 hsl(var(--primary))) drop-shadow(0 1px 0 hsl(var(--primary))) drop-shadow(0 -1px 0 hsl(var(--primary)))'
+                    : 'none'
                 }}
                 draggable={false}
               />
@@ -477,7 +482,8 @@ export const ConstructorCanvas = ({
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
       
       {/* Zoom controls - overlay bottom center */}
