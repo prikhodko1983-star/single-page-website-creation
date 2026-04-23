@@ -764,14 +764,7 @@ const Constructor = () => {
       const logicalH = canvasRect.height / canvasZoom;
       setElements(prev => prev.map(el => {
         if (el.id === selectedElement) {
-          const isImgEl = ['image', 'cross', 'flower'].includes(el.type);
-          const maxX = (el.autoSize || isImgEl) ? logicalW : logicalW - el.width;
-          const maxY = (el.autoSize || isImgEl) ? logicalH : logicalH - el.height;
-          return { 
-            ...el, 
-            x: Math.max(0, Math.min(newX, maxX)), 
-            y: Math.max(0, Math.min(newY, maxY)) 
-          };
+          return { ...el, x: Math.max(-logicalW, Math.min(newX, logicalW * 2)), y: Math.max(-logicalH, Math.min(newY, logicalH * 2)) };
         }
         return el;
       }));
@@ -923,14 +916,7 @@ const Constructor = () => {
       const logicalH = canvasRect.height / canvasZoom;
       setElements(prev => prev.map(el => {
         if (el.id === selectedElement) {
-          const isImgEl = ['image', 'cross', 'flower'].includes(el.type);
-          const maxX = (el.autoSize || isImgEl) ? logicalW : logicalW - el.width;
-          const maxY = (el.autoSize || isImgEl) ? logicalH : logicalH - el.height;
-          return { 
-            ...el, 
-            x: Math.max(0, Math.min(newX, maxX)), 
-            y: Math.max(0, Math.min(newY, maxY)) 
-          };
+          return { ...el, x: Math.max(-logicalW, Math.min(newX, logicalW * 2)), y: Math.max(-logicalH, Math.min(newY, logicalH * 2)) };
         }
         return el;
       }));
