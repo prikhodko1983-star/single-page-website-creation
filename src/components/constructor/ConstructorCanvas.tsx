@@ -9,6 +9,10 @@ interface ImageWithBorderProps {
   isSelected: boolean;
   containerWidth: number;
   containerHeight: number;
+  rotateMode: boolean;
+  onResizeMouseDown: (e: React.MouseEvent) => void;
+  onResizeTouchStart: (e: React.TouchEvent) => void;
+  onToggleRotate: (e: React.MouseEvent) => void;
 }
 
 const calcImgRect = (natW: number, natH: number, cW: number, cH: number) => {
@@ -18,7 +22,10 @@ const calcImgRect = (natW: number, natH: number, cW: number, cH: number) => {
   return { w: rW, h: rH, x: (cW - rW) / 2, y: (cH - rH) / 2 };
 };
 
-const ImageWithBorder: React.FC<ImageWithBorderProps> = ({ src, alt, flipHorizontal, isSelected, containerWidth, containerHeight }) => {
+const ImageWithBorder: React.FC<ImageWithBorderProps> = ({
+  src, alt, flipHorizontal, isSelected, containerWidth, containerHeight,
+  rotateMode, onResizeMouseDown, onResizeTouchStart, onToggleRotate
+}) => {
   const natRef = useRef<{ w: number; h: number } | null>(null);
   const [imgRect, setImgRect] = useState<{ w: number; h: number; x: number; y: number } | null>(null);
 
@@ -45,16 +52,34 @@ const ImageWithBorder: React.FC<ImageWithBorderProps> = ({ src, alt, flipHorizon
         onLoad={onLoad}
       />
       {isSelected && imgRect && (
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            left: imgRect.x,
-            top: imgRect.y,
-            width: imgRect.w,
-            height: imgRect.h,
-            outline: '2px solid hsl(var(--primary))',
-          }}
-        />
+        <>
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              left: imgRect.x,
+              top: imgRect.y,
+              width: imgRect.w,
+              height: imgRect.h,
+              outline: '2px solid hsl(var(--primary))',
+            }}
+          />
+          <div
+            className={`absolute w-4 h-4 bg-primary rounded-full hover:scale-125 transition-transform touch-none flex items-center justify-center shadow-lg border-2 border-background ${
+              rotateMode ? 'cursor-grab' : 'cursor-nwse-resize'
+            }`}
+            style={{
+              left: imgRect.x + imgRect.w,
+              top: imgRect.y + imgRect.h,
+              transform: 'translate(50%, 50%)',
+            }}
+            onMouseDown={onResizeMouseDown}
+            onTouchStart={onResizeTouchStart}
+            onDoubleClick={onToggleRotate}
+            title={rotateMode ? 'Режим вращения' : 'Режим масштабирования'}
+          >
+            {rotateMode && <Icon name="RotateCw" size={8} className="text-primary-foreground" />}
+          </div>
+        </>
       )}
     </div>
   );
@@ -487,6 +512,10 @@ export const ConstructorCanvas = ({
                 isSelected={selectedElement === element.id}
                 containerWidth={element.width}
                 containerHeight={element.height}
+                rotateMode={rotateMode}
+                onResizeMouseDown={(e) => handleResizeMouseDown(e, element.id)}
+                onResizeTouchStart={(e) => handleResizeTouchStart(e, element.id)}
+                onToggleRotate={(e) => { e.stopPropagation(); toggleRotateMode(); }}
               />
             )}
             
@@ -516,7 +545,7 @@ export const ConstructorCanvas = ({
               </div>
             )}
 
-            {selectedElement === element.id && (
+            {selectedElement === element.id && !isImageElement && (
               <div 
                 className={`absolute bottom-0 right-0 w-4 h-4 bg-primary rounded-full hover:scale-125 transition-transform touch-none flex items-center justify-center shadow-lg border-2 border-background ${
                   rotateMode ? 'cursor-grab' : 'cursor-nwse-resize'
