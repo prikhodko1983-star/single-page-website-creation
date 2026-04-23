@@ -678,6 +678,7 @@ const PrintOrder = () => {
           margin-left: -1px;
           display: flex;
           flex-direction: column;
+          background: #ffffff;
         }
         .po-sketch-label {
           font-size: clamp(9px, 1.5vw, 12px);
@@ -692,12 +693,15 @@ const PrintOrder = () => {
           display: flex;
           align-items: center;
           justify-content: center;
+          background: #ffffff;
+          overflow: hidden;
         }
         .po-sketch img {
           max-width: 100%;
           max-height: 100%;
           object-fit: contain;
-          padding: 3px;
+          display: block;
+          background: #ffffff;
         }
 
         /* Extra sheet */
