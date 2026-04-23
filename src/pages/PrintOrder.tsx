@@ -182,7 +182,10 @@ const PrintOrder = () => {
           const sliceCanvas = document.createElement("canvas");
           sliceCanvas.width = canvas.width;
           sliceCanvas.height = sliceH;
-          sliceCanvas.getContext("2d")!.drawImage(canvas, 0, -yOffset);
+          const sliceCtx = sliceCanvas.getContext("2d")!;
+          sliceCtx.fillStyle = "#ffffff";
+          sliceCtx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+          sliceCtx.drawImage(canvas, 0, -yOffset);
           pdf.addImage(sliceCanvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, pdfW, (sliceH * pdfW) / canvas.width);
           yOffset += sliceH;
           if (yOffset < canvas.height) pdf.addPage();
@@ -219,7 +222,10 @@ const PrintOrder = () => {
           const sliceCanvas = document.createElement("canvas");
           sliceCanvas.width = canvas.width;
           sliceCanvas.height = sliceH;
-          sliceCanvas.getContext("2d")!.drawImage(canvas, 0, -yOffset);
+          const sliceCtx2 = sliceCanvas.getContext("2d")!;
+          sliceCtx2.fillStyle = "#ffffff";
+          sliceCtx2.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+          sliceCtx2.drawImage(canvas, 0, -yOffset);
           pdf.addImage(sliceCanvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, pdfW, (sliceH * pdfW) / canvas.width);
           yOffset += sliceH;
           if (yOffset < canvas.height) pdf.addPage();
