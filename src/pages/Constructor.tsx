@@ -918,8 +918,9 @@ const Constructor = () => {
       
       setElements(prev => prev.map(el => {
         if (el.id === selectedElement) {
-          const maxX = el.autoSize ? canvasRect.width : canvasRect.width - el.width;
-          const maxY = el.autoSize ? canvasRect.height : canvasRect.height - el.height;
+          const isImgEl = ['image', 'cross', 'flower'].includes(el.type);
+          const maxX = (el.autoSize || isImgEl) ? canvasRect.width : canvasRect.width - el.width;
+          const maxY = (el.autoSize || isImgEl) ? canvasRect.height : canvasRect.height - el.height;
           return { 
             ...el, 
             x: Math.max(0, Math.min(newX, maxX)), 
