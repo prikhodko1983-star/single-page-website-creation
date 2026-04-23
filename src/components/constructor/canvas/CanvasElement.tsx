@@ -86,11 +86,12 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   onUpdateElement,
 }) => {
   const isTextElement = ['text', 'epitaph', 'fio', 'dates'].includes(element.type);
+  const isImageElement = ['image', 'cross', 'flower'].includes(element.type);
 
   return (
     <div
       key={element.id}
-      className={`absolute cursor-move touch-none ${isSelected ? 'ring-2 ring-inset ring-primary' : ''}`}
+      className={`absolute cursor-move touch-none ${isSelected && !isImageElement ? 'ring-2 ring-inset ring-primary' : ''}`}
       style={{
         left: element.x,
         top: element.y,
@@ -195,7 +196,10 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
           className="w-full h-full object-contain select-none"
           style={{
             transform: element.flipHorizontal ? 'scaleX(-1)' : 'none',
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            filter: isSelected
+              ? 'drop-shadow(1px 0 0 hsl(var(--primary))) drop-shadow(-1px 0 0 hsl(var(--primary))) drop-shadow(0 1px 0 hsl(var(--primary))) drop-shadow(0 -1px 0 hsl(var(--primary)))'
+              : 'none',
           }}
           draggable={false}
         />
