@@ -221,31 +221,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
 
       {isSelected && !rotateMode && (
         <>
-          {isTextElement && onUpdateElement && (
-            <div
-              className="absolute -top-9 left-1/2 flex gap-0.5 bg-background/90 backdrop-blur-sm rounded-md border border-border shadow-lg p-0.5"
-              style={{ transform: 'translateX(-50%)' }}
-              onMouseDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-            >
-              {(['left', 'center', 'right'] as const).map((align) => (
-                <button
-                  key={align}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onUpdateElement(element.id, { textAlign: align });
-                  }}
-                  className={`w-7 h-7 flex items-center justify-center rounded transition-colors ${
-                    (element.textAlign || 'center') === align
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-muted text-muted-foreground'
-                  }`}
-                >
-                  <Icon name={align === 'left' ? 'AlignLeft' : align === 'center' ? 'AlignCenter' : 'AlignRight'} size={14} />
-                </button>
-              ))}
-            </div>
-          )}
+
 
           <div 
             className="absolute bottom-0 right-0 w-4 h-4 bg-primary rounded-full cursor-se-resize touch-none"
