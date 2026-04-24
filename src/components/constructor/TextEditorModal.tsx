@@ -107,7 +107,7 @@ export const TextEditorModal = ({
         if (e.target === e.currentTarget) handleCancel();
       }}
     >
-      <Card className="w-full max-w-lg sm:my-4 rounded-b-none sm:rounded-b-lg max-h-[95vh] flex flex-col">
+      <Card className="w-full max-w-lg sm:my-4 rounded-b-none sm:rounded-b-lg flex flex-col" style={{ maxHeight: 'calc(100vh - 40px)' }}>
         <CardContent className="p-3 flex flex-col min-h-0 flex-1">
           {/* Шапка */}
           <div className="flex justify-between items-center pb-2 border-b mb-2 flex-shrink-0">
