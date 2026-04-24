@@ -181,22 +181,19 @@ export const MobileElementsToolbar = ({
           >
             {tool.key === 'cross' ? (
               <svg width="18" height="18" viewBox="0 0 90 160" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-                {/* Вертикальная стойка */}
                 <rect x="38" y="0" width="14" height="160" fill="currentColor"/>
-                {/* Верхняя перекладина (квадратная, короткая) */}
                 <rect x="28" y="8" width="34" height="14" fill="currentColor"/>
-                {/* Средняя длинная перекладина */}
                 <rect x="0" y="44" width="90" height="14" fill="currentColor"/>
-                {/* Нижняя косая: левый конец выше, правый ниже, с выступами */}
                 <polygon points="10,98 10,112 38,118 38,106" fill="currentColor"/>
                 <polygon points="52,106 52,118 80,112 80,98" fill="currentColor"/>
               </svg>
-            ) : tool.key === 'photo' ? (
-              <img
-                src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/f06131a3-f165-4a48-a22b-01f4f0548de3.png"
-                alt="Портрет"
-                style={{ width: 18, height: 18, objectFit: 'cover', flexShrink: 0, borderRadius: 2 }}
-              />
+            ) : tool.key === 'fio' ? (
+              <svg width="18" height="18" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+                <rect x="4" y="4" width="92" height="92" rx="14" fill={activePanel === 'fio' ? '#B8860B' : '#3a3a3a'} stroke={activePanel === 'fio' ? '#D4AF37' : '#555'} strokeWidth="3"/>
+                <text x="50" y="34" textAnchor="middle" fontSize="18" fontWeight="bold" fill={activePanel === 'fio' ? '#D4AF37' : '#888'} fontFamily="serif" letterSpacing="0.5">ФАМ</text>
+                <text x="50" y="57" textAnchor="middle" fontSize="18" fontWeight="bold" fill={activePanel === 'fio' ? '#D4AF37' : '#888'} fontFamily="serif" letterSpacing="0.5">ИМЯ</text>
+                <text x="50" y="80" textAnchor="middle" fontSize="14" fontWeight="bold" fill={activePanel === 'fio' ? '#D4AF37' : '#888'} fontFamily="serif" letterSpacing="0.5">ОТЧ</text>
+              </svg>
             ) : (
               <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={18} />
             )}
