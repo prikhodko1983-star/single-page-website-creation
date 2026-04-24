@@ -102,214 +102,139 @@ export const TextEditorModal = ({
 
   return (
     <div 
-      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto"
+      className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-50"
       onClick={(e) => {
         if (e.target === e.currentTarget) handleCancel();
       }}
     >
-      <Card className="w-full max-w-3xl my-auto">
-        <CardContent className="p-3 sm:p-4 max-h-[90vh] overflow-y-auto overscroll-contain">
-          <div className="flex justify-between items-center mb-4 sm:mb-6 sticky top-0 bg-card z-10 -mx-3 sm:-mx-4 px-3 sm:px-4 pb-3 border-b">
-            <h2 className="text-lg sm:text-xl font-bold">Редактор текста</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCancel}
-              className="h-10 w-10"
-            >
-              <Icon name="X" size={24} />
+      <Card className="w-full max-w-lg sm:my-4 rounded-b-none sm:rounded-b-lg max-h-[95vh] flex flex-col">
+        <CardContent className="p-3 flex flex-col min-h-0 flex-1">
+          {/* Шапка */}
+          <div className="flex justify-between items-center pb-2 border-b mb-2 flex-shrink-0">
+            <h2 className="text-base font-bold">Редактор текста</h2>
+            <button onClick={handleCancel} className="text-muted-foreground hover:text-foreground">
+              <Icon name="X" size={20} />
+            </button>
+          </div>
+
+          {/* Превью */}
+          <div className="relative bg-black/90 rounded-lg border border-border p-2 min-h-[90px] mb-2 flex-shrink-0">
+            <textarea
+              autoFocus
+              value={editingElement.content || ''}
+              onChange={(e) => setEditingElement({ ...editingElement, content: e.target.value })}
+              className="w-full min-h-[70px] resize-none bg-transparent border-none outline-none"
+              placeholder="Введите текст..."
+              style={{
+                fontSize: `${Math.min(editingElement.fontSize || 24, 36)}px`,
+                color: editingElement.color || '#FFFFFF',
+                fontFamily: editingElement.fontFamily?.split('|')[0] || 'serif',
+                fontWeight: editingElement.fontFamily?.split('|')[1] || '400',
+                fontStyle: editingElement.italic ? 'italic' : 'normal',
+                lineHeight: editingElement.lineHeight || 1.2,
+                letterSpacing: editingElement.letterSpacing ? `${editingElement.letterSpacing}px` : 'normal',
+                textAlign: editingElement.textAlign || 'center',
+                textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'keep-all',
+                overflowWrap: 'normal',
+                touchAction: 'manipulation',
+              }}
+            />
+          </div>
+
+          {/* Инструменты — скроллятся */}
+          <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
+
+            {/* Размер + Межстрочный + Межбуквенный в 2 колонки */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs text-muted-foreground">Размер: <span className="text-primary">{editingElement.fontSize || 24}px</span></Label>
+                <input type="range" min="12" max="72" value={editingElement.fontSize || 24}
+                  onChange={(e) => setEditingElement({ ...editingElement, fontSize: parseInt(e.target.value) })}
+                  className="w-full h-1.5 mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Между строк: <span className="text-primary">{editingElement.lineHeight?.toFixed(1) || '1.2'}</span></Label>
+                <input type="range" min="0.8" max="2.5" step="0.1" value={editingElement.lineHeight || 1.2}
+                  onChange={(e) => setEditingElement({ ...editingElement, lineHeight: parseFloat(e.target.value) })}
+                  className="w-full h-1.5 mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Между букв: <span className="text-primary">{editingElement.letterSpacing?.toFixed(1) || '0'}px</span></Label>
+                <input type="range" min="-2" max="10" step="0.5" value={editingElement.letterSpacing || 0}
+                  onChange={(e) => setEditingElement({ ...editingElement, letterSpacing: parseFloat(e.target.value) })}
+                  className="w-full h-1.5 mt-1" />
+              </div>
+              <div className="flex flex-col justify-end">
+                <Label className="text-xs text-muted-foreground mb-1">Курсив и выравнивание</Label>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setEditingElement({ ...editingElement, italic: !editingElement.italic })}
+                    className={`flex-1 h-7 rounded border text-xs flex items-center justify-center transition-all ${editingElement.italic ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-muted'}`}
+                  >
+                    <Icon name="Italic" size={13} />
+                  </button>
+                  {(['left', 'center', 'right'] as const).map((a) => (
+                    <button key={a}
+                      onClick={() => setEditingElement({ ...editingElement, textAlign: a })}
+                      className={`flex-1 h-7 rounded border text-xs flex items-center justify-center transition-all ${(editingElement.textAlign || 'center') === a ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-muted'}`}
+                    >
+                      <Icon name={a === 'left' ? 'AlignLeft' : a === 'center' ? 'AlignCenter' : 'AlignRight'} size={13} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Цвет */}
+            <div>
+              <Label className="text-xs text-muted-foreground">Цвет текста</Label>
+              <div className="flex gap-1.5 mt-1">
+                {[{ name: 'Золото', value: '#C9A84C' }, { name: 'Серебро', value: '#C0C0C0' }, { name: 'Белый', value: '#FFFFFF' }].map((c) => (
+                  <button key={c.value} title={c.name}
+                    onClick={() => setEditingElement({ ...editingElement, color: c.value })}
+                    className={`w-8 h-8 rounded-lg border-2 transition-all ${editingElement.color === c.value ? 'border-primary scale-110' : 'border-muted-foreground/30'}`}
+                    style={{ backgroundColor: c.value }}
+                  />
+                ))}
+                <input type="color" value={editingElement.color || '#FFFFFF'}
+                  onChange={(e) => setEditingElement({ ...editingElement, color: e.target.value })}
+                  className="w-8 h-8 rounded-lg border-2 cursor-pointer" title="Свой цвет" />
+              </div>
+            </div>
+
+            {/* Шрифты */}
+            {fonts.length > 0 && (
+              <div>
+                <Label className="text-xs text-muted-foreground">Шрифт</Label>
+                <div className="grid grid-cols-2 gap-1 mt-1">
+                  {fonts.map(font => (
+                    <button key={font.id}
+                      onClick={() => setEditingElement({ ...editingElement, fontFamily: font.fullStyle })}
+                      className={`text-left px-2 py-1 rounded transition-all border ${editingElement.fontFamily === font.fullStyle ? 'border-primary bg-primary/10' : 'border-border hover:bg-muted'}`}
+                    >
+                      <div className="text-[9px] text-muted-foreground leading-tight truncate">{font.name}</div>
+                      <div className="text-sm text-foreground truncate" style={{ fontFamily: font.style, fontWeight: font.weight }}>
+                        {font.example}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Кнопки */}
+          <div className="flex gap-2 pt-2 flex-shrink-0">
+            <Button className="flex-1 h-10 font-semibold" onClick={handleApply}>
+              <Icon name="Check" size={16} className="mr-1.5" />
+              Применить
+            </Button>
+            <Button variant="outline" onClick={handleCancel} className="h-10 px-4">
+              Отмена
             </Button>
           </div>
-          
-          <div className="space-y-4">
-            <div>
-              <div className="relative bg-black/90 rounded-lg border-2 border-border p-3 sm:p-4 min-h-[200px] sm:min-h-[280px]">
-                <textarea
-                  autoFocus
-                  value={editingElement.content || ''}
-                  onChange={(e) => setEditingElement({ ...editingElement, content: e.target.value })}
-                  className="w-full h-full min-h-[170px] sm:min-h-[250px] resize-none bg-transparent border-none outline-none"
-                  placeholder="Введите текст..."
-                  style={{
-                    fontSize: `${editingElement.fontSize || 24}px`,
-                    color: editingElement.color || '#FFFFFF',
-                    fontFamily: editingElement.fontFamily?.split('|')[0] || 'serif',
-                    fontWeight: editingElement.fontFamily?.split('|')[1] || '400',
-                    fontStyle: editingElement.italic ? 'italic' : 'normal',
-                    lineHeight: editingElement.lineHeight || 1.2,
-                    letterSpacing: editingElement.letterSpacing ? `${editingElement.letterSpacing}px` : 'normal',
-                    textAlign: editingElement.textAlign || 'center',
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'keep-all',
-                    overflowWrap: 'normal',
-                    touchAction: 'manipulation',
-                  }}
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-4 pb-4">
-            
-              <div>
-                <Label className="text-sm sm:text-base font-semibold">Размер шрифта: <span className="text-primary">{editingElement.fontSize || 24}px</span></Label>
-                <div className="flex gap-2 items-center mt-2">
-                  <input
-                    type="range"
-                    min="12"
-                    max="72"
-                    value={editingElement.fontSize || 24}
-                    onChange={(e) => setEditingElement({ ...editingElement, fontSize: parseInt(e.target.value) })}
-                    className="flex-1 h-2"
-                  />
-                  <Input
-                    type="number"
-                    min="12"
-                    max="120"
-                    value={editingElement.fontSize || 24}
-                    onChange={(e) => setEditingElement({ ...editingElement, fontSize: parseInt(e.target.value) || 24 })}
-                    className="w-16 sm:w-20 text-center text-base sm:text-lg font-semibold"
-                  />
-                </div>
-              </div>
-            
-              <div>
-                <Label className="text-sm sm:text-base font-semibold">Цвет текста</Label>
-                <div className="flex gap-2 mt-2">
-                  {[
-                    { name: 'Золото', value: '#C9A84C' },
-                    { name: 'Серебро', value: '#C0C0C0' },
-                    { name: 'Белый', value: '#FFFFFF' },
-                  ].map((c) => (
-                    <button
-                      key={c.value}
-                      title={c.name}
-                      onClick={() => setEditingElement({ ...editingElement, color: c.value })}
-                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 transition-all ${
-                        editingElement.color === c.value ? 'border-primary scale-110' : 'border-muted-foreground/30'
-                      }`}
-                      style={{ backgroundColor: c.value }}
-                    />
-                  ))}
-                  <input
-                    type="color"
-                    value={editingElement.color || '#FFFFFF'}
-                    onChange={(e) => setEditingElement({ ...editingElement, color: e.target.value })}
-                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 cursor-pointer"
-                    title="Свой цвет"
-                  />
-                </div>
-              </div>
-            
-              {fonts.length > 0 && (
-                <div>
-                  <Label className="text-sm sm:text-base font-semibold">Шрифт</Label>
-                  <div className="space-y-1.5 mt-2 max-h-40 overflow-y-auto rounded-lg border border-border p-1.5">
-                    {fonts.map(font => (
-                      <button
-                        key={font.id}
-                        onClick={() => setEditingElement({ ...editingElement, fontFamily: font.fullStyle })}
-                        className={`w-full text-left p-2 rounded transition-all ${
-                          editingElement.fontFamily === font.fullStyle ? 'border border-primary bg-primary/10' : 'border border-transparent hover:bg-muted'
-                        }`}
-                      >
-                        <div className="text-[10px] text-muted-foreground leading-tight">{font.name}</div>
-                        <div
-                          className="text-base sm:text-lg text-foreground"
-                          style={{ fontFamily: font.style, fontWeight: font.weight }}
-                        >
-                          {font.example}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <Label className="text-sm sm:text-base font-semibold">Между строк: <span className="text-primary">{editingElement.lineHeight?.toFixed(1) || '1.2'}</span></Label>
-                <input
-                  type="range"
-                  min="0.8"
-                  max="2.5"
-                  step="0.1"
-                  value={editingElement.lineHeight || 1.2}
-                  onChange={(e) => setEditingElement({ ...editingElement, lineHeight: parseFloat(e.target.value) })}
-                  className="w-full mt-2 h-2"
-                />
-              </div>
-            
-              <div>
-                <Label className="text-sm sm:text-base font-semibold">Между букв: <span className="text-primary">{editingElement.letterSpacing?.toFixed(1) || '0'}px</span></Label>
-                <input
-                  type="range"
-                  min="-2"
-                  max="10"
-                  step="0.5"
-                  value={editingElement.letterSpacing || 0}
-                  onChange={(e) => setEditingElement({ ...editingElement, letterSpacing: parseFloat(e.target.value) })}
-                  className="w-full mt-2 h-2"
-                />
-              </div>
-            
-              <div>
-                <Label className="text-sm sm:text-base font-semibold">Курсив</Label>
-                <Button
-                  variant={editingElement.italic ? "default" : "outline"}
-                  onClick={() => setEditingElement({ ...editingElement, italic: !editingElement.italic })}
-                  className="w-full mt-2 h-10 sm:h-12 font-italic"
-                >
-                  <Icon name={editingElement.italic ? "Check" : "Italic"} size={18} className="mr-2" />
-                  {editingElement.italic ? 'Включен' : 'Выключен'}
-                </Button>
-              </div>
-            
-              <div>
-                <Label className="text-sm sm:text-base font-semibold">Выравнивание</Label>
-                <div className="flex gap-2 mt-2">
-                  <Button
-                    variant={editingElement.textAlign === 'left' ? 'default' : 'outline'}
-                    onClick={() => setEditingElement({ ...editingElement, textAlign: 'left' })}
-                    className="flex-1 h-10 sm:h-12"
-                  >
-                    <Icon name="AlignLeft" size={18} />
-                  </Button>
-                  <Button
-                    variant={editingElement.textAlign === 'center' || !editingElement.textAlign ? 'default' : 'outline'}
-                    onClick={() => setEditingElement({ ...editingElement, textAlign: 'center' })}
-                    className="flex-1 h-10 sm:h-12"
-                  >
-                    <Icon name="AlignCenter" size={18} />
-                  </Button>
-                  <Button
-                    variant={editingElement.textAlign === 'right' ? 'default' : 'outline'}
-                    onClick={() => setEditingElement({ ...editingElement, textAlign: 'right' })}
-                    className="flex-1 h-10 sm:h-12"
-                  >
-                    <Icon name="AlignRight" size={18} />
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="flex gap-2 pt-4 pb-2">
-                <Button
-                  className="flex-1 h-12 sm:h-14 text-base sm:text-lg font-semibold"
-                  onClick={handleApply}
-                >
-                  <Icon name="Check" size={20} className="mr-2" />
-                  Применить
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleCancel}
-                  className="h-12 sm:h-14 px-4 sm:px-6 text-base sm:text-lg"
-                >
-                  Отмена
-                </Button>
-              </div>
-            </div>
-          </div>
-
         </CardContent>
       </Card>
     </div>
