@@ -240,7 +240,26 @@ export const MobileElementsToolbar = ({
                   <Icon name="X" size={16} />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3">
+              {/* Превью ФИО в выбранном шрифте */}
+              <div className="px-4 pb-2 flex-shrink-0">
+                <div className="rounded-lg bg-black/40 border border-white/20 flex flex-col items-center justify-center py-3 px-4 min-h-[64px]">
+                  {(() => {
+                    const f = fonts.find(f => f.id === selectedFont);
+                    const lines = [surname, name, patronymic].filter(Boolean);
+                    const preview = lines.length > 0 ? lines : ['Фамилия', 'Имя', 'Отчество'];
+                    return preview.map((line, i) => (
+                      <span
+                        key={i}
+                        className="text-white text-base text-center leading-tight"
+                        style={{ fontFamily: f?.style, fontWeight: f?.weight, opacity: lines.length === 0 ? 0.3 : 1 }}
+                      >
+                        {line}
+                      </span>
+                    ));
+                  })()}
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-2 space-y-3 min-h-0">
               <div className="space-y-2">
                 <Input
                   placeholder="Фамилия"
@@ -282,14 +301,16 @@ export const MobileElementsToolbar = ({
                   ))}
                 </div>
               </div>
-              <Button
-                className="w-full"
-                onClick={() => { addFIOElement(); close(); }}
-                disabled={!surname && !name && !patronymic}
-              >
-                <Icon name="Plus" size={16} className="mr-2" />
-                Добавить ФИО
-              </Button>
+              </div>
+              <div className="px-4 pb-4 flex-shrink-0">
+                <Button
+                  className="w-full"
+                  onClick={() => { addFIOElement(); close(); }}
+                  disabled={!surname && !name && !patronymic}
+                >
+                  <Icon name="Plus" size={16} className="mr-2" />
+                  Добавить ФИО
+                </Button>
               </div>
             </div>
           )}
