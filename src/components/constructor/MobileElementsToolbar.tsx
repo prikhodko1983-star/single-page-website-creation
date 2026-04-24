@@ -191,6 +191,12 @@ export const MobileElementsToolbar = ({
                 <polygon points="10,98 10,112 38,118 38,106" fill="currentColor"/>
                 <polygon points="52,106 52,118 80,112 80,98" fill="currentColor"/>
               </svg>
+            ) : tool.key === 'photo' ? (
+              <img
+                src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/f06131a3-f165-4a48-a22b-01f4f0548de3.png"
+                alt="Портрет"
+                style={{ width: 18, height: 18, objectFit: 'cover', flexShrink: 0, borderRadius: 2 }}
+              />
             ) : (
               <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={18} />
             )}
