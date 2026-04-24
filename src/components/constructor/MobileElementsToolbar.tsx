@@ -91,6 +91,13 @@ export const MobileElementsToolbar = ({
   isLoadingFlowers,
   addImageElement,
 }: MobileElementsToolbarProps) => {
+  const formatDateInput = (value: string, prev: string): string => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0, 2)}.${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4, 8)}`;
+  };
+
   const [activePanel, setActivePanel] = useState<ToolPanel>(null);
   const [mobileCustomText, setMobileCustomText] = useState('');
   const [mobileCustomTextFont, setMobileCustomTextFont] = useState('');
@@ -320,7 +327,9 @@ export const MobileElementsToolbar = ({
                   <Input
                     placeholder="01.01.1950"
                     value={birthDate}
-                    onChange={(e) => setBirthDate(e.target.value)}
+                    onChange={(e) => setBirthDate(formatDateInput(e.target.value, birthDate))}
+                    inputMode="numeric"
+                    maxLength={10}
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/30"
                   />
                 </div>
@@ -329,7 +338,9 @@ export const MobileElementsToolbar = ({
                   <Input
                     placeholder="01.01.2024"
                     value={deathDate}
-                    onChange={(e) => setDeathDate(e.target.value)}
+                    onChange={(e) => setDeathDate(formatDateInput(e.target.value, deathDate))}
+                    inputMode="numeric"
+                    maxLength={10}
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/30"
                   />
                 </div>
