@@ -317,6 +317,21 @@ export const MobileElementsToolbar = ({
                   />
                 </div>
               </div>
+              {/* Превью дат в выбранном шрифте */}
+              <div className="rounded-lg bg-white/5 border border-white/10 flex items-center justify-center py-3 px-4">
+                {(() => {
+                  const f = fonts.find(f => f.id === selectedDateFont);
+                  const preview = [birthDate, deathDate].filter(Boolean).join(' – ') || '1950 – 2024';
+                  return (
+                    <span
+                      className="text-white text-lg text-center"
+                      style={{ fontFamily: f?.style, fontWeight: f?.weight }}
+                    >
+                      {preview}
+                    </span>
+                  );
+                })()}
+              </div>
               <div className="space-y-1">
                 <Label className="text-xs text-white/50">Шрифт дат</Label>
                 <div className="grid grid-cols-3 gap-1.5">
