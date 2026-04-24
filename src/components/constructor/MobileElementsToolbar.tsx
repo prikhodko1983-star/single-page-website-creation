@@ -296,7 +296,24 @@ export const MobileElementsToolbar = ({
                   <Icon name="X" size={16} />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3">
+              {/* Превью — фиксировано, не скроллится */}
+              <div className="px-4 pt-1 flex-shrink-0">
+                <div className="rounded-lg bg-black/40 border border-white/20 flex items-center justify-center py-3 px-4">
+                  {(() => {
+                    const f = fonts.find(f => f.id === selectedDateFont);
+                    const preview = [birthDate, deathDate].filter(Boolean).join(' – ') || '1950 – 2024';
+                    return (
+                      <span
+                        className="text-white text-xl text-center"
+                        style={{ fontFamily: f?.style, fontWeight: f?.weight }}
+                      >
+                        {preview}
+                      </span>
+                    );
+                  })()}
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-2 space-y-3 min-h-0">
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
                   <Label className="text-xs text-white/50">Дата рождения</Label>
@@ -316,21 +333,6 @@ export const MobileElementsToolbar = ({
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/30"
                   />
                 </div>
-              </div>
-              {/* Превью дат в выбранном шрифте */}
-              <div className="rounded-lg bg-white/5 border border-white/10 flex items-center justify-center py-3 px-4">
-                {(() => {
-                  const f = fonts.find(f => f.id === selectedDateFont);
-                  const preview = [birthDate, deathDate].filter(Boolean).join(' – ') || '1950 – 2024';
-                  return (
-                    <span
-                      className="text-white text-lg text-center"
-                      style={{ fontFamily: f?.style, fontWeight: f?.weight }}
-                    >
-                      {preview}
-                    </span>
-                  );
-                })()}
               </div>
               <div className="space-y-1">
                 <Label className="text-xs text-white/50">Шрифт дат</Label>
@@ -353,6 +355,8 @@ export const MobileElementsToolbar = ({
                   ))}
                 </div>
               </div>
+              </div>
+              <div className="px-4 pb-4 flex-shrink-0">
               <Button
                 className="w-full"
                 onClick={() => { addDatesElement(); close(); }}
