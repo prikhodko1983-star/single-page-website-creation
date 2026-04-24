@@ -188,7 +188,7 @@ export const MobileElementsToolbar = ({
                 <polygon points="52,106 52,118 80,112 80,98" fill="currentColor"/>
               </svg>
             ) : tool.key === 'fio' ? (
-              <svg width="18" height="18" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+              <svg width="34" height="34" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
                 <rect x="4" y="4" width="92" height="92" rx="14" fill={activePanel === 'fio' ? '#B8860B' : '#3a3a3a'} stroke={activePanel === 'fio' ? '#D4AF37' : '#555'} strokeWidth="3"/>
                 <text x="50" y="34" textAnchor="middle" fontSize="18" fontWeight="bold" fill={activePanel === 'fio' ? '#D4AF37' : '#888'} fontFamily="serif" letterSpacing="0.5">ФАМ</text>
                 <text x="50" y="57" textAnchor="middle" fontSize="18" fontWeight="bold" fill={activePanel === 'fio' ? '#D4AF37' : '#888'} fontFamily="serif" letterSpacing="0.5">ИМЯ</text>
