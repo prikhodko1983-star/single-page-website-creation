@@ -530,7 +530,7 @@ export const MobileElementsToolbar = ({
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
                 </div>
               ) : crosses.length > 0 ? (
-                <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                <div className="grid grid-cols-3 gap-2">
                   {crosses.map((cross) => (
                     <button
                       key={cross.id}
