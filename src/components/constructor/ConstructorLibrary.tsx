@@ -338,44 +338,52 @@ export const ConstructorLibrary = ({
                       );
                     })()}
 
+                    <div className="space-y-1">
+                      <Label className="text-[10px] text-white/40">Дата рождения</Label>
+                      <Input placeholder="01.01.1950" value={birthDate} inputMode="numeric" maxLength={10} onChange={(e) => setBirthDate(formatDateInput(e.target.value))} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] text-white/40">Дата смерти</Label>
+                      <Input placeholder="01.01.2020" value={deathDate} inputMode="numeric" maxLength={10} onChange={(e) => setDeathDate(formatDateInput(e.target.value))} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
+                    </div>
+
                     {/* Пресеты расположения */}
                     <p className="text-[10px] text-white/40 pt-1">Расположение</p>
                     {(() => {
                       const f = fonts.find(f => f.id === selectedDateFont);
                       const b = birthDate || '15.03.1950';
                       const d = deathDate || '07.11.2024';
-                      const disabled = !birthDate && !deathDate;
                       const presets: Array<{ key: 'inline' | 'stacked' | 'offset'; label: string; preview: string; align: 'center' | 'left' }> = [
                         { key: 'inline', label: 'В строку', preview: `${b} – ${d}`, align: 'center' },
                         { key: 'stacked', label: 'Столбцом', preview: `${b}\n${d}`, align: 'center' },
                         { key: 'offset', label: 'Со сдвигом', preview: `${b}\n      ${d}`, align: 'left' },
                       ];
                       return (
-                        <div className="grid grid-cols-3 gap-2 -mx-3">
+                        <div className="grid grid-cols-3 gap-2">
                           {presets.map(p => {
                             const isActive = selectedDatePreset === p.key;
                             return (
                               <button
                                 key={p.key}
                                 onClick={() => setSelectedDatePreset(p.key)}
-                                className={`flex flex-col items-center gap-2 py-3 px-2 transition-all group`}
+                                className={`flex flex-col items-center gap-1.5 p-2 rounded border transition-all group ${
+                                  isActive
+                                    ? 'border-primary bg-primary/15'
+                                    : 'border-white/10 hover:border-primary/60 hover:bg-primary/10'
+                                }`}
                               >
                                 <div
-                                  className={`rounded-md w-full flex items-center justify-center min-h-[56px] transition-all overflow-hidden ${
-                                    p.key === 'inline' ? 'px-1 py-2' : 'px-2 py-3'
-                                  } ${
-                                    isActive
-                                      ? 'bg-primary/15 ring-2 ring-primary'
-                                      : 'bg-black/60 hover:bg-black/80'
-                                  }`}
+                                  className={`rounded w-full flex items-center justify-center min-h-[40px] overflow-hidden ${
+                                    p.key === 'inline' ? 'px-1 py-2' : 'px-2 py-2'
+                                  } ${isActive ? 'bg-black/60' : 'bg-black/50'}`}
                                 >
                                   <span
                                     className={`text-white ${p.key === 'inline' ? 'whitespace-nowrap' : 'whitespace-pre'}`}
                                     style={{
                                       fontFamily: f?.style,
                                       fontWeight: f?.weight,
-                                      fontSize: p.key === 'inline' ? '7.5px' : '11px',
-                                      lineHeight: 1.2,
+                                      fontSize: p.key === 'inline' ? '6px' : '9px',
+                                      lineHeight: 1.3,
                                       textAlign: p.align,
                                       display: 'block',
                                       width: '100%',
@@ -391,15 +399,6 @@ export const ConstructorLibrary = ({
                         </div>
                       );
                     })()}
-
-                    <div className="space-y-1">
-                      <Label className="text-[10px] text-white/40">Дата рождения</Label>
-                      <Input placeholder="01.01.1950" value={birthDate} inputMode="numeric" maxLength={10} onChange={(e) => setBirthDate(formatDateInput(e.target.value))} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[10px] text-white/40">Дата смерти</Label>
-                      <Input placeholder="01.01.2020" value={deathDate} inputMode="numeric" maxLength={10} onChange={(e) => setDeathDate(formatDateInput(e.target.value))} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
-                    </div>
 
                     <p className="text-[10px] text-white/40 pt-1">Шрифт</p>
                     <div className="grid grid-cols-2 gap-1">
