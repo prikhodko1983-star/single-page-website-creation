@@ -499,6 +499,9 @@ const PrintOrder = () => {
           <div className="po-field" style={{ marginBottom: 12, fontSize: "inherit" }}>
             <b>Заказчик:</b> <span style={{ marginLeft: 6 }}>{customerName || "___"}</span>
           </div>
+          <div style={{ marginBottom: 12, fontSize: "inherit" }}>
+            С эскизом согласен(на), материал осмотрен, претензий не имею
+          </div>
 
           <div className="po-extra-blocks">
             {extraBlocks.map((block) => (
