@@ -36,7 +36,7 @@ interface ConstructorLibraryProps {
   addEpitaphElement: (customText?: string) => void;
   addImageElement: (src: string, type: 'image' | 'cross' | 'flower') => void;
   addFIOElement: () => void;
-  addDatesElement: () => void;
+  addDatesElement: (preset?: 'inline' | 'stacked' | 'offset') => void;
   handlePhotoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   photoInputRef: React.RefObject<HTMLInputElement>;
   surname: string;
@@ -452,15 +452,16 @@ export const ConstructorLibrary = ({
                     {/* Превью дат */}
                     {(() => {
                       const f = fonts.find(f => f.id === selectedDateFont);
-                      const preview = [birthDate, deathDate].filter(Boolean).join(' – ') || '1950 – 2024';
+                      const b = birthDate || '1950';
+                      const d = deathDate || '2024';
                       const isEmpty = !birthDate && !deathDate;
                       return (
                         <div className="rounded-lg bg-black/40 border border-white/10 flex items-center justify-center py-3 px-4">
                           <span
-                            className="text-white text-lg text-center"
+                            className="text-white text-lg text-center whitespace-pre"
                             style={{ fontFamily: f?.style, fontWeight: f?.weight, opacity: isEmpty ? 0.3 : 1 }}
                           >
-                            {preview}
+                            {`${b} – ${d}`}
                           </span>
                         </div>
                       );
@@ -483,9 +484,44 @@ export const ConstructorLibrary = ({
                         </button>
                       ))}
                     </div>
-                    <Button className="w-full h-8 text-xs mt-1" onClick={() => { addDatesElement(); }} disabled={!birthDate && !deathDate}>
-                      <Icon name="Calendar" size={14} className="mr-1" /> Добавить даты
-                    </Button>
+                    {/* Пресеты расположения */}
+                    <p className="text-[10px] text-white/40 pt-1">Расположение</p>
+                    {(() => {
+                      const f = fonts.find(f => f.id === selectedDateFont);
+                      const b = birthDate || '1950';
+                      const d = deathDate || '2024';
+                      const disabled = !birthDate && !deathDate;
+                      const presets: Array<{ key: 'inline' | 'stacked' | 'offset'; label: string; preview: string; align: 'center' | 'left' }> = [
+                        { key: 'inline', label: 'В строку', preview: `${b} – ${d}`, align: 'center' },
+                        { key: 'stacked', label: 'Столбцом', preview: `${b}\n${d}`, align: 'center' },
+                        { key: 'offset', label: 'Со сдвигом', preview: `${b}\n   ${d}`, align: 'left' },
+                      ];
+                      return (
+                        <div className="grid grid-cols-3 gap-1.5">
+                          {presets.map(p => (
+                            <button
+                              key={p.key}
+                              disabled={disabled}
+                              onClick={() => addDatesElement(p.key)}
+                              className="flex flex-col items-center gap-1.5 p-2 rounded border border-white/10 hover:border-primary/60 hover:bg-primary/10 transition-all disabled:opacity-30 disabled:cursor-default"
+                            >
+                              <div
+                                className="bg-black/50 rounded w-full flex items-center justify-center py-1.5 px-1 min-h-[36px]"
+                                style={{ textAlign: p.align }}
+                              >
+                                <span
+                                  className="text-white leading-tight whitespace-pre"
+                                  style={{ fontFamily: f?.style, fontWeight: f?.weight, fontSize: '8px' }}
+                                >
+                                  {p.preview}
+                                </span>
+                              </div>
+                              <span className="text-[9px] text-white/50 text-center leading-tight">{p.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
 

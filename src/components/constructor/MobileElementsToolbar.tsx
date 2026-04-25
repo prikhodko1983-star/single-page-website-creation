@@ -26,7 +26,7 @@ interface MobileElementsToolbarProps {
   addTextElement: (customText?: string, customFont?: string) => void;
   addEpitaphElement: (customText?: string) => void;
   addFIOElement: () => void;
-  addDatesElement: () => void;
+  addDatesElement: (preset?: 'inline' | 'stacked' | 'offset') => void;
   handlePhotoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   photoInputRef: React.RefObject<HTMLInputElement>;
   surname: string;
@@ -387,11 +387,47 @@ export const MobileElementsToolbar = ({
                   ))}
                 </div>
               </div>
+              {/* Пресеты расположения */}
+              <div className="space-y-1">
+                <Label className="text-xs text-white/50">Расположение</Label>
+                {(() => {
+                  const f = fonts.find(f => f.id === selectedDateFont);
+                  const b = birthDate || '1950';
+                  const d = deathDate || '2024';
+                  const presets: Array<{ key: 'inline' | 'stacked' | 'offset'; label: string; preview: string }> = [
+                    { key: 'inline', label: 'В строку', preview: `${b} – ${d}` },
+                    { key: 'stacked', label: 'Столбцом', preview: `${b}\n${d}` },
+                    { key: 'offset', label: 'Со сдвигом', preview: `${b}\n   ${d}` },
+                  ];
+                  return (
+                    <div className="grid grid-cols-3 gap-2">
+                      {presets.map(p => (
+                        <button
+                          key={p.key}
+                          onClick={() => { addDatesElement(p.key); close(); }}
+                          disabled={!birthDate && !deathDate}
+                          className="flex flex-col items-center gap-1.5 p-2 rounded border border-white/10 hover:border-primary/60 hover:bg-primary/10 transition-all disabled:opacity-30 disabled:cursor-default"
+                        >
+                          <div className="bg-black/50 rounded w-full flex items-center justify-center py-2 px-1 min-h-[40px]">
+                            <span
+                              className="text-white leading-tight whitespace-pre text-center"
+                              style={{ fontFamily: f?.style, fontWeight: f?.weight, fontSize: '9px' }}
+                            >
+                              {p.preview}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-white/50 text-center leading-tight">{p.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
               </div>
               <div className="px-4 pb-4 flex-shrink-0">
               <Button
                 className="w-full"
-                onClick={() => { addDatesElement(); close(); }}
+                onClick={() => { addDatesElement('inline'); close(); }}
               >
                 <Icon name="Plus" size={16} className="mr-2" />
                 Добавить даты

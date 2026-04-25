@@ -519,11 +519,29 @@ const Constructor = () => {
     setPatronymic('');
   };
 
-  const addDatesElement = () => {
+  const addDatesElement = (preset: 'inline' | 'stacked' | 'offset' = 'inline') => {
     if (!birthDate && !deathDate) return;
     
-    const datesText = `${birthDate} – ${deathDate}`.trim();
     const selectedFontData = fonts.find(f => f.id === selectedDateFont);
+    const fontStyle = selectedFontData?.fullStyle || 'serif';
+
+    let datesText: string;
+    let textAlign: 'left' | 'center' | 'right' = 'center';
+    let lineHeight = 1.4;
+
+    if (preset === 'inline') {
+      datesText = `${birthDate} – ${deathDate}`.trim();
+    } else if (preset === 'stacked') {
+      datesText = `${birthDate}\n${deathDate}`.trim();
+      lineHeight = 1.6;
+    } else {
+      // offset — рождение слева, смерть со сдвигом вправо как на памятниках
+      const birth = birthDate || '';
+      const death = deathDate || '';
+      datesText = `${birth}\n      ${death}`.trim();
+      textAlign = 'left';
+      lineHeight = 1.6;
+    }
     
     const newElement: CanvasElement = {
       id: Date.now().toString(),
@@ -536,8 +554,10 @@ const Constructor = () => {
       fontSize: 20,
       color: '#FFFFFF',
       rotation: 0,
-      fontFamily: selectedFontData?.fullStyle || 'serif',
+      fontFamily: fontStyle,
       autoSize: true,
+      textAlign,
+      lineHeight,
     };
     pushToHistory(prev => [...prev, newElement]);
     
