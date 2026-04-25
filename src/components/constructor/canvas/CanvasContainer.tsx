@@ -106,7 +106,10 @@ export const CanvasContainer: React.FC<CanvasContainerProps> = ({
         onDoubleClick={onCanvasDoubleClick}
         onContextMenu={(e) => e.preventDefault()}
         onMouseDown={(e) => {
-          if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'IMG') {
+          const target = e.target as HTMLElement;
+          const isBackground = target === e.currentTarget || 
+            (target.tagName === 'IMG' && target.getAttribute('alt') === 'Памятник');
+          if (isBackground) {
             setSelectedElement(null);
             onCanvasMouseDown(e);
           }
