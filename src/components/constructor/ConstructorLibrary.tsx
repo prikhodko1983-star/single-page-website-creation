@@ -492,18 +492,20 @@ export const ConstructorLibrary = ({
                                 className={`flex flex-col items-center gap-2 py-3 px-2 transition-all group`}
                               >
                                 <div
-                                  className={`rounded-md w-full flex items-center justify-center py-3 px-2 min-h-[56px] transition-all ${
+                                  className={`rounded-md w-full flex items-center justify-center min-h-[56px] transition-all overflow-hidden ${
+                                    p.key === 'inline' ? 'px-1 py-2' : 'px-2 py-3'
+                                  } ${
                                     isActive
                                       ? 'bg-primary/15 ring-2 ring-primary'
                                       : 'bg-black/60 hover:bg-black/80'
                                   }`}
                                 >
                                   <span
-                                    className="text-white whitespace-pre-wrap break-all"
+                                    className={`text-white ${p.key === 'inline' ? 'whitespace-nowrap' : 'whitespace-pre'}`}
                                     style={{
                                       fontFamily: f?.style,
                                       fontWeight: f?.weight,
-                                      fontSize: p.key === 'inline' ? '8px' : '11px',
+                                      fontSize: p.key === 'inline' ? '7.5px' : '11px',
                                       lineHeight: 1.2,
                                       textAlign: p.align,
                                       display: 'block',
