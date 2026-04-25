@@ -2757,7 +2757,7 @@ const Constructor = () => {
   return (
     <div className="h-screen w-screen bg-[#111] text-foreground flex flex-col overflow-hidden">
       {/* Top toolbar */}
-      <div className="fixed top-0 left-0 right-0 h-12 flex-shrink-0 bg-[#1a1a1a] border-b border-white/10 flex items-center px-3 gap-1 z-50">
+      <div className="fixed top-0 left-0 right-0 h-12 flex-shrink-0 bg-[#1a1a1a] flex items-center px-3 gap-1 z-50">
         <Button
           variant="ghost"
           size="sm"
