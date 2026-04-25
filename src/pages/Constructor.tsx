@@ -36,11 +36,9 @@ interface CanvasElement {
 
 const MAX_HISTORY = 50;
 
-type ElementsUpdater = CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[]);
-
 type HistoryAction =
-  | { type: 'SET'; updater: ElementsUpdater }
-  | { type: 'PUSH'; updater: ElementsUpdater }
+  | { type: 'SET'; elements: CanvasElement[] }
+  | { type: 'PUSH'; elements: CanvasElement[] }
   | { type: 'UNDO' }
   | { type: 'REDO' };
 
@@ -50,18 +48,13 @@ interface HistoryState {
   future: CanvasElement[][];
 }
 
-function resolveUpdater(updater: ElementsUpdater, present: CanvasElement[]): CanvasElement[] {
-  return typeof updater === 'function' ? updater(present) : updater;
-}
-
 function historyReducer(state: HistoryState, action: HistoryAction): HistoryState {
   switch (action.type) {
     case 'SET':
-      return { past: [], present: resolveUpdater(action.updater, state.present), future: [] };
+      return { past: [], present: action.elements, future: [] };
     case 'PUSH': {
-      const next = resolveUpdater(action.updater, state.present);
       const past = [...state.past, state.present].slice(-MAX_HISTORY);
-      return { past, present: next, future: [] };
+      return { past, present: action.elements, future: [] };
     }
     case 'UNDO': {
       if (state.past.length === 0) return state;
@@ -94,13 +87,19 @@ const Constructor = () => {
   const canUndo = historyState.past.length > 0;
   const canRedo = historyState.future.length > 0;
 
-  const setElements = useCallback((updater: ElementsUpdater) => {
-    dispatchHistory({ type: 'SET', updater });
-  }, []);
+  const setElements = useCallback((updater: CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[]), pushHistory = false) => {
+    dispatchHistory({
+      type: pushHistory ? 'PUSH' : 'SET',
+      elements: typeof updater === 'function' ? updater(historyState.present) : updater,
+    });
+  }, [historyState.present]);
 
-  const pushHistory = useCallback((updater: ElementsUpdater) => {
-    dispatchHistory({ type: 'PUSH', updater });
-  }, []);
+  const pushHistory = useCallback((updater: CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[])) => {
+    dispatchHistory({
+      type: 'PUSH',
+      elements: typeof updater === 'function' ? updater(historyState.present) : updater,
+    });
+  }, [historyState.present]);
 
   const undo = useCallback(() => dispatchHistory({ type: 'UNDO' }), []);
   const redo = useCallback(() => dispatchHistory({ type: 'REDO' }), []);
@@ -108,14 +107,6 @@ const Constructor = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
-  const isDraggingRef = useRef(false);
-  const isResizingRef = useRef(false);
-  const isRotatingRef = useRef(false);
-
-  // Синхронные обёртки — обновляют ref сразу, до следующего рендера
-  const setIsDraggingS = (v: boolean) => { isDraggingRef.current = v; setIsDragging(v); };
-  const setIsResizingS = (v: boolean) => { isResizingRef.current = v; setIsResizing(v); };
-  const setIsRotatingS = (v: boolean) => { isRotatingRef.current = v; setIsRotating(v); };
   const [rotateMode, setRotateMode] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0, fontSize: 0 });
@@ -704,7 +695,7 @@ const Constructor = () => {
   const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
     e.stopPropagation();
     setSelectedElement(elementId);
-    setIsDraggingS(true);
+    setIsDragging(true);
     
     const element = elements.find(el => el.id === elementId);
     if (!element || !canvasRef.current) return;
@@ -755,7 +746,7 @@ const Constructor = () => {
     // Один палец = перетаскивание
     if (!canvasRef.current) return;
     
-    setIsDraggingS(true);
+    setIsDragging(true);
     const touch = e.touches[0];
     const canvasRect = canvasRef.current.getBoundingClientRect();
     
@@ -1015,22 +1006,22 @@ const Constructor = () => {
   };
 
   const handleMouseUp = () => {
-    if (isDraggingRef.current || isResizingRef.current || isRotatingRef.current) {
-      dispatchHistory({ type: 'PUSH', updater: (prev) => prev });
+    if (isDragging || isResizing || isRotating) {
+      dispatchHistory({ type: 'PUSH', elements: historyState.present });
     }
-    setIsDraggingS(false);
-    setIsResizingS(false);
-    setIsRotatingS(false);
+    setIsDragging(false);
+    setIsResizing(false);
+    setIsRotating(false);
     setIsPanning(false);
   };
 
   const handleTouchEnd = () => {
-    if (isDraggingRef.current || isResizingRef.current || isRotatingRef.current) {
-      dispatchHistory({ type: 'PUSH', updater: (prev) => prev });
+    if (isDragging || isResizing || isRotating) {
+      dispatchHistory({ type: 'PUSH', elements: historyState.present });
     }
-    setIsDraggingS(false);
-    setIsResizingS(false);
-    setIsRotatingS(false);
+    setIsDragging(false);
+    setIsResizing(false);
+    setIsRotating(false);
     setTouchRotateStart(null);
     setTouchPinchStart(null);
     setCanvasPinchStart(null);
@@ -1047,7 +1038,7 @@ const Constructor = () => {
     if (rotateMode) {
       // Режим вращения
       const canvasRect = canvasRef.current.getBoundingClientRect();
-      setIsRotatingS(true);
+      setIsRotating(true);
       setRotateStart({
         x: e.clientX - canvasRect.left,
         y: e.clientY - canvasRect.top,
@@ -1057,7 +1048,7 @@ const Constructor = () => {
       });
     } else {
       // Режим масштабирования
-      setIsResizingS(true);
+      setIsResizing(true);
       setResizeStart({
         x: e.clientX,
         y: e.clientY,
@@ -1079,7 +1070,7 @@ const Constructor = () => {
     if (rotateMode) {
       // Режим вращения
       const canvasRect = canvasRef.current.getBoundingClientRect();
-      setIsRotatingS(true);
+      setIsRotating(true);
       setRotateStart({
         x: touch.clientX - canvasRect.left,
         y: touch.clientY - canvasRect.top,
@@ -1089,7 +1080,7 @@ const Constructor = () => {
       });
     } else {
       // Режим масштабирования
-      setIsResizingS(true);
+      setIsResizing(true);
       setResizeStart({
         x: touch.clientX,
         y: touch.clientY,
@@ -1107,7 +1098,7 @@ const Constructor = () => {
     
     const canvasRect = canvasRef.current.getBoundingClientRect();
     setSelectedElement(elementId);
-    setIsRotatingS(true);
+    setIsRotating(true);
     setRotateStart({
       x: e.clientX - canvasRect.left,
       y: e.clientY - canvasRect.top,
@@ -1125,7 +1116,7 @@ const Constructor = () => {
     const touch = e.touches[0];
     const canvasRect = canvasRef.current.getBoundingClientRect();
     setSelectedElement(elementId);
-    setIsRotatingS(true);
+    setIsRotating(true);
     setRotateStart({
       x: touch.clientX - canvasRect.left,
       y: touch.clientY - canvasRect.top,
@@ -1694,7 +1685,7 @@ const Constructor = () => {
           console.log('✅ Workflow данные извлечены из PNG, элементов:', parsedData.elements.length);
           
           setMonumentImage(parsedData.monumentImage);
-          dispatchHistory({ type: 'SET', updater: parsedData.elements });
+          dispatchHistory({ type: 'SET', elements: parsedData.elements });
           setSelectedElement(null);
           
           toast({
@@ -1742,7 +1733,7 @@ const Constructor = () => {
         console.log('✅ JSON валиден, элементов:', jsonData.elements.length);
         
         setMonumentImage(jsonData.monumentImage);
-        dispatchHistory({ type: 'SET', updater: jsonData.elements });
+        dispatchHistory({ type: 'SET', elements: jsonData.elements });
         setSelectedElement(null);
         
         toast({
