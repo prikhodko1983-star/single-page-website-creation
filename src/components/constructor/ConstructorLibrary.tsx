@@ -223,7 +223,17 @@ export const ConstructorLibrary = ({
                       }`}
                       title={tool.label}
                     >
-                      {tool.key === 'cross' ? (
+                      {tool.key === '_catalog' ? (
+                        /* Памятник: арочная стела с постаментом */
+                        <svg width="17" height="17" viewBox="0 0 80 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+                          {/* Постамент низ */}
+                          <rect x="0" y="88" width="80" height="12" rx="1" fill="currentColor"/>
+                          {/* Постамент средний */}
+                          <rect x="8" y="78" width="64" height="12" rx="1" fill="currentColor"/>
+                          {/* Стела — прямоугольник с аркой сверху */}
+                          <path d="M20 78 L20 30 Q20 6 40 6 Q60 6 60 30 L60 78 Z" fill="currentColor"/>
+                        </svg>
+                      ) : tool.key === 'cross' ? (
                         <svg width="17" height="17" viewBox="0 0 90 160" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
                           <rect x="38" y="0" width="14" height="160" fill="currentColor"/>
                           <rect x="28" y="8" width="34" height="14" fill="currentColor"/>
