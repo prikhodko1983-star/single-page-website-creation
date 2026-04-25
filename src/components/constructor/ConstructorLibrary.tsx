@@ -71,7 +71,7 @@ interface ConstructorLibraryProps {
 type DesktopToolPanel = '_catalog' | 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'flower' | 'imageCatalog' | null;
 
 const DESKTOP_TOOLS = [
-  { key: '_catalog', icon: 'LayoutGrid', label: 'Каталог' },
+  { key: '_catalog', icon: 'Milestone', label: 'Памятник' },
   { key: 'fio' as DesktopToolPanel, icon: 'User', label: 'ФИО' },
   { key: 'dates' as DesktopToolPanel, icon: 'Calendar', label: 'Даты' },
   { key: 'epitaph' as DesktopToolPanel, icon: 'Quote', label: 'Эпитафия' },
@@ -565,7 +565,10 @@ export const ConstructorLibrary = ({
                 {/* Каталог памятников */}
                 {activeToolPanel === '_catalog' && (
                   <div className="flex flex-col h-full">
-                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider px-3 pt-3 pb-2 shrink-0">Каталог памятников</p>
+                    <div className="flex items-center gap-2 px-3 pt-3 pb-2 shrink-0">
+                      <Icon name="Milestone" size={14} className="text-white/50" />
+                      <p className="text-xs font-semibold text-white/60 uppercase tracking-wider">Каталог памятников</p>
+                    </div>
                     {isLoadingCatalog ? (
                       <div className="flex items-center justify-center py-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
