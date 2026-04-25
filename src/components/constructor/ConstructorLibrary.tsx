@@ -499,11 +499,11 @@ export const ConstructorLibrary = ({
                                   }`}
                                 >
                                   <span
-                                    className="text-white whitespace-pre"
+                                    className="text-white whitespace-pre-wrap break-all"
                                     style={{
                                       fontFamily: f?.style,
                                       fontWeight: f?.weight,
-                                      fontSize: p.key === 'inline' ? '10px' : '12px',
+                                      fontSize: p.key === 'inline' ? '8px' : '11px',
                                       lineHeight: 1.2,
                                       textAlign: p.align,
                                       display: 'block',
