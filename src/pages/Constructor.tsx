@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback, useReducer } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ConstructorLibrary } from "@/components/constructor/ConstructorLibrary";
@@ -34,6 +34,45 @@ interface CanvasElement {
   italic?: boolean;
 }
 
+const MAX_HISTORY = 50;
+
+type HistoryAction =
+  | { type: 'SET'; elements: CanvasElement[] }
+  | { type: 'PUSH'; elements: CanvasElement[] }
+  | { type: 'UNDO' }
+  | { type: 'REDO' };
+
+interface HistoryState {
+  past: CanvasElement[][];
+  present: CanvasElement[];
+  future: CanvasElement[][];
+}
+
+function historyReducer(state: HistoryState, action: HistoryAction): HistoryState {
+  switch (action.type) {
+    case 'SET':
+      return { past: [], present: action.elements, future: [] };
+    case 'PUSH': {
+      const past = [...state.past, state.present].slice(-MAX_HISTORY);
+      return { past, present: action.elements, future: [] };
+    }
+    case 'UNDO': {
+      if (state.past.length === 0) return state;
+      const previous = state.past[state.past.length - 1];
+      const past = state.past.slice(0, -1);
+      return { past, present: previous, future: [state.present, ...state.future] };
+    }
+    case 'REDO': {
+      if (state.future.length === 0) return state;
+      const next = state.future[0];
+      const future = state.future.slice(1);
+      return { past: [...state.past, state.present], present: next, future };
+    }
+    default:
+      return state;
+  }
+}
+
 const Constructor = () => {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -43,7 +82,27 @@ const Constructor = () => {
   const [savedDesigns, setSavedDesigns] = useState<Array<{monumentImage: string, elements: CanvasElement[], timestamp: number}>>([]);
   
   const [monumentImage, setMonumentImage] = useState<string>('https://storage.yandexcloud.net/sitevek/5474527360758972468.jpg');
-  const [elements, setElements] = useState<CanvasElement[]>([]);
+  const [historyState, dispatchHistory] = useReducer(historyReducer, { past: [], present: [], future: [] });
+  const elements = historyState.present;
+  const canUndo = historyState.past.length > 0;
+  const canRedo = historyState.future.length > 0;
+
+  const setElements = useCallback((updater: CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[]), pushHistory = false) => {
+    dispatchHistory({
+      type: pushHistory ? 'PUSH' : 'SET',
+      elements: typeof updater === 'function' ? updater(historyState.present) : updater,
+    });
+  }, [historyState.present]);
+
+  const pushHistory = useCallback((updater: CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[])) => {
+    dispatchHistory({
+      type: 'PUSH',
+      elements: typeof updater === 'function' ? updater(historyState.present) : updater,
+    });
+  }, [historyState.present]);
+
+  const undo = useCallback(() => dispatchHistory({ type: 'UNDO' }), []);
+  const redo = useCallback(() => dispatchHistory({ type: 'REDO' }), []);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -103,6 +162,29 @@ const Constructor = () => {
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
   const prevCanvasSizeRef = useRef<{ width: number; height: number } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        const active = document.activeElement;
+        const isInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || (active as HTMLElement).isContentEditable);
+        if (!isInput) {
+          e.preventDefault();
+          undo();
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        const active = document.activeElement;
+        const isInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || (active as HTMLElement).isContentEditable);
+        if (!isInput) {
+          e.preventDefault();
+          redo();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, redo]);
 
   const loadCatalog = async () => {
     setIsLoadingCatalog(true);
@@ -322,7 +404,7 @@ const Constructor = () => {
       autoSize: true,
       fontFamily: customFont,
     };
-    setElements(prev => [...prev, newElement]);
+    pushHistory(prev => [...prev, newElement]);
   };
 
   const addImageElement = async (src: string, type: 'image' | 'cross' | 'flower') => {
@@ -377,7 +459,7 @@ const Constructor = () => {
       screenMode: true,
       processedSrc,
     };
-    setElements(prev => [...prev, newElement]);
+    pushHistory(prev => [...prev, newElement]);
   };
 
   const addEpitaphElement = (customText?: string) => {
@@ -394,7 +476,7 @@ const Constructor = () => {
       rotation: 0,
       autoSize: true,
     };
-    setElements(prev => [...prev, newElement]);
+    pushHistory(prev => [...prev, newElement]);
   };
 
   const addFIOElement = () => {
@@ -418,7 +500,7 @@ const Constructor = () => {
       autoSize: true,
       lineHeight: 1.05,
     };
-    setElements(prev => [...prev, newElement]);
+    pushHistory(prev => [...prev, newElement]);
     
     setSurname('');
     setName('');
@@ -444,7 +526,7 @@ const Constructor = () => {
       rotation: 0,
       fontFamily: selectedFontData?.fullStyle || 'serif',
     };
-    setElements(prev => [...prev, newElement]);
+    pushHistory(prev => [...prev, newElement]);
     
     setBirthDate('');
     setDeathDate('');
@@ -571,7 +653,7 @@ const Constructor = () => {
           screenMode: true,
           processedSrc,
         };
-        setElements(prev => [...prev, newElement]);
+        pushHistory(prev => [...prev, newElement]);
         setIsMobileLibraryOpen(false);
       };
       img.src = photoUrl;
@@ -598,7 +680,7 @@ const Constructor = () => {
   };
 
   const handleInlineTextChange = (elementId: string, newContent: string, textareaElement?: HTMLTextAreaElement) => {
-    setElements(prev => prev.map(el => {
+    pushHistory(prev => prev.map(el => {
       if (el.id === elementId) {
         return { ...el, content: newContent };
       }
@@ -924,6 +1006,9 @@ const Constructor = () => {
   };
 
   const handleMouseUp = () => {
+    if (isDragging || isResizing || isRotating) {
+      dispatchHistory({ type: 'PUSH', elements: historyState.present });
+    }
     setIsDragging(false);
     setIsResizing(false);
     setIsRotating(false);
@@ -931,6 +1016,9 @@ const Constructor = () => {
   };
 
   const handleTouchEnd = () => {
+    if (isDragging || isResizing || isRotating) {
+      dispatchHistory({ type: 'PUSH', elements: historyState.present });
+    }
     setIsDragging(false);
     setIsResizing(false);
     setIsRotating(false);
@@ -1051,22 +1139,22 @@ const Constructor = () => {
       if (updates.screenMode === true) {
         if (!element.processedSrc) {
           const processed = await applyScreenMode(element.src);
-          setElements(prev => prev.map(el => el.id === id ? { ...el, screenMode: true, processedSrc: processed } : el));
+          pushHistory(prev => prev.map(el => el.id === id ? { ...el, screenMode: true, processedSrc: processed } : el));
         } else {
-          setElements(prev => prev.map(el => el.id === id ? { ...el, screenMode: true } : el));
+          pushHistory(prev => prev.map(el => el.id === id ? { ...el, screenMode: true } : el));
         }
         return;
       } else if (updates.screenMode === false) {
-        setElements(prev => prev.map(el => el.id === id ? { ...el, screenMode: false, processedSrc: undefined } : el));
+        pushHistory(prev => prev.map(el => el.id === id ? { ...el, screenMode: false, processedSrc: undefined } : el));
         return;
       }
     }
     
-    setElements(prev => prev.map(el => el.id === id ? { ...el, ...updates } : el));
+    pushHistory(prev => prev.map(el => el.id === id ? { ...el, ...updates } : el));
   };
 
   const deleteElement = (id: string) => {
-    setElements(prev => prev.filter(el => el.id !== id));
+    pushHistory(prev => prev.filter(el => el.id !== id));
     if (selectedElement === id) setSelectedElement(null);
   };
 
@@ -1086,13 +1174,13 @@ const Constructor = () => {
 
     if (wasScreenMode) {
       const processed = await applyScreenMode(editedImageUrl);
-      setElements(prev => prev.map(el =>
+      pushHistory(prev => prev.map(el =>
         el.id === editingImageId
           ? { ...el, src: editedImageUrl, processedSrc: processed, screenMode: true }
           : el
       ));
     } else {
-      setElements(prev => prev.map(el =>
+      pushHistory(prev => prev.map(el =>
         el.id === editingImageId
           ? { ...el, src: editedImageUrl, processedSrc: undefined }
           : el
@@ -1597,7 +1685,7 @@ const Constructor = () => {
           console.log('✅ Workflow данные извлечены из PNG, элементов:', parsedData.elements.length);
           
           setMonumentImage(parsedData.monumentImage);
-          setElements(parsedData.elements);
+          dispatchHistory({ type: 'SET', elements: parsedData.elements });
           setSelectedElement(null);
           
           toast({
@@ -1645,7 +1733,7 @@ const Constructor = () => {
         console.log('✅ JSON валиден, элементов:', jsonData.elements.length);
         
         setMonumentImage(jsonData.monumentImage);
-        setElements(jsonData.elements);
+        dispatchHistory({ type: 'SET', elements: jsonData.elements });
         setSelectedElement(null);
         
         toast({
@@ -2589,6 +2677,27 @@ const Constructor = () => {
         >
           <Icon name="ArrowLeft" size={16} className="mr-1" />
           <span className="text-xs">Назад</span>
+        </Button>
+        <div className="w-px h-5 bg-white/10 mx-1" />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={undo}
+          disabled={!canUndo}
+          title="Отменить (Ctrl+Z)"
+          className="h-8 w-8 p-0 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30"
+        >
+          <Icon name="Undo2" size={15} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={redo}
+          disabled={!canRedo}
+          title="Вернуть (Ctrl+Y)"
+          className="h-8 w-8 p-0 flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30"
+        >
+          <Icon name="Redo2" size={15} />
         </Button>
         <div className="w-px h-5 bg-white/10 mx-1" />
         <span className="text-xs font-semibold text-primary tracking-widest uppercase hidden sm:block">Конструктор памятника</span>
