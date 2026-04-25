@@ -139,16 +139,14 @@ const Constructor = () => {
   const [deathDate, setDeathDate] = useState('');
   
   const [isTextEditorOpen, setIsTextEditorOpen] = useState(false);
-  const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
-  const [mobileLibraryTab, setMobileLibraryTab] = useState('catalog');
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 1024);
   useEffect(() => {
     const handler = () => setIsMobile(window.innerWidth < 1024);
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
   }, []);
-  const canvasTopOffset = isMobile ? 104 : 48;
-  const workspaceTop = isMobile ? 104 : 48;
+  const canvasTopOffset = 48;
+  const workspaceTop = 48;
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
   const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
@@ -2849,82 +2847,7 @@ const Constructor = () => {
         </Button>
       </div>
 
-      {/* Мобильная панель категорий (только мобайл) — fixed чтобы не сжимать canvas */}
-      <div className="lg:hidden fixed top-12 left-12 right-0 bg-[#181818] border-b border-white/10 flex items-stretch h-14 z-30">
-        {[
-          { key: 'catalog', label: 'Каталог памятников', icon: 'LayoutGrid' },
-          { key: 'images', label: 'Каталог изображений', icon: 'Image' },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => {
-              if (isMobileLibraryOpen && mobileLibraryTab === tab.key) {
-                setIsMobileLibraryOpen(false);
-              } else {
-                setMobileLibraryTab(tab.key);
-                setIsMobileLibraryOpen(true);
-                if (tab.key === 'catalog') loadCatalog();
-              }
-            }}
-            className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors ${
-              isMobileLibraryOpen && mobileLibraryTab === tab.key
-                ? 'text-primary bg-white/5 border-b-2 border-primary'
-                : 'text-white/50 hover:text-white/80'
-            }`}
-          >
-            <Icon name={tab.icon as Parameters<typeof Icon>[0]['name']} size={16} />
-            {tab.label}
-          </button>
-        ))}
-      </div>
 
-      {/* Мобильный drawer с библиотекой (fixed, не сжимает canvas) */}
-      {isMobileLibraryOpen && (
-        <>
-          <div className="lg:hidden fixed z-30" style={{ top: '104px', left: '48px', right: 0, bottom: 0 }} onClick={() => setIsMobileLibraryOpen(false)} />
-          <div className="lg:hidden fixed right-0 z-40 bg-[#181818] border-b border-white/10 overflow-y-auto shadow-2xl" style={{ top: '104px', left: '48px', height: 'calc(100vh - 104px)' }}>
-          <ConstructorLibrary
-            defaultTab={mobileLibraryTab}
-            monumentImage={monumentImage}
-            setMonumentImage={(src) => { setMonumentImage(src); setIsMobileLibraryOpen(false); }}
-            addTextElement={() => { addTextElement(); setIsMobileLibraryOpen(false); }}
-            addEpitaphElement={(text) => { addEpitaphElement(text); setIsMobileLibraryOpen(false); }}
-            addImageElement={(src, type) => { addImageElement(src, type); setIsMobileLibraryOpen(false); }}
-            addFIOElement={() => { addFIOElement(); setIsMobileLibraryOpen(false); }}
-            addDatesElement={() => { addDatesElement(); setIsMobileLibraryOpen(false); }}
-            handlePhotoUpload={handlePhotoUpload}
-            photoInputRef={photoInputRef}
-            surname={surname}
-            setSurname={setSurname}
-            name={name}
-            setName={setName}
-            patronymic={patronymic}
-            setPatronymic={setPatronymic}
-            selectedFont={selectedFont}
-            setSelectedFont={setSelectedFont}
-            birthDate={birthDate}
-            setBirthDate={setBirthDate}
-            deathDate={deathDate}
-            setDeathDate={setDeathDate}
-            selectedDateFont={selectedDateFont}
-            setSelectedDateFont={setSelectedDateFont}
-            catalogCategories={catalogCategories}
-            catalogProducts={catalogProducts}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            isLoadingCatalog={isLoadingCatalog}
-            loadCatalog={loadCatalog}
-            fonts={fonts}
-            crosses={crosses}
-            isLoadingCrosses={isLoadingCrosses}
-            loadCrosses={loadCrosses}
-            flowers={flowers}
-            isLoadingFlowers={isLoadingFlowers}
-            loadFlowers={loadFlowers}
-          />
-        </div>
-        </>
-      )}
 
       {/* Main workspace — fixed под топбар+панель */}
       <div className="flex overflow-hidden fixed right-0 bottom-0" style={{ top: workspaceTop, left: isMobile ? '48px' : '0' }}>
