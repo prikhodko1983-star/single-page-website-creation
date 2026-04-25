@@ -473,8 +473,8 @@ export const ConstructorLibrary = ({
                     <p className="text-[10px] text-white/40 pt-1">Расположение</p>
                     {(() => {
                       const f = fonts.find(f => f.id === selectedDateFont);
-                      const b = birthDate || '1950';
-                      const d = deathDate || '2024';
+                      const b = birthDate || '15.03.1950';
+                      const d = deathDate || '07.11.2024';
                       const disabled = !birthDate && !deathDate;
                       const presets: Array<{ key: 'inline' | 'stacked' | 'offset'; label: string; preview: string; align: 'center' | 'left' }> = [
                         { key: 'inline', label: 'В строку', preview: `${b} – ${d}`, align: 'center' },
