@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -195,9 +195,8 @@ export const MobileElementsToolbar = ({
         style={{ top: '64px', bottom: '40px', width: '48px' }}
       >
         {TOOLS.map((tool, idx) => (
-          <>
+          <Fragment key={tool.key}>
             <button
-              key={tool.key}
               onClick={() => toggle(tool.key)}
               className={`w-10 h-10 flex flex-col items-center justify-center rounded transition-colors gap-0.5 ${
                 activePanel === tool.key
@@ -225,8 +224,8 @@ export const MobileElementsToolbar = ({
               )}
               <span className="text-[7px] leading-tight text-center whitespace-pre-wrap">{tool.label}</span>
             </button>
-            {idx === 0 && <div key="sep" className="w-8 border-t border-white/10 my-0.5" />}
-          </>
+            {idx === 0 && <div className="w-8 border-t border-white/10 my-0.5" />}
+          </Fragment>
         ))}
       </div>
 
