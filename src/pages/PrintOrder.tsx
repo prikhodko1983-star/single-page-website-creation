@@ -496,12 +496,14 @@ const PrintOrder = () => {
             <span className="po-title">Доп. лист к наряд-заказу №</span>
             <span className="po-title" style={{ marginLeft: 4 }}>{orderNumber || "___"}</span>
           </div>
-          <div className="po-field" style={{ marginBottom: 12, fontSize: "inherit" }}>
-            <b>Заказчик:</b> <span style={{ marginLeft: 6 }}>{customerName || "___"}</span>
-          </div>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 16, gap: 24 }}>
-            <div style={{ fontSize: "inherit" }}>
-              С эскизом согласен(на), материал осмотрен, претензий не имею
+            <div>
+              <div className="po-field" style={{ marginBottom: 6, fontSize: "inherit" }}>
+                <b>Заказчик:</b> <span style={{ marginLeft: 6 }}>{customerName || "___"}</span>
+              </div>
+              <div style={{ fontSize: "inherit" }}>
+                С эскизом согласен(на), материал осмотрен, претензий не имею
+              </div>
             </div>
             <div style={{ textAlign: "center", flexShrink: 0, minWidth: 140 }}>
               <div style={{ borderBottom: "1px solid #000", width: 140, height: 32, marginBottom: 4 }} />
