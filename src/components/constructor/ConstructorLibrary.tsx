@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface CanvasElement {
@@ -71,6 +71,7 @@ interface ConstructorLibraryProps {
 type DesktopToolPanel = 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'flower' | 'imageCatalog' | null;
 
 const DESKTOP_TOOLS = [
+  { key: '_catalog', icon: 'LayoutGrid', label: 'Каталог' },
   { key: 'fio' as DesktopToolPanel, icon: 'User', label: 'ФИО' },
   { key: 'dates' as DesktopToolPanel, icon: 'Calendar', label: 'Даты' },
   { key: 'epitaph' as DesktopToolPanel, icon: 'Quote', label: 'Эпитафия' },
@@ -79,8 +80,6 @@ const DESKTOP_TOOLS = [
   { key: 'cross' as DesktopToolPanel, icon: 'Cross', label: 'Крест' },
   { key: 'imageCatalog' as DesktopToolPanel, icon: 'Images', label: 'Картинки' },
 ];
-
-const CATALOG_SHORTCUT = { icon: 'LayoutGrid', label: 'Каталог' };
 
 export const ConstructorLibrary = ({
   defaultTab = 'catalog',
@@ -366,50 +365,46 @@ export const ConstructorLibrary = ({
             <div className="flex flex-1 min-h-0">
               {/* Вертикальная панель иконок */}
               <div className="flex flex-col items-center gap-1 py-2 bg-[#141414] border-r border-white/10 shrink-0" style={{ width: '52px' }}>
-                {DESKTOP_TOOLS.map((tool) => (
-                  <button
-                    key={tool.key}
-                    onClick={() => setActiveToolPanel(prev => prev === tool.key ? null : tool.key)}
-                    className={`w-10 h-10 flex flex-col items-center justify-center rounded transition-colors gap-0.5 ${
-                      activeToolPanel === tool.key
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-white/50 hover:text-white hover:bg-white/10'
-                    }`}
-                    title={tool.label}
-                  >
-                    {tool.key === 'cross' ? (
-                      <svg width="17" height="17" viewBox="0 0 90 160" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-                        {/* Вертикальная стойка */}
-                        <rect x="38" y="0" width="14" height="160" fill="currentColor"/>
-                        {/* Верхняя перекладина (квадратная, короткая) */}
-                        <rect x="28" y="8" width="34" height="14" fill="currentColor"/>
-                        {/* Средняя длинная перекладина */}
-                        <rect x="0" y="44" width="90" height="14" fill="currentColor"/>
-                        {/* Нижняя косая: левый конец выше, правый ниже, с выступами */}
-                        <polygon points="10,98 10,112 38,118 38,106" fill="currentColor"/>
-                        <polygon points="52,106 52,118 80,112 80,98" fill="currentColor"/>
-                      </svg>
-                    ) : (
-                      <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={17} />
-                    )}
-                    <span className="text-[7px] leading-none">{tool.label}</span>
-                  </button>
+                {DESKTOP_TOOLS.map((tool, idx) => (
+                  <React.Fragment key={tool.key}>
+                    <button
+                      onClick={() => {
+                        if (tool.key === '_catalog') {
+                          setActiveTab('catalog');
+                          setActiveToolPanel(null);
+                          loadCatalog();
+                        } else {
+                          setActiveTab('elements');
+                          setActiveToolPanel(prev => prev === tool.key ? null : tool.key as DesktopToolPanel);
+                        }
+                      }}
+                      className={`w-10 h-10 flex flex-col items-center justify-center rounded transition-colors gap-0.5 ${
+                        tool.key === '_catalog'
+                          ? activeTab === 'catalog'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-white/50 hover:text-white hover:bg-white/10'
+                          : activeTab === 'elements' && activeToolPanel === tool.key
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-white/50 hover:text-white hover:bg-white/10'
+                      }`}
+                      title={tool.label}
+                    >
+                      {tool.key === 'cross' ? (
+                        <svg width="17" height="17" viewBox="0 0 90 160" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+                          <rect x="38" y="0" width="14" height="160" fill="currentColor"/>
+                          <rect x="28" y="8" width="34" height="14" fill="currentColor"/>
+                          <rect x="0" y="44" width="90" height="14" fill="currentColor"/>
+                          <polygon points="10,98 10,112 38,118 38,106" fill="currentColor"/>
+                          <polygon points="52,106 52,118 80,112 80,98" fill="currentColor"/>
+                        </svg>
+                      ) : (
+                        <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={17} />
+                      )}
+                      <span className="text-[7px] leading-none">{tool.label}</span>
+                    </button>
+                    {idx === 0 && <div key="sep" className="w-8 border-t border-white/10 my-0.5" />}
+                  </React.Fragment>
                 ))}
-                {/* Разделитель */}
-                <div className="w-8 border-t border-white/10 my-1" />
-                {/* Каталог памятников */}
-                <button
-                  onClick={() => { setActiveTab('catalog'); setActiveToolPanel(null); loadCatalog(); }}
-                  className={`w-10 h-10 flex flex-col items-center justify-center rounded transition-colors gap-0.5 ${
-                    activeTab === 'catalog'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-white/50 hover:text-white hover:bg-white/10'
-                  }`}
-                  title={CATALOG_SHORTCUT.label}
-                >
-                  <Icon name={CATALOG_SHORTCUT.icon as Parameters<typeof Icon>[0]['name']} size={17} />
-                  <span className="text-[7px] leading-none">{CATALOG_SHORTCUT.label}</span>
-                </button>
               </div>
 
               {/* Панель содержимого инструмента */}
