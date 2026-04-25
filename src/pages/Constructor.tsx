@@ -36,9 +36,11 @@ interface CanvasElement {
 
 const MAX_HISTORY = 50;
 
+type ElementsUpdater = CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[]);
+
 type HistoryAction =
-  | { type: 'SET'; elements: CanvasElement[] }
-  | { type: 'PUSH'; elements: CanvasElement[] }
+  | { type: 'SET'; updater: ElementsUpdater }
+  | { type: 'PUSH'; updater: ElementsUpdater }
   | { type: 'UNDO' }
   | { type: 'REDO' };
 
@@ -48,13 +50,18 @@ interface HistoryState {
   future: CanvasElement[][];
 }
 
+function resolveUpdater(updater: ElementsUpdater, present: CanvasElement[]): CanvasElement[] {
+  return typeof updater === 'function' ? updater(present) : updater;
+}
+
 function historyReducer(state: HistoryState, action: HistoryAction): HistoryState {
   switch (action.type) {
     case 'SET':
-      return { past: [], present: action.elements, future: [] };
+      return { past: [], present: resolveUpdater(action.updater, state.present), future: [] };
     case 'PUSH': {
+      const next = resolveUpdater(action.updater, state.present);
       const past = [...state.past, state.present].slice(-MAX_HISTORY);
-      return { past, present: action.elements, future: [] };
+      return { past, present: next, future: [] };
     }
     case 'UNDO': {
       if (state.past.length === 0) return state;
@@ -87,19 +94,13 @@ const Constructor = () => {
   const canUndo = historyState.past.length > 0;
   const canRedo = historyState.future.length > 0;
 
-  const setElements = useCallback((updater: CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[]), pushHistory = false) => {
-    dispatchHistory({
-      type: pushHistory ? 'PUSH' : 'SET',
-      elements: typeof updater === 'function' ? updater(historyState.present) : updater,
-    });
-  }, [historyState.present]);
+  const setElements = useCallback((updater: ElementsUpdater) => {
+    dispatchHistory({ type: 'SET', updater });
+  }, []);
 
-  const pushHistory = useCallback((updater: CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[])) => {
-    dispatchHistory({
-      type: 'PUSH',
-      elements: typeof updater === 'function' ? updater(historyState.present) : updater,
-    });
-  }, [historyState.present]);
+  const pushHistory = useCallback((updater: ElementsUpdater) => {
+    dispatchHistory({ type: 'PUSH', updater });
+  }, []);
 
   const undo = useCallback(() => dispatchHistory({ type: 'UNDO' }), []);
   const redo = useCallback(() => dispatchHistory({ type: 'REDO' }), []);
@@ -1007,7 +1008,7 @@ const Constructor = () => {
 
   const handleMouseUp = () => {
     if (isDragging || isResizing || isRotating) {
-      dispatchHistory({ type: 'PUSH', elements: historyState.present });
+      dispatchHistory({ type: 'PUSH', updater: (prev) => prev });
     }
     setIsDragging(false);
     setIsResizing(false);
@@ -1017,7 +1018,7 @@ const Constructor = () => {
 
   const handleTouchEnd = () => {
     if (isDragging || isResizing || isRotating) {
-      dispatchHistory({ type: 'PUSH', elements: historyState.present });
+      dispatchHistory({ type: 'PUSH', updater: (prev) => prev });
     }
     setIsDragging(false);
     setIsResizing(false);
@@ -1685,7 +1686,7 @@ const Constructor = () => {
           console.log('✅ Workflow данные извлечены из PNG, элементов:', parsedData.elements.length);
           
           setMonumentImage(parsedData.monumentImage);
-          dispatchHistory({ type: 'SET', elements: parsedData.elements });
+          dispatchHistory({ type: 'SET', updater: parsedData.elements });
           setSelectedElement(null);
           
           toast({
@@ -1733,7 +1734,7 @@ const Constructor = () => {
         console.log('✅ JSON валиден, элементов:', jsonData.elements.length);
         
         setMonumentImage(jsonData.monumentImage);
-        dispatchHistory({ type: 'SET', elements: jsonData.elements });
+        dispatchHistory({ type: 'SET', updater: jsonData.elements });
         setSelectedElement(null);
         
         toast({
