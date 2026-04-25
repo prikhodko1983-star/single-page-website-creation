@@ -33,6 +33,15 @@ const Header = () => {
             >
               <Icon name="Send" size={18} />
             </a>
+            <a
+              href="https://max.ru/im?phone=79960681168"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 bg-[#FF4D00] hover:bg-[#e04400] text-white rounded-lg transition-colors"
+              title="Написать в Мессенджер Макс"
+            >
+              <Icon name="MessageSquare" size={18} />
+            </a>
           </div>
         </div>
       </div>
