@@ -481,23 +481,23 @@ export const ConstructorLibrary = ({
                         { key: 'offset', label: 'Со сдвигом', preview: `${b}\n      ${d}`, align: 'left' },
                       ];
                       return (
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-3 gap-2 -mx-3">
                           {presets.map(p => (
                             <button
                               key={p.key}
                               disabled={disabled}
                               onClick={() => addDatesElement(p.key)}
-                              className="flex flex-col items-center gap-2 p-2 rounded-lg border border-white/10 hover:border-primary/70 hover:bg-primary/10 transition-all disabled:opacity-30 disabled:cursor-default group"
+                              className="flex flex-col items-center gap-2 py-3 px-2 hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-default group"
                             >
                               <div
-                                className="bg-black/60 rounded-md w-full flex items-center justify-center py-3 px-2 min-h-[52px]"
+                                className="bg-black/60 rounded-md w-full flex items-center justify-center py-3 px-2 min-h-[56px]"
                               >
                                 <span
                                   className="text-white leading-snug whitespace-pre"
                                   style={{
                                     fontFamily: f?.style,
                                     fontWeight: f?.weight,
-                                    fontSize: p.key === 'inline' ? '10px' : '11px',
+                                    fontSize: p.key === 'inline' ? '10px' : '12px',
                                     textAlign: p.align,
                                     display: 'block',
                                     width: '100%',
