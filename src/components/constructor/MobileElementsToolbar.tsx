@@ -192,7 +192,7 @@ export const MobileElementsToolbar = ({
     <>
       {/* Вертикальная панель иконок слева */}
       <div className="lg:hidden fixed left-0 z-40 flex flex-col items-center gap-1 py-2 bg-[#1a1a1a] border-r border-white/10 shadow-lg"
-        style={{ top: '64px', bottom: '40px', width: '48px' }}
+        style={{ top: '64px', bottom: '0px', width: '48px' }}
       >
         {TOOLS.map((tool, idx) => (
           <Fragment key={tool.key}>
@@ -233,7 +233,7 @@ export const MobileElementsToolbar = ({
       {activePanel && (
         <div
           className="lg:hidden fixed inset-0 z-40 bg-black/40"
-          style={{ top: '104px' }}
+          style={{ top: '64px' }}
           onClick={close}
         />
       )}
@@ -241,7 +241,7 @@ export const MobileElementsToolbar = ({
       {/* Bottom sheet панель */}
       {activePanel && (
         <div
-          className="lg:hidden fixed left-0 right-0 bottom-10 z-50 bg-[#1e1e1e] border-t border-white/10 rounded-t-2xl shadow-2xl flex flex-col"
+          className="lg:hidden fixed left-0 right-0 bottom-0 z-50 bg-[#1e1e1e] border-t border-white/10 rounded-t-2xl shadow-2xl flex flex-col"
           style={{ height: `${sheetHeight}vh`, transition: dragStartY.current !== null ? 'none' : 'height 0.25s ease' }}
         >
           {/* Хэндл — тяни для изменения размера */}
