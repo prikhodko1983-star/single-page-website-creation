@@ -10,6 +10,7 @@ import { TextEditorModal } from "@/components/constructor/TextEditorModal";
 import { MobileToolbar } from "@/components/constructor/MobileToolbar";
 import { MobileElementsToolbar } from "@/components/constructor/MobileElementsToolbar";
 import { ImageEraser } from "@/components/constructor/ImageEraser";
+import ConstructorLayers from "@/components/constructor/ConstructorLayers";
 
 interface CanvasElement {
   id: string;
@@ -1181,6 +1182,42 @@ const Constructor = () => {
   const deleteElement = (id: string) => {
     pushToHistory(prev => prev.filter(el => el.id !== id));
     if (selectedElement === id) setSelectedElement(null);
+  };
+
+  const moveLayerUp = (id: string) => {
+    pushToHistory(prev => {
+      const idx = prev.findIndex(el => el.id === id);
+      if (idx < 0 || idx >= prev.length - 1) return prev;
+      const next = [...prev];
+      [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+      return next;
+    });
+  };
+
+  const moveLayerDown = (id: string) => {
+    pushToHistory(prev => {
+      const idx = prev.findIndex(el => el.id === id);
+      if (idx <= 0) return prev;
+      const next = [...prev];
+      [next[idx], next[idx - 1]] = [next[idx - 1], next[idx]];
+      return next;
+    });
+  };
+
+  const moveLayerToFront = (id: string) => {
+    pushToHistory(prev => {
+      const el = prev.find(e => e.id === id);
+      if (!el) return prev;
+      return [...prev.filter(e => e.id !== id), el];
+    });
+  };
+
+  const moveLayerToBack = (id: string) => {
+    pushToHistory(prev => {
+      const el = prev.find(e => e.id === id);
+      if (!el) return prev;
+      return [el, ...prev.filter(e => e.id !== id)];
+    });
   };
 
   const handleEditImage = (id: string) => {
@@ -2956,13 +2993,29 @@ const Constructor = () => {
 
         {/* Right panel */}
         <div className="hidden lg:flex flex-shrink-0 w-[280px] border-l border-white/10 bg-[#181818] flex-col overflow-hidden">
-          <ConstructorProperties
-            selectedEl={selectedEl}
-            updateElement={updateElement}
-            deleteElement={deleteElement}
-            fonts={fonts}
-            onEditImage={handleEditImage}
-          />
+          <div className="flex flex-col h-full">
+            <div className="flex-shrink-0 overflow-y-auto" style={{ maxHeight: '60%' }}>
+              <ConstructorProperties
+                selectedEl={selectedEl}
+                updateElement={updateElement}
+                deleteElement={deleteElement}
+                fonts={fonts}
+                onEditImage={handleEditImage}
+              />
+            </div>
+            <div className="flex-1 border-t border-white/10 overflow-hidden flex flex-col min-h-0">
+              <ConstructorLayers
+                elements={elements}
+                selectedElement={selectedElement}
+                setSelectedElement={setSelectedElement}
+                onMoveUp={moveLayerUp}
+                onMoveDown={moveLayerDown}
+                onMoveToFront={moveLayerToFront}
+                onMoveToBack={moveLayerToBack}
+                onDelete={deleteElement}
+              />
+            </div>
+          </div>
         </div>
       </div>
       
