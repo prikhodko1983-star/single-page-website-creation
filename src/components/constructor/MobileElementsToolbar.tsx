@@ -99,6 +99,7 @@ export const MobileElementsToolbar = ({
   };
 
   const [activePanel, setActivePanel] = useState<ToolPanel>(null);
+  const [selectedDatePreset, setSelectedDatePreset] = useState<'inline' | 'stacked' | 'offset'>('inline');
   const [mobileCustomText, setMobileCustomText] = useState('');
   const [mobileCustomTextFont, setMobileCustomTextFont] = useState('');
   const [imageCategories, setImageCategories] = useState<Array<{id: number, name: string, slug: string}>>([]);
@@ -392,33 +393,47 @@ export const MobileElementsToolbar = ({
                 <Label className="text-xs text-white/50">Расположение</Label>
                 {(() => {
                   const f = fonts.find(f => f.id === selectedDateFont);
-                  const b = birthDate || '1950';
-                  const d = deathDate || '2024';
-                  const presets: Array<{ key: 'inline' | 'stacked' | 'offset'; label: string; preview: string }> = [
-                    { key: 'inline', label: 'В строку', preview: `${b} – ${d}` },
-                    { key: 'stacked', label: 'Столбцом', preview: `${b}\n${d}` },
-                    { key: 'offset', label: 'Со сдвигом', preview: `${b}\n   ${d}` },
+                  const b = birthDate || '15.03.1950';
+                  const d = deathDate || '07.11.2024';
+                  const presets: Array<{ key: 'inline' | 'stacked' | 'offset'; label: string; preview: string; align: 'center' | 'left' }> = [
+                    { key: 'inline', label: 'В строку', preview: `${b} – ${d}`, align: 'center' },
+                    { key: 'stacked', label: 'Столбцом', preview: `${b}\n${d}`, align: 'center' },
+                    { key: 'offset', label: 'Со сдвигом', preview: `${b}\n      ${d}`, align: 'left' },
                   ];
                   return (
                     <div className="grid grid-cols-3 gap-2">
-                      {presets.map(p => (
-                        <button
-                          key={p.key}
-                          onClick={() => { addDatesElement(p.key); close(); }}
-                          disabled={!birthDate && !deathDate}
-                          className="flex flex-col items-center gap-1.5 p-2 rounded border border-white/10 hover:border-primary/60 hover:bg-primary/10 transition-all disabled:opacity-30 disabled:cursor-default"
-                        >
-                          <div className="bg-black/50 rounded w-full flex items-center justify-center py-2 px-1 min-h-[40px]">
-                            <span
-                              className="text-white leading-tight whitespace-pre text-center"
-                              style={{ fontFamily: f?.style, fontWeight: f?.weight, fontSize: '9px' }}
-                            >
-                              {p.preview}
-                            </span>
-                          </div>
-                          <span className="text-[10px] text-white/50 text-center leading-tight">{p.label}</span>
-                        </button>
-                      ))}
+                      {presets.map(p => {
+                        const isActive = selectedDatePreset === p.key;
+                        return (
+                          <button
+                            key={p.key}
+                            onClick={() => setSelectedDatePreset(p.key)}
+                            className={`flex flex-col items-center gap-1.5 p-2 rounded border transition-all ${
+                              isActive
+                                ? 'border-primary bg-primary/15 ring-1 ring-primary'
+                                : 'border-white/10 hover:border-primary/60 hover:bg-primary/10'
+                            }`}
+                          >
+                            <div className={`rounded w-full flex items-center justify-center py-2 px-1 min-h-[40px] ${isActive ? 'bg-black/60' : 'bg-black/50'}`}>
+                              <span
+                                className={`text-white leading-tight whitespace-pre ${p.key === 'inline' ? 'whitespace-nowrap' : 'whitespace-pre'}`}
+                                style={{
+                                  fontFamily: f?.style,
+                                  fontWeight: f?.weight,
+                                  fontSize: p.key === 'inline' ? '6px' : '9px',
+                                  textAlign: p.align,
+                                  display: 'block',
+                                  width: '100%',
+                                  lineHeight: 1.3,
+                                }}
+                              >
+                                {p.preview}
+                              </span>
+                            </div>
+                            <span className={`text-[10px] text-center leading-tight ${isActive ? 'text-primary' : 'text-white/50'}`}>{p.label}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   );
                 })()}
@@ -427,7 +442,8 @@ export const MobileElementsToolbar = ({
               <div className="px-4 pb-4 flex-shrink-0">
               <Button
                 className="w-full"
-                onClick={() => { addDatesElement('inline'); close(); }}
+                onClick={() => { addDatesElement(selectedDatePreset); close(); }}
+                disabled={!birthDate && !deathDate}
               >
                 <Icon name="Plus" size={16} className="mr-2" />
                 Добавить даты
