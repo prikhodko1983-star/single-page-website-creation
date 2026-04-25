@@ -80,6 +80,8 @@ const DESKTOP_TOOLS = [
   { key: 'imageCatalog' as DesktopToolPanel, icon: 'Images', label: 'Картинки' },
 ];
 
+const CATALOG_SHORTCUT = { icon: 'LayoutGrid', label: 'Каталог' };
+
 export const ConstructorLibrary = ({
   defaultTab = 'catalog',
   monumentImage,
@@ -393,6 +395,21 @@ export const ConstructorLibrary = ({
                     <span className="text-[7px] leading-none">{tool.label}</span>
                   </button>
                 ))}
+                {/* Разделитель */}
+                <div className="w-8 border-t border-white/10 my-1" />
+                {/* Каталог памятников */}
+                <button
+                  onClick={() => { setActiveTab('catalog'); setActiveToolPanel(null); loadCatalog(); }}
+                  className={`w-10 h-10 flex flex-col items-center justify-center rounded transition-colors gap-0.5 ${
+                    activeTab === 'catalog'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-white/50 hover:text-white hover:bg-white/10'
+                  }`}
+                  title={CATALOG_SHORTCUT.label}
+                >
+                  <Icon name={CATALOG_SHORTCUT.icon as Parameters<typeof Icon>[0]['name']} size={17} />
+                  <span className="text-[7px] leading-none">{CATALOG_SHORTCUT.label}</span>
+                </button>
               </div>
 
               {/* Панель содержимого инструмента */}
