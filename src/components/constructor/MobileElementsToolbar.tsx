@@ -62,7 +62,7 @@ interface MobileElementsToolbarProps {
 type ToolPanel = '_catalog' | 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'imageCatalog' | null;
 
 const TOOLS = [
-  { key: '_catalog' as ToolPanel, icon: 'Milestone', label: 'Каталог' },
+  { key: '_catalog' as ToolPanel, icon: 'Milestone', label: 'Каталог\nпамятников' },
   { key: 'fio' as ToolPanel, icon: 'User', label: 'ФИО' },
   { key: 'dates' as ToolPanel, icon: 'Calendar', label: 'Даты' },
   { key: 'epitaph' as ToolPanel, icon: 'Quote', label: 'Эпитафия' },
@@ -223,7 +223,7 @@ export const MobileElementsToolbar = ({
               ) : (
                 <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={18} />
               )}
-              <span className="text-[7px] leading-none text-center">{tool.label}</span>
+              <span className="text-[7px] leading-tight text-center whitespace-pre-wrap">{tool.label}</span>
             </button>
             {idx === 0 && <div key="sep" className="w-8 border-t border-white/10 my-0.5" />}
           </>
