@@ -68,7 +68,7 @@ interface ConstructorLibraryProps {
   loadFlowers: () => void;
 }
 
-type DesktopToolPanel = 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'flower' | 'imageCatalog' | null;
+type DesktopToolPanel = '_catalog' | 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'flower' | 'imageCatalog' | null;
 
 const DESKTOP_TOOLS = [
   { key: '_catalog', icon: 'LayoutGrid', label: 'Каталог' },
@@ -201,166 +201,6 @@ export const ConstructorLibrary = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#181818', color: 'white' }}>
-          <div className="hidden lg:block px-3 pt-3 pb-2 border-b border-white/10">
-            <p className="text-[10px] font-semibold text-white/40 uppercase tracking-widest mb-2">Библиотека</p>
-            <div className="grid grid-cols-3 bg-white/5 h-8 rounded-md p-0.5 gap-0.5">
-              {(['catalog', 'images', 'elements'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`text-xs rounded transition-all font-medium ${
-                    activeTab === tab
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-white/50 hover:text-white'
-                  }`}
-                >
-                  {tab === 'catalog' ? 'Каталог' : tab === 'images' ? 'Изображения' : 'Элементы'}
-                </button>
-              ))}
-            </div>
-          </div>
-          
-          <div style={{ display: activeTab === 'catalog' ? 'flex' : 'none', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', padding: '8px 12px 16px' }}>
-            <Label className="shrink-0 mb-2">Памятники из каталога магазина</Label>
-            
-            {isLoadingCatalog ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
-                {catalogCategories.length > 0 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
-                    {/* Кнопки категорий */}
-                    <div className="flex flex-wrap gap-1 shrink-0 mb-3 bg-white/5 rounded-lg p-1">
-                      {catalogCategories.map(cat => {
-                        const count = catalogProducts.filter(p => p.category_id === cat.id && p.image_url).length;
-                        const isActive = selectedCategory === cat.id;
-                        return (
-                          <button
-                            key={cat.id}
-                            onClick={() => setSelectedCategory(cat.id)}
-                            className={`flex-1 min-w-[100px] px-2 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1 ${
-                              isActive
-                                ? 'bg-primary text-primary-foreground'
-                                : 'text-white/50 hover:text-white hover:bg-white/10'
-                            }`}
-                          >
-                            <span className="truncate">{cat.name}</span>
-                            <Badge variant="secondary" className="ml-1 h-4 text-[10px] px-1 shrink-0">
-                              {count}
-                            </Badge>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    
-                    {/* Сетка памятников — прокручивается */}
-                    <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
-                      {(() => {
-                        const categoryProducts = catalogProducts.filter(p => p.category_id === selectedCategory && p.image_url);
-                        return categoryProducts.length > 0 ? (
-                          <div className="grid grid-cols-2 gap-2 pb-2">
-                            {categoryProducts.map(product => (
-                              <button
-                                key={product.id}
-                                onClick={() => setMonumentImage(product.image_url!)}
-                                className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all bg-secondary ${
-                                  monumentImage === product.image_url ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
-                                }`}
-                              >
-                                <img src={product.image_url!} alt={product.name} className="w-full h-full object-contain p-2" />
-                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-xs p-2 text-center">
-                                  <div className="font-medium">{product.name}</div>
-                                </div>
-                                {monumentImage === product.image_url && (
-                                  <div className="absolute top-2 right-2 bg-primary rounded-full p-1">
-                                    <Icon name="Check" size={12} className="text-primary-foreground" />
-                                  </div>
-                                )}
-                              </button>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center py-8 text-muted-foreground">
-                            <p className="text-sm">Нет памятников в этой категории</p>
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  </div>
-                )}
-                
-                {catalogCategories.length === 0 && catalogProducts.length === 0 && !isLoadingCatalog && (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <Icon name="Package" size={48} className="mx-auto mb-4 opacity-20" />
-                    <p className="text-sm font-medium">Каталог пуст</p>
-                    <p className="text-xs mt-1">Добавьте памятники в магазин через админ-панель</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div style={{ display: activeTab === 'images' ? 'flex' : 'none', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', padding: '8px 16px 16px' }}>
-            <Label className="shrink-0 mb-2">Изображения по категориям</Label>
-            {isLoadingImages ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : imageCategories.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
-                <div className="flex flex-wrap gap-1 shrink-0 mb-2 bg-white/5 rounded-lg p-1">
-                  {imageCategories.map(cat => {
-                    const count = categoryImages.filter(img => img.category_id === cat.id).length;
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => setSelectedImageCategory(cat.id)}
-                        className={`flex-1 min-w-[80px] px-2 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1 ${
-                          selectedImageCategory === cat.id
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-white/50 hover:text-white hover:bg-white/10'
-                        }`}
-                      >
-                        <span className="truncate">{cat.name}</span>
-                        <Badge variant="secondary" className="ml-1 h-4 text-[10px] px-1 shrink-0">{count}</Badge>
-                      </button>
-                    );
-                  })}
-                </div>
-                <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
-                  {(() => {
-                    const images = categoryImages.filter(img => img.category_id === selectedImageCategory);
-                    return images.length > 0 ? (
-                      <div className="grid grid-cols-3 gap-2 pb-2">
-                        {images.map(image => (
-                          <button key={image.id} onClick={() => addImageElement(image.image_url, 'image')}
-                            className="relative aspect-square rounded-lg overflow-hidden border-2 border-border hover:border-primary/50 transition-all bg-secondary">
-                            <img src={image.image_url} alt={image.name} className="w-full h-full object-contain p-1" />
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-[10px] p-1 text-center">
-                              <div className="font-medium truncate">{image.name}</div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <p className="text-sm">Нет изображений в этой категории</p>
-                      </div>
-                    );
-                  })()}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-12 text-muted-foreground">
-                <Icon name="Image" size={48} className="mx-auto mb-4 opacity-20" />
-                <p className="text-sm font-medium">Нет категорий</p>
-              </div>
-            )}
-          </div>
-
-          <div style={{ display: activeTab === 'elements' ? 'flex' : 'none', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
             {/* Иконочная панель инструментов в стиле Фотошопа */}
             <div className="flex flex-1 min-h-0">
               {/* Вертикальная панель иконок */}
@@ -370,22 +210,16 @@ export const ConstructorLibrary = ({
                     <button
                       onClick={() => {
                         if (tool.key === '_catalog') {
-                          setActiveTab('catalog');
-                          setActiveToolPanel(null);
                           loadCatalog();
+                          setActiveToolPanel(prev => prev === '_catalog' ? null : '_catalog' as DesktopToolPanel);
                         } else {
-                          setActiveTab('elements');
                           setActiveToolPanel(prev => prev === tool.key ? null : tool.key as DesktopToolPanel);
                         }
                       }}
                       className={`w-10 h-10 flex flex-col items-center justify-center rounded transition-colors gap-0.5 ${
-                        tool.key === '_catalog'
-                          ? activeTab === 'catalog'
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-white/50 hover:text-white hover:bg-white/10'
-                          : activeTab === 'elements' && activeToolPanel === tool.key
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-white/50 hover:text-white hover:bg-white/10'
+                        activeToolPanel === tool.key
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-white/50 hover:text-white hover:bg-white/10'
                       }`}
                       title={tool.label}
                     >
@@ -728,6 +562,77 @@ export const ConstructorLibrary = ({
                   </div>
                 )}
 
+                {/* Каталог памятников */}
+                {activeToolPanel === '_catalog' && (
+                  <div className="flex flex-col h-full">
+                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider px-3 pt-3 pb-2 shrink-0">Каталог памятников</p>
+                    {isLoadingCatalog ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                      </div>
+                    ) : catalogCategories.length > 0 ? (
+                      <div className="flex flex-col flex-1 min-h-0 px-3 pb-3">
+                        <div className="flex flex-wrap gap-1 shrink-0 mb-3 bg-white/5 rounded-lg p-1">
+                          {catalogCategories.map(cat => {
+                            const count = catalogProducts.filter(p => p.category_id === cat.id && p.image_url).length;
+                            return (
+                              <button
+                                key={cat.id}
+                                onClick={() => setSelectedCategory(cat.id)}
+                                className={`flex-1 min-w-[80px] px-2 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1 ${
+                                  selectedCategory === cat.id
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'text-white/50 hover:text-white hover:bg-white/10'
+                                }`}
+                              >
+                                <span className="truncate">{cat.name}</span>
+                                <Badge variant="secondary" className="ml-1 h-4 text-[10px] px-1 shrink-0">{count}</Badge>
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <div className="flex-1 overflow-y-auto min-h-0">
+                          {(() => {
+                            const categoryProducts = catalogProducts.filter(p => p.category_id === selectedCategory && p.image_url);
+                            return categoryProducts.length > 0 ? (
+                              <div className="grid grid-cols-2 gap-2 pb-2">
+                                {categoryProducts.map(product => (
+                                  <button
+                                    key={product.id}
+                                    onClick={() => setMonumentImage(product.image_url!)}
+                                    className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all bg-secondary ${
+                                      monumentImage === product.image_url ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
+                                    }`}
+                                  >
+                                    <img src={product.image_url!} alt={product.name} className="w-full h-full object-contain p-2" />
+                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent text-white text-xs p-2 text-center">
+                                      <div className="font-medium">{product.name}</div>
+                                    </div>
+                                    {monumentImage === product.image_url && (
+                                      <div className="absolute top-2 right-2 bg-primary rounded-full p-1">
+                                        <Icon name="Check" size={12} className="text-primary-foreground" />
+                                      </div>
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="text-center py-8 text-muted-foreground">
+                                <p className="text-sm">Нет памятников в этой категории</p>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-12 text-muted-foreground px-3">
+                        <Icon name="Package" size={48} className="mx-auto mb-4 opacity-20" />
+                        <p className="text-sm font-medium">Каталог пуст</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Каталог изображений */}
                 {activeToolPanel === 'imageCatalog' && (
                   <div className="p-3 space-y-2">
@@ -784,7 +689,6 @@ export const ConstructorLibrary = ({
                 )}
               </div>
             </div>
-          </div>
     </div>
   );
 };
