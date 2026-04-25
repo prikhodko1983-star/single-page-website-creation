@@ -449,6 +449,7 @@ export const ConstructorLibrary = ({
                 {activeToolPanel === 'dates' && (
                   <div className="p-3 space-y-2">
                     <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Даты жизни</p>
+
                     {/* Превью дат */}
                     {(() => {
                       const f = fonts.find(f => f.id === selectedDateFont);
@@ -466,24 +467,7 @@ export const ConstructorLibrary = ({
                         </div>
                       );
                     })()}
-                    <div className="space-y-1">
-                      <Label className="text-[10px] text-white/40">Дата рождения</Label>
-                      <Input placeholder="01.01.1950" value={birthDate} inputMode="numeric" maxLength={10} onChange={(e) => setBirthDate(formatDateInput(e.target.value))} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[10px] text-white/40">Дата смерти</Label>
-                      <Input placeholder="01.01.2020" value={deathDate} inputMode="numeric" maxLength={10} onChange={(e) => setDeathDate(formatDateInput(e.target.value))} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
-                    </div>
-                    <p className="text-[10px] text-white/40 pt-1">Шрифт</p>
-                    <div className="grid grid-cols-2 gap-1">
-                      {fonts.map(font => (
-                        <button key={font.id} onClick={() => setSelectedDateFont(font.id)}
-                          className={`px-2 py-1.5 rounded border text-left transition-all ${selectedDateFont === font.id ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 hover:border-primary/50 text-white/70'}`}>
-                          <div className="text-[9px] text-white/40 truncate">{font.name}</div>
-                          <div className="text-xs truncate" style={{ fontFamily: font.style, fontWeight: font.weight }}>01.01—01.01</div>
-                        </button>
-                      ))}
-                    </div>
+
                     {/* Пресеты расположения */}
                     <p className="text-[10px] text-white/40 pt-1">Расположение</p>
                     {(() => {
@@ -494,34 +478,64 @@ export const ConstructorLibrary = ({
                       const presets: Array<{ key: 'inline' | 'stacked' | 'offset'; label: string; preview: string; align: 'center' | 'left' }> = [
                         { key: 'inline', label: 'В строку', preview: `${b} – ${d}`, align: 'center' },
                         { key: 'stacked', label: 'Столбцом', preview: `${b}\n${d}`, align: 'center' },
-                        { key: 'offset', label: 'Со сдвигом', preview: `${b}\n   ${d}`, align: 'left' },
+                        { key: 'offset', label: 'Со сдвигом', preview: `${b}\n      ${d}`, align: 'left' },
                       ];
                       return (
-                        <div className="grid grid-cols-3 gap-1.5">
+                        <div className="grid grid-cols-3 gap-2">
                           {presets.map(p => (
                             <button
                               key={p.key}
                               disabled={disabled}
                               onClick={() => addDatesElement(p.key)}
-                              className="flex flex-col items-center gap-1.5 p-2 rounded border border-white/10 hover:border-primary/60 hover:bg-primary/10 transition-all disabled:opacity-30 disabled:cursor-default"
+                              className="flex flex-col items-center gap-2 p-2 rounded-lg border border-white/10 hover:border-primary/70 hover:bg-primary/10 transition-all disabled:opacity-30 disabled:cursor-default group"
                             >
                               <div
-                                className="bg-black/50 rounded w-full flex items-center justify-center py-1.5 px-1 min-h-[36px]"
-                                style={{ textAlign: p.align }}
+                                className="bg-black/60 rounded-md w-full flex items-center justify-center py-3 px-2 min-h-[52px]"
                               >
                                 <span
-                                  className="text-white leading-tight whitespace-pre"
-                                  style={{ fontFamily: f?.style, fontWeight: f?.weight, fontSize: '8px' }}
+                                  className="text-white leading-snug whitespace-pre"
+                                  style={{
+                                    fontFamily: f?.style,
+                                    fontWeight: f?.weight,
+                                    fontSize: p.key === 'inline' ? '10px' : '11px',
+                                    textAlign: p.align,
+                                    display: 'block',
+                                    width: '100%',
+                                  }}
                                 >
                                   {p.preview}
                                 </span>
                               </div>
-                              <span className="text-[9px] text-white/50 text-center leading-tight">{p.label}</span>
+                              <span className="text-[10px] text-white/50 group-hover:text-white/80 text-center leading-tight transition-colors">{p.label}</span>
                             </button>
                           ))}
                         </div>
                       );
                     })()}
+
+                    <div className="space-y-1">
+                      <Label className="text-[10px] text-white/40">Дата рождения</Label>
+                      <Input placeholder="01.01.1950" value={birthDate} inputMode="numeric" maxLength={10} onChange={(e) => setBirthDate(formatDateInput(e.target.value))} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] text-white/40">Дата смерти</Label>
+                      <Input placeholder="01.01.2020" value={deathDate} inputMode="numeric" maxLength={10} onChange={(e) => setDeathDate(formatDateInput(e.target.value))} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
+                    </div>
+
+                    <p className="text-[10px] text-white/40 pt-1">Шрифт</p>
+                    <div className="grid grid-cols-2 gap-1">
+                      {fonts.map(font => (
+                        <button key={font.id} onClick={() => setSelectedDateFont(font.id)}
+                          className={`px-2 py-1.5 rounded border text-left transition-all ${selectedDateFont === font.id ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 hover:border-primary/50 text-white/70'}`}>
+                          <div className="text-[9px] text-white/40 truncate">{font.name}</div>
+                          <div className="text-xs truncate" style={{ fontFamily: font.style, fontWeight: font.weight }}>01.01—01.01</div>
+                        </button>
+                      ))}
+                    </div>
+
+                    <Button className="w-full h-8 text-xs mt-1" onClick={() => addDatesElement('inline')} disabled={!birthDate && !deathDate}>
+                      <Icon name="Calendar" size={14} className="mr-1" /> Добавить даты
+                    </Button>
                   </div>
                 )}
 
