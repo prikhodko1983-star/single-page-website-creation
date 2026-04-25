@@ -454,16 +454,29 @@ export const ConstructorLibrary = ({
                     {/* Превью дат */}
                     {(() => {
                       const f = fonts.find(f => f.id === selectedDateFont);
-                      const b = birthDate || '1950';
-                      const d = deathDate || '2024';
+                      const b = birthDate || '15.03.1950';
+                      const d = deathDate || '07.11.2024';
                       const isEmpty = !birthDate && !deathDate;
+                      const previewText =
+                        selectedDatePreset === 'inline' ? `${b} – ${d}` :
+                        selectedDatePreset === 'stacked' ? `${b}\n${d}` :
+                        `${b}\n      ${d}`;
+                      const previewAlign =
+                        selectedDatePreset === 'offset' ? 'left' : 'center';
                       return (
-                        <div className="rounded-lg bg-black/40 border border-white/10 flex items-center justify-center py-3 px-4">
+                        <div className="rounded-lg bg-black/40 border border-white/10 flex items-center justify-center py-4 px-4 min-h-[64px]">
                           <span
-                            className="text-white text-lg text-center whitespace-pre"
-                            style={{ fontFamily: f?.style, fontWeight: f?.weight, opacity: isEmpty ? 0.3 : 1 }}
+                            className="text-white text-base whitespace-pre"
+                            style={{
+                              fontFamily: f?.style,
+                              fontWeight: f?.weight,
+                              opacity: isEmpty ? 0.3 : 1,
+                              lineHeight: 1.3,
+                              textAlign: previewAlign,
+                              display: 'block',
+                            }}
                           >
-                            {`${b} – ${d}`}
+                            {previewText}
                           </span>
                         </div>
                       );
