@@ -204,7 +204,7 @@ export const ConstructorLibrary = ({
             {/* Иконочная панель инструментов в стиле Фотошопа */}
             <div className="flex flex-1 min-h-0">
               {/* Вертикальная панель иконок */}
-              <div className="flex flex-col items-center gap-1 py-2 bg-[#141414] border-r border-white/10 shrink-0" style={{ width: '52px' }}>
+              <div className="flex flex-col items-center gap-1 pt-4 pb-2 bg-[#141414] border-r border-white/10 shrink-0" style={{ width: '52px' }}>
                 {DESKTOP_TOOLS.map((tool, idx) => (
                   <React.Fragment key={tool.key}>
                     <button
