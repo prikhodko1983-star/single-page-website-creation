@@ -129,6 +129,13 @@ export const ConstructorLibrary = ({
   const [customText, setCustomText] = useState('');
   const [customTextFont, setCustomTextFont] = useState('');
 
+  const formatDateInput = (value: string): string => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0, 2)}.${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4, 8)}`;
+  };
+
   useEffect(() => {
     if (defaultTab) setActiveTab(defaultTab);
   }, [defaultTab]);
@@ -460,11 +467,11 @@ export const ConstructorLibrary = ({
                     })()}
                     <div className="space-y-1">
                       <Label className="text-[10px] text-white/40">Дата рождения</Label>
-                      <Input placeholder="01.01.1950" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
+                      <Input placeholder="01.01.1950" value={birthDate} inputMode="numeric" maxLength={10} onChange={(e) => setBirthDate(formatDateInput(e.target.value))} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
                     </div>
                     <div className="space-y-1">
                       <Label className="text-[10px] text-white/40">Дата смерти</Label>
-                      <Input placeholder="01.01.2020" value={deathDate} onChange={(e) => setDeathDate(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
+                      <Input placeholder="01.01.2020" value={deathDate} inputMode="numeric" maxLength={10} onChange={(e) => setDeathDate(formatDateInput(e.target.value))} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
                     </div>
                     <p className="text-[10px] text-white/40 pt-1">Шрифт</p>
                     <div className="grid grid-cols-2 gap-1">
