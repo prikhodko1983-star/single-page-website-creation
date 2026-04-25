@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import { useState, useRef, useEffect, useMemo, useCallback, useReducer } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ConstructorLibrary } from "@/components/constructor/ConstructorLibrary";
@@ -36,43 +36,6 @@ interface CanvasElement {
 
 const MAX_HISTORY = 50;
 
-type HistoryAction =
-  | { type: 'SET'; elements: CanvasElement[] }
-  | { type: 'PUSH'; elements: CanvasElement[] }
-  | { type: 'UNDO' }
-  | { type: 'REDO' };
-
-interface HistoryState {
-  past: CanvasElement[][];
-  present: CanvasElement[];
-  future: CanvasElement[][];
-}
-
-function historyReducer(state: HistoryState, action: HistoryAction): HistoryState {
-  switch (action.type) {
-    case 'SET':
-      return { past: [], present: action.elements, future: [] };
-    case 'PUSH': {
-      const past = [...state.past, state.present].slice(-MAX_HISTORY);
-      return { past, present: action.elements, future: [] };
-    }
-    case 'UNDO': {
-      if (state.past.length === 0) return state;
-      const previous = state.past[state.past.length - 1];
-      const past = state.past.slice(0, -1);
-      return { past, present: previous, future: [state.present, ...state.future] };
-    }
-    case 'REDO': {
-      if (state.future.length === 0) return state;
-      const next = state.future[0];
-      const future = state.future.slice(1);
-      return { past: [...state.past, state.present], present: next, future };
-    }
-    default:
-      return state;
-  }
-}
-
 const Constructor = () => {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -82,27 +45,81 @@ const Constructor = () => {
   const [savedDesigns, setSavedDesigns] = useState<Array<{monumentImage: string, elements: CanvasElement[], timestamp: number}>>([]);
   
   const [monumentImage, setMonumentImage] = useState<string>('https://storage.yandexcloud.net/sitevek/5474527360758972468.jpg');
-  const [historyState, dispatchHistory] = useReducer(historyReducer, { past: [], present: [], future: [] });
-  const elements = historyState.present;
-  const canUndo = historyState.past.length > 0;
-  const canRedo = historyState.future.length > 0;
 
-  const setElements = useCallback((updater: CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[]), pushHistory = false) => {
-    dispatchHistory({
-      type: pushHistory ? 'PUSH' : 'SET',
-      elements: typeof updater === 'function' ? updater(historyState.present) : updater,
-    });
-  }, [historyState.present]);
+  // --- История изменений ---
+  // Используем useRef чтобы избежать проблем с устаревшими замыканиями
+  const [elements, setElementsState] = useState<CanvasElement[]>([]);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+  const historyRef = useRef<{ past: CanvasElement[][], future: CanvasElement[][] }>({ past: [], future: [] });
+  const elementsRef = useRef<CanvasElement[]>([]);
 
-  const pushHistory = useCallback((updater: CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[])) => {
-    dispatchHistory({
-      type: 'PUSH',
-      elements: typeof updater === 'function' ? updater(historyState.present) : updater,
-    });
-  }, [historyState.present]);
+  // Синхронизируем ref с состоянием
+  useEffect(() => { elementsRef.current = elements; }, [elements]);
 
-  const undo = useCallback(() => dispatchHistory({ type: 'UNDO' }), []);
-  const redo = useCallback(() => dispatchHistory({ type: 'REDO' }), []);
+  // Просто обновляет элементы БЕЗ записи в историю (для drag/resize в процессе)
+  const setElements = useCallback((updater: CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[])) => {
+    const next = typeof updater === 'function' ? updater(elementsRef.current) : updater;
+    elementsRef.current = next;
+    setElementsState(next);
+  }, []);
+
+  // Обновляет элементы И записывает снимок в историю
+  const pushToHistory = useCallback((updater: CanvasElement[] | ((prev: CanvasElement[]) => CanvasElement[])) => {
+    const snapshot = elementsRef.current;
+    const next = typeof updater === 'function' ? updater(snapshot) : updater;
+    historyRef.current.past = [...historyRef.current.past, snapshot].slice(-MAX_HISTORY);
+    historyRef.current.future = [];
+    elementsRef.current = next;
+    setElementsState(next);
+    setCanUndo(true);
+    setCanRedo(false);
+    // Автосохранение
+    try { localStorage.setItem('constructor_design', JSON.stringify(next)); } catch (e) { void e; }
+  }, []);
+
+  // Записывает текущее состояние в историю без изменения elements
+  // (используется в конце drag/resize/rotate)
+  const commitToHistory = useCallback(() => {
+    const snapshot = elementsRef.current;
+    historyRef.current.past = [...historyRef.current.past, snapshot].slice(-MAX_HISTORY);
+    historyRef.current.future = [];
+    setCanUndo(historyRef.current.past.length > 0);
+    setCanRedo(false);
+    try { localStorage.setItem('constructor_design', JSON.stringify(snapshot)); } catch (e) { void e; }
+  }, []);
+
+  const undo = useCallback(() => {
+    const { past, future } = historyRef.current;
+    if (past.length === 0) return;
+    const previous = past[past.length - 1];
+    historyRef.current.past = past.slice(0, -1);
+    historyRef.current.future = [elementsRef.current, ...future];
+    elementsRef.current = previous;
+    setElementsState(previous);
+    setCanUndo(historyRef.current.past.length > 0);
+    setCanRedo(true);
+    try { localStorage.setItem('constructor_design', JSON.stringify(previous)); } catch (e) { void e; }
+  }, []);
+
+  const redo = useCallback(() => {
+    const { past, future } = historyRef.current;
+    if (future.length === 0) return;
+    const next = future[0];
+    historyRef.current.past = [...past, elementsRef.current];
+    historyRef.current.future = future.slice(1);
+    elementsRef.current = next;
+    setElementsState(next);
+    setCanUndo(true);
+    setCanRedo(historyRef.current.future.length > 0);
+    try { localStorage.setItem('constructor_design', JSON.stringify(next)); } catch (e) { void e; }
+  }, []);
+
+  // Флаги drag/resize/rotate через ref — синхронные, не теряются в замыканиях
+  const isDraggingRef = useRef(false);
+  const isResizingRef = useRef(false);
+  const isRotatingRef = useRef(false);
+
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -168,18 +185,12 @@ const Constructor = () => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         const active = document.activeElement;
         const isInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || (active as HTMLElement).isContentEditable);
-        if (!isInput) {
-          e.preventDefault();
-          undo();
-        }
+        if (!isInput) { e.preventDefault(); undo(); }
       }
       if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
         const active = document.activeElement;
         const isInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || (active as HTMLElement).isContentEditable);
-        if (!isInput) {
-          e.preventDefault();
-          redo();
-        }
+        if (!isInput) { e.preventDefault(); redo(); }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -404,7 +415,7 @@ const Constructor = () => {
       autoSize: true,
       fontFamily: customFont,
     };
-    pushHistory(prev => [...prev, newElement]);
+    pushToHistory(prev => [...prev, newElement]);
   };
 
   const addImageElement = async (src: string, type: 'image' | 'cross' | 'flower') => {
@@ -459,7 +470,7 @@ const Constructor = () => {
       screenMode: true,
       processedSrc,
     };
-    pushHistory(prev => [...prev, newElement]);
+    pushToHistory(prev => [...prev, newElement]);
   };
 
   const addEpitaphElement = (customText?: string) => {
@@ -476,7 +487,7 @@ const Constructor = () => {
       rotation: 0,
       autoSize: true,
     };
-    pushHistory(prev => [...prev, newElement]);
+    pushToHistory(prev => [...prev, newElement]);
   };
 
   const addFIOElement = () => {
@@ -500,7 +511,7 @@ const Constructor = () => {
       autoSize: true,
       lineHeight: 1.05,
     };
-    pushHistory(prev => [...prev, newElement]);
+    pushToHistory(prev => [...prev, newElement]);
     
     setSurname('');
     setName('');
@@ -526,7 +537,7 @@ const Constructor = () => {
       rotation: 0,
       fontFamily: selectedFontData?.fullStyle || 'serif',
     };
-    pushHistory(prev => [...prev, newElement]);
+    pushToHistory(prev => [...prev, newElement]);
     
     setBirthDate('');
     setDeathDate('');
@@ -653,7 +664,7 @@ const Constructor = () => {
           screenMode: true,
           processedSrc,
         };
-        pushHistory(prev => [...prev, newElement]);
+        pushToHistory(prev => [...prev, newElement]);
         setIsMobileLibraryOpen(false);
       };
       img.src = photoUrl;
@@ -680,7 +691,7 @@ const Constructor = () => {
   };
 
   const handleInlineTextChange = (elementId: string, newContent: string, textareaElement?: HTMLTextAreaElement) => {
-    pushHistory(prev => prev.map(el => {
+    pushToHistory(prev => prev.map(el => {
       if (el.id === elementId) {
         return { ...el, content: newContent };
       }
@@ -695,6 +706,7 @@ const Constructor = () => {
   const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
     e.stopPropagation();
     setSelectedElement(elementId);
+    isDraggingRef.current = true;
     setIsDragging(true);
     
     const element = elements.find(el => el.id === elementId);
@@ -746,6 +758,7 @@ const Constructor = () => {
     // Один палец = перетаскивание
     if (!canvasRef.current) return;
     
+    isDraggingRef.current = true;
     setIsDragging(true);
     const touch = e.touches[0];
     const canvasRect = canvasRef.current.getBoundingClientRect();
@@ -1006,9 +1019,12 @@ const Constructor = () => {
   };
 
   const handleMouseUp = () => {
-    if (isDragging || isResizing || isRotating) {
-      dispatchHistory({ type: 'PUSH', elements: historyState.present });
+    if (isDraggingRef.current || isResizingRef.current || isRotatingRef.current) {
+      commitToHistory();
     }
+    isDraggingRef.current = false;
+    isResizingRef.current = false;
+    isRotatingRef.current = false;
     setIsDragging(false);
     setIsResizing(false);
     setIsRotating(false);
@@ -1016,9 +1032,12 @@ const Constructor = () => {
   };
 
   const handleTouchEnd = () => {
-    if (isDragging || isResizing || isRotating) {
-      dispatchHistory({ type: 'PUSH', elements: historyState.present });
+    if (isDraggingRef.current || isResizingRef.current || isRotatingRef.current) {
+      commitToHistory();
     }
+    isDraggingRef.current = false;
+    isResizingRef.current = false;
+    isRotatingRef.current = false;
     setIsDragging(false);
     setIsResizing(false);
     setIsRotating(false);
@@ -1038,6 +1057,7 @@ const Constructor = () => {
     if (rotateMode) {
       // Режим вращения
       const canvasRect = canvasRef.current.getBoundingClientRect();
+      isRotatingRef.current = true;
       setIsRotating(true);
       setRotateStart({
         x: e.clientX - canvasRect.left,
@@ -1048,6 +1068,7 @@ const Constructor = () => {
       });
     } else {
       // Режим масштабирования
+      isResizingRef.current = true;
       setIsResizing(true);
       setResizeStart({
         x: e.clientX,
@@ -1070,6 +1091,7 @@ const Constructor = () => {
     if (rotateMode) {
       // Режим вращения
       const canvasRect = canvasRef.current.getBoundingClientRect();
+      isRotatingRef.current = true;
       setIsRotating(true);
       setRotateStart({
         x: touch.clientX - canvasRect.left,
@@ -1080,6 +1102,7 @@ const Constructor = () => {
       });
     } else {
       // Режим масштабирования
+      isResizingRef.current = true;
       setIsResizing(true);
       setResizeStart({
         x: touch.clientX,
@@ -1098,6 +1121,7 @@ const Constructor = () => {
     
     const canvasRect = canvasRef.current.getBoundingClientRect();
     setSelectedElement(elementId);
+    isRotatingRef.current = true;
     setIsRotating(true);
     setRotateStart({
       x: e.clientX - canvasRect.left,
@@ -1116,6 +1140,7 @@ const Constructor = () => {
     const touch = e.touches[0];
     const canvasRect = canvasRef.current.getBoundingClientRect();
     setSelectedElement(elementId);
+    isRotatingRef.current = true;
     setIsRotating(true);
     setRotateStart({
       x: touch.clientX - canvasRect.left,
@@ -1139,22 +1164,22 @@ const Constructor = () => {
       if (updates.screenMode === true) {
         if (!element.processedSrc) {
           const processed = await applyScreenMode(element.src);
-          pushHistory(prev => prev.map(el => el.id === id ? { ...el, screenMode: true, processedSrc: processed } : el));
+          pushToHistory(prev => prev.map(el => el.id === id ? { ...el, screenMode: true, processedSrc: processed } : el));
         } else {
-          pushHistory(prev => prev.map(el => el.id === id ? { ...el, screenMode: true } : el));
+          pushToHistory(prev => prev.map(el => el.id === id ? { ...el, screenMode: true } : el));
         }
         return;
       } else if (updates.screenMode === false) {
-        pushHistory(prev => prev.map(el => el.id === id ? { ...el, screenMode: false, processedSrc: undefined } : el));
+        pushToHistory(prev => prev.map(el => el.id === id ? { ...el, screenMode: false, processedSrc: undefined } : el));
         return;
       }
     }
     
-    pushHistory(prev => prev.map(el => el.id === id ? { ...el, ...updates } : el));
+    pushToHistory(prev => prev.map(el => el.id === id ? { ...el, ...updates } : el));
   };
 
   const deleteElement = (id: string) => {
-    pushHistory(prev => prev.filter(el => el.id !== id));
+    pushToHistory(prev => prev.filter(el => el.id !== id));
     if (selectedElement === id) setSelectedElement(null);
   };
 
@@ -1174,13 +1199,13 @@ const Constructor = () => {
 
     if (wasScreenMode) {
       const processed = await applyScreenMode(editedImageUrl);
-      pushHistory(prev => prev.map(el =>
+      pushToHistory(prev => prev.map(el =>
         el.id === editingImageId
           ? { ...el, src: editedImageUrl, processedSrc: processed, screenMode: true }
           : el
       ));
     } else {
-      pushHistory(prev => prev.map(el =>
+      pushToHistory(prev => prev.map(el =>
         el.id === editingImageId
           ? { ...el, src: editedImageUrl, processedSrc: undefined }
           : el
@@ -1685,7 +1710,11 @@ const Constructor = () => {
           console.log('✅ Workflow данные извлечены из PNG, элементов:', parsedData.elements.length);
           
           setMonumentImage(parsedData.monumentImage);
-          dispatchHistory({ type: 'SET', elements: parsedData.elements });
+          historyRef.current = { past: [], future: [] };
+          elementsRef.current = parsedData.elements;
+          setElementsState(parsedData.elements);
+          setCanUndo(false);
+          setCanRedo(false);
           setSelectedElement(null);
           
           toast({
@@ -1733,7 +1762,11 @@ const Constructor = () => {
         console.log('✅ JSON валиден, элементов:', jsonData.elements.length);
         
         setMonumentImage(jsonData.monumentImage);
-        dispatchHistory({ type: 'SET', elements: jsonData.elements });
+        historyRef.current = { past: [], future: [] };
+        elementsRef.current = jsonData.elements;
+        setElementsState(jsonData.elements);
+        setCanUndo(false);
+        setCanRedo(false);
         setSelectedElement(null);
         
         toast({
