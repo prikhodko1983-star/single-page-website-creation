@@ -499,8 +499,14 @@ const PrintOrder = () => {
           <div className="po-field" style={{ marginBottom: 12, fontSize: "inherit" }}>
             <b>Заказчик:</b> <span style={{ marginLeft: 6 }}>{customerName || "___"}</span>
           </div>
-          <div style={{ marginBottom: 12, fontSize: "inherit" }}>
-            С эскизом согласен(на), материал осмотрен, претензий не имею
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 16, gap: 24 }}>
+            <div style={{ fontSize: "inherit" }}>
+              С эскизом согласен(на), материал осмотрен, претензий не имею
+            </div>
+            <div style={{ textAlign: "center", flexShrink: 0, minWidth: 140 }}>
+              <div style={{ borderBottom: "1px solid #000", width: 140, height: 32, marginBottom: 4 }} />
+              <div style={{ fontSize: 10, color: "#555" }}>(подпись заказчика)</div>
+            </div>
           </div>
 
           <div className="po-extra-blocks">
