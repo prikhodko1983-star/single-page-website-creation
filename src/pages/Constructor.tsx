@@ -145,8 +145,8 @@ const Constructor = () => {
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
   }, []);
-  const canvasTopOffset = isMobile ? 64 : 48;
-  const workspaceTop = isMobile ? 64 : 48;
+  const canvasTopOffset = isMobile ? 48 : 48;
+  const workspaceTop = isMobile ? 48 : 48;
   const [editingElement, setEditingElement] = useState<CanvasElement | null>(null);
   const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
   const [selectedDateFont, setSelectedDateFont] = useState('font1');
