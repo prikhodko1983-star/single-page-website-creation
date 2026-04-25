@@ -192,7 +192,7 @@ export const MobileElementsToolbar = ({
     <>
       {/* Вертикальная панель иконок слева */}
       <div className="lg:hidden fixed left-0 z-40 flex flex-col items-center gap-1 py-2 bg-[#1a1a1a] border-r border-white/10 shadow-lg"
-        style={{ top: '48px', bottom: '40px', width: '48px' }}
+        style={{ top: '64px', bottom: '40px', width: '48px' }}
       >
         {TOOLS.map((tool, idx) => (
           <>
