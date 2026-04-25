@@ -537,6 +537,7 @@ const Constructor = () => {
       color: '#FFFFFF',
       rotation: 0,
       fontFamily: selectedFontData?.fullStyle || 'serif',
+      autoSize: true,
     };
     pushToHistory(prev => [...prev, newElement]);
     
