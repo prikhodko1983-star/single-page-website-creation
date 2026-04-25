@@ -108,6 +108,14 @@ const Constructor = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
+  const isDraggingRef = useRef(false);
+  const isResizingRef = useRef(false);
+  const isRotatingRef = useRef(false);
+
+  // Синхронные обёртки — обновляют ref сразу, до следующего рендера
+  const setIsDraggingS = (v: boolean) => { isDraggingRef.current = v; setIsDragging(v); };
+  const setIsResizingS = (v: boolean) => { isResizingRef.current = v; setIsResizing(v); };
+  const setIsRotatingS = (v: boolean) => { isRotatingRef.current = v; setIsRotating(v); };
   const [rotateMode, setRotateMode] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0, fontSize: 0 });
@@ -696,7 +704,7 @@ const Constructor = () => {
   const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
     e.stopPropagation();
     setSelectedElement(elementId);
-    setIsDragging(true);
+    setIsDraggingS(true);
     
     const element = elements.find(el => el.id === elementId);
     if (!element || !canvasRef.current) return;
@@ -747,7 +755,7 @@ const Constructor = () => {
     // Один палец = перетаскивание
     if (!canvasRef.current) return;
     
-    setIsDragging(true);
+    setIsDraggingS(true);
     const touch = e.touches[0];
     const canvasRect = canvasRef.current.getBoundingClientRect();
     
@@ -1007,22 +1015,22 @@ const Constructor = () => {
   };
 
   const handleMouseUp = () => {
-    if (isDragging || isResizing || isRotating) {
+    if (isDraggingRef.current || isResizingRef.current || isRotatingRef.current) {
       dispatchHistory({ type: 'PUSH', updater: (prev) => prev });
     }
-    setIsDragging(false);
-    setIsResizing(false);
-    setIsRotating(false);
+    setIsDraggingS(false);
+    setIsResizingS(false);
+    setIsRotatingS(false);
     setIsPanning(false);
   };
 
   const handleTouchEnd = () => {
-    if (isDragging || isResizing || isRotating) {
+    if (isDraggingRef.current || isResizingRef.current || isRotatingRef.current) {
       dispatchHistory({ type: 'PUSH', updater: (prev) => prev });
     }
-    setIsDragging(false);
-    setIsResizing(false);
-    setIsRotating(false);
+    setIsDraggingS(false);
+    setIsResizingS(false);
+    setIsRotatingS(false);
     setTouchRotateStart(null);
     setTouchPinchStart(null);
     setCanvasPinchStart(null);
@@ -1039,7 +1047,7 @@ const Constructor = () => {
     if (rotateMode) {
       // Режим вращения
       const canvasRect = canvasRef.current.getBoundingClientRect();
-      setIsRotating(true);
+      setIsRotatingS(true);
       setRotateStart({
         x: e.clientX - canvasRect.left,
         y: e.clientY - canvasRect.top,
@@ -1049,7 +1057,7 @@ const Constructor = () => {
       });
     } else {
       // Режим масштабирования
-      setIsResizing(true);
+      setIsResizingS(true);
       setResizeStart({
         x: e.clientX,
         y: e.clientY,
@@ -1071,7 +1079,7 @@ const Constructor = () => {
     if (rotateMode) {
       // Режим вращения
       const canvasRect = canvasRef.current.getBoundingClientRect();
-      setIsRotating(true);
+      setIsRotatingS(true);
       setRotateStart({
         x: touch.clientX - canvasRect.left,
         y: touch.clientY - canvasRect.top,
@@ -1081,7 +1089,7 @@ const Constructor = () => {
       });
     } else {
       // Режим масштабирования
-      setIsResizing(true);
+      setIsResizingS(true);
       setResizeStart({
         x: touch.clientX,
         y: touch.clientY,
@@ -1099,7 +1107,7 @@ const Constructor = () => {
     
     const canvasRect = canvasRef.current.getBoundingClientRect();
     setSelectedElement(elementId);
-    setIsRotating(true);
+    setIsRotatingS(true);
     setRotateStart({
       x: e.clientX - canvasRect.left,
       y: e.clientY - canvasRect.top,
@@ -1117,7 +1125,7 @@ const Constructor = () => {
     const touch = e.touches[0];
     const canvasRect = canvasRef.current.getBoundingClientRect();
     setSelectedElement(elementId);
-    setIsRotating(true);
+    setIsRotatingS(true);
     setRotateStart({
       x: touch.clientX - canvasRect.left,
       y: touch.clientY - canvasRect.top,
