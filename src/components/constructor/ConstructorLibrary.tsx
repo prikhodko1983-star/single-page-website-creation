@@ -128,6 +128,7 @@ export const ConstructorLibrary = ({
   const [isLoadingImages, setIsLoadingImages] = useState(false);
   const [customText, setCustomText] = useState('');
   const [customTextFont, setCustomTextFont] = useState('');
+  const [selectedDatePreset, setSelectedDatePreset] = useState<'inline' | 'stacked' | 'offset'>('inline');
 
   const formatDateInput = (value: string): string => {
     const digits = value.replace(/\D/g, '');
@@ -482,33 +483,39 @@ export const ConstructorLibrary = ({
                       ];
                       return (
                         <div className="grid grid-cols-3 gap-2 -mx-3">
-                          {presets.map(p => (
-                            <button
-                              key={p.key}
-                              disabled={disabled}
-                              onClick={() => addDatesElement(p.key)}
-                              className="flex flex-col items-center gap-2 py-3 px-2 hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-default group"
-                            >
-                              <div
-                                className="bg-black/60 rounded-md w-full flex items-center justify-center py-3 px-2 min-h-[56px]"
+                          {presets.map(p => {
+                            const isActive = selectedDatePreset === p.key;
+                            return (
+                              <button
+                                key={p.key}
+                                onClick={() => setSelectedDatePreset(p.key)}
+                                className={`flex flex-col items-center gap-2 py-3 px-2 transition-all group`}
                               >
-                                <span
-                                  className="text-white leading-snug whitespace-pre"
-                                  style={{
-                                    fontFamily: f?.style,
-                                    fontWeight: f?.weight,
-                                    fontSize: p.key === 'inline' ? '10px' : '12px',
-                                    textAlign: p.align,
-                                    display: 'block',
-                                    width: '100%',
-                                  }}
+                                <div
+                                  className={`rounded-md w-full flex items-center justify-center py-3 px-2 min-h-[56px] transition-all ${
+                                    isActive
+                                      ? 'bg-primary/15 ring-2 ring-primary'
+                                      : 'bg-black/60 hover:bg-black/80'
+                                  }`}
                                 >
-                                  {p.preview}
-                                </span>
-                              </div>
-                              <span className="text-[10px] text-white/50 group-hover:text-white/80 text-center leading-tight transition-colors">{p.label}</span>
-                            </button>
-                          ))}
+                                  <span
+                                    className="text-white leading-snug whitespace-pre"
+                                    style={{
+                                      fontFamily: f?.style,
+                                      fontWeight: f?.weight,
+                                      fontSize: p.key === 'inline' ? '10px' : '12px',
+                                      textAlign: p.align,
+                                      display: 'block',
+                                      width: '100%',
+                                    }}
+                                  >
+                                    {p.preview}
+                                  </span>
+                                </div>
+                                <span className={`text-[10px] text-center leading-tight transition-colors ${isActive ? 'text-primary' : 'text-white/50 group-hover:text-white/80'}`}>{p.label}</span>
+                              </button>
+                            );
+                          })}
                         </div>
                       );
                     })()}
@@ -533,7 +540,7 @@ export const ConstructorLibrary = ({
                       ))}
                     </div>
 
-                    <Button className="w-full h-8 text-xs mt-1" onClick={() => addDatesElement('inline')} disabled={!birthDate && !deathDate}>
+                    <Button className="w-full h-8 text-xs mt-1" onClick={() => addDatesElement(selectedDatePreset)} disabled={!birthDate && !deathDate}>
                       <Icon name="Calendar" size={14} className="mr-1" /> Добавить даты
                     </Button>
                   </div>
