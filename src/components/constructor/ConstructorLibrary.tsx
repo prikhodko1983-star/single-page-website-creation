@@ -400,6 +400,25 @@ export const ConstructorLibrary = ({
                 {activeToolPanel === 'fio' && (
                   <div className="p-3 space-y-2">
                     <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">ФИО</p>
+                    {/* Превью ФИО */}
+                    {(() => {
+                      const f = fonts.find(f => f.id === selectedFont);
+                      const lines = [surname, name, patronymic].filter(Boolean);
+                      const preview = lines.length > 0 ? lines : ['Фамилия', 'Имя', 'Отчество'];
+                      return (
+                        <div className="rounded-lg bg-black/40 border border-white/10 flex flex-col items-center justify-center py-3 px-4 min-h-[64px]">
+                          {preview.map((line, i) => (
+                            <span
+                              key={i}
+                              className="text-white text-sm text-center leading-tight"
+                              style={{ fontFamily: f?.style, fontWeight: f?.weight, opacity: lines.length === 0 ? 0.3 : 1 }}
+                            >
+                              {line}
+                            </span>
+                          ))}
+                        </div>
+                      );
+                    })()}
                     <Input placeholder="Фамилия" value={surname} onChange={(e) => setSurname(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
                     <Input placeholder="Имя" value={name} onChange={(e) => setName(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
                     <Input placeholder="Отчество" value={patronymic} onChange={(e) => setPatronymic(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
@@ -423,6 +442,22 @@ export const ConstructorLibrary = ({
                 {activeToolPanel === 'dates' && (
                   <div className="p-3 space-y-2">
                     <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Даты жизни</p>
+                    {/* Превью дат */}
+                    {(() => {
+                      const f = fonts.find(f => f.id === selectedDateFont);
+                      const preview = [birthDate, deathDate].filter(Boolean).join(' – ') || '1950 – 2024';
+                      const isEmpty = !birthDate && !deathDate;
+                      return (
+                        <div className="rounded-lg bg-black/40 border border-white/10 flex items-center justify-center py-3 px-4">
+                          <span
+                            className="text-white text-lg text-center"
+                            style={{ fontFamily: f?.style, fontWeight: f?.weight, opacity: isEmpty ? 0.3 : 1 }}
+                          >
+                            {preview}
+                          </span>
+                        </div>
+                      );
+                    })()}
                     <div className="space-y-1">
                       <Label className="text-[10px] text-white/40">Дата рождения</Label>
                       <Input placeholder="01.01.1950" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-8 text-xs" />
