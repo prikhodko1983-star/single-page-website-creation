@@ -71,7 +71,7 @@ interface ConstructorLibraryProps {
 type DesktopToolPanel = '_catalog' | 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'flower' | 'imageCatalog' | null;
 
 const DESKTOP_TOOLS = [
-  { key: '_catalog', icon: 'Milestone', label: 'Памятник' },
+  { key: '_catalog', icon: 'Milestone', label: 'Каталог\nпамятников' },
   { key: 'fio' as DesktopToolPanel, icon: 'User', label: 'ФИО' },
   { key: 'dates' as DesktopToolPanel, icon: 'Calendar', label: 'Даты' },
   { key: 'epitaph' as DesktopToolPanel, icon: 'Quote', label: 'Эпитафия' },
@@ -234,7 +234,7 @@ export const ConstructorLibrary = ({
                       ) : (
                         <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={17} />
                       )}
-                      <span className="text-[7px] leading-none">{tool.label}</span>
+                      <span className="text-[7px] leading-tight text-center whitespace-pre">{tool.label}</span>
                     </button>
                     {idx === 0 && <div key="sep" className="w-8 border-t border-white/10 my-0.5" />}
                   </React.Fragment>
