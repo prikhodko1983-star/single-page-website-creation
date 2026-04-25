@@ -3110,6 +3110,14 @@ const Constructor = () => {
         flowers={flowers}
         isLoadingFlowers={isLoadingFlowers}
         addImageElement={addImageElement}
+        monumentImage={monumentImage}
+        setMonumentImage={setMonumentImage}
+        catalogCategories={catalogCategories}
+        catalogProducts={catalogProducts}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        isLoadingCatalog={isLoadingCatalog}
+        loadCatalog={loadCatalog}
       />
 
     </div>
