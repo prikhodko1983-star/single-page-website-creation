@@ -121,12 +121,12 @@ export default function BeforeAfterSlider({
       {/* Labels */}
       <div className="absolute top-4 left-4 z-10 pointer-events-none">
         <span className="bg-secondary/90 text-foreground px-3 py-1.5 rounded-lg font-oswald font-semibold text-xs border border-border">
-          ДО ОБРАБОТКИ
+          ДО
         </span>
       </div>
       <div className="absolute top-4 right-4 z-10 pointer-events-none">
         <span className="bg-primary text-primary-foreground px-3 py-1.5 rounded-lg font-oswald font-semibold text-xs">
-          ПОСЛЕ ОБРАБОТКИ
+          ПОСЛЕ
         </span>
       </div>
     </div>
