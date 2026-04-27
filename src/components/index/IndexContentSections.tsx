@@ -119,7 +119,7 @@ export default function IndexContentSections({
                 </h3>
                 <div className="max-w-sm mx-auto">
                   <BeforeAfterSlider
-                    beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/9a820780-c801-4997-8cd9-99752c087dd2.jpg"
+                    beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/a614f91d-b8d0-4ed3-bbef-8c54c91a4ab8.jpg"
                     afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/61058af6-f736-442c-bf1e-0460464d212a.jpg"
                     beforeAlt="Фото до реставрации"
                     afterAlt="Фото после реставрации"
