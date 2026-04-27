@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import RetouchForm from "@/components/RetouchForm";
+import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import { useNavigate } from "react-router-dom";
 
 interface Service {
@@ -116,70 +117,57 @@ export default function IndexContentSections({
                 <h3 className="font-oswald font-semibold text-2xl text-center mb-8">
                   Пример реставрации старой фотографии
                 </h3>
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div>
-                    <div className="relative aspect-[3/4] mb-4 rounded-lg overflow-hidden border-2 border-border bg-secondary">
-                      <img 
-                        src="https://cdn.poehali.dev/files/3e19395b-495c-4eef-91ce-74b56fbffe66.jpg"
-                        alt="Старое фото до реставрации - поврежденная фотография для памятника"
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-4 left-4 bg-secondary text-foreground px-4 py-2 rounded-lg font-oswald font-semibold text-sm border border-border">
-                        ДО ОБРАБОТКИ
+                <div className="max-w-sm mx-auto">
+                  <BeforeAfterSlider
+                    beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/13b9f2c1-ed40-4ddb-8c8f-e4a38e36a79c.png"
+                    afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/5ae4e974-e20d-4f9e-8a05-9bd5420e850e.jpg"
+                    beforeAlt="Фото до реставрации"
+                    afterAlt="Фото после реставрации"
+                    aspectRatio="3/4"
+                  />
+                  <p className="text-center text-xs text-muted-foreground mt-3">
+                    Перетащите линию для сравнения
+                  </p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-6 mt-6">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
+                        <Icon name="X" size={14} className="text-destructive" />
                       </div>
+                      Выцветшие и тусклые тона
                     </div>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
-                          <Icon name="X" size={14} className="text-destructive" />
-                        </div>
-                        Трещины и повреждения
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
+                        <Icon name="X" size={14} className="text-destructive" />
                       </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
-                          <Icon name="X" size={14} className="text-destructive" />
-                        </div>
-                        Низкая контрастность
+                      Низкая чёткость деталей
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
+                        <Icon name="X" size={14} className="text-destructive" />
                       </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
-                          <Icon name="X" size={14} className="text-destructive" />
-                        </div>
-                        Выцветшие участки
-                      </div>
+                      Повреждения и артефакты
                     </div>
                   </div>
-
-                  <div>
-                    <div className="relative aspect-[3/4] mb-4 rounded-lg overflow-hidden border-2 border-primary bg-secondary">
-                      <img 
-                        src="https://cdn.poehali.dev/files/ed11db8d-2e82-4c44-a219-2b25cbe05cd3.jpg"
-                        alt="Отреставрированное фото для памятника - профессиональная ретушь в Великом Новгороде"
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-oswald font-semibold text-sm">
-                        ПОСЛЕ ОБРАБОТКИ
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Icon name="Check" size={14} className="text-primary" />
                       </div>
+                      Устранены все повреждения
                     </div>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Icon name="Check" size={14} className="text-primary" />
-                        </div>
-                        Устранены все повреждения
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Icon name="Check" size={14} className="text-primary" />
                       </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Icon name="Check" size={14} className="text-primary" />
-                        </div>
-                        Улучшена чёткость и детали
+                      Улучшена чёткость и детали
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Icon name="Check" size={14} className="text-primary" />
                       </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Icon name="Check" size={14} className="text-primary" />
-                        </div>
-                        Готово к гравировке
-                      </div>
+                      Готово к гравировке
                     </div>
                   </div>
                 </div>
