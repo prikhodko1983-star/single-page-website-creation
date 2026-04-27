@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,96 +6,59 @@ import Icon from "@/components/ui/icon";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 
+const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif'];
+
 const RetouchForm = () => {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    comment: ""
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", comment: "" });
+  const [honeypot, setHoneypot] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const compressImage = (file: File): Promise<File> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          
-          const maxSize = 1200;
-          if (width > height && width > maxSize) {
-            height = (height * maxSize) / width;
-            width = maxSize;
-          } else if (height > maxSize) {
-            width = (width * maxSize) / height;
-            height = maxSize;
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-          
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const compressedFile = new File([blob], file.name, {
-                type: 'image/jpeg',
-                lastModified: Date.now()
-              });
-              resolve(compressedFile);
-            } else {
-              resolve(file);
-            }
-          }, 'image/jpeg', 0.85);
-        };
-        img.src = e.target?.result as string;
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
+    if (!ALLOWED_TYPES.includes(file.type.toLowerCase())) {
+      toast.error("Можно загружать только изображения (JPEG, PNG, WEBP, GIF)");
+      e.target.value = "";
+      return;
+    }
+
     if (file.size > 10 * 1024 * 1024) {
       toast.error("Размер файла не должен превышать 10 МБ");
       e.target.value = "";
       return;
     }
-    
-    try {
-      toast.info("Подготовка фото...");
-      const compressedFile = await compressImage(file);
-      
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-      
-      const url = URL.createObjectURL(compressedFile);
-      
-      requestAnimationFrame(() => {
-        setSelectedFile(compressedFile);
-        setPreviewUrl(url);
-        toast.success("Фото загружено");
-      });
-    } catch (error) {
-      console.error("File processing error:", error);
-      toast.error("Ошибка обработки файла");
-      e.target.value = "";
-    }
+
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
   };
+
+  const clearFile = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    if (inputRef.current) inputRef.current.value = "";
+    setSelectedFile(null);
+    setPreviewUrl("");
+  };
+
+  const toBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve((reader.result as string).split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.phone) {
+    if (!formData.name || !formData.email) {
       toast.error("Заполните обязательные поля");
       return;
     }
@@ -108,27 +71,25 @@ const RetouchForm = () => {
     setLoading(true);
     setUploadProgress(0);
 
+    const progressInterval = setInterval(() => {
+      setUploadProgress((prev) => prev >= 85 ? 85 : prev + 10);
+    }, 200);
+
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("phone", formData.phone);
-      formDataToSend.append("comment", formData.comment);
-      formDataToSend.append("photo", selectedFile);
+      const photoBase64 = await toBase64(selectedFile);
 
-      // Simulate upload progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress((prev) => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 200);
-
-      const response = await fetch("https://functions.poehali.dev/839640cf-1008-4c5d-8be3-81a7d9db548e", {
+      const response = await fetch("https://functions.poehali.dev/e1ebea09-647f-4074-8e3d-0fe6662857df", {
         method: "POST",
-        body: formDataToSend
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          comment: formData.comment,
+          photo: photoBase64,
+          filename: selectedFile.name,
+          fileType: selectedFile.type,
+          website: honeypot,
+        }),
       });
 
       clearInterval(progressInterval);
@@ -137,26 +98,23 @@ const RetouchForm = () => {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        // GTM event
         if (window.dataLayer) {
-          window.dataLayer.push({
-            event: 'retouch_form_submit',
-            form_name: 'Заказ ретуши фото'
-          });
+          window.dataLayer.push({ event: 'retouch_form_submit', form_name: 'Заказ ретуши фото' });
         }
-        
         toast.success("Заявка отправлена! Мы свяжемся с вами в течение 30 минут");
-        setFormData({ name: "", phone: "", comment: "" });
+        setFormData({ name: "", email: "", comment: "" });
+        setHoneypot("");
         setSelectedFile(null);
         setPreviewUrl("");
+        if (inputRef.current) inputRef.current.value = "";
         setTimeout(() => setUploadProgress(0), 1000);
       } else {
         toast.error(result.error || "Ошибка при отправке заявки");
         setUploadProgress(0);
       }
-    } catch (error) {
+    } catch {
+      clearInterval(progressInterval);
       toast.error("Ошибка при отправке заявки. Попробуйте позже");
-      console.error("Submit error:", error);
       setUploadProgress(0);
     } finally {
       setLoading(false);
@@ -171,6 +129,18 @@ const RetouchForm = () => {
         </h3>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Honeypot — скрыто от людей, видно ботам */}
+          <div style={{ display: 'none' }} aria-hidden="true">
+            <input
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
+          </div>
+
           {/* Загрузка фото */}
           <div>
             <label className="block font-semibold mb-2 text-sm">
@@ -178,6 +148,7 @@ const RetouchForm = () => {
             </label>
             <div className="relative">
               <input
+                ref={inputRef}
                 type="file"
                 id="photo-upload"
                 accept="image/*"
@@ -193,26 +164,14 @@ const RetouchForm = () => {
                     <img
                       src={previewUrl}
                       alt="Предпросмотр"
-                      className="max-h-[300px] mx-auto rounded-lg object-contain"
+                      className="max-h-[260px] mx-auto rounded-lg object-contain"
                     />
                     <Button
                       type="button"
                       variant="destructive"
                       size="sm"
                       className="absolute top-2 right-2 z-10"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (previewUrl) {
-                          URL.revokeObjectURL(previewUrl);
-                        }
-                        const input = document.getElementById('photo-upload') as HTMLInputElement;
-                        if (input) input.value = "";
-                        requestAnimationFrame(() => {
-                          setSelectedFile(null);
-                          setPreviewUrl("");
-                        });
-                      }}
+                      onClick={clearFile}
                     >
                       <Icon name="X" size={16} />
                     </Button>
@@ -224,7 +183,7 @@ const RetouchForm = () => {
                       Выбрать фото
                     </p>
                     <p className="text-muted-foreground text-sm text-center">
-                      с телефона или компьютера
+                      JPEG, PNG, WEBP · до 10 МБ
                     </p>
                   </>
                 )}
@@ -232,7 +191,7 @@ const RetouchForm = () => {
             </div>
           </div>
 
-          {/* Имя + Телефон в ряд */}
+          {/* Имя + Email в ряд */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block font-semibold mb-1.5 text-sm">
@@ -249,13 +208,13 @@ const RetouchForm = () => {
             </div>
             <div>
               <label className="block font-semibold mb-1.5 text-sm">
-                Телефон <span className="text-destructive">*</span>
+                Email <span className="text-destructive">*</span>
               </label>
               <Input
-                type="tel"
-                placeholder="+7 (___) __-__-__"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                type="email"
+                placeholder="your@email.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="h-10 text-sm"
                 required
               />
@@ -275,17 +234,16 @@ const RetouchForm = () => {
             />
           </div>
 
-          {/* Прогресс загрузки */}
+          {/* Прогресс */}
           {loading && uploadProgress > 0 && (
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Progress value={uploadProgress} className="h-2" />
-              <p className="text-center text-sm text-muted-foreground">
-                Загрузка: {uploadProgress}%
+              <p className="text-center text-xs text-muted-foreground">
+                Отправка: {uploadProgress}%
               </p>
             </div>
           )}
 
-          {/* Кнопка отправки */}
           <Button
             type="submit"
             size="lg"
@@ -294,18 +252,15 @@ const RetouchForm = () => {
           >
             {loading ? (
               <>
-                <Icon name="Loader2" className="animate-spin mr-2" size={24} />
+                <Icon name="Loader2" className="animate-spin mr-2" size={20} />
                 Отправка...
               </>
             ) : (
-              <>
-                <Icon name="Send" className="mr-2" size={24} />
-                Отправить заявку
-              </>
+              "Отправить заявку"
             )}
           </Button>
 
-          <p className="text-center text-muted-foreground text-sm">
+          <p className="text-center text-xs text-muted-foreground">
             Мы свяжемся с вами в течение 30 минут
           </p>
         </form>

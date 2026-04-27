@@ -1,0 +1,37 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Honeypot spam block",
+      "method": "POST",
+      "path": "/",
+      "body": {"website": "http://spam.com", "name": "Bot", "email": "bot@spam.com", "photo": "abc"},
+      "expectedStatus": 200,
+      "expectedBody": {"success": true},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Missing required fields",
+      "method": "POST",
+      "path": "/",
+      "body": {"name": "", "email": "", "photo": ""},
+      "expectedStatus": 400,
+      "expectedBody": {"success": false},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Invalid file type",
+      "method": "POST",
+      "path": "/",
+      "body": {"name": "Тест", "email": "test@example.com", "fileType": "application/pdf", "photo": "AAAA"},
+      "expectedStatus": 400,
+      "expectedBody": {"success": false},
+      "bodyMatcher": "partial"
+    }
+  ]
+}
