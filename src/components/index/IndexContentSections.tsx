@@ -94,8 +94,11 @@ export default function IndexContentSections({
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto mb-12 px-4">
-            <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 md:p-8 space-y-4 text-muted-foreground leading-relaxed">
+          <div className="max-w-6xl mx-auto mb-12 grid md:grid-cols-2 gap-8 items-start px-4">
+            <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 md:p-8 space-y-4 text-muted-foreground leading-relaxed h-full">
+              <h3 className="font-oswald font-semibold text-2xl text-foreground">
+                Восстановление лиц по описанию
+              </h3>
               <p>
                 Восстановление лиц с помощью ретуши — сложный и творческий процесс, который в нашей команде выполняют только опытные специалисты, профессиональные художники и дизайнеры.
               </p>
@@ -109,9 +112,8 @@ export default function IndexContentSections({
                 Всё это профессиональный подход, которым мы гордимся.
               </p>
             </div>
-          </div>
 
-          <div className="max-w-6xl mx-auto mb-12">
+            <div>
             <h3 className="font-oswald font-semibold text-2xl text-center mb-8">
               Примеры реставрации старых фотографий
             </h3>
@@ -146,6 +148,7 @@ export default function IndexContentSections({
                 />
                 <p className="text-center text-xs text-muted-foreground mt-2">Перетащите линию для сравнения</p>
               </div>
+            </div>
             </div>
           </div>
 
