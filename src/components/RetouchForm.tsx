@@ -164,16 +164,16 @@ const RetouchForm = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="bg-card border-2 border-primary/30 rounded-2xl p-8 md:p-12 shadow-lg">
-        <h3 className="font-oswald font-bold text-3xl md:text-4xl text-center mb-8">
+    <div className="max-w-2xl mx-auto">
+      <div className="bg-card border border-primary/20 rounded-xl p-6 shadow-lg">
+        <h3 className="font-oswald font-bold text-2xl text-center mb-5">
           Заказать ретушь фото
         </h3>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Загрузка фото */}
           <div>
-            <label className="block font-semibold mb-3 text-lg">
+            <label className="block font-semibold mb-2 text-sm">
               Загрузите фото
             </label>
             <div className="relative">
@@ -186,7 +186,7 @@ const RetouchForm = () => {
               />
               <label
                 htmlFor="photo-upload"
-                className="flex flex-col items-center justify-center min-h-[200px] border-2 border-dashed border-primary/50 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all p-8"
+                className="flex flex-col items-center justify-center min-h-[130px] border-2 border-dashed border-primary/50 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all p-4"
               >
                 {previewUrl ? (
                   <div className="relative w-full">
@@ -219,11 +219,11 @@ const RetouchForm = () => {
                   </div>
                 ) : (
                   <>
-                    <Icon name="Upload" size={48} className="text-primary mb-4" />
-                    <p className="font-oswald font-semibold text-xl text-foreground mb-2">
+                    <Icon name="Upload" size={32} className="text-primary mb-2" />
+                    <p className="font-oswald font-semibold text-base text-foreground mb-1">
                       Выбрать фото
                     </p>
-                    <p className="text-muted-foreground text-center">
+                    <p className="text-muted-foreground text-sm text-center">
                       с телефона или компьютера
                     </p>
                   </>
@@ -232,46 +232,46 @@ const RetouchForm = () => {
             </div>
           </div>
 
-          {/* Имя */}
-          <div>
-            <label className="block font-semibold mb-3 text-lg">
-              Ваше имя <span className="text-destructive">*</span>
-            </label>
-            <Input
-              type="text"
-              placeholder="Как к вам обращаться?"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="h-14 text-base"
-              required
-            />
-          </div>
-
-          {/* Телефон */}
-          <div>
-            <label className="block font-semibold mb-3 text-lg">
-              Телефон <span className="text-destructive">*</span>
-            </label>
-            <Input
-              type="tel"
-              placeholder="+7 (___) __-__-__"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="h-14 text-base"
-              required
-            />
+          {/* Имя + Телефон в ряд */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block font-semibold mb-1.5 text-sm">
+                Ваше имя <span className="text-destructive">*</span>
+              </label>
+              <Input
+                type="text"
+                placeholder="Как к вам обращаться?"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="h-10 text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold mb-1.5 text-sm">
+                Телефон <span className="text-destructive">*</span>
+              </label>
+              <Input
+                type="tel"
+                placeholder="+7 (___) __-__-__"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="h-10 text-sm"
+                required
+              />
+            </div>
           </div>
 
           {/* Комментарий */}
           <div>
-            <label className="block font-semibold mb-3 text-lg">
+            <label className="block font-semibold mb-1.5 text-sm">
               Комментарий
             </label>
             <Textarea
               placeholder="Опишите пожелания к ретуши (необязательно)"
               value={formData.comment}
               onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-              className="min-h-[120px] text-base resize-none"
+              className="min-h-[80px] text-sm resize-none"
             />
           </div>
 
@@ -290,7 +290,7 @@ const RetouchForm = () => {
             type="submit"
             size="lg"
             disabled={loading}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-xl h-16"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-oswald text-lg h-12"
           >
             {loading ? (
               <>
