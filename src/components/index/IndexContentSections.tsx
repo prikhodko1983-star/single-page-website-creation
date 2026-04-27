@@ -94,7 +94,7 @@ export default function IndexContentSections({
             </p>
           </div>
 
-          <div className="max-w-6xl mx-auto mb-12 px-4">
+          <div className="max-w-4xl mx-auto mb-12 px-4">
             <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 md:p-8 space-y-4 text-muted-foreground leading-relaxed">
               <p>
                 Восстановление лиц с помощью ретуши — сложный и творческий процесс, который в нашей команде выполняют только опытные специалисты, профессиональные художники и дизайнеры.
@@ -118,8 +118,8 @@ export default function IndexContentSections({
             <div className="grid md:grid-cols-3 gap-6">
               <div>
                 <BeforeAfterSlider
-                  beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/a614f91d-b8d0-4ed3-bbef-8c54c91a4ab8.jpg"
-                  afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/61058af6-f736-442c-bf1e-0460464d212a.jpg"
+                  beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/de725b64-6c1c-4cae-8359-86617a51a775.jpg"
+                  afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/064c9023-256a-4b19-b152-aca5e42b321b.jpg"
                   beforeAlt="Фото до реставрации"
                   afterAlt="Фото после реставрации"
                   aspectRatio="3/4"
