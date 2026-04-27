@@ -118,17 +118,28 @@ export default function BeforeAfterSlider({
         </div>
       </div>
 
-      {/* Labels */}
-      <div className="absolute top-4 left-4 z-10 pointer-events-none">
-        <span className="bg-secondary/90 text-foreground px-3 py-1.5 rounded-lg font-oswald font-semibold text-xs border border-border">
-          ДО
-        </span>
-      </div>
-      <div className="absolute top-4 right-4 z-10 pointer-events-none">
-        <span className="bg-primary text-primary-foreground px-3 py-1.5 rounded-lg font-oswald font-semibold text-xs">
-          ПОСЛЕ
-        </span>
-      </div>
+      {/* Label ДО — следует за ползунком, прижат влево от линии */}
+      {position > 10 && (
+        <div
+          className="absolute top-4 z-20 pointer-events-none transition-none"
+          style={{ left: Math.min(position, 90) + '%', transform: 'translateX(calc(-100% - 8px))' }}
+        >
+          <span className="bg-black/60 text-white px-2.5 py-1 rounded font-oswald font-semibold text-xs whitespace-nowrap">
+            ДО
+          </span>
+        </div>
+      )}
+      {/* Label ПОСЛЕ — следует за ползунком, прижат вправо от линии */}
+      {position < 90 && (
+        <div
+          className="absolute top-4 z-20 pointer-events-none transition-none"
+          style={{ left: Math.max(position, 10) + '%', transform: 'translateX(8px)' }}
+        >
+          <span className="bg-primary text-primary-foreground px-2.5 py-1 rounded font-oswald font-semibold text-xs whitespace-nowrap">
+            ПОСЛЕ
+          </span>
+        </div>
+      )}
     </div>
   );
 }
