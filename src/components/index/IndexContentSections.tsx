@@ -111,68 +111,42 @@ export default function IndexContentSections({
             </div>
           </div>
 
-          <div className="max-w-5xl mx-auto mb-12">
-            <Card className="bg-card border-border overflow-hidden">
-              <CardContent className="p-8">
-                <h3 className="font-oswald font-semibold text-2xl text-center mb-8">
-                  Пример реставрации старой фотографии
-                </h3>
-                <div className="max-w-sm mx-auto">
-                  <BeforeAfterSlider
-                    beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/a614f91d-b8d0-4ed3-bbef-8c54c91a4ab8.jpg"
-                    afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/61058af6-f736-442c-bf1e-0460464d212a.jpg"
-                    beforeAlt="Фото до реставрации"
-                    afterAlt="Фото после реставрации"
-                    aspectRatio="3/4"
-                  />
-                  <p className="text-center text-xs text-muted-foreground mt-3">
-                    Перетащите линию для сравнения
-                  </p>
-                </div>
-                <div className="grid md:grid-cols-2 gap-6 mt-6">
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
-                        <Icon name="X" size={14} className="text-destructive" />
-                      </div>
-                      Выцветшие и тусклые тона
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
-                        <Icon name="X" size={14} className="text-destructive" />
-                      </div>
-                      Низкая чёткость деталей
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
-                        <Icon name="X" size={14} className="text-destructive" />
-                      </div>
-                      Повреждения и артефакты
-                    </div>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Icon name="Check" size={14} className="text-primary" />
-                      </div>
-                      Устранены все повреждения
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Icon name="Check" size={14} className="text-primary" />
-                      </div>
-                      Улучшена чёткость и детали
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Icon name="Check" size={14} className="text-primary" />
-                      </div>
-                      Готово к гравировке
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="max-w-6xl mx-auto mb-12">
+            <h3 className="font-oswald font-semibold text-2xl text-center mb-8">
+              Примеры реставрации старых фотографий
+            </h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
+                <BeforeAfterSlider
+                  beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/a614f91d-b8d0-4ed3-bbef-8c54c91a4ab8.jpg"
+                  afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/61058af6-f736-442c-bf1e-0460464d212a.jpg"
+                  beforeAlt="Фото до реставрации"
+                  afterAlt="Фото после реставрации"
+                  aspectRatio="3/4"
+                />
+                <p className="text-center text-xs text-muted-foreground mt-2">Перетащите линию для сравнения</p>
+              </div>
+              <div>
+                <BeforeAfterSlider
+                  beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/a614f91d-b8d0-4ed3-bbef-8c54c91a4ab8.jpg"
+                  afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/61058af6-f736-442c-bf1e-0460464d212a.jpg"
+                  beforeAlt="Фото до реставрации"
+                  afterAlt="Фото после реставрации"
+                  aspectRatio="3/4"
+                />
+                <p className="text-center text-xs text-muted-foreground mt-2">Перетащите линию для сравнения</p>
+              </div>
+              <div>
+                <BeforeAfterSlider
+                  beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/a614f91d-b8d0-4ed3-bbef-8c54c91a4ab8.jpg"
+                  afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/61058af6-f736-442c-bf1e-0460464d212a.jpg"
+                  beforeAlt="Фото до реставрации"
+                  afterAlt="Фото после реставрации"
+                  aspectRatio="3/4"
+                />
+                <p className="text-center text-xs text-muted-foreground mt-2">Перетащите линию для сравнения</p>
+              </div>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-8">
