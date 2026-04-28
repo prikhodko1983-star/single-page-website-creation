@@ -233,9 +233,9 @@ export default function IndexContactFooter({
                 </div>
                 <div className="text-muted-foreground">Ежедневно с 9:00 до 20:00</div>
                 <div className="flex items-center gap-2">
-                  <a href="https://wa.me/79960681168" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-1.5 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-lg transition-colors text-xs">
-                    <Icon name="MessageCircle" size={14} />
-                    <span>WhatsApp</span>
+                  <a href="https://vk.ru/vekpam" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-1.5 bg-[#0077FF] hover:bg-[#0060CC] text-white rounded-lg transition-colors text-xs">
+                    <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/d013d239-bfaa-4a1b-a14c-18c8d933ee0d.png" alt="ВК" width={14} height={14} className="rounded-sm flex-shrink-0" />
+                    <span>ВКонтакте</span>
                   </a>
                   <a href="https://t.me/79960681168" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-1.5 bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors text-xs">
                     <Icon name="Send" size={14} />
