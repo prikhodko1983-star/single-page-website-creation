@@ -117,7 +117,7 @@ const ContactSection = () => {
 
               <Card className="bg-card border-border">
                 <CardContent className="p-6 text-center">
-                  <Icon name="Users" size={32} className="text-primary mx-auto mb-3" />
+                  <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/d013d239-bfaa-4a1b-a14c-18c8d933ee0d.png" alt="ВКонтакте" width={48} height={48} className="mx-auto mb-3 rounded-xl" />
                   <div className="font-oswald font-bold mb-1">ВКонтакте</div>
                   <a href="https://vk.ru/vekpam" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                     Написать ВКонтакте
