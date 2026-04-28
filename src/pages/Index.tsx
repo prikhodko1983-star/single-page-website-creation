@@ -445,8 +445,9 @@ const Index = () => {
                 label: "Художественная композиция"
               },
               {
-                url: "https://cdn.poehali.dev/files/7112f930-700c-4c99-a122-56bf0dbc2b2c.png",
-                label: "Портрет с цветами"
+                url: "https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/775ae30e-ea22-4398-a12c-30e9356d8f1a.jpeg",
+                label: "Портрет с цветами",
+                contain: true
               },
               {
                 url: "https://cdn.poehali.dev/files/ed11db8d-2e82-4c44-a219-2b25cbe05cd3.jpg",
@@ -463,7 +464,7 @@ const Index = () => {
                   <img
                     src={item.url}
                     alt={item.label}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className={`w-full h-full ${item.contain ? 'object-contain bg-zinc-900' : 'object-cover'} group-hover:scale-105 transition-transform duration-500`}
                   />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
