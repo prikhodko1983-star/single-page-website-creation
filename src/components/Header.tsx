@@ -34,7 +34,7 @@ const Header = () => {
               <Icon name="Send" size={18} />
             </a>
             <a
-              href="https://max.ru/im?phone=79960681168"
+              href="https://max.ru/im?phone=89960681168"
               target="_blank"
               rel="noopener noreferrer"
               className="w-9 h-9 flex items-center justify-center bg-[#FF4D00] hover:bg-[#e04400] text-white rounded-xl transition-colors"
