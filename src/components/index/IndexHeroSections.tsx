@@ -191,10 +191,7 @@ export default function IndexHeroSections({
                     }
                     onNavigateConstructor();
                   }}
-                >
-                  <Icon name="Wrench" className="mr-2" size={16} />
-                  СОЗДАТЬ ПРОЕКТ
-                </Button>
+                >Конструктор </Button>
                 <Button 
                   size="sm"
                   variant="outline"
