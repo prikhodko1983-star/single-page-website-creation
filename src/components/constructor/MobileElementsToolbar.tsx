@@ -67,9 +67,9 @@ const TOOLS = [
   { key: 'dates' as ToolPanel, icon: 'Calendar', label: 'Даты' },
   { key: 'photo' as ToolPanel, icon: 'UserRound', label: 'Портрет' },
   { key: 'text' as ToolPanel, icon: 'Type', label: 'Текст' },
-  { key: 'epitaph' as ToolPanel, icon: 'Quote', label: 'Эпитафия' },
-  { key: 'cross' as ToolPanel, icon: 'Cross', label: 'Крест' },
   { key: 'imageCatalog' as ToolPanel, icon: 'Images', label: 'Картинки' },
+  { key: 'cross' as ToolPanel, icon: 'Cross', label: 'Крест' },
+  { key: 'epitaph' as ToolPanel, icon: 'Quote', label: 'Эпитафия' },
 ];
 
 export const MobileElementsToolbar = ({

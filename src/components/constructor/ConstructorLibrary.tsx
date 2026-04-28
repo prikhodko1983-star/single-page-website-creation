@@ -76,9 +76,9 @@ const DESKTOP_TOOLS = [
   { key: 'dates' as DesktopToolPanel, icon: 'Calendar', label: 'Даты' },
   { key: 'photo' as DesktopToolPanel, icon: 'UserRound', label: 'Портрет' },
   { key: 'text' as DesktopToolPanel, icon: 'Type', label: 'Текст' },
-  { key: 'epitaph' as DesktopToolPanel, icon: 'Quote', label: 'Эпитафия' },
-  { key: 'cross' as DesktopToolPanel, icon: 'Cross', label: 'Крест' },
   { key: 'imageCatalog' as DesktopToolPanel, icon: 'Images', label: 'Картинки' },
+  { key: 'cross' as DesktopToolPanel, icon: 'Cross', label: 'Крест' },
+  { key: 'epitaph' as DesktopToolPanel, icon: 'Quote', label: 'Эпитафия' },
 ];
 
 export const ConstructorLibrary = ({
