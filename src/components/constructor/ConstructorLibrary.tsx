@@ -74,9 +74,9 @@ const DESKTOP_TOOLS = [
   { key: '_catalog', icon: 'Milestone', label: 'Каталог\nпамятников' },
   { key: 'fio' as DesktopToolPanel, icon: 'User', label: 'ФИО' },
   { key: 'dates' as DesktopToolPanel, icon: 'Calendar', label: 'Даты' },
-  { key: 'epitaph' as DesktopToolPanel, icon: 'Quote', label: 'Эпитафия' },
-  { key: 'text' as DesktopToolPanel, icon: 'Type', label: 'Текст' },
   { key: 'photo' as DesktopToolPanel, icon: 'UserRound', label: 'Портрет' },
+  { key: 'text' as DesktopToolPanel, icon: 'Type', label: 'Текст' },
+  { key: 'epitaph' as DesktopToolPanel, icon: 'Quote', label: 'Эпитафия' },
   { key: 'cross' as DesktopToolPanel, icon: 'Cross', label: 'Крест' },
   { key: 'imageCatalog' as DesktopToolPanel, icon: 'Images', label: 'Картинки' },
 ];

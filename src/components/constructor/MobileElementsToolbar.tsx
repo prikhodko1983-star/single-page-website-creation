@@ -65,9 +65,9 @@ const TOOLS = [
   { key: '_catalog' as ToolPanel, icon: 'Milestone', label: 'Каталог\nпамятников' },
   { key: 'fio' as ToolPanel, icon: 'User', label: 'ФИО' },
   { key: 'dates' as ToolPanel, icon: 'Calendar', label: 'Даты' },
-  { key: 'epitaph' as ToolPanel, icon: 'Quote', label: 'Эпитафия' },
-  { key: 'text' as ToolPanel, icon: 'Type', label: 'Текст' },
   { key: 'photo' as ToolPanel, icon: 'UserRound', label: 'Портрет' },
+  { key: 'text' as ToolPanel, icon: 'Type', label: 'Текст' },
+  { key: 'epitaph' as ToolPanel, icon: 'Quote', label: 'Эпитафия' },
   { key: 'cross' as ToolPanel, icon: 'Cross', label: 'Крест' },
   { key: 'imageCatalog' as ToolPanel, icon: 'Images', label: 'Картинки' },
 ];
