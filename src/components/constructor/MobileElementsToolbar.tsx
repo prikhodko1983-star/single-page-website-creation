@@ -62,14 +62,14 @@ interface MobileElementsToolbarProps {
 type ToolPanel = '_catalog' | 'fio' | 'dates' | 'epitaph' | 'text' | 'photo' | 'cross' | 'imageCatalog' | null;
 
 const TOOLS = [
-  { key: '_catalog' as ToolPanel, icon: 'Milestone', label: 'Каталог\nпамятников' },
-  { key: 'fio' as ToolPanel, icon: 'User', label: 'ФИО' },
-  { key: 'dates' as ToolPanel, icon: 'Calendar', label: 'Даты' },
-  { key: 'photo' as ToolPanel, icon: 'UserRound', label: 'Портрет' },
-  { key: 'text' as ToolPanel, icon: 'Type', label: 'Текст' },
-  { key: 'imageCatalog' as ToolPanel, icon: 'Images', label: 'Картинки' },
-  { key: 'cross' as ToolPanel, icon: 'Cross', label: 'Крест' },
-  { key: 'epitaph' as ToolPanel, icon: 'Quote', label: 'Эпитафия' },
+  { key: '_catalog' as ToolPanel, icon: 'Milestone', label: 'Каталог\nпамятников', step: null },
+  { key: 'fio' as ToolPanel, icon: 'User', label: 'ФИО', step: 1 },
+  { key: 'dates' as ToolPanel, icon: 'Calendar', label: 'Даты', step: 2 },
+  { key: 'photo' as ToolPanel, icon: 'UserRound', label: 'Портрет', step: 3 },
+  { key: 'imageCatalog' as ToolPanel, icon: 'Images', label: 'Картинки', step: 4 },
+  { key: 'cross' as ToolPanel, icon: 'Cross', label: 'Крест', step: 5 },
+  { key: 'epitaph' as ToolPanel, icon: 'Quote', label: 'Эпитафия', step: 6 },
+  { key: 'text' as ToolPanel, icon: 'Type', label: 'Текст', step: 7 },
 ];
 
 export const MobileElementsToolbar = ({
@@ -205,23 +205,30 @@ export const MobileElementsToolbar = ({
               }`}
               title={tool.label}
             >
-              {tool.key === '_catalog' ? (
-                <svg width="17" height="17" viewBox="0 0 80 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-                  <rect x="0" y="88" width="80" height="12" rx="1" fill="currentColor"/>
-                  <rect x="8" y="78" width="64" height="12" rx="1" fill="currentColor"/>
-                  <path d="M20 78 L20 30 Q20 6 40 6 Q60 6 60 30 L60 78 Z" fill="currentColor"/>
-                </svg>
-              ) : tool.key === 'cross' ? (
-                <svg width="18" height="18" viewBox="0 0 90 160" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-                  <rect x="38" y="0" width="14" height="160" fill="currentColor"/>
-                  <rect x="28" y="8" width="34" height="14" fill="currentColor"/>
-                  <rect x="0" y="44" width="90" height="14" fill="currentColor"/>
-                  <polygon points="10,98 10,112 38,118 38,106" fill="currentColor"/>
-                  <polygon points="52,106 52,118 80,112 80,98" fill="currentColor"/>
-                </svg>
-              ) : (
-                <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={18} />
-              )}
+              <div className="relative">
+                {tool.step !== null && (
+                  <span className="absolute -top-1 -right-2 bg-primary text-primary-foreground text-[7px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none z-10"
+                    style={{ fontSize: '7px' }}
+                  >{tool.step}</span>
+                )}
+                {tool.key === '_catalog' ? (
+                  <svg width="17" height="17" viewBox="0 0 80 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+                    <rect x="0" y="88" width="80" height="12" rx="1" fill="currentColor"/>
+                    <rect x="8" y="78" width="64" height="12" rx="1" fill="currentColor"/>
+                    <path d="M20 78 L20 30 Q20 6 40 6 Q60 6 60 30 L60 78 Z" fill="currentColor"/>
+                  </svg>
+                ) : tool.key === 'cross' ? (
+                  <svg width="18" height="18" viewBox="0 0 90 160" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+                    <rect x="38" y="0" width="14" height="160" fill="currentColor"/>
+                    <rect x="28" y="8" width="34" height="14" fill="currentColor"/>
+                    <rect x="0" y="44" width="90" height="14" fill="currentColor"/>
+                    <polygon points="10,98 10,112 38,118 38,106" fill="currentColor"/>
+                    <polygon points="52,106 52,118 80,112 80,98" fill="currentColor"/>
+                  </svg>
+                ) : (
+                  <Icon name={tool.icon as Parameters<typeof Icon>[0]['name']} size={18} />
+                )}
+              </div>
               <span className="text-[7px] leading-tight text-center whitespace-pre-wrap">{tool.label}</span>
             </button>
             {idx === 0 && <div className="w-8 border-t border-white/10 my-0.5" />}
