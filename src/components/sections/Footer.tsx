@@ -14,8 +14,8 @@ const Footer = () => {
             <a href="tel:+79960681168" className="text-sm hover:text-primary transition-colors">
               8 (996) 068-11-68
             </a>
-            <a href="https://wa.me/79960681168" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-lg transition-colors">
-              <Icon name="MessageCircle" size={18} />
+            <a href="https://vk.ru/vekpam" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#0077FF] hover:bg-[#0060CC] text-white rounded-lg transition-colors" title="ВКонтакте">
+              <Icon name="Users" size={18} />
             </a>
             <a href="https://t.me/79960681168" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors">
               <Icon name="Send" size={18} />

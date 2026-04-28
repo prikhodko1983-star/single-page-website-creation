@@ -117,10 +117,10 @@ const ContactSection = () => {
 
               <Card className="bg-card border-border">
                 <CardContent className="p-6 text-center">
-                  <Icon name="MessageCircle" size={32} className="text-primary mx-auto mb-3" />
-                  <div className="font-oswald font-bold mb-1">WhatsApp</div>
-                  <a href="https://wa.me/79960681168" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    Написать в WhatsApp
+                  <Icon name="Users" size={32} className="text-primary mx-auto mb-3" />
+                  <div className="font-oswald font-bold mb-1">ВКонтакте</div>
+                  <a href="https://vk.ru/vekpam" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Написать ВКонтакте
                   </a>
                 </CardContent>
               </Card>

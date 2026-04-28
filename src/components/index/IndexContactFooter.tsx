@@ -110,21 +110,21 @@ export default function IndexContactFooter({
                     
                     <div className="flex items-center gap-2">
                       <a 
-                        href="https://wa.me/79960681168" 
+                        href="https://vk.ru/vekpam" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-lg transition-colors"
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm bg-[#0077FF] hover:bg-[#0060CC] text-white rounded-lg transition-colors"
                         onClick={() => {
                           if (window.dataLayer) {
                             window.dataLayer.push({
                               event: 'messenger_click',
-                              messenger_name: 'WhatsApp'
+                              messenger_name: 'VK'
                             });
                           }
                         }}
                       >
-                        <Icon name="MessageCircle" size={16} />
-                        <span className="font-medium">WhatsApp</span>
+                        <Icon name="Users" size={16} />
+                        <span className="font-medium">ВКонтакте</span>
                       </a>
                       <a 
                         href="https://t.me/79960681168" 
