@@ -67,7 +67,7 @@ const TOOLS = [
   { key: 'dates' as ToolPanel, icon: 'Calendar', label: 'Даты' },
   { key: 'epitaph' as ToolPanel, icon: 'Quote', label: 'Эпитафия' },
   { key: 'text' as ToolPanel, icon: 'Type', label: 'Текст' },
-  { key: 'photo' as ToolPanel, icon: 'Camera', label: 'Портрет' },
+  { key: 'photo' as ToolPanel, icon: 'UserRound', label: 'Портрет' },
   { key: 'cross' as ToolPanel, icon: 'Cross', label: 'Крест' },
   { key: 'imageCatalog' as ToolPanel, icon: 'Images', label: 'Картинки' },
 ];

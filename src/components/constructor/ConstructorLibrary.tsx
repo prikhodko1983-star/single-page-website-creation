@@ -76,7 +76,7 @@ const DESKTOP_TOOLS = [
   { key: 'dates' as DesktopToolPanel, icon: 'Calendar', label: 'Даты' },
   { key: 'epitaph' as DesktopToolPanel, icon: 'Quote', label: 'Эпитафия' },
   { key: 'text' as DesktopToolPanel, icon: 'Type', label: 'Текст' },
-  { key: 'photo' as DesktopToolPanel, icon: 'Camera', label: 'Портрет' },
+  { key: 'photo' as DesktopToolPanel, icon: 'UserRound', label: 'Портрет' },
   { key: 'cross' as DesktopToolPanel, icon: 'Cross', label: 'Крест' },
   { key: 'imageCatalog' as DesktopToolPanel, icon: 'Images', label: 'Картинки' },
 ];
