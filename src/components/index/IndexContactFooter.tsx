@@ -113,7 +113,7 @@ export default function IndexContactFooter({
                         href="https://vk.ru/vekpam" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm bg-[#0077FF] hover:bg-[#0060CC] text-white rounded-lg transition-colors hover:opacity-80"
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm bg-[#0077FF] hover:bg-[#0060CC] text-white rounded-lg transition-colors"
                         onClick={() => {
                           if (window.dataLayer) {
                             window.dataLayer.push({
@@ -123,7 +123,7 @@ export default function IndexContactFooter({
                           }
                         }}
                       >
-                        <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/d013d239-bfaa-4a1b-a14c-18c8d933ee0d.png" alt="ВКонтакте" width={20} height={20} className="rounded-sm" />
+                        <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/d013d239-bfaa-4a1b-a14c-18c8d933ee0d.png" alt="ВКонтакте" width={16} height={16} className="rounded-sm flex-shrink-0" />
                         <span className="font-medium">ВКонтакте</span>
                       </a>
                       <a 
