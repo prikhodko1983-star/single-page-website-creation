@@ -14,10 +14,10 @@ const Footer = () => {
             <a href="tel:+79960681168" className="text-sm hover:text-primary transition-colors">
               8 (996) 068-11-68
             </a>
-            <a href="https://vk.ru/vekpam" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-80" title="ВКонтакте">
-              <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/d013d239-bfaa-4a1b-a14c-18c8d933ee0d.png" alt="ВКонтакте" width={34} height={34} className="rounded-lg" />
+            <a href="https://vk.ru/vekpam" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center rounded-xl overflow-hidden hover:opacity-80 transition-opacity" title="ВКонтакте">
+              <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/d013d239-bfaa-4a1b-a14c-18c8d933ee0d.png" alt="ВКонтакте" width={36} height={36} className="w-full h-full object-cover" />
             </a>
-            <a href="https://t.me/79960681168" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#0088cc] hover:bg-[#006699] text-white rounded-lg transition-colors">
+            <a href="https://t.me/79960681168" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-[#0088cc] hover:bg-[#006699] text-white rounded-xl transition-colors">
               <Icon name="Send" size={18} />
             </a>
           </div>
