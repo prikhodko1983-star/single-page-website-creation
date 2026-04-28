@@ -243,6 +243,10 @@ export default function IndexContactFooter({
                   </a>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
+                  <Icon name="Mail" size={16} />
+                  <a href="mailto:vekpam@mail.ru" className="hover:text-primary transition-colors">vekpam@mail.ru</a>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <Icon name="MapPin" size={16} />
                   <span>ул. Державина 17, стр. 3</span>
                 </div>
