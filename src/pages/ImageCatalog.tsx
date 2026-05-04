@@ -118,9 +118,9 @@ export default function ImageCatalog() {
           <div className="mt-8 p-4 bg-muted rounded-lg">
             <p className="text-sm font-medium mb-2">Хотите использовать изображение?</p>
             <p className="text-xs text-muted-foreground mb-3">Перейдите в конструктор и добавьте любой элемент на памятник</p>
-            <Button size="sm" className="w-full" onClick={() => navigate("/constructor")}>
-              <Icon name="Wrench" size={14} className="mr-2" />
-              Открыть конструктор
+            <Button size="sm" className="w-full flex items-center justify-center gap-2" onClick={() => navigate("/constructor")}>
+              <Icon name="Wrench" size={14} />
+              <span>Открыть конструктор</span>
             </Button>
           </div>
         </aside>
