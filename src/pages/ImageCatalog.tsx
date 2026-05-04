@@ -222,7 +222,7 @@ export default function ImageCatalog() {
                 className="max-w-full max-h-60 object-contain"
               />
             </div>
-            <Button className="w-full" onClick={() => { navigate("/constructor"); setLightbox(null); }}>
+            <Button className="w-full" onClick={() => { navigate(`/constructor?image=${encodeURIComponent(lightbox.image_url)}`); setLightbox(null); }}>
               <Icon name="Wrench" size={16} className="mr-2" />
               Добавить на памятник в конструкторе
             </Button>

@@ -326,6 +326,10 @@ const Constructor = () => {
     if (monumentParam) {
       setMonumentImage(decodeURIComponent(monumentParam));
     }
+    const imageParam = searchParams.get('image');
+    if (imageParam) {
+      addImageElement(decodeURIComponent(imageParam), 'image');
+    }
     loadCustomFonts();
   }, [searchParams]);
 
