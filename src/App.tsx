@@ -18,6 +18,7 @@ import Legal from "./pages/Legal";
 import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
 import PrintOrder from "./pages/PrintOrder";
+import ImageCatalog from "./pages/ImageCatalog";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,14 @@ const NavigationBar = () => {
           >
             <Icon name="ShoppingBag" size={16} className="mr-2" />
             Каталог
+          </Button>
+          <Button
+            variant={location.pathname === "/image-catalog" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => navigate("/image-catalog")}
+          >
+            <Icon name="Images" size={16} className="mr-2" />
+            Картинки
           </Button>
           <Button
             variant={location.pathname === "/admin" ? "default" : "ghost"}
@@ -112,6 +121,15 @@ const NavigationBar = () => {
               Каталог
             </Button>
             <Button
+              variant={location.pathname === "/image-catalog" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => { navigate("/image-catalog"); setIsOpen(false); }}
+              className="justify-start"
+            >
+              <Icon name="Images" size={16} className="mr-2" />
+              Картинки
+            </Button>
+            <Button
               variant={location.pathname === "/admin" ? "default" : "ghost"}
               size="sm"
               onClick={() => { navigate("/admin"); setIsOpen(false); }}
@@ -162,6 +180,7 @@ const AppContent = () => {
         <Route path="/legal" element={<Legal />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/print-order" element={<PrintOrder />} />
+        <Route path="/image-catalog" element={<ImageCatalog />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
