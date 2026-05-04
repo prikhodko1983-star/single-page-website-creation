@@ -180,8 +180,9 @@ export default function ImageCatalog() {
                     <img
                       src={img.image_url}
                       alt={img.name}
-                      className="w-full h-full object-contain p-3 transition-transform group-hover:scale-105"
+                      className="w-full h-full object-contain p-3 transition-transform group-hover:scale-105 select-none pointer-events-none"
                       loading="lazy"
+                      draggable={false}
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-end">
                       <p className="w-full text-white text-xs px-2 py-1.5 bg-black/50 translate-y-full group-hover:translate-y-0 transition-transform leading-tight">
@@ -215,11 +216,13 @@ export default function ImageCatalog() {
                 <Icon name="X" size={20} />
               </button>
             </div>
-            <div className="bg-muted rounded-lg p-6 mb-4 flex items-center justify-center" style={{ minHeight: 200 }}>
+            <div className="bg-muted rounded-lg p-6 mb-4 flex items-center justify-center select-none" style={{ minHeight: 200 }}>
               <img
                 src={lightbox.image_url}
                 alt={lightbox.name}
-                className="max-w-full max-h-60 object-contain"
+                className="max-w-full max-h-60 object-contain select-none pointer-events-none"
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
               />
             </div>
             <Button className="w-full" onClick={() => { navigate(`/constructor?image=${encodeURIComponent(lightbox.image_url)}`); setLightbox(null); }}>
