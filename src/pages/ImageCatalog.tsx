@@ -216,13 +216,16 @@ export default function ImageCatalog() {
                 <Icon name="X" size={20} />
               </button>
             </div>
-            <div className="bg-muted rounded-lg p-6 mb-4 flex items-center justify-center select-none" style={{ minHeight: 200 }}>
+            <div
+              className="bg-muted rounded-lg p-6 mb-4 flex items-center justify-center select-none"
+              style={{ minHeight: 200 }}
+              onContextMenu={(e) => e.preventDefault()}
+            >
               <img
                 src={lightbox.image_url}
                 alt={lightbox.name}
                 className="max-w-full max-h-60 object-contain select-none pointer-events-none"
                 draggable={false}
-                onContextMenu={(e) => e.preventDefault()}
               />
             </div>
             <Button className="w-full" onClick={() => { navigate(`/constructor?image=${encodeURIComponent(lightbox.image_url)}`); setLightbox(null); }}>
