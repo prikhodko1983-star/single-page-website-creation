@@ -1469,24 +1469,28 @@ const Constructor = () => {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0);
 
-      // Водяной знак
-      const wmText = 'ЭСКИЗ • НЕ ЯВЛЯЕТСЯ ФИНАЛЬНЫМ МАКЕТОМ';
-      const fontSize = Math.max(14, Math.round(canvas.width * 0.022));
+      // Водяной знак — диагональная плитка
+      const wmText = 'Гранит-мастер.рф';
+      const fontSize = Math.max(16, Math.round(canvas.width * 0.028));
       ctx.save();
       ctx.font = `bold ${fontSize}px Arial`;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.18)';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      // Полупрозрачный прямоугольник под текстом
-      const textWidth = ctx.measureText(wmText).width;
-      const padX = fontSize * 0.8;
-      const padY = fontSize * 0.5;
-      const rx = canvas.width / 2 - textWidth / 2 - padX;
-      const ry = canvas.height - fontSize * 2.5;
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
-      ctx.fillRect(rx, ry, textWidth + padX * 2, fontSize + padY * 2);
-      // Текст
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.fillText(wmText, canvas.width / 2, canvas.height - fontSize * 1.8);
+      const angle = -Math.PI / 6; // -30 градусов
+      const stepX = canvas.width * 0.35;
+      const stepY = canvas.height * 0.18;
+      for (let row = -2; row < 8; row++) {
+        for (let col = -1; col < 5; col++) {
+          const x = col * stepX + (row % 2 === 0 ? 0 : stepX / 2);
+          const y = row * stepY;
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(angle);
+          ctx.fillText(wmText, 0, 0);
+          ctx.restore();
+        }
+      }
       ctx.restore();
 
       const jpgDataUrl = canvas.toDataURL('image/jpeg', 1.0);
