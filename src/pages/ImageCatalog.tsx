@@ -175,6 +175,7 @@ export default function ImageCatalog() {
                   <button
                     key={img.id}
                     onClick={() => setLightbox(img)}
+                    onContextMenu={(e) => e.preventDefault()}
                     className="group relative bg-muted rounded-lg overflow-hidden aspect-square hover:ring-2 hover:ring-primary transition-all"
                   >
                     <img
