@@ -23,7 +23,7 @@ export default function IndexHeader({ mobileMenuOpen, setMobileMenuOpen, onNavig
             <a href="#shop" className="hover:text-primary transition-colors">Каталог</a>
             <a href="#portfolio" className="hover:text-primary transition-colors">Наши работы</a>
             <a href="/constructor" className="hover:text-primary transition-colors">Конструктор</a>
-            <a href="/image-catalog" className="hover:text-primary transition-colors">Картинки</a>
+            <a href="/image-catalog" className="hover:text-primary transition-colors">Каталог изображений</a>
             <a href="#services" className="hover:text-primary transition-colors">Услуги</a>
             <a href="#retouch" className="hover:text-primary transition-colors">Ретушь</a>
             <a href="#prices" className="hover:text-primary transition-colors">Цены</a>
