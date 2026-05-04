@@ -477,38 +477,34 @@ export const ConstructorLibrary = ({
 
                 {/* Портрет */}
                 {activeToolPanel === 'photo' && (
-                  <div className="p-3 space-y-2">
-                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Портреты</p>
-                    <Tabs defaultValue="female" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2 h-7 bg-white/5">
-                        <TabsTrigger value="male" className="text-xs">Мужские</TabsTrigger>
-                        <TabsTrigger value="female" className="text-xs">Женские</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="male" className="mt-2">
-                        <div className="grid grid-cols-2 gap-1.5">
-                          <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/5be3255b-1f30-4759-8daf-1c364342e4e7.jpg', 'image')}
-                            className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
-                            <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/5be3255b-1f30-4759-8daf-1c364342e4e7.jpg" alt="Мужской портрет" className="w-full h-full object-cover" />
-                          </button>
-                          <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/1a839d6b-b217-4729-bfc9-58961b033575.jpg', 'image')}
-                            className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
-                            <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/1a839d6b-b217-4729-bfc9-58961b033575.jpg" alt="Мужской портрет контур" className="w-full h-full object-cover" />
-                          </button>
-                        </div>
-                      </TabsContent>
-                      <TabsContent value="female" className="mt-2">
-                        <div className="grid grid-cols-2 gap-1.5">
-                          <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/e1a552a7-32c5-4385-99b6-143f6b05e8b7.jpg', 'image')}
-                            className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
-                            <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/e1a552a7-32c5-4385-99b6-143f6b05e8b7.jpg" alt="Женский портрет" className="w-full h-full object-cover" />
-                          </button>
-                          <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/81e2b99f-4600-4a07-8bd0-9387efad0f57.jpg', 'image')}
-                            className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
-                            <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/81e2b99f-4600-4a07-8bd0-9387efad0f57.jpg" alt="Женский портрет контур" className="w-full h-full object-cover" />
-                          </button>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
+                  <div className="p-3 space-y-3">
+                    <p className="text-xs font-semibold text-white/60 uppercase tracking-wider">Портреты</p>
+                    <div>
+                      <p className="text-xs text-white/40 mb-1.5">Мужские</p>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/5be3255b-1f30-4759-8daf-1c364342e4e7.jpg', 'image')}
+                          className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
+                          <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/5be3255b-1f30-4759-8daf-1c364342e4e7.jpg" alt="Мужской портрет" className="w-full h-full object-cover" />
+                        </button>
+                        <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/1a839d6b-b217-4729-bfc9-58961b033575.jpg', 'image')}
+                          className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
+                          <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/1a839d6b-b217-4729-bfc9-58961b033575.jpg" alt="Мужской портрет контур" className="w-full h-full object-cover" />
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-white/40 mb-1.5">Женские</p>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/e1a552a7-32c5-4385-99b6-143f6b05e8b7.jpg', 'image')}
+                          className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
+                          <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/e1a552a7-32c5-4385-99b6-143f6b05e8b7.jpg" alt="Женский портрет" className="w-full h-full object-cover" />
+                        </button>
+                        <button onClick={() => addImageElement('https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/81e2b99f-4600-4a07-8bd0-9387efad0f57.jpg', 'image')}
+                          className="relative overflow-hidden rounded border-2 border-white/10 hover:border-primary transition-all aspect-[3/4] bg-black">
+                          <img src="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/81e2b99f-4600-4a07-8bd0-9387efad0f57.jpg" alt="Женский портрет контур" className="w-full h-full object-cover" />
+                        </button>
+                      </div>
+                    </div>
                     <input ref={photoInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" id="photo-upload" />
                     <Button onClick={() => photoInputRef.current?.click()} className="w-full h-8 text-xs mt-2">
                       <Icon name="Upload" size={14} className="mr-1" /> Загрузить свой портрет
