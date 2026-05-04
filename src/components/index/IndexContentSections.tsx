@@ -118,8 +118,8 @@ export default function IndexContentSections({
             <div className="grid md:grid-cols-3 gap-6">
               <div>
                 <BeforeAfterSlider
-                  beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/c6dfdb21-82f7-4f1e-97a6-2a0beac9c037.jpg"
-                  afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/68d7c8aa-a20b-4b56-a8e6-2defbe35d244.jpg"
+                  beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/11bb65ae-862b-4f6f-90e0-818db2935f22.jpg"
+                  afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/53c48fd5-c15f-4d35-84fa-0ebeeeb6b64c.jpg"
                   beforeAlt="Фото до реставрации"
                   afterAlt="Фото после реставрации"
                   aspectRatio="3/4"
@@ -128,8 +128,8 @@ export default function IndexContentSections({
               </div>
               <div>
                 <BeforeAfterSlider
-                  beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/c6dfdb21-82f7-4f1e-97a6-2a0beac9c037.jpg"
-                  afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/68d7c8aa-a20b-4b56-a8e6-2defbe35d244.jpg"
+                  beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/11bb65ae-862b-4f6f-90e0-818db2935f22.jpg"
+                  afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/53c48fd5-c15f-4d35-84fa-0ebeeeb6b64c.jpg"
                   beforeAlt="Фото до реставрации"
                   afterAlt="Фото после реставрации"
                   aspectRatio="3/4"
@@ -138,8 +138,8 @@ export default function IndexContentSections({
               </div>
               <div>
                 <BeforeAfterSlider
-                  beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/c6dfdb21-82f7-4f1e-97a6-2a0beac9c037.jpg"
-                  afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/68d7c8aa-a20b-4b56-a8e6-2defbe35d244.jpg"
+                  beforeSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/11bb65ae-862b-4f6f-90e0-818db2935f22.jpg"
+                  afterSrc="https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/53c48fd5-c15f-4d35-84fa-0ebeeeb6b64c.jpg"
                   beforeAlt="Фото до реставрации"
                   afterAlt="Фото после реставрации"
                   aspectRatio="3/4"
