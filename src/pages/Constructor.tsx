@@ -1470,7 +1470,7 @@ const Constructor = () => {
       ctx.drawImage(img, 0, 0);
 
       // Водяной знак — диагональная плитка
-      const wmText = 'Гранит-мастер.рф';
+      const wmText = 'Мастер-гранит.рф';
       const fontSize = Math.max(16, Math.round(canvas.width * 0.028));
       ctx.save();
       ctx.font = `bold ${fontSize}px Arial`;
