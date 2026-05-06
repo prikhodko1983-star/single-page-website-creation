@@ -64,7 +64,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         # Поиск пользователя
         cursor.execute(
-            "SELECT id, password_hash FROM admin_users WHERE username = %s",
+            "SELECT id, password_hash, role FROM admin_users WHERE username = %s",
             (username,)
         )
         result = cursor.fetchone()
@@ -79,7 +79,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        user_id, password_hash = result
+        user_id, password_hash, role = result
         
         # Проверка пароля - password_hash может быть строкой или bytes из БД
         if isinstance(password_hash, str):
@@ -107,6 +107,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         payload = {
             'user_id': user_id,
             'username': username,
+            'role': role,
             'exp': datetime.utcnow() + timedelta(hours=24)
         }
         token = jwt.encode(payload, jwt_secret, algorithm='HS256')
@@ -114,7 +115,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             'statusCode': 200,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'token': token, 'username': username}),
+            'body': json.dumps({'token': token, 'username': username, 'role': role}),
             'isBase64Encoded': False
         }
         

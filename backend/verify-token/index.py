@@ -61,7 +61,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'body': json.dumps({
                 'valid': True,
                 'user_id': payload.get('user_id'),
-                'username': payload.get('username')
+                'username': payload.get('username'),
+                'role': payload.get('role', 'admin')
             }),
             'isBase64Encoded': False
         }

@@ -1,4 +1,5 @@
 {
+  "orders": "https://functions.poehali.dev/b5924719-d843-42a9-a1ad-1fbea82a8035",
   "send-retouch-email": "https://functions.poehali.dev/e1ebea09-647f-4074-8e3d-0fe6662857df",
   "image-proxy": "https://functions.poehali.dev/a333157a-6afc-488c-a133-697f8cff0e15",
   "telegram-bot": "https://functions.poehali.dev/f7736d84-f59f-426b-8140-a5825c4ef688",
@@ -9,6 +10,7 @@
   "fonts": "https://functions.poehali.dev/c1b3f505-db44-492c-8db4-231760a9bb95",
   "image-categories": "https://functions.poehali.dev/dee0114f-9dc3-4783-87b7-346a133d7c73",
   "verify-token": "https://functions.poehali.dev/8ac57caf-53fd-4068-b6ca-7c89b2e92e0c",
+  "auth": "https://functions.poehali.dev/64953dd9-0671-4262-8b63-ebef8dcb5c54",
   "process-image": "https://functions.poehali.dev/7984fbed-b9d7-47d1-aa0d-cf674fc696d8",
   "products": "https://functions.poehali.dev/119b2e99-2f11-4608-9043-9aae1bf8500d",
   "monuments": "https://functions.poehali.dev/92a4ea52-a3a0-4502-9181-ceeb714f2ad6"

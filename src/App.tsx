@@ -19,6 +19,7 @@ import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
 import PrintOrder from "./pages/PrintOrder";
 import ImageCatalog from "./pages/ImageCatalog";
+import Manager from "./pages/Manager";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +28,7 @@ const NavigationBar = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   
-  if (location.pathname === '/login' || location.pathname === '/print-order') {
+  if (location.pathname === '/login' || location.pathname === '/print-order' || location.pathname === '/manager') {
     return null;
   }
   
@@ -181,6 +182,7 @@ const AppContent = () => {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/print-order" element={<PrintOrder />} />
         <Route path="/image-catalog" element={<ImageCatalog />} />
+        <Route path="/manager" element={<Manager />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
