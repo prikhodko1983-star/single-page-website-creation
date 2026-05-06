@@ -42,6 +42,7 @@ const Constructor = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
+  const isStaff = !!localStorage.getItem('auth_token');
 
   const [savedDesigns, setSavedDesigns] = useState<Array<{monumentImage: string, elements: CanvasElement[], timestamp: number}>>([]);
   
@@ -2864,15 +2865,19 @@ const Constructor = () => {
             <span className="hidden sm:inline">Загрузить эскиз</span>
           </div>
         </label>
-        <div className="w-px h-5 bg-white/10 mx-1 flex-shrink-0" />
-        <Button
-          size="sm"
-          onClick={handlePrintOrder}
-          className="h-8 px-2 sm:px-3 flex-shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground text-xs gap-1.5"
-        >
-          <Icon name="FileText" size={14} />
-          <span className="hidden sm:inline">Оформить заказ</span>
-        </Button>
+        {isStaff && (
+          <>
+            <div className="w-px h-5 bg-white/10 mx-1 flex-shrink-0" />
+            <Button
+              size="sm"
+              onClick={handlePrintOrder}
+              className="h-8 px-2 sm:px-3 flex-shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground text-xs gap-1.5"
+            >
+              <Icon name="FileText" size={14} />
+              <span className="hidden sm:inline">Оформить заказ</span>
+            </Button>
+          </>
+        )}
       </div>
 
 

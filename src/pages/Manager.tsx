@@ -155,16 +155,22 @@ export default function Manager() {
 
       <div className="container mx-auto px-4 py-6 max-w-5xl">
         <Tabs defaultValue="new-order" onValueChange={handleTabChange}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="new-order">
-              <Icon name="Plus" size={16} className="mr-2" />
-              Оформить заказ
-            </TabsTrigger>
-            <TabsTrigger value="orders">
-              <Icon name="ClipboardList" size={16} className="mr-2" />
-              История заказов
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center gap-3 mb-6 flex-wrap">
+            <TabsList>
+              <TabsTrigger value="new-order">
+                <Icon name="Plus" size={16} className="mr-2" />
+                Оформить заказ
+              </TabsTrigger>
+              <TabsTrigger value="orders">
+                <Icon name="ClipboardList" size={16} className="mr-2" />
+                История заказов
+              </TabsTrigger>
+            </TabsList>
+            <Button variant="outline" size="sm" onClick={() => navigate('/constructor')}>
+              <Icon name="Wrench" size={16} className="mr-2" />
+              Открыть конструктор
+            </Button>
+          </div>
 
           {/* Вкладка: Новый заказ */}
           <TabsContent value="new-order">
