@@ -9,6 +9,7 @@
   "send-order": "https://functions.poehali.dev/ea9959d5-aa7f-4172-aebd-486fef3e3ae4",
   "fonts": "https://functions.poehali.dev/c1b3f505-db44-492c-8db4-231760a9bb95",
   "image-categories": "https://functions.poehali.dev/dee0114f-9dc3-4783-87b7-346a133d7c73",
+  "change-admin-password": "https://functions.poehali.dev/cf510a11-9eb6-49d2-905f-18c803ab5aa0",
   "verify-token": "https://functions.poehali.dev/8ac57caf-53fd-4068-b6ca-7c89b2e92e0c",
   "auth": "https://functions.poehali.dev/64953dd9-0671-4262-8b63-ebef8dcb5c54",
   "process-image": "https://functions.poehali.dev/7984fbed-b9d7-47d1-aa0d-cf674fc696d8",

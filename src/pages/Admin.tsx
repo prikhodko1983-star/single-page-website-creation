@@ -1108,7 +1108,7 @@ export default function Admin() {
       const errors: string[] = [];
 
       for (let i = 0; i < jsonData.length; i++) {
-        const row = jsonData[i] as any;
+        const row = jsonData[i] as Record<string, unknown>;
         try {
           const productData = {
             name: row['Название'] || row['name'] || '',
@@ -1379,6 +1379,10 @@ export default function Admin() {
                 <TabsTrigger value="fonts" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
                   <Icon name="Type" size={14} className="sm:mr-2" />
                   <span className="hidden sm:inline">Шрифты</span>
+                </TabsTrigger>
+                <TabsTrigger value="staff" className="font-oswald whitespace-nowrap text-xs sm:text-sm">
+                  <Icon name="Users" size={14} className="sm:mr-2" />
+                  <span className="hidden sm:inline">Сотрудники</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -3015,8 +3019,166 @@ export default function Admin() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Вкладка: Сотрудники */}
+          <TabsContent value="staff">
+            <StaffTab token={localStorage.getItem('auth_token') || ''} currentUsername={localStorage.getItem('auth_username') || ''} />
+          </TabsContent>
         </Tabs>
       </div>
+    </div>
+  );
+}
+
+const STAFF_URL = 'https://functions.poehali.dev/cf510a11-9eb6-49d2-905f-18c803ab5aa0';
+
+function StaffTab({ token, currentUsername }: { token: string; currentUsername: string }) {
+  const { toast } = useToast();
+  const [users, setUsers] = useState<{ id: number; username: string; role: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [newLogin, setNewLogin] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [curPassword, setCurPassword] = useState('');
+  const [newPwd, setNewPwd] = useState('');
+  const [changingPwd, setChangingPwd] = useState(false);
+
+  const loadUsers = async () => {
+    setLoading(true);
+    const res = await fetch(STAFF_URL, { headers: { 'X-Auth-Token': token } });
+    if (res.ok) setUsers(await res.json());
+    setLoading(false);
+  };
+
+  useEffect(() => { loadUsers(); }, []);
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreating(true);
+    const res = await fetch(STAFF_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token },
+      body: JSON.stringify({ action: 'create_manager', username: newLogin, password: newPassword }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      toast({ title: 'Менеджер создан', description: `Логин: ${newLogin}`, duration: 3000 });
+      setNewLogin(''); setNewPassword('');
+      loadUsers();
+    } else {
+      toast({ title: 'Ошибка', description: data.error, variant: 'destructive' });
+    }
+    setCreating(false);
+  };
+
+  const handleDelete = async (id: number, username: string) => {
+    if (!confirm(`Удалить менеджера «${username}»?`)) return;
+    const res = await fetch(STAFF_URL, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) {
+      toast({ title: 'Удалён', description: username, duration: 2000 });
+      setUsers(prev => prev.filter(u => u.id !== id));
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setChangingPwd(true);
+    const res = await fetch(STAFF_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token },
+      body: JSON.stringify({ action: 'change_password', current_username: currentUsername, current_password: curPassword, new_password: newPwd }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      toast({ title: 'Пароль изменён', duration: 2000 });
+      setCurPassword(''); setNewPwd('');
+    } else {
+      toast({ title: 'Ошибка', description: data.error, variant: 'destructive' });
+    }
+    setChangingPwd(false);
+  };
+
+  return (
+    <div className="space-y-6 max-w-2xl">
+      {/* Список пользователей */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-oswald">Сотрудники</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="text-muted-foreground text-sm py-4">Загрузка...</div>
+          ) : (
+            <div className="space-y-2">
+              {users.map(u => (
+                <div key={u.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <span className="font-medium">{u.username}</span>
+                    <Badge className="ml-2 text-xs" variant={u.role === 'admin' ? 'default' : 'secondary'}>
+                      {u.role === 'admin' ? 'Администратор' : 'Менеджер'}
+                    </Badge>
+                  </div>
+                  {u.role !== 'admin' && (
+                    <Button size="sm" variant="destructive" onClick={() => handleDelete(u.id, u.username)}>
+                      <Icon name="Trash2" size={14} />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Создать менеджера */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-oswald">Добавить менеджера</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleCreate} className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label>Логин</Label>
+                <Input placeholder="manager1" value={newLogin} onChange={e => setNewLogin(e.target.value)} required />
+              </div>
+              <div className="space-y-1">
+                <Label>Пароль</Label>
+                <Input type="password" placeholder="минимум 6 символов" value={newPassword} onChange={e => setNewPassword(e.target.value)} required minLength={6} />
+              </div>
+            </div>
+            <Button type="submit" disabled={creating}>
+              {creating ? <><Icon name="Loader2" size={14} className="mr-2 animate-spin" />Создаю...</> : <><Icon name="UserPlus" size={14} className="mr-2" />Создать</>}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Сменить свой пароль */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-oswald">Сменить свой пароль</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleChangePassword} className="space-y-3">
+            <div className="space-y-1">
+              <Label>Текущий пароль</Label>
+              <Input type="password" placeholder="••••••••" value={curPassword} onChange={e => setCurPassword(e.target.value)} required />
+            </div>
+            <div className="space-y-1">
+              <Label>Новый пароль</Label>
+              <Input type="password" placeholder="минимум 8 символов" value={newPwd} onChange={e => setNewPwd(e.target.value)} required minLength={8} />
+            </div>
+            <Button type="submit" disabled={changingPwd}>
+              {changingPwd ? <><Icon name="Loader2" size={14} className="mr-2 animate-spin" />Сохраняю...</> : <><Icon name="KeyRound" size={14} className="mr-2" />Сменить пароль</>}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
