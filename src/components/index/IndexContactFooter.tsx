@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,6 +27,7 @@ export default function IndexContactFooter({
   selectedImage,
   setSelectedImage
 }: IndexContactFooterProps) {
+  const navigate = useNavigate();
   return (
     <>
       <section id="contact" className="py-20 bg-secondary">
@@ -279,7 +280,7 @@ export default function IndexContactFooter({
           <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
             <p>© 2024 Гранитные памятники. Все права защищены.</p>
             <p className="mt-2">Опыт и профессионализм — более 16 лет</p>
-            <div className="mt-3">
+            <div className="mt-3 flex items-center justify-center gap-4">
               <Link 
                 to="/legal" 
                 className="text-primary hover:underline inline-flex items-center gap-1"
@@ -287,6 +288,13 @@ export default function IndexContactFooter({
                 <Icon name="FileText" size={14} />
                 Правовая информация и условия оказания услуг
               </Link>
+              <button
+                onClick={() => navigate("/login")}
+                className="text-muted-foreground/30 hover:text-muted-foreground transition-colors"
+                title="Вход для сотрудников"
+              >
+                <Icon name="Lock" size={13} />
+              </button>
             </div>
           </div>
         </div>
