@@ -17,21 +17,32 @@ CORS_HEADERS = {
 
 def verify_admin(headers: dict) -> bool:
     import jwt
-    # Ищем токен во всех возможных вариантах заголовка
-    token = (headers.get('X-Auth-Token') or headers.get('x-auth-token')
-             or headers.get('X-Auth-token') or headers.get('x-auth-Token'))
-    if not token:
-        # Последний шанс — ищем по ключам без учёта регистра
-        for k, v in headers.items():
-            if k.lower() == 'x-auth-token':
-                token = v
-                break
+    token = None
+    for k, v in headers.items():
+        if k.lower() == 'x-auth-token':
+            token = v
+            break
     if not token:
         return False
     jwt_secret = os.environ.get('JWT_SECRET')
     try:
         payload = jwt.decode(token, jwt_secret, algorithms=['HS256'])
-        return payload.get('role', 'admin') == 'admin'
+        role = payload.get('role', 'admin')
+        if role == 'admin':
+            return True
+        # Если role нет в токене или не совпадает — проверяем по username в БД
+        username = payload.get('username', '')
+        if not username:
+            return False
+        conn = psycopg2.connect(os.environ['DATABASE_URL'])
+        cursor = conn.cursor()
+        try:
+            cursor.execute("SELECT role FROM admin_users WHERE username = %s", (username,))
+            row = cursor.fetchone()
+            return bool(row and row[0] == 'admin')
+        finally:
+            cursor.close()
+            conn.close()
     except Exception:
         return False
 
