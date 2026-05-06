@@ -3045,8 +3045,14 @@ function StaffTab({ token, currentUsername }: { token: string; currentUsername: 
 
   const loadUsers = async () => {
     setLoading(true);
-    const res = await fetch(STAFF_URL, { headers: { 'X-Auth-Token': token } });
-    if (res.ok) setUsers(await res.json());
+    const t = localStorage.getItem('auth_token') || token;
+    const res = await fetch(STAFF_URL, { headers: { 'X-Auth-Token': t } });
+    if (res.ok) {
+      setUsers(await res.json());
+    } else {
+      const err = await res.json().catch(() => ({}));
+      toast({ title: 'Ошибка загрузки', description: err.error || `Статус: ${res.status}`, variant: 'destructive' });
+    }
     setLoading(false);
   };
 
@@ -3055,9 +3061,10 @@ function StaffTab({ token, currentUsername }: { token: string; currentUsername: 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreating(true);
+    const t = localStorage.getItem('auth_token') || token;
     const res = await fetch(STAFF_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token },
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': t },
       body: JSON.stringify({ action: 'create_manager', username: newLogin, password: newPassword }),
     });
     const data = await res.json();
@@ -3073,9 +3080,10 @@ function StaffTab({ token, currentUsername }: { token: string; currentUsername: 
 
   const handleDelete = async (id: number, username: string) => {
     if (!confirm(`Удалить менеджера «${username}»?`)) return;
+    const t = localStorage.getItem('auth_token') || token;
     const res = await fetch(STAFF_URL, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token },
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': t },
       body: JSON.stringify({ id }),
     });
     if (res.ok) {
@@ -3087,9 +3095,10 @@ function StaffTab({ token, currentUsername }: { token: string; currentUsername: 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setChangingPwd(true);
+    const t = localStorage.getItem('auth_token') || token;
     const res = await fetch(STAFF_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token },
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Token': t },
       body: JSON.stringify({ action: 'change_password', current_username: currentUsername, current_password: curPassword, new_password: newPwd }),
     });
     const data = await res.json();

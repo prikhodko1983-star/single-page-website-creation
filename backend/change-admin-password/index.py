@@ -17,7 +17,15 @@ CORS_HEADERS = {
 
 def verify_admin(headers: dict) -> bool:
     import jwt
-    token = headers.get('X-Auth-Token') or headers.get('x-auth-token')
+    # Ищем токен во всех возможных вариантах заголовка
+    token = (headers.get('X-Auth-Token') or headers.get('x-auth-token')
+             or headers.get('X-Auth-token') or headers.get('x-auth-Token'))
+    if not token:
+        # Последний шанс — ищем по ключам без учёта регистра
+        for k, v in headers.items():
+            if k.lower() == 'x-auth-token':
+                token = v
+                break
     if not token:
         return False
     jwt_secret = os.environ.get('JWT_SECRET')
