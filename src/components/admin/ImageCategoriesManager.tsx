@@ -122,9 +122,12 @@ export function ImageCategoriesManager() {
   // Получить все уникальные теги из загруженных изображений
   const allTags = Array.from(new Set(images.flatMap(img => img.tags || []))).sort();
 
-  // Фильтрация на фронте по имени и тегу
+  // Фильтрация на фронте по имени/тегам и выбранному тегу
   const filteredImages = images.filter(img => {
-    const matchName = !searchName || img.name.toLowerCase().includes(searchName.toLowerCase());
+    const matchName = !searchName || (
+      img.name.toLowerCase().includes(searchName.toLowerCase()) ||
+      (img.tags || []).some(tag => tag.toLowerCase().includes(searchName.toLowerCase()))
+    );
     const matchTag = !searchTag || (img.tags || []).includes(searchTag);
     return matchName && matchTag;
   });
