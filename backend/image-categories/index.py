@@ -1,5 +1,6 @@
 """
-Функция управления категориями изображений и изображениями для конструктора
+Функция управления категориями изображений и изображениями для конструктора.
+Поддерживает теги для изображений.
 """
 import json
 import os
@@ -64,22 +65,41 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             elif query_type == 'images':
-                # Получить изображения (все или по категории)
+                # Получить изображения (все или по категории, с фильтром по тегу)
                 category_id = params.get('category_id')
+                tag_filter = params.get('tag')
                 
-                if category_id:
+                if category_id and tag_filter:
                     cursor.execute("""
                         SELECT ci.id, ci.category_id, ci.name, ci.image_url, ci.sort_order, ci.created_at,
-                               ic.name as category_name
+                               ic.name as category_name, ci.tags
+                        FROM category_images ci
+                        JOIN image_categories ic ON ci.category_id = ic.id
+                        WHERE ci.category_id = %s AND %s = ANY(ci.tags)
+                        ORDER BY ci.sort_order, ci.name
+                    """, (category_id, tag_filter))
+                elif category_id:
+                    cursor.execute("""
+                        SELECT ci.id, ci.category_id, ci.name, ci.image_url, ci.sort_order, ci.created_at,
+                               ic.name as category_name, ci.tags
                         FROM category_images ci
                         JOIN image_categories ic ON ci.category_id = ic.id
                         WHERE ci.category_id = %s
                         ORDER BY ci.sort_order, ci.name
                     """, (category_id,))
+                elif tag_filter:
+                    cursor.execute("""
+                        SELECT ci.id, ci.category_id, ci.name, ci.image_url, ci.sort_order, ci.created_at,
+                               ic.name as category_name, ci.tags
+                        FROM category_images ci
+                        JOIN image_categories ic ON ci.category_id = ic.id
+                        WHERE %s = ANY(ci.tags)
+                        ORDER BY ic.sort_order, ci.sort_order, ci.name
+                    """, (tag_filter,))
                 else:
                     cursor.execute("""
                         SELECT ci.id, ci.category_id, ci.name, ci.image_url, ci.sort_order, ci.created_at,
-                               ic.name as category_name
+                               ic.name as category_name, ci.tags
                         FROM category_images ci
                         JOIN image_categories ic ON ci.category_id = ic.id
                         ORDER BY ic.sort_order, ci.sort_order, ci.name
@@ -94,7 +114,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'image_url': row[3],
                         'sort_order': row[4],
                         'created_at': row[5].isoformat() if row[5] else None,
-                        'category_name': row[6]
+                        'category_name': row[6],
+                        'tags': list(row[7]) if row[7] else []
                     })
                 
                 return {
@@ -145,6 +166,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 name = body_data.get('name')
                 image_url = body_data.get('image_url')
                 sort_order = body_data.get('sort_order', 0)
+                tags = body_data.get('tags', [])
                 
                 if not category_id or not name or not image_url:
                     return {
@@ -155,10 +177,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     }
                 
                 cursor.execute("""
-                    INSERT INTO category_images (category_id, name, image_url, sort_order)
-                    VALUES (%s, %s, %s, %s)
+                    INSERT INTO category_images (category_id, name, image_url, sort_order, tags)
+                    VALUES (%s, %s, %s, %s, %s)
                     RETURNING id
-                """, (category_id, name, image_url, sort_order))
+                """, (category_id, name, image_url, sort_order, tags))
                 
                 image_id = cursor.fetchone()[0]
                 conn.commit()
@@ -212,6 +234,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 name = body_data.get('name')
                 image_url = body_data.get('image_url')
                 sort_order = body_data.get('sort_order')
+                tags = body_data.get('tags', [])
                 
                 if not image_id:
                     return {
@@ -223,9 +246,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 cursor.execute("""
                     UPDATE category_images
-                    SET category_id = %s, name = %s, image_url = %s, sort_order = %s
+                    SET category_id = %s, name = %s, image_url = %s, sort_order = %s, tags = %s
                     WHERE id = %s
-                """, (category_id, name, image_url, sort_order, image_id))
+                """, (category_id, name, image_url, sort_order, tags, image_id))
                 
                 conn.commit()
                 

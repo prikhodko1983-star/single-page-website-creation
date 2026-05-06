@@ -1,0 +1,1 @@
+ALTER TABLE category_images ADD COLUMN IF NOT EXISTS tags TEXT[] DEFAULT '{}';

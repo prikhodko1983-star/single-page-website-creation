@@ -13,6 +13,13 @@
       "path": "/?type=images&category_id=1",
       "expectedStatus": 200,
       "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get all images",
+      "method": "GET",
+      "path": "/?type=images",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
     }
   ]
 }

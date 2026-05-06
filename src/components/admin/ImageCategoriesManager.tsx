@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
 import {
@@ -39,6 +40,7 @@ interface CategoryImage {
   image_url: string;
   sort_order: number;
   category_name: string;
+  tags: string[];
 }
 
 export function ImageCategoriesManager() {
@@ -46,8 +48,10 @@ export function ImageCategoriesManager() {
   const [images, setImages] = useState<CategoryImage[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [searchTag, setSearchTag] = useState('');
+  const [searchName, setSearchName] = useState('');
   const { toast } = useToast();
-  
+
   // Category dialog
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -57,7 +61,7 @@ export function ImageCategoriesManager() {
     description: '',
     sort_order: 0
   });
-  
+
   // Image dialog
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [editingImage, setEditingImage] = useState<CategoryImage | null>(null);
@@ -65,8 +69,10 @@ export function ImageCategoriesManager() {
     category_id: 0,
     name: '',
     image_url: '',
-    sort_order: 0
+    sort_order: 0,
+    tags: [] as string[]
   });
+  const [tagInput, setTagInput] = useState('');
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -75,11 +81,7 @@ export function ImageCategoriesManager() {
   }, []);
 
   useEffect(() => {
-    if (selectedCategoryId) {
-      loadImages(selectedCategoryId);
-    } else {
-      loadImages();
-    }
+    loadImages(selectedCategoryId || undefined);
   }, [selectedCategoryId]);
 
   const loadCategories = async () => {
@@ -101,7 +103,7 @@ export function ImageCategoriesManager() {
   const loadImages = async (categoryId?: number) => {
     setLoading(true);
     try {
-      const url = categoryId 
+      const url = categoryId
         ? `${API_URL}?type=images&category_id=${categoryId}`
         : `${API_URL}?type=images`;
       const response = await fetch(url);
@@ -117,9 +119,19 @@ export function ImageCategoriesManager() {
     }
   };
 
+  // Получить все уникальные теги из загруженных изображений
+  const allTags = Array.from(new Set(images.flatMap(img => img.tags || []))).sort();
+
+  // Фильтрация на фронте по имени и тегу
+  const filteredImages = images.filter(img => {
+    const matchName = !searchName || img.name.toLowerCase().includes(searchName.toLowerCase());
+    const matchTag = !searchTag || (img.tags || []).includes(searchTag);
+    return matchName && matchTag;
+  });
+
   const handleCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!categoryForm.name || !categoryForm.slug) {
       toast({ title: 'Ошибка', description: 'Заполните все обязательные поля', variant: 'destructive' });
       return;
@@ -127,7 +139,7 @@ export function ImageCategoriesManager() {
 
     try {
       const method = editingCategory ? 'PUT' : 'POST';
-      const body = editingCategory 
+      const body = editingCategory
         ? { ...categoryForm, id: editingCategory.id }
         : categoryForm;
 
@@ -175,14 +187,11 @@ export function ImageCategoriesManager() {
       const reader = new FileReader();
       reader.onload = async (event) => {
         const base64 = event.target?.result as string;
-        
+
         const response = await fetch(UPLOAD_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            image: base64,
-            filename: file.name
-          })
+          body: JSON.stringify({ image: base64, filename: file.name })
         });
 
         if (response.ok) {
@@ -192,7 +201,6 @@ export function ImageCategoriesManager() {
         }
         setUploading(false);
       };
-      
       reader.readAsDataURL(file);
     } catch (error) {
       console.error('Upload error:', error);
@@ -201,9 +209,27 @@ export function ImageCategoriesManager() {
     }
   };
 
+  const handleAddTag = () => {
+    const tag = tagInput.trim();
+    if (!tag || imageForm.tags.includes(tag)) return;
+    setImageForm(prev => ({ ...prev, tags: [...prev.tags, tag] }));
+    setTagInput('');
+  };
+
+  const handleRemoveTag = (tag: string) => {
+    setImageForm(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
+  };
+
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddTag();
+    }
+  };
+
   const handleImageSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!imageForm.category_id || !imageForm.name || !imageForm.image_url) {
       toast({ title: 'Ошибка', description: 'Заполните все обязательные поля', variant: 'destructive' });
       return;
@@ -211,7 +237,7 @@ export function ImageCategoriesManager() {
 
     try {
       const method = editingImage ? 'PUT' : 'POST';
-      const body = editingImage 
+      const body = editingImage
         ? { ...imageForm, id: editingImage.id }
         : imageForm;
 
@@ -226,7 +252,8 @@ export function ImageCategoriesManager() {
         loadImages(selectedCategoryId || undefined);
         setImageDialogOpen(false);
         setEditingImage(null);
-        setImageForm({ category_id: 0, name: '', image_url: '', sort_order: 0 });
+        setImageForm({ category_id: 0, name: '', image_url: '', sort_order: 0, tags: [] });
+        setTagInput('');
       }
     } catch (error) {
       console.error('Error saving image:', error);
@@ -310,14 +337,14 @@ export function ImageCategoriesManager() {
 
       {/* Images Management */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div className="flex items-center gap-4 flex-1">
-            <CardTitle>Изображения</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-3">
+          <CardTitle>Изображения</CardTitle>
+          <div className="flex items-center gap-2 flex-wrap flex-1">
             <Select
               value={selectedCategoryId?.toString() || 'all'}
               onValueChange={(value) => setSelectedCategoryId(value === 'all' ? null : parseInt(value))}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Все категории" />
               </SelectTrigger>
               <SelectContent>
@@ -327,15 +354,43 @@ export function ImageCategoriesManager() {
                 ))}
               </SelectContent>
             </Select>
+            <Input
+              placeholder="Поиск по названию..."
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              className="w-[180px]"
+            />
+            <Select
+              value={searchTag || 'all'}
+              onValueChange={(value) => setSearchTag(value === 'all' ? '' : value)}
+            >
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Все теги" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Все теги</SelectItem>
+                {allTags.map(tag => (
+                  <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {(searchName || searchTag) && (
+              <Button variant="ghost" size="sm" onClick={() => { setSearchName(''); setSearchTag(''); }}>
+                <Icon name="X" size={14} className="mr-1" />
+                Сбросить
+              </Button>
+            )}
           </div>
           <Button onClick={() => {
             setEditingImage(null);
-            setImageForm({ 
-              category_id: selectedCategoryId || (categories[0]?.id || 0), 
-              name: '', 
-              image_url: '', 
-              sort_order: 0 
+            setImageForm({
+              category_id: selectedCategoryId || (categories[0]?.id || 0),
+              name: '',
+              image_url: '',
+              sort_order: 0,
+              tags: []
             });
+            setTagInput('');
             setImageDialogOpen(true);
           }}>
             <Icon name="Plus" size={16} className="mr-2" />
@@ -343,8 +398,11 @@ export function ImageCategoriesManager() {
           </Button>
         </CardHeader>
         <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Показано: {filteredImages.length} из {images.length}
+          </p>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {images.map(image => (
+            {filteredImages.map(image => (
               <Card key={image.id} className="overflow-hidden">
                 <div className="aspect-square bg-secondary relative">
                   <img src={image.image_url} alt={image.name} className="w-full h-full object-contain" />
@@ -352,6 +410,20 @@ export function ImageCategoriesManager() {
                 <div className="p-2">
                   <p className="text-sm font-medium truncate">{image.name}</p>
                   <p className="text-xs text-muted-foreground truncate">{image.category_name}</p>
+                  {image.tags && image.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {image.tags.map(tag => (
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="text-xs px-1 py-0 cursor-pointer"
+                          onClick={() => setSearchTag(tag)}
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                   <div className="flex gap-2 mt-2">
                     <Button
                       size="sm"
@@ -363,8 +435,10 @@ export function ImageCategoriesManager() {
                           category_id: image.category_id,
                           name: image.name,
                           image_url: image.image_url,
-                          sort_order: image.sort_order
+                          sort_order: image.sort_order,
+                          tags: image.tags || []
                         });
+                        setTagInput('');
                         setImageDialogOpen(true);
                       }}
                     >
@@ -383,7 +457,7 @@ export function ImageCategoriesManager() {
               </Card>
             ))}
           </div>
-          {images.length === 0 && !loading && (
+          {filteredImages.length === 0 && !loading && (
             <div className="text-center py-12 text-muted-foreground">
               <Icon name="Image" size={48} className="mx-auto mb-4 opacity-20" />
               <p>Нет изображений</p>
@@ -475,21 +549,48 @@ export function ImageCategoriesManager() {
               <Input
                 value={imageForm.name}
                 onChange={(e) => setImageForm(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Роза"
+                placeholder="Роза красная"
                 required
               />
             </div>
             <div>
               <Label>Изображение *</Label>
+              {imageForm.image_url && (
+                <img src={imageForm.image_url} alt="Preview" className="w-24 h-24 object-contain mb-2 border rounded" />
+              )}
               <Input
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
                 disabled={uploading}
               />
-              {uploading && <p className="text-sm text-muted-foreground mt-2">Загрузка...</p>}
-              {imageForm.image_url && (
-                <img src={imageForm.image_url} alt="Preview" className="mt-2 w-32 h-32 object-contain border rounded" />
+              {uploading && <p className="text-sm text-muted-foreground mt-1">Загрузка...</p>}
+            </div>
+            <div>
+              <Label>Теги</Label>
+              <p className="text-xs text-muted-foreground mb-1">Добавьте теги для удобного поиска (например: роза, красный, цветок)</p>
+              <div className="flex gap-2">
+                <Input
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleTagInputKeyDown}
+                  placeholder="Введите тег и нажмите Enter"
+                />
+                <Button type="button" variant="outline" onClick={handleAddTag}>
+                  <Icon name="Plus" size={16} />
+                </Button>
+              </div>
+              {imageForm.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {imageForm.tags.map(tag => (
+                    <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                      {tag}
+                      <button type="button" onClick={() => handleRemoveTag(tag)}>
+                        <Icon name="X" size={12} />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
               )}
             </div>
             <div>
@@ -501,7 +602,7 @@ export function ImageCategoriesManager() {
               />
             </div>
             <div className="flex gap-2">
-              <Button type="submit" className="flex-1" disabled={!imageForm.image_url}>
+              <Button type="submit" className="flex-1" disabled={uploading}>
                 {editingImage ? 'Обновить' : 'Добавить'}
               </Button>
               <Button type="button" variant="outline" onClick={() => setImageDialogOpen(false)}>
