@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 
 const Footer = () => {
+  const navigate = useNavigate();
+
   return (
     <footer className="bg-background border-t border-border py-8">
       <div className="container mx-auto px-4">
@@ -20,6 +23,13 @@ const Footer = () => {
             <a href="https://t.me/79960681168" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-[#0088cc] hover:bg-[#006699] text-white rounded-xl transition-colors">
               <Icon name="Send" size={18} />
             </a>
+            <button
+              onClick={() => navigate("/login")}
+              className="text-xs text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+              title="Вход для сотрудников"
+            >
+              <Icon name="Lock" size={14} />
+            </button>
           </div>
         </div>
       </div>

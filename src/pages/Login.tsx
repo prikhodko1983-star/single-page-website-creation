@@ -29,12 +29,13 @@ export default function Login() {
         const data = await response.json();
         localStorage.setItem('auth_token', data.token);
         localStorage.setItem('auth_username', data.username);
+        localStorage.setItem('auth_role', data.role || 'admin');
         toast({
           title: 'Вход выполнен',
           description: `Добро пожаловать, ${data.username}!`,
           duration: 2000,
         });
-        navigate('/admin');
+        navigate(data.role === 'manager' ? '/manager' : '/admin');
       } else {
         toast({
           title: 'Ошибка входа',
@@ -66,7 +67,7 @@ export default function Login() {
 
         <Card>
           <CardHeader className="space-y-1">
-            <CardTitle className="font-oswald text-2xl">Вход в админ-панель</CardTitle>
+            <CardTitle className="font-oswald text-2xl">Вход для сотрудников</CardTitle>
             <CardDescription>
               Введите логин и пароль для доступа
             </CardDescription>
