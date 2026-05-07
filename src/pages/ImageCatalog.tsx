@@ -55,7 +55,7 @@ export default function ImageCatalog() {
 
   const filtered = images.filter((img) => {
     const matchCat = selectedCategory === null || img.category_id === selectedCategory;
-    const matchSearch = search === "" || img.name.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = search === "" || img.name.toLowerCase().includes(search.toLowerCase()) || img.category_name.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
   });
 
