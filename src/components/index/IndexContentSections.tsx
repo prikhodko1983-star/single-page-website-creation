@@ -47,38 +47,77 @@ export default function IndexContentSections({
   
   return (
     <>
-      <section id="services" className="py-12 md:py-16 bg-background relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-secondary via-background to-secondary opacity-50"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-8">
-            <h2 className="font-oswald font-bold text-2xl md:text-4xl mb-3">
-              Услуги по изготовлению памятников
+      <section id="services" className="py-16 md:py-24 relative overflow-hidden" style={{ background: '#1A1814' }}>
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage: `repeating-linear-gradient(108deg, transparent, transparent 120px, rgba(201,168,76,0.06) 120px, rgba(201,168,76,0.06) 121px), repeating-linear-gradient(-15deg, transparent, transparent 200px, rgba(201,168,76,0.03) 200px, rgba(201,168,76,0.03) 201px)`
+        }} />
+        <div className="container mx-auto px-4 relative z-10 max-w-6xl">
+          <div className="text-center mb-16">
+            <div className="flex items-center justify-center gap-4 mb-5">
+              <div style={{ width: 40, height: 1, background: 'rgba(201,168,76,0.5)' }} />
+              <span style={{ fontFamily: 'Raleway, sans-serif', fontSize: 11, fontWeight: 500, letterSpacing: 4, textTransform: 'uppercase', color: '#C9A84C' }}>
+                Мастерская памятников
+              </span>
+              <div style={{ width: 40, height: 1, background: 'rgba(201,168,76,0.5)' }} />
+            </div>
+            <h2 className="font-oswald font-bold text-3xl md:text-5xl mb-4" style={{ color: '#F0EBE0', letterSpacing: '-0.5px' }}>
+              Услуги по изготовлению <span style={{ color: '#C9A84C' }}>памятников</span>
             </h2>
-            <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
-              Полный комплекс услуг от изготовления до установки
+            <p style={{ color: '#9A9080', fontSize: 15, fontWeight: 300, letterSpacing: '0.5px' }}>
+              Полный комплекс услуг — от создания эскиза до установки
             </p>
+            <div className="flex items-center justify-center gap-3 mt-6">
+              <div style={{ width: 80, height: 1, background: 'linear-gradient(90deg, transparent, #E8C97A)' }} />
+              <div style={{ width: 3, height: 3, borderRadius: '50%', background: '#C9A84C', opacity: 0.5 }} />
+              <div style={{ width: 6, height: 6, background: '#C9A84C', transform: 'rotate(45deg)' }} />
+              <div style={{ width: 3, height: 3, borderRadius: '50%', background: '#C9A84C', opacity: 0.5 }} />
+              <div style={{ width: 80, height: 1, background: 'linear-gradient(90deg, #E8C97A, transparent)' }} />
+            </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3" style={{ gap: 2, background: 'rgba(201,168,76,0.18)', border: '1px solid rgba(201,168,76,0.18)', borderRadius: 4, overflow: 'hidden' }}>
             {services.map((service, idx) => (
-              <Card 
+              <div
                 key={idx}
-                className="bg-card border-border shadow-sm hover:shadow-md hover:border-primary transition-all duration-300 animate-fade-in"
-                style={{ animationDelay: `${idx * 0.1}s` }}
+                className="group relative flex flex-col items-start overflow-hidden"
+                style={{
+                  background: '#242018',
+                  padding: '44px 32px 40px',
+                  cursor: 'default',
+                  transition: 'background 0.4s ease',
+                  animation: `fadeUp 0.6s ease both`,
+                  animationDelay: `${0.1 + idx * 0.08}s`
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#2E2A22')}
+                onMouseLeave={e => (e.currentTarget.style.background = '#242018')}
               >
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 md:w-14 md:h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Icon name={service.icon as any} className="text-primary" size={24} />
+                <div className="absolute top-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: 'linear-gradient(90deg, transparent, #C9A84C, transparent)' }} />
+                <div className="absolute top-0 right-4" style={{ fontFamily: 'Playfair Display, serif', fontSize: 90, fontWeight: 700, color: 'rgba(201,168,76,0.05)', lineHeight: 1, userSelect: 'none', transition: 'color 0.4s ease, transform 0.4s ease', top: -10 }}>
+                  {String(idx + 1).padStart(2, '0')}
+                </div>
+                <div className="relative mb-6" style={{ width: 52, height: 52, flexShrink: 0 }}>
+                  <div className="absolute inset-0 rounded-full group-hover:scale-110 transition-transform duration-400" style={{ background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.18)', transition: 'background 0.4s ease, border-color 0.4s ease, transform 0.4s ease' }} />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Icon name={service.icon} size={22} style={{ color: '#C9A84C' }} />
                   </div>
-                  <h3 className="font-oswald font-semibold text-sm md:text-base mb-2">
-                    {service.title}
-                  </h3>
-                  <div className="text-muted-foreground text-xs md:text-sm">
-                    {service.desc}
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+                <h3 className="mb-2.5 transition-colors duration-300 group-hover:text-[#E8C97A]" style={{ fontFamily: 'Playfair Display, serif', fontSize: 18, fontWeight: 600, color: '#F0EBE0', lineHeight: 1.3 }}>
+                  {service.title}
+                </h3>
+                <p className="transition-colors duration-300" style={{ fontSize: 13, fontWeight: 300, color: '#9A9080', letterSpacing: '0.3px', lineHeight: 1.6 }}>
+                  {service.desc}
+                </p>
+                <div className="absolute bottom-0 left-0 h-0.5 w-0 group-hover:w-full transition-all duration-500" style={{ background: 'linear-gradient(90deg, #C9A84C, transparent)' }} />
+              </div>
             ))}
+          </div>
+
+          <div className="flex items-center justify-center gap-5 mt-12">
+            <div style={{ fontSize: 12, fontWeight: 400, color: '#9A9080', letterSpacing: '1.5px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 8 }}>Гарантия качества</div>
+            <div style={{ width: 3, height: 3, borderRadius: '50%', background: '#C9A84C', opacity: 0.5 }} />
+            <div style={{ fontSize: 12, fontWeight: 400, color: '#9A9080', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Собственное производство</div>
+            <div style={{ width: 3, height: 3, borderRadius: '50%', background: '#C9A84C', opacity: 0.5 }} />
+            <div style={{ fontSize: 12, fontWeight: 400, color: '#9A9080', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Работаем с 2005 года</div>
           </div>
         </div>
       </section>
@@ -258,7 +297,7 @@ export default function IndexContentSections({
               >
                 <CardContent className="p-4 md:p-6">
                   <div className="w-12 h-12 md:w-14 md:h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Icon name={adv.icon as any} className="text-primary" size={24} />
+                    <Icon name={adv.icon} className="text-primary" size={24} />
                   </div>
                   <h3 className="font-oswald font-semibold text-sm md:text-base mb-2">{adv.title}</h3>
                   <div className="text-muted-foreground text-xs md:text-sm">{adv.desc}</div>
