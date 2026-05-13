@@ -117,7 +117,7 @@ export default function IndexContentSections({
             <div style={{ width: 3, height: 3, borderRadius: '50%', background: '#C9A84C', opacity: 0.5 }} />
             <div style={{ fontSize: 12, fontWeight: 400, color: '#9A9080', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Собственное производство</div>
             <div style={{ width: 3, height: 3, borderRadius: '50%', background: '#C9A84C', opacity: 0.5 }} />
-            <div style={{ fontSize: 12, fontWeight: 400, color: '#9A9080', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Работаем с 2005 года</div>
+            <div style={{ fontSize: 12, fontWeight: 400, color: '#9A9080', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Опыт с 2008 года</div>
           </div>
         </div>
       </section>
