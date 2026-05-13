@@ -437,7 +437,7 @@ const Index = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto">
             {[
               {
-                url: "https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/25e1a37e-5458-40f9-b36e-e82fb51897c3.jpeg",
+                url: "https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/c14f84c8-b1ce-4959-80d4-0a2bb3b325d3.jpg",
                 label: "Портрет с пейзажем"
               },
               {
