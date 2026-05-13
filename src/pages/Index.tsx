@@ -404,7 +404,7 @@ const Index = () => {
                     </div>
                   </div>
                   
-                  <button className="bg-[#D4A855] hover:bg-[#C49745] text-black font-medium px-6 py-3 lg:px-8 lg:py-4 rounded-lg text-base lg:text-lg transition-all duration-300 group-hover:scale-105 flex items-center gap-2">
+                  <button className="hover:bg-[#C49745] text-black font-medium px-6 py-3 lg:px-8 lg:py-4 rounded-lg text-base lg:text-lg transition-all duration-300 group-hover:scale-105 flex items-center gap-2 bg-[#e89c1f]">
                     <svg className="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
