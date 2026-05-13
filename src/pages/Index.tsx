@@ -438,7 +438,8 @@ const Index = () => {
             {[
               {
                 url: "https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/c14f84c8-b1ce-4959-80d4-0a2bb3b325d3.jpg",
-                label: "Портрет с пейзажем"
+                label: "Портрет с пейзажем",
+                contain: true
               },
               {
                 url: "https://cdn.poehali.dev/projects/522c6aad-08c3-4e8e-ac23-7f70b446ea53/bucket/78bc18ba-c4d0-4e12-9a5b-0bdaedcdc304.PNG",
