@@ -47,7 +47,7 @@ export default function IndexContentSections({
   
   return (
     <>
-      <section id="services" className="py-16 md:py-24 relative overflow-hidden bg-[#1a181447]" style={{ background: '#1A1814' }}>
+      <section id="services" className="py-16 md:py-24 relative overflow-hidden bg-[#1a181463]" style={{ background: '#1A1814' }}>
         <div className="absolute inset-0 pointer-events-none" style={{
           backgroundImage: `repeating-linear-gradient(108deg, transparent, transparent 120px, rgba(201,168,76,0.06) 120px, rgba(201,168,76,0.06) 121px), repeating-linear-gradient(-15deg, transparent, transparent 200px, rgba(201,168,76,0.03) 200px, rgba(201,168,76,0.03) 201px)`
         }} />
