@@ -177,6 +177,8 @@ const Constructor = () => {
   
   const [isImageEraserOpen, setIsImageEraserOpen] = useState(false);
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
+  const [inlineEraserElementId, setInlineEraserElementId] = useState<string | null>(null);
+  const [inlineEraserBrushSize] = useState(40);
   const prevCanvasSizeRef = useRef<{ width: number; height: number } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -1247,8 +1249,7 @@ const Constructor = () => {
   const handleEditImage = (id: string) => {
     const element = elements.find(el => el.id === id);
     if (element && element.src) {
-      setEditingImageId(id);
-      setIsImageEraserOpen(true);
+      setInlineEraserElementId(id);
     }
   };
 
@@ -1277,6 +1278,28 @@ const Constructor = () => {
       title: "Изображение обновлено",
       description: "Отредактированное изображение применено",
     });
+  };
+
+  const handleInlineEraserSave = async (editedDataUrl: string) => {
+    if (!inlineEraserElementId) return;
+    const element = elements.find(el => el.id === inlineEraserElementId);
+    const wasScreenMode = element?.screenMode ?? false;
+
+    if (wasScreenMode) {
+      const processed = await applyScreenMode(editedDataUrl);
+      pushToHistory(prev => prev.map(el =>
+        el.id === inlineEraserElementId
+          ? { ...el, src: editedDataUrl, processedSrc: processed, screenMode: true }
+          : el
+      ));
+    } else {
+      pushToHistory(prev => prev.map(el =>
+        el.id === inlineEraserElementId
+          ? { ...el, src: editedDataUrl, processedSrc: undefined }
+          : el
+      ));
+    }
+    setInlineEraserElementId(null);
   };
 
   const editingImageUrl = useMemo(() => {
@@ -2965,6 +2988,11 @@ const Constructor = () => {
             updateElement={updateElement}
             onPrintOrder={handlePrintOrder}
             topOffset={canvasTopOffset}
+            inlineEraserElementId={inlineEraserElementId}
+            onStartInlineErase={(id) => setInlineEraserElementId(id)}
+            onStopInlineErase={() => setInlineEraserElementId(null)}
+            onSaveInlineErase={handleInlineEraserSave}
+            inlineEraserBrushSize={inlineEraserBrushSize}
           />
         </div>
 

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import React, { useState, useRef, useEffect } from "react";
+import { InlineEraser } from "./InlineEraser";
 
 interface ImageWithBorderProps {
   src: string;
@@ -146,6 +147,11 @@ interface ConstructorCanvasProps {
   updateElement?: (id: string, updates: Partial<CanvasElement>) => Promise<void>;
   onPrintOrder?: () => void;
   topOffset?: number;
+  inlineEraserElementId?: string | null;
+  onStartInlineErase?: (id: string) => void;
+  onStopInlineErase?: () => void;
+  onSaveInlineErase?: (dataUrl: string) => void;
+  inlineEraserBrushSize?: number;
 }
 
 export const ConstructorCanvas = ({
@@ -185,6 +191,11 @@ export const ConstructorCanvas = ({
   updateElement,
   onPrintOrder,
   topOffset = 48,
+  inlineEraserElementId,
+  onStartInlineErase,
+  onStopInlineErase,
+  onSaveInlineErase,
+  inlineEraserBrushSize = 40,
 }: ConstructorCanvasProps) => {
   // Функция для рендеринга текста с увеличенными первыми буквами
   const renderTextWithInitials = (text: string, initialScale?: number) => {
@@ -518,8 +529,20 @@ export const ConstructorCanvas = ({
                 onToggleRotate={(e) => { e.stopPropagation(); toggleRotateMode(); }}
               />
             )}
-            
 
+            {inlineEraserElementId === element.id &&
+             (element.type === 'image' || element.type === 'cross' ||
+              element.type === 'flower' || element.type === 'photo') &&
+              element.src && (
+              <InlineEraser
+                imageUrl={element.processedSrc || element.src}
+                elementRect={{ x: element.x, y: element.y, width: element.width, height: element.height }}
+                zoom={canvasZoom}
+                brushSize={inlineEraserBrushSize}
+                onSave={(dataUrl) => onSaveInlineErase?.(dataUrl)}
+                onCancel={() => onStopInlineErase?.()}
+              />
+            )}
 
             {selectedElement === element.id && !isImageElement && (
               <div 
