@@ -2994,6 +2994,10 @@ const Constructor = () => {
             onSaveInlineErase={handleInlineEraserSave}
             inlineEraserBrushSize={inlineEraserBrushSize}
             onChangeInlineEraserBrushSize={setInlineEraserBrushSize}
+            onZoomChange={(zoom) => {
+              setCanvasZoom(zoom);
+              if (zoom === 1) setCanvasPan({ x: 0, y: 0 });
+            }}
           />
         </div>
 
