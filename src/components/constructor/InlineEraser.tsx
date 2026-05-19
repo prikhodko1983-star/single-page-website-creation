@@ -83,16 +83,21 @@ export function InlineEraser({
     img.src = src;
   }, [imageUrl, containerWidth, containerHeight, isContain]);
 
-  // Синхронизация cursor canvas с основным canvas (в CSS-пикселях)
+  // Синхронизация буфера cursor canvas с реальным экранным размером (учитывает zoom)
   useEffect(() => {
-    const canvas = canvasRef.current;
     const cursorCanvas = cursorCanvasRef.current;
-    if (!canvas || !cursorCanvas) return;
+    if (!cursorCanvas) return;
     const sync = () => {
-      cursorCanvas.width = Math.round(canvasRect.w);
-      cursorCanvas.height = Math.round(canvasRect.h);
+      const rect = cursorCanvas.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        cursorCanvas.width = Math.round(rect.width);
+        cursorCanvas.height = Math.round(rect.height);
+      }
     };
     sync();
+    const observer = new ResizeObserver(sync);
+    observer.observe(cursorCanvas);
+    return () => observer.disconnect();
   }, [canvasRect]);
 
   // Рисуем круглый курсор на cursor canvas
