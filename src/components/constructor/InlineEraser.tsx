@@ -41,19 +41,19 @@ export function InlineEraser({
     const img = new Image();
     if (!isDataUrl) img.crossOrigin = 'anonymous';
     img.onload = () => {
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
+      canvas.width = elementRect.width;
+      canvas.height = elementRect.height;
       ctx.globalCompositeOperation = 'source-over';
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, elementRect.width, elementRect.height);
       setIsLoaded(true);
     };
     img.onerror = () => {
       const img2 = new Image();
       img2.crossOrigin = 'anonymous';
       img2.onload = () => {
-        canvas.width = img2.naturalWidth;
-        canvas.height = img2.naturalHeight;
-        ctx.drawImage(img2, 0, 0);
+        canvas.width = elementRect.width;
+        canvas.height = elementRect.height;
+        ctx.drawImage(img2, 0, 0, elementRect.width, elementRect.height);
         setIsLoaded(true);
       };
       img2.src = imageUrl;
@@ -72,21 +72,18 @@ export function InlineEraser({
 
   const erase = useCallback((x: number, y: number) => {
     const ctx = ctxRef.current;
-    const canvas = canvasRef.current;
-    if (!ctx || !canvas) return;
-    // Масштабируем кисть из экранных координат в координаты натурального изображения
-    const scaleX = canvas.width / elementRect.width;
-    const scaledRadius = (brushSize / 2) * scaleX;
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, scaledRadius);
+    if (!ctx) return;
+    const radius = brushSize / 2;
+    const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
     gradient.addColorStop(0, 'rgba(0,0,0,1)');
     gradient.addColorStop(0.5, 'rgba(0,0,0,0.8)');
     gradient.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.globalCompositeOperation = 'destination-out';
     ctx.fillStyle = gradient;
     ctx.beginPath();
-    ctx.arc(x, y, scaledRadius, 0, Math.PI * 2);
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fill();
-  }, [brushSize, elementRect.width]);
+  }, [brushSize]);
 
   const interpolateAndErase = useCallback((x: number, y: number) => {
     if (!lastPosRef.current) {
