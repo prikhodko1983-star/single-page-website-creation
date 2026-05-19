@@ -35,37 +35,40 @@ export function InlineEraser({
     if (!ctx) return;
     ctxRef.current = ctx;
 
-    // Берём реальные экранные размеры родительского контейнера
-    const parent = canvas.parentElement;
-    const rect = parent ? parent.getBoundingClientRect() : canvas.getBoundingClientRect();
-    const w = Math.round(rect.width);
-    const h = Math.round(rect.height);
+    // Размеры canvas = логические размеры элемента (в единицах макета)
+    // CSS width/height: 100% растянет canvas на весь родительский div — это правильно
+    const w = elementRect.width;
+    const h = elementRect.height;
 
     const isDataUrl = imageUrl.startsWith('data:');
     const src = isDataUrl ? imageUrl : `${PROXY_URL}?url=${encodeURIComponent(imageUrl)}`;
 
     const img = new Image();
     if (!isDataUrl) img.crossOrigin = 'anonymous';
-    img.onload = () => {
+    const drawContain = (image: HTMLImageElement) => {
       canvas.width = w;
       canvas.height = h;
+      ctx.clearRect(0, 0, w, h);
       ctx.globalCompositeOperation = 'source-over';
-      ctx.drawImage(img, 0, 0, w, h);
+      // object-contain: вписываем с сохранением пропорций
+      const scale = Math.min(w / image.naturalWidth, h / image.naturalHeight);
+      const dw = image.naturalWidth * scale;
+      const dh = image.naturalHeight * scale;
+      const dx = (w - dw) / 2;
+      const dy = (h - dh) / 2;
+      ctx.drawImage(image, dx, dy, dw, dh);
       setIsLoaded(true);
     };
+
+    img.onload = () => drawContain(img);
     img.onerror = () => {
       const img2 = new Image();
       img2.crossOrigin = 'anonymous';
-      img2.onload = () => {
-        canvas.width = w;
-        canvas.height = h;
-        ctx.drawImage(img2, 0, 0, w, h);
-        setIsLoaded(true);
-      };
+      img2.onload = () => drawContain(img2);
       img2.src = imageUrl;
     };
     img.src = src;
-  }, [imageUrl]);
+  }, [imageUrl, elementRect.width, elementRect.height]);
 
   const getCanvasCoords = useCallback((clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
