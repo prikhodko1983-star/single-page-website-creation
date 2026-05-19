@@ -35,25 +35,31 @@ export function InlineEraser({
     if (!ctx) return;
     ctxRef.current = ctx;
 
+    // Берём реальные экранные размеры родительского контейнера
+    const parent = canvas.parentElement;
+    const rect = parent ? parent.getBoundingClientRect() : canvas.getBoundingClientRect();
+    const w = Math.round(rect.width);
+    const h = Math.round(rect.height);
+
     const isDataUrl = imageUrl.startsWith('data:');
     const src = isDataUrl ? imageUrl : `${PROXY_URL}?url=${encodeURIComponent(imageUrl)}`;
 
     const img = new Image();
     if (!isDataUrl) img.crossOrigin = 'anonymous';
     img.onload = () => {
-      canvas.width = elementRect.width;
-      canvas.height = elementRect.height;
+      canvas.width = w;
+      canvas.height = h;
       ctx.globalCompositeOperation = 'source-over';
-      ctx.drawImage(img, 0, 0, elementRect.width, elementRect.height);
+      ctx.drawImage(img, 0, 0, w, h);
       setIsLoaded(true);
     };
     img.onerror = () => {
       const img2 = new Image();
       img2.crossOrigin = 'anonymous';
       img2.onload = () => {
-        canvas.width = elementRect.width;
-        canvas.height = elementRect.height;
-        ctx.drawImage(img2, 0, 0, elementRect.width, elementRect.height);
+        canvas.width = w;
+        canvas.height = h;
+        ctx.drawImage(img2, 0, 0, w, h);
         setIsLoaded(true);
       };
       img2.src = imageUrl;
@@ -169,8 +175,8 @@ export function InlineEraser({
           position: 'absolute',
           left: 0,
           top: 0,
-          width: elementRect.width,
-          height: elementRect.height,
+          width: '100%',
+          height: '100%',
           cursor: 'none',
           touchAction: 'none',
           zIndex: 50,
