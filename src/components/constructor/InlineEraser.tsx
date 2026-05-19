@@ -167,7 +167,14 @@ export function InlineEraser({
     onSave(dataUrl);
   }, [onSave]);
 
-  const cursorScreenSize = brushSize * zoom;
+  // Реальный размер кисти на экране в px — берём из соотношения CSS/буфер canvas
+  const getCursorScreenSize = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return brushSize;
+    const rect = canvas.getBoundingClientRect();
+    if (canvas.width === 0) return brushSize;
+    return (brushSize / canvas.width) * rect.width;
+  }, [brushSize]);
 
   return (
     <>
@@ -201,14 +208,14 @@ export function InlineEraser({
             position: 'fixed',
             left: cursorPos.x,
             top: cursorPos.y,
-            width: cursorScreenSize,
-            height: cursorScreenSize,
-            border: '1.5px solid white',
+            width: getCursorScreenSize(),
+            height: getCursorScreenSize(),
+            border: '1.5px solid rgba(255,255,255,0.9)',
             borderRadius: '50%',
             transform: 'translate(-50%, -50%)',
             pointerEvents: 'none',
             zIndex: 999999,
-            boxShadow: '0 0 0 1px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(0,0,0,0.2)',
+            boxShadow: '0 0 0 1px rgba(0,0,0,0.9)',
           }}
         />
       )}
