@@ -2952,7 +2952,7 @@ const Constructor = () => {
         {/* Canvas area */}
         <div className="flex-1 min-w-0 flex items-start justify-center bg-[#111] overflow-y-auto overflow-x-hidden relative">
           {/* Ползунок зума — фиксирован поверх холста, не масштабируется */}
-          <div className="absolute bottom-3 right-3 z-30 flex items-center gap-1.5 bg-black/70 rounded px-2 py-1 backdrop-blur-sm">
+          <div className="absolute bottom-3 right-12 z-30 flex items-center gap-1.5 bg-black/70 rounded px-2 py-1 backdrop-blur-sm">
             <button
               onClick={() => { setCanvasZoom(1); setCanvasPan({ x: 0, y: 0 }); }}
               className="text-white/60 hover:text-white transition-colors"
