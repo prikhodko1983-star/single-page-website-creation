@@ -4,7 +4,9 @@ import Icon from "@/components/ui/icon";
 
 interface InlineEraserProps {
   imageUrl: string;
-  elementRect: { x: number; y: number; width: number; height: number };
+  containerWidth: number;
+  containerHeight: number;
+  isContain: boolean; // true = object-contain (image/cross/flower), false = object-cover (photo)
   zoom: number;
   brushSize: number;
   onSave: (dataUrl: string) => void;
@@ -13,8 +15,19 @@ interface InlineEraserProps {
 
 const PROXY_URL = 'https://functions.poehali.dev/a333157a-6afc-488c-a133-697f8cff0e15';
 
+// Вычисляет rect картинки внутри контейнера при object-contain
+const calcContainRect = (natW: number, natH: number, cW: number, cH: number) => {
+  const scale = Math.min(cW / natW, cH / natH);
+  const w = natW * scale;
+  const h = natH * scale;
+  return { x: (cW - w) / 2, y: (cH - h) / 2, w, h };
+};
+
 export function InlineEraser({
   imageUrl,
+  containerWidth,
+  containerHeight,
+  isContain,
   brushSize,
   onSave,
   onCancel,
@@ -25,8 +38,9 @@ export function InlineEraser({
   const isDrawingRef = useRef(false);
   const lastPosRef = useRef<{ x: number; y: number } | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  // Позиция и размер canvas внутри родительского div (object-contain letterbox)
+  const [canvasRect, setCanvasRect] = useState({ x: 0, y: 0, w: containerWidth, h: containerHeight });
 
-  // Загрузка изображения в canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -40,58 +54,65 @@ export function InlineEraser({
     const img = new Image();
     if (!isDataUrl) img.crossOrigin = 'anonymous';
 
-    const drawNatural = (image: HTMLImageElement) => {
+    const draw = (image: HTMLImageElement) => {
+      // Вычисляем реальный rect картинки
+      const rect = isContain
+        ? calcContainRect(image.naturalWidth, image.naturalHeight, containerWidth, containerHeight)
+        : { x: 0, y: 0, w: containerWidth, h: containerHeight };
+
+      setCanvasRect(rect);
+
+      // Буфер canvas = натуральный размер изображения (без потери качества)
       canvas.width = image.naturalWidth;
       canvas.height = image.naturalHeight;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.globalCompositeOperation = 'source-over';
       ctx.drawImage(image, 0, 0);
+
+
       setIsLoaded(true);
     };
 
-    img.onload = () => drawNatural(img);
+    img.onload = () => draw(img);
     img.onerror = () => {
       const img2 = new Image();
       img2.crossOrigin = 'anonymous';
-      img2.onload = () => drawNatural(img2);
+      img2.onload = () => draw(img2);
       img2.src = imageUrl;
     };
     img.src = src;
-  }, [imageUrl]);
+  }, [imageUrl, containerWidth, containerHeight, isContain]);
 
-  // Синхронизация размера cursor canvas с основным
+  // Синхронизация cursor canvas с основным canvas (в CSS-пикселях)
   useEffect(() => {
     const canvas = canvasRef.current;
     const cursorCanvas = cursorCanvasRef.current;
     if (!canvas || !cursorCanvas) return;
-    const observer = new ResizeObserver(() => {
-      cursorCanvas.width = canvas.offsetWidth;
-      cursorCanvas.height = canvas.offsetHeight;
-    });
-    observer.observe(canvas);
-    cursorCanvas.width = canvas.offsetWidth;
-    cursorCanvas.height = canvas.offsetHeight;
-    return () => observer.disconnect();
-  }, []);
+    const sync = () => {
+      cursorCanvas.width = Math.round(canvasRect.w);
+      cursorCanvas.height = Math.round(canvasRect.h);
+    };
+    sync();
+  }, [canvasRect]);
 
-  // Рисуем курсор-круг на cursor canvas
+  // Рисуем круглый курсор на cursor canvas
   const drawCursor = useCallback((x: number, y: number) => {
     const cursorCanvas = cursorCanvasRef.current;
     if (!cursorCanvas) return;
     const ctx = cursorCanvas.getContext('2d');
     if (!ctx) return;
     ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+    // Внешняя чёрная обводка для контраста
+    ctx.beginPath();
+    ctx.arc(x, y, brushSize / 2 + 1, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(0,0,0,0.85)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // Белый круг
     ctx.beginPath();
     ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(255,255,255,0.95)';
     ctx.lineWidth = 1.5;
-    ctx.stroke();
-    // Тёмная обводка для контраста
-    ctx.beginPath();
-    ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(0,0,0,0.8)';
-    ctx.lineWidth = 0.5;
-    ctx.setLineDash([]);
     ctx.stroke();
   }, [brushSize]);
 
@@ -99,19 +120,18 @@ export function InlineEraser({
     const cursorCanvas = cursorCanvasRef.current;
     if (!cursorCanvas) return;
     const ctx = cursorCanvas.getContext('2d');
-    if (!ctx) return;
-    ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+    ctx?.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
   }, []);
 
-  // Координаты мыши в пространстве cursor canvas (CSS пиксели)
-  const getCursorCanvasPos = useCallback((clientX: number, clientY: number) => {
+  // Координаты мыши → пространство cursor canvas (CSS px)
+  const getCursorPos = useCallback((clientX: number, clientY: number) => {
     const cursorCanvas = cursorCanvasRef.current;
     if (!cursorCanvas) return { x: 0, y: 0 };
     const rect = cursorCanvas.getBoundingClientRect();
     return { x: clientX - rect.left, y: clientY - rect.top };
   }, []);
 
-  // Координаты в пространстве основного canvas (натуральные пиксели)
+  // Координаты мыши → натуральные пиксели основного canvas
   const getCanvasCoords = useCallback((clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -126,8 +146,7 @@ export function InlineEraser({
     const canvas = canvasRef.current;
     if (!canvas) return brushSize / 2;
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    return (brushSize / 2) * scaleX;
+    return (brushSize / 2) * (canvas.width / rect.width);
   }, [brushSize]);
 
   const erase = useCallback((x: number, y: number) => {
@@ -157,8 +176,7 @@ export function InlineEraser({
   }, [erase]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     isDrawingRef.current = true;
     const { x, y } = getCanvasCoords(e.clientX, e.clientY);
     lastPosRef.current = { x, y };
@@ -167,13 +185,13 @@ export function InlineEraser({
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    const pos = getCursorCanvasPos(e.clientX, e.clientY);
+    const pos = getCursorPos(e.clientX, e.clientY);
     drawCursor(pos.x, pos.y);
     if (!isDrawingRef.current) return;
     const { x, y } = getCanvasCoords(e.clientX, e.clientY);
     interpolateAndErase(x, y);
     lastPosRef.current = { x, y };
-  }, [getCursorCanvasPos, drawCursor, getCanvasCoords, interpolateAndErase]);
+  }, [getCursorPos, drawCursor, getCanvasCoords, interpolateAndErase]);
 
   const handleMouseUp = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -188,8 +206,7 @@ export function InlineEraser({
   }, [clearCursor]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     const touch = e.touches[0];
     isDrawingRef.current = true;
     const { x, y } = getCanvasCoords(touch.clientX, touch.clientY);
@@ -220,31 +237,33 @@ export function InlineEraser({
 
   return (
     <>
-      {/* Основной canvas с изображением */}
+      {/* Основной canvas — позиционируется точно по видимой части картинки */}
       <canvas
         ref={canvasRef}
         style={{
           position: 'absolute',
-          left: 0, top: 0,
-          width: '100%', height: '100%',
+          left: canvasRect.x,
+          top: canvasRect.y,
+          width: canvasRect.w,
+          height: canvasRect.h,
           touchAction: 'none',
           zIndex: 50,
           opacity: isLoaded ? 1 : 0,
-          borderRadius: 'inherit',
         }}
       />
 
-      {/* Cursor canvas — поверх, перехватывает события мыши */}
+      {/* Cursor canvas поверх — перехватывает события, рисует круглый курсор */}
       <canvas
         ref={cursorCanvasRef}
         style={{
           position: 'absolute',
-          left: 0, top: 0,
-          width: '100%', height: '100%',
+          left: canvasRect.x,
+          top: canvasRect.y,
+          width: canvasRect.w,
+          height: canvasRect.h,
           cursor: 'none',
           touchAction: 'none',
           zIndex: 51,
-          borderRadius: 'inherit',
         }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -270,22 +289,12 @@ export function InlineEraser({
         }}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={onCancel}
-          className="bg-black/80 border-white/20 text-white hover:bg-black/90 h-8 text-xs px-3"
-        >
-          <Icon name="X" size={14} className="mr-1" />
-          Отмена
+        <Button size="sm" variant="outline" onClick={onCancel}
+          className="bg-black/80 border-white/20 text-white hover:bg-black/90 h-8 text-xs px-3">
+          <Icon name="X" size={14} className="mr-1" />Отмена
         </Button>
-        <Button
-          size="sm"
-          onClick={handleSave}
-          className="bg-primary h-8 text-xs px-3"
-        >
-          <Icon name="Check" size={14} className="mr-1" />
-          Готово
+        <Button size="sm" onClick={handleSave} className="bg-primary h-8 text-xs px-3">
+          <Icon name="Check" size={14} className="mr-1" />Готово
         </Button>
       </div>
     </>

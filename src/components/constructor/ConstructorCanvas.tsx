@@ -538,7 +538,9 @@ export const ConstructorCanvas = ({
               element.src && (
               <InlineEraser
                 imageUrl={element.processedSrc || element.src}
-                elementRect={{ x: element.x, y: element.y, width: element.width, height: element.height }}
+                containerWidth={element.width}
+                containerHeight={element.height}
+                isContain={element.type !== 'photo'}
                 zoom={canvasZoom}
                 brushSize={inlineEraserBrushSize}
                 onSave={(dataUrl) => onSaveInlineErase?.(dataUrl)}
