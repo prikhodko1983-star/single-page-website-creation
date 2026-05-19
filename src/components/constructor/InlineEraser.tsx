@@ -146,13 +146,14 @@ export function InlineEraser({
     return { x, y };
   }, []);
 
-  // Радиус кисти в натуральных пикселях
+  // Радиус кисти в натуральных пикселях изображения
+  // brushSize задан в логических px (без zoom), canvasRect.w — CSS-размер canvas без zoom
+  // canvas.width — натуральный буфер изображения
   const getScaledRadius = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return brushSize / 2;
-    const rect = canvas.getBoundingClientRect();
-    return (brushSize / 2) * (canvas.width / rect.width);
-  }, [brushSize]);
+    if (!canvas || canvasRect.w === 0) return brushSize / 2;
+    return (brushSize / 2) * (canvas.width / canvasRect.w);
+  }, [brushSize, canvasRect.w]);
 
   const erase = useCallback((x: number, y: number) => {
     const ctx = ctxRef.current;
