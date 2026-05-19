@@ -85,21 +85,13 @@ export function InlineEraser({
     img.src = src;
   }, [imageUrl, containerWidth, containerHeight, isContain]);
 
-  // Синхронизация буфера cursor canvas с реальным экранным размером (учитывает zoom)
+  // Буфер cursor canvas = CSS-размер (логические единицы, без zoom)
+  // CSS масштабирование родителем применяется поверх — координаты остаются корректными
   useEffect(() => {
     const cursorCanvas = cursorCanvasRef.current;
     if (!cursorCanvas) return;
-    const sync = () => {
-      const rect = cursorCanvas.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        cursorCanvas.width = Math.round(rect.width);
-        cursorCanvas.height = Math.round(rect.height);
-      }
-    };
-    sync();
-    const observer = new ResizeObserver(sync);
-    observer.observe(cursorCanvas);
-    return () => observer.disconnect();
+    cursorCanvas.width = Math.round(canvasRect.w);
+    cursorCanvas.height = Math.round(canvasRect.h);
   }, [canvasRect]);
 
   // Рисуем круглый курсор на cursor canvas
@@ -130,12 +122,18 @@ export function InlineEraser({
     ctx?.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
   }, []);
 
-  // Координаты мыши → пространство cursor canvas (CSS px)
+  // Координаты мыши → логические единицы cursor canvas (без zoom)
   const getCursorPos = useCallback((clientX: number, clientY: number) => {
     const cursorCanvas = cursorCanvasRef.current;
     if (!cursorCanvas) return { x: 0, y: 0 };
     const rect = cursorCanvas.getBoundingClientRect();
-    return { x: clientX - rect.left, y: clientY - rect.top };
+    // rect.width = CSS-ширина * zoom, поэтому делим чтобы получить логические координаты
+    const scaleX = cursorCanvas.width / rect.width;
+    const scaleY = cursorCanvas.height / rect.height;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY,
+    };
   }, []);
 
   // Координаты мыши → натуральные пиксели основного canvas
