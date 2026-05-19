@@ -15,7 +15,6 @@ const PROXY_URL = 'https://functions.poehali.dev/a333157a-6afc-488c-a133-697f8cf
 
 export function InlineEraser({
   imageUrl,
-  elementRect,
   zoom,
   brushSize,
   onSave,
@@ -35,54 +34,56 @@ export function InlineEraser({
     if (!ctx) return;
     ctxRef.current = ctx;
 
-    // Размеры canvas = логические размеры элемента (в единицах макета)
-    // CSS width/height: 100% растянет canvas на весь родительский div — это правильно
-    const w = elementRect.width;
-    const h = elementRect.height;
-
     const isDataUrl = imageUrl.startsWith('data:');
     const src = isDataUrl ? imageUrl : `${PROXY_URL}?url=${encodeURIComponent(imageUrl)}`;
 
     const img = new Image();
     if (!isDataUrl) img.crossOrigin = 'anonymous';
-    const drawContain = (image: HTMLImageElement) => {
-      canvas.width = w;
-      canvas.height = h;
-      ctx.clearRect(0, 0, w, h);
+
+    const drawNatural = (image: HTMLImageElement) => {
+      // Внутренний буфер = натуральный размер изображения — качество не теряется
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.globalCompositeOperation = 'source-over';
-      // object-contain: вписываем с сохранением пропорций
-      const scale = Math.min(w / image.naturalWidth, h / image.naturalHeight);
-      const dw = image.naturalWidth * scale;
-      const dh = image.naturalHeight * scale;
-      const dx = (w - dw) / 2;
-      const dy = (h - dh) / 2;
-      ctx.drawImage(image, dx, dy, dw, dh);
+      ctx.drawImage(image, 0, 0);
       setIsLoaded(true);
     };
 
-    img.onload = () => drawContain(img);
+    img.onload = () => drawNatural(img);
     img.onerror = () => {
       const img2 = new Image();
       img2.crossOrigin = 'anonymous';
-      img2.onload = () => drawContain(img2);
+      img2.onload = () => drawNatural(img2);
       img2.src = imageUrl;
     };
     img.src = src;
-  }, [imageUrl, elementRect.width, elementRect.height]);
+  }, [imageUrl]);
 
+  // Пересчёт экранных координат в пиксели натурального изображения
   const getCanvasCoords = useCallback((clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
+    // rect.width/height — CSS-размер (маленький), canvas.width/height — натуральный
     const x = ((clientX - rect.left) / rect.width) * canvas.width;
     const y = ((clientY - rect.top) / rect.height) * canvas.height;
     return { x, y };
   }, []);
 
+  // Кисть тоже масштабируем в натуральные пиксели
+  const getScaledRadius = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return brushSize / 2;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    return (brushSize / 2) * scaleX;
+  }, [brushSize]);
+
   const erase = useCallback((x: number, y: number) => {
     const ctx = ctxRef.current;
     if (!ctx) return;
-    const radius = brushSize / 2;
+    const radius = getScaledRadius();
     const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
     gradient.addColorStop(0, 'rgba(0,0,0,1)');
     gradient.addColorStop(0.5, 'rgba(0,0,0,0.8)');
@@ -92,7 +93,7 @@ export function InlineEraser({
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fill();
-  }, [brushSize]);
+  }, [getScaledRadius]);
 
   const interpolateAndErase = useCallback((x: number, y: number) => {
     if (!lastPosRef.current) {
@@ -166,6 +167,7 @@ export function InlineEraser({
   const handleSave = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    // Сохраняем в натуральном разрешении — качество не теряется
     const dataUrl = canvas.toDataURL('image/png');
     onSave(dataUrl);
   }, [onSave]);
