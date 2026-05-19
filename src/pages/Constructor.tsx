@@ -3001,8 +3001,8 @@ const Constructor = () => {
             }}
           />
           </div>
-          {/* Ползунок зума — вне скролла, всегда внизу */}
-          <div className="flex-shrink-0 flex justify-end items-center bg-[#111] border-t border-white/5 px-2 py-1.5 z-30">
+          {/* Нижняя панель — зум + очистка, вне скролла */}
+          <div className="flex-shrink-0 flex justify-end items-center gap-2 bg-[#111] border-t border-white/5 px-2 py-1.5 z-30">
             <div className="flex items-center gap-1.5 bg-black/60 rounded px-2 py-1">
               <button
                 onClick={() => { setCanvasZoom(1); setCanvasPan({ x: 0, y: 0 }); }}
@@ -3034,6 +3034,13 @@ const Constructor = () => {
               </button>
               <span className="text-white/50 text-xs w-9 text-center">{Math.round(canvasZoom * 100)}%</span>
             </div>
+            <button
+              onClick={() => setElements([])}
+              className="h-7 w-7 rounded bg-black/60 hover:bg-red-900/80 text-white/70 hover:text-white flex items-center justify-center transition-colors"
+              title="Очистить холст"
+            >
+              <Icon name="Trash2" size={14} />
+            </button>
           </div>
         </div>
 

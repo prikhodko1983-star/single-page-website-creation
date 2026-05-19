@@ -574,16 +574,7 @@ export const ConstructorCanvas = ({
         })}
       </div>
       
-      {/* Кнопка очистки холста */}
-      <div className="absolute bottom-3 right-3 flex gap-1 z-20">
-        <button
-          onClick={() => setElements([])}
-          className="h-7 w-7 rounded bg-black/60 hover:bg-red-900/80 text-white/70 hover:text-white flex items-center justify-center transition-colors"
-          title="Очистить холст"
-        >
-          <Icon name="Trash2" size={14} />
-        </button>
-      </div>
+
     </div>
   );
 };
