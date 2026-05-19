@@ -153,6 +153,7 @@ interface ConstructorCanvasProps {
   onSaveInlineErase?: (dataUrl: string) => void;
   inlineEraserBrushSize?: number;
   onChangeInlineEraserBrushSize?: (size: number) => void;
+  inlineEraserHardness?: number;
   onZoomChange?: (zoom: number) => void;
 }
 
@@ -199,6 +200,7 @@ export const ConstructorCanvas = ({
   onSaveInlineErase,
   inlineEraserBrushSize = 40,
   onChangeInlineEraserBrushSize,
+  inlineEraserHardness = 80,
   onZoomChange,
 }: ConstructorCanvasProps) => {
   // Функция для рендеринга текста с увеличенными первыми буквами
@@ -545,6 +547,7 @@ export const ConstructorCanvas = ({
                 isContain={element.type !== 'photo'}
                 zoom={canvasZoom}
                 brushSize={inlineEraserBrushSize}
+                hardness={inlineEraserHardness}
                 onSave={(dataUrl) => onSaveInlineErase?.(dataUrl)}
                 onCancel={() => onStopInlineErase?.()}
               />

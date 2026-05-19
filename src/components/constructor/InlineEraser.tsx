@@ -9,6 +9,7 @@ interface InlineEraserProps {
   isContain: boolean; // true = object-contain (image/cross/flower), false = object-cover (photo)
   zoom: number;
   brushSize: number;
+  hardness?: number; // 0 = очень мягкий, 100 = жёсткий
   onSave: (dataUrl: string) => void;
   onCancel: () => void;
 }
@@ -29,6 +30,7 @@ export function InlineEraser({
   containerHeight,
   isContain,
   brushSize,
+  hardness = 80,
   onSave,
   onCancel,
 }: InlineEraserProps) {
@@ -158,16 +160,18 @@ export function InlineEraser({
     const ctx = ctxRef.current;
     if (!ctx) return;
     const radius = getScaledRadius();
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+    // hardness 0–100: точка начала мягкого края
+    // 100 = жёсткий (непрозрачная зона = весь круг), 0 = очень мягкий (градиент от центра)
+    const hardEdge = (hardness / 100) * radius;
+    const gradient = ctx.createRadialGradient(x, y, hardEdge, x, y, radius);
     gradient.addColorStop(0, 'rgba(0,0,0,1)');
-    gradient.addColorStop(0.5, 'rgba(0,0,0,0.8)');
     gradient.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.globalCompositeOperation = 'destination-out';
     ctx.fillStyle = gradient;
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fill();
-  }, [getScaledRadius]);
+  }, [getScaledRadius, hardness]);
 
   const interpolateAndErase = useCallback((x: number, y: number) => {
     if (!lastPosRef.current) { erase(x, y); return; }

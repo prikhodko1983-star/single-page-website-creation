@@ -36,6 +36,8 @@ interface ConstructorPropertiesProps {
   onEditImage?: (id: string) => void;
   eraserBrushSize?: number;
   onEraserBrushSizeChange?: (size: number) => void;
+  eraserHardness?: number;
+  onEraserHardnessChange?: (hardness: number) => void;
 }
 
 export const ConstructorProperties = ({
@@ -46,6 +48,8 @@ export const ConstructorProperties = ({
   onEditImage,
   eraserBrushSize = 40,
   onEraserBrushSizeChange,
+  eraserHardness = 80,
+  onEraserHardnessChange,
 }: ConstructorPropertiesProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   
@@ -293,20 +297,38 @@ export const ConstructorProperties = ({
                   <p className="text-xs text-muted-foreground mt-1">
                     Уберите лишний фон вручную
                   </p>
-                  <div className="mt-3">
-                    <Label className="text-xs">Размер кисти: {eraserBrushSize}px</Label>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="w-2 h-2 rounded-full border border-muted-foreground flex-shrink-0" />
-                      <input
-                        type="range"
-                        min={5}
-                        max={150}
-                        value={eraserBrushSize}
-                        onChange={(e) => onEraserBrushSizeChange?.(Number(e.target.value))}
-                        className="flex-1"
-                        style={{ accentColor: 'hsl(var(--primary))' }}
-                      />
-                      <div className="w-4 h-4 rounded-full border border-muted-foreground flex-shrink-0" />
+                  <div className="mt-3 space-y-2">
+                    <div>
+                      <Label className="text-xs">Размер кисти: {eraserBrushSize}px</Label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-2 h-2 rounded-full border border-muted-foreground flex-shrink-0" />
+                        <input
+                          type="range"
+                          min={5}
+                          max={150}
+                          value={eraserBrushSize}
+                          onChange={(e) => onEraserBrushSizeChange?.(Number(e.target.value))}
+                          className="flex-1"
+                          style={{ accentColor: 'hsl(var(--primary))' }}
+                        />
+                        <div className="w-4 h-4 rounded-full border border-muted-foreground flex-shrink-0" />
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Жёсткость: {eraserHardness}%</Label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-3 h-3 rounded-full bg-muted-foreground/40 flex-shrink-0" style={{ filter: 'blur(1px)' }} />
+                        <input
+                          type="range"
+                          min={0}
+                          max={100}
+                          value={eraserHardness}
+                          onChange={(e) => onEraserHardnessChange?.(Number(e.target.value))}
+                          className="flex-1"
+                          style={{ accentColor: 'hsl(var(--primary))' }}
+                        />
+                        <div className="w-3 h-3 rounded-full bg-muted-foreground flex-shrink-0" />
+                      </div>
                     </div>
                   </div>
                 </div>

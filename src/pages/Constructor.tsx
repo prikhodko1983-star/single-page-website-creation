@@ -179,6 +179,7 @@ const Constructor = () => {
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
   const [inlineEraserElementId, setInlineEraserElementId] = useState<string | null>(null);
   const [inlineEraserBrushSize, setInlineEraserBrushSize] = useState(40);
+  const [inlineEraserHardness, setInlineEraserHardness] = useState(80);
   const prevCanvasSizeRef = useRef<{ width: number; height: number } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -2995,6 +2996,7 @@ const Constructor = () => {
             onSaveInlineErase={handleInlineEraserSave}
             inlineEraserBrushSize={inlineEraserBrushSize}
             onChangeInlineEraserBrushSize={setInlineEraserBrushSize}
+            inlineEraserHardness={inlineEraserHardness}
             onZoomChange={(zoom) => {
               setCanvasZoom(zoom);
               if (zoom === 1) setCanvasPan({ x: 0, y: 0 });
@@ -3056,6 +3058,8 @@ const Constructor = () => {
                 onEditImage={handleEditImage}
                 eraserBrushSize={inlineEraserBrushSize}
                 onEraserBrushSizeChange={setInlineEraserBrushSize}
+                eraserHardness={inlineEraserHardness}
+                onEraserHardnessChange={setInlineEraserHardness}
               />
             </div>
             <div className="flex-1 border-t border-white/10 overflow-hidden flex flex-col min-h-0">
