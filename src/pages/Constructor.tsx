@@ -2951,6 +2951,38 @@ const Constructor = () => {
 
         {/* Canvas area */}
         <div className="flex-1 min-w-0 flex items-start justify-center bg-[#111] overflow-y-auto overflow-x-hidden relative">
+          {/* Ползунок зума — фиксирован поверх холста, не масштабируется */}
+          <div className="absolute bottom-3 right-3 z-30 flex items-center gap-1.5 bg-black/70 rounded px-2 py-1 backdrop-blur-sm">
+            <button
+              onClick={() => { setCanvasZoom(1); setCanvasPan({ x: 0, y: 0 }); }}
+              className="text-white/60 hover:text-white transition-colors"
+              title="Сбросить масштаб"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+            <input
+              type="range"
+              min={1}
+              max={4}
+              step={0.1}
+              value={canvasZoom}
+              onChange={(e) => {
+                const zoom = Number(e.target.value);
+                setCanvasZoom(zoom);
+                if (zoom === 1) setCanvasPan({ x: 0, y: 0 });
+              }}
+              className="w-24"
+              style={{ accentColor: 'hsl(var(--primary))' }}
+            />
+            <button
+              onClick={() => setCanvasZoom(z => Math.min(z + 0.5, 4))}
+              className="text-white/60 hover:text-white transition-colors"
+              title="Увеличить"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+            <span className="text-white/50 text-xs w-9 text-center">{Math.round(canvasZoom * 100)}%</span>
+          </div>
           <ConstructorCanvas
             canvasRef={canvasRef}
             monumentImage={monumentImage}

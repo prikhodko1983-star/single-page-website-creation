@@ -574,37 +574,8 @@ export const ConstructorCanvas = ({
         })}
       </div>
       
-      {/* Zoom controls - overlay bottom right */}
-      <div className="absolute bottom-3 right-3 flex items-center gap-2 z-20">
-        {/* Ползунок зума */}
-        <div className="flex items-center gap-1.5 bg-black/60 rounded px-2 py-1">
-          <button
-            onClick={() => onZoomChange?.(1)}
-            className="text-white/60 hover:text-white transition-colors"
-            title="Сбросить масштаб"
-          >
-            <Icon name="ZoomOut" size={13} />
-          </button>
-          <input
-            type="range"
-            min={1}
-            max={4}
-            step={0.1}
-            value={canvasZoom}
-            onChange={(e) => onZoomChange?.(Number(e.target.value))}
-            className="w-20"
-            style={{ accentColor: 'hsl(var(--primary))' }}
-            title={`Масштаб: ${Math.round(canvasZoom * 100)}%`}
-          />
-          <button
-            onClick={() => onZoomChange?.(Math.min(canvasZoom + 0.5, 4))}
-            className="text-white/60 hover:text-white transition-colors"
-            title="Увеличить"
-          >
-            <Icon name="ZoomIn" size={13} />
-          </button>
-          <span className="text-white/50 text-xs w-8 text-center">{Math.round(canvasZoom * 100)}%</span>
-        </div>
+      {/* Кнопка очистки холста */}
+      <div className="absolute bottom-3 right-3 flex gap-1 z-20">
         <button
           onClick={() => setElements([])}
           className="h-7 w-7 rounded bg-black/60 hover:bg-red-900/80 text-white/70 hover:text-white flex items-center justify-center transition-colors"
