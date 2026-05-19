@@ -15,18 +15,18 @@ const PROXY_URL = 'https://functions.poehali.dev/a333157a-6afc-488c-a133-697f8cf
 
 export function InlineEraser({
   imageUrl,
-  zoom,
   brushSize,
   onSave,
   onCancel,
 }: InlineEraserProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cursorCanvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const isDrawingRef = useRef(false);
   const lastPosRef = useRef<{ x: number; y: number } | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(null);
 
+  // Загрузка изображения в canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -59,6 +59,59 @@ export function InlineEraser({
     img.src = src;
   }, [imageUrl]);
 
+  // Синхронизация размера cursor canvas с основным
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const cursorCanvas = cursorCanvasRef.current;
+    if (!canvas || !cursorCanvas) return;
+    const observer = new ResizeObserver(() => {
+      cursorCanvas.width = canvas.offsetWidth;
+      cursorCanvas.height = canvas.offsetHeight;
+    });
+    observer.observe(canvas);
+    cursorCanvas.width = canvas.offsetWidth;
+    cursorCanvas.height = canvas.offsetHeight;
+    return () => observer.disconnect();
+  }, []);
+
+  // Рисуем курсор-круг на cursor canvas
+  const drawCursor = useCallback((x: number, y: number) => {
+    const cursorCanvas = cursorCanvasRef.current;
+    if (!cursorCanvas) return;
+    const ctx = cursorCanvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+    ctx.beginPath();
+    ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Тёмная обводка для контраста
+    ctx.beginPath();
+    ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([]);
+    ctx.stroke();
+  }, [brushSize]);
+
+  const clearCursor = useCallback(() => {
+    const cursorCanvas = cursorCanvasRef.current;
+    if (!cursorCanvas) return;
+    const ctx = cursorCanvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+  }, []);
+
+  // Координаты мыши в пространстве cursor canvas (CSS пиксели)
+  const getCursorCanvasPos = useCallback((clientX: number, clientY: number) => {
+    const cursorCanvas = cursorCanvasRef.current;
+    if (!cursorCanvas) return { x: 0, y: 0 };
+    const rect = cursorCanvas.getBoundingClientRect();
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }, []);
+
+  // Координаты в пространстве основного canvas (натуральные пиксели)
   const getCanvasCoords = useCallback((clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -68,6 +121,7 @@ export function InlineEraser({
     return { x, y };
   }, []);
 
+  // Радиус кисти в натуральных пикселях
   const getScaledRadius = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return brushSize / 2;
@@ -92,10 +146,7 @@ export function InlineEraser({
   }, [getScaledRadius]);
 
   const interpolateAndErase = useCallback((x: number, y: number) => {
-    if (!lastPosRef.current) {
-      erase(x, y);
-      return;
-    }
+    if (!lastPosRef.current) { erase(x, y); return; }
     const { x: lx, y: ly } = lastPosRef.current;
     const dist = Math.sqrt((x - lx) ** 2 + (y - ly) ** 2);
     const steps = Math.max(Math.ceil(dist / 2), 1);
@@ -116,12 +167,13 @@ export function InlineEraser({
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    setCursorPos({ x: e.clientX, y: e.clientY });
+    const pos = getCursorCanvasPos(e.clientX, e.clientY);
+    drawCursor(pos.x, pos.y);
     if (!isDrawingRef.current) return;
     const { x, y } = getCanvasCoords(e.clientX, e.clientY);
     interpolateAndErase(x, y);
     lastPosRef.current = { x, y };
-  }, [getCanvasCoords, interpolateAndErase]);
+  }, [getCursorCanvasPos, drawCursor, getCanvasCoords, interpolateAndErase]);
 
   const handleMouseUp = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -132,8 +184,8 @@ export function InlineEraser({
   const handleMouseLeave = useCallback(() => {
     isDrawingRef.current = false;
     lastPosRef.current = null;
-    setCursorPos(null);
-  }, []);
+    clearCursor();
+  }, [clearCursor]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
@@ -163,33 +215,35 @@ export function InlineEraser({
   const handleSave = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const dataUrl = canvas.toDataURL('image/png');
-    onSave(dataUrl);
+    onSave(canvas.toDataURL('image/png'));
   }, [onSave]);
-
-  // Реальный размер кисти на экране в px — берём из соотношения CSS/буфер canvas
-  const getCursorScreenSize = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return brushSize;
-    const rect = canvas.getBoundingClientRect();
-    if (canvas.width === 0) return brushSize;
-    return (brushSize / canvas.width) * rect.width;
-  }, [brushSize]);
 
   return (
     <>
+      {/* Основной canvas с изображением */}
       <canvas
         ref={canvasRef}
         style={{
           position: 'absolute',
-          left: 0,
-          top: 0,
-          width: '100%',
-          height: '100%',
-          cursor: 'none',
+          left: 0, top: 0,
+          width: '100%', height: '100%',
           touchAction: 'none',
           zIndex: 50,
           opacity: isLoaded ? 1 : 0,
+          borderRadius: 'inherit',
+        }}
+      />
+
+      {/* Cursor canvas — поверх, перехватывает события мыши */}
+      <canvas
+        ref={cursorCanvasRef}
+        style={{
+          position: 'absolute',
+          left: 0, top: 0,
+          width: '100%', height: '100%',
+          cursor: 'none',
+          touchAction: 'none',
+          zIndex: 51,
           borderRadius: 'inherit',
         }}
         onMouseDown={handleMouseDown}
@@ -201,26 +255,7 @@ export function InlineEraser({
         onTouchEnd={handleTouchEnd}
       />
 
-      {/* Круглый курсор как в Photoshop */}
-      {cursorPos && (
-        <div
-          style={{
-            position: 'fixed',
-            left: cursorPos.x,
-            top: cursorPos.y,
-            width: getCursorScreenSize(),
-            height: getCursorScreenSize(),
-            border: '1.5px solid rgba(255,255,255,0.9)',
-            borderRadius: '50%',
-            transform: 'translate(-50%, -50%)',
-            pointerEvents: 'none',
-            zIndex: 999999,
-            boxShadow: '0 0 0 1px rgba(0,0,0,0.9)',
-          }}
-        />
-      )}
-
-      {/* Панель снизу: кнопки */}
+      {/* Кнопки */}
       <div
         style={{
           position: 'absolute',
