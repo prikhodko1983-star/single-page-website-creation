@@ -506,7 +506,7 @@ export const ConstructorCanvas = ({
               </div>
             )}
             
-            {element.type === 'photo' && element.src && (
+            {element.type === 'photo' && element.src && inlineEraserElementId !== element.id && (
               <img 
                 src={element.screenMode && element.processedSrc ? element.processedSrc : element.src} 
                 alt="Фотография"
@@ -515,7 +515,7 @@ export const ConstructorCanvas = ({
               />
             )}
             
-            {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && (
+            {(element.type === 'image' || element.type === 'cross' || element.type === 'flower') && element.src && inlineEraserElementId !== element.id && (
               <ImageWithBorder
                 src={element.screenMode && element.processedSrc ? element.processedSrc : element.src}
                 alt={element.type}

@@ -72,18 +72,21 @@ export function InlineEraser({
 
   const erase = useCallback((x: number, y: number) => {
     const ctx = ctxRef.current;
-    if (!ctx) return;
-    const radius = brushSize / 2;
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+    const canvas = canvasRef.current;
+    if (!ctx || !canvas) return;
+    // Масштабируем кисть из экранных координат в координаты натурального изображения
+    const scaleX = canvas.width / elementRect.width;
+    const scaledRadius = (brushSize / 2) * scaleX;
+    const gradient = ctx.createRadialGradient(x, y, 0, x, y, scaledRadius);
     gradient.addColorStop(0, 'rgba(0,0,0,1)');
     gradient.addColorStop(0.5, 'rgba(0,0,0,0.8)');
     gradient.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.globalCompositeOperation = 'destination-out';
     ctx.fillStyle = gradient;
     ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.arc(x, y, scaledRadius, 0, Math.PI * 2);
     ctx.fill();
-  }, [brushSize]);
+  }, [brushSize, elementRect.width]);
 
   const interpolateAndErase = useCallback((x: number, y: number) => {
     if (!lastPosRef.current) {
@@ -169,8 +172,8 @@ export function InlineEraser({
           position: 'absolute',
           left: 0,
           top: 0,
-          width: '100%',
-          height: '100%',
+          width: elementRect.width,
+          height: elementRect.height,
           cursor: 'none',
           touchAction: 'none',
           zIndex: 50,
