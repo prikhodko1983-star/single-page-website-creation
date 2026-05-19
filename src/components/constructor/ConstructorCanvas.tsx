@@ -541,7 +541,6 @@ export const ConstructorCanvas = ({
                 elementRect={{ x: element.x, y: element.y, width: element.width, height: element.height }}
                 zoom={canvasZoom}
                 brushSize={inlineEraserBrushSize}
-                onBrushSizeChange={onChangeInlineEraserBrushSize}
                 onSave={(dataUrl) => onSaveInlineErase?.(dataUrl)}
                 onCancel={() => onStopInlineErase?.()}
               />

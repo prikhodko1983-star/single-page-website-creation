@@ -3007,6 +3007,8 @@ const Constructor = () => {
                 deleteElement={deleteElement}
                 fonts={fonts}
                 onEditImage={handleEditImage}
+                eraserBrushSize={inlineEraserBrushSize}
+                onEraserBrushSizeChange={setInlineEraserBrushSize}
               />
             </div>
             <div className="flex-1 border-t border-white/10 overflow-hidden flex flex-col min-h-0">

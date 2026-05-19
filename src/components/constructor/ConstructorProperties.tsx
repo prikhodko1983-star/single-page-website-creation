@@ -34,6 +34,8 @@ interface ConstructorPropertiesProps {
   deleteElement: (id: string) => void;
   fonts: Array<{id: string, name: string, style: string, weight: string, example: string, fullStyle: string}>;
   onEditImage?: (id: string) => void;
+  eraserBrushSize?: number;
+  onEraserBrushSizeChange?: (size: number) => void;
 }
 
 export const ConstructorProperties = ({
@@ -42,6 +44,8 @@ export const ConstructorProperties = ({
   deleteElement,
   fonts,
   onEditImage,
+  eraserBrushSize = 40,
+  onEraserBrushSizeChange,
 }: ConstructorPropertiesProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   
@@ -278,9 +282,6 @@ export const ConstructorProperties = ({
                   <Label>Редактор изображения</Label>
                   <Button
                     onClick={() => {
-                      console.log('🖱️ Клик на Редактировать с ластиком (десктоп)');
-                      console.log('selectedEl.id:', selectedEl.id);
-                      console.log('onEditImage:', onEditImage);
                       onEditImage?.(selectedEl.id);
                     }}
                     variant="outline"
@@ -292,6 +293,22 @@ export const ConstructorProperties = ({
                   <p className="text-xs text-muted-foreground mt-1">
                     Уберите лишний фон вручную
                   </p>
+                  <div className="mt-3">
+                    <Label className="text-xs">Размер кисти: {eraserBrushSize}px</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="w-2 h-2 rounded-full border border-muted-foreground flex-shrink-0" />
+                      <input
+                        type="range"
+                        min={5}
+                        max={150}
+                        value={eraserBrushSize}
+                        onChange={(e) => onEraserBrushSizeChange?.(Number(e.target.value))}
+                        className="flex-1"
+                        style={{ accentColor: 'hsl(var(--primary))' }}
+                      />
+                      <div className="w-4 h-4 rounded-full border border-muted-foreground flex-shrink-0" />
+                    </div>
+                  </div>
                 </div>
                 
                 <div>

@@ -7,7 +7,6 @@ interface InlineEraserProps {
   elementRect: { x: number; y: number; width: number; height: number };
   zoom: number;
   brushSize: number;
-  onBrushSizeChange?: (size: number) => void;
   onSave: (dataUrl: string) => void;
   onCancel: () => void;
 }
@@ -18,7 +17,6 @@ export function InlineEraser({
   imageUrl,
   zoom,
   brushSize,
-  onBrushSizeChange,
   onSave,
   onCancel,
 }: InlineEraserProps) {
@@ -215,11 +213,11 @@ export function InlineEraser({
         />
       )}
 
-      {/* Панель снизу: ползунок + кнопки */}
+      {/* Панель снизу: кнопки */}
       <div
         style={{
           position: 'absolute',
-          bottom: -52,
+          bottom: -44,
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
@@ -227,41 +225,24 @@ export function InlineEraser({
           gap: 8,
           zIndex: 100,
           whiteSpace: 'nowrap',
-          background: 'rgba(0,0,0,0.80)',
-          borderRadius: 8,
-          padding: '5px 10px',
-          backdropFilter: 'blur(6px)',
         }}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div style={{ width: 7, height: 7, borderRadius: '50%', border: '1.5px solid rgba(255,255,255,0.55)', flexShrink: 0 }} />
-        <input
-          type="range"
-          min={5}
-          max={150}
-          value={brushSize}
-          onChange={(e) => onBrushSizeChange?.(Number(e.target.value))}
-          style={{ width: 90, accentColor: 'hsl(var(--primary))', cursor: 'pointer' }}
-        />
-        <div style={{ width: 15, height: 15, borderRadius: '50%', border: '1.5px solid rgba(255,255,255,0.55)', flexShrink: 0 }} />
-
-        <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.2)', margin: '0 2px', flexShrink: 0 }} />
-
         <Button
           size="sm"
           variant="outline"
           onClick={onCancel}
-          className="bg-transparent border-white/20 text-white hover:bg-white/10 h-7 text-xs px-2"
+          className="bg-black/80 border-white/20 text-white hover:bg-black/90 h-8 text-xs px-3"
         >
-          <Icon name="X" size={13} className="mr-1" />
+          <Icon name="X" size={14} className="mr-1" />
           Отмена
         </Button>
         <Button
           size="sm"
           onClick={handleSave}
-          className="bg-primary h-7 text-xs px-2"
+          className="bg-primary h-8 text-xs px-3"
         >
-          <Icon name="Check" size={13} className="mr-1" />
+          <Icon name="Check" size={14} className="mr-1" />
           Готово
         </Button>
       </div>
