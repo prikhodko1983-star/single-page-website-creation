@@ -7,6 +7,7 @@ interface InlineEraserProps {
   elementRect: { x: number; y: number; width: number; height: number };
   zoom: number;
   brushSize: number;
+  onBrushSizeChange?: (size: number) => void;
   onSave: (dataUrl: string) => void;
   onCancel: () => void;
 }
@@ -17,6 +18,7 @@ export function InlineEraser({
   imageUrl,
   zoom,
   brushSize,
+  onBrushSizeChange,
   onSave,
   onCancel,
 }: InlineEraserProps) {
@@ -41,7 +43,6 @@ export function InlineEraser({
     if (!isDataUrl) img.crossOrigin = 'anonymous';
 
     const drawNatural = (image: HTMLImageElement) => {
-      // Внутренний буфер = натуральный размер изображения — качество не теряется
       canvas.width = image.naturalWidth;
       canvas.height = image.naturalHeight;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -60,18 +61,15 @@ export function InlineEraser({
     img.src = src;
   }, [imageUrl]);
 
-  // Пересчёт экранных координат в пиксели натурального изображения
   const getCanvasCoords = useCallback((clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
-    // rect.width/height — CSS-размер (маленький), canvas.width/height — натуральный
     const x = ((clientX - rect.left) / rect.width) * canvas.width;
     const y = ((clientY - rect.top) / rect.height) * canvas.height;
     return { x, y };
   }, []);
 
-  // Кисть тоже масштабируем в натуральные пиксели
   const getScaledRadius = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return brushSize / 2;
@@ -167,10 +165,11 @@ export function InlineEraser({
   const handleSave = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    // Сохраняем в натуральном разрешении — качество не теряется
     const dataUrl = canvas.toDataURL('image/png');
     onSave(dataUrl);
   }, [onSave]);
+
+  const cursorScreenSize = brushSize * zoom;
 
   return (
     <>
@@ -196,51 +195,73 @@ export function InlineEraser({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       />
+
+      {/* Круглый курсор как в Photoshop */}
       {cursorPos && (
         <div
           style={{
             position: 'fixed',
             left: cursorPos.x,
             top: cursorPos.y,
-            width: brushSize * zoom,
-            height: brushSize * zoom,
-            border: '2px solid rgba(255,255,255,0.9)',
+            width: cursorScreenSize,
+            height: cursorScreenSize,
+            border: '1.5px solid white',
             borderRadius: '50%',
             transform: 'translate(-50%, -50%)',
             pointerEvents: 'none',
             zIndex: 999999,
-            boxShadow: '0 0 0 1px rgba(0,0,0,0.5)',
+            boxShadow: '0 0 0 1px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(0,0,0,0.2)',
           }}
         />
       )}
+
+      {/* Панель снизу: ползунок + кнопки */}
       <div
         style={{
           position: 'absolute',
-          bottom: -44,
+          bottom: -52,
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
+          alignItems: 'center',
           gap: 8,
           zIndex: 100,
           whiteSpace: 'nowrap',
+          background: 'rgba(0,0,0,0.80)',
+          borderRadius: 8,
+          padding: '5px 10px',
+          backdropFilter: 'blur(6px)',
         }}
         onMouseDown={(e) => e.stopPropagation()}
       >
+        <div style={{ width: 7, height: 7, borderRadius: '50%', border: '1.5px solid rgba(255,255,255,0.55)', flexShrink: 0 }} />
+        <input
+          type="range"
+          min={5}
+          max={150}
+          value={brushSize}
+          onChange={(e) => onBrushSizeChange?.(Number(e.target.value))}
+          style={{ width: 90, accentColor: 'hsl(var(--primary))', cursor: 'pointer' }}
+        />
+        <div style={{ width: 15, height: 15, borderRadius: '50%', border: '1.5px solid rgba(255,255,255,0.55)', flexShrink: 0 }} />
+
+        <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.2)', margin: '0 2px', flexShrink: 0 }} />
+
         <Button
           size="sm"
           variant="outline"
           onClick={onCancel}
-          className="bg-black/80 border-white/20 text-white hover:bg-black/90 h-8 text-xs px-3"
+          className="bg-transparent border-white/20 text-white hover:bg-white/10 h-7 text-xs px-2"
         >
-          <Icon name="X" size={14} className="mr-1" />
+          <Icon name="X" size={13} className="mr-1" />
           Отмена
         </Button>
         <Button
           size="sm"
           onClick={handleSave}
-          className="bg-primary h-8 text-xs px-3"
+          className="bg-primary h-7 text-xs px-2"
         >
-          <Icon name="Check" size={14} className="mr-1" />
+          <Icon name="Check" size={13} className="mr-1" />
           Готово
         </Button>
       </div>

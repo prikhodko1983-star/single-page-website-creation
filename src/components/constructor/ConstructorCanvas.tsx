@@ -152,6 +152,7 @@ interface ConstructorCanvasProps {
   onStopInlineErase?: () => void;
   onSaveInlineErase?: (dataUrl: string) => void;
   inlineEraserBrushSize?: number;
+  onChangeInlineEraserBrushSize?: (size: number) => void;
 }
 
 export const ConstructorCanvas = ({
@@ -196,6 +197,7 @@ export const ConstructorCanvas = ({
   onStopInlineErase,
   onSaveInlineErase,
   inlineEraserBrushSize = 40,
+  onChangeInlineEraserBrushSize,
 }: ConstructorCanvasProps) => {
   // Функция для рендеринга текста с увеличенными первыми буквами
   const renderTextWithInitials = (text: string, initialScale?: number) => {
@@ -539,6 +541,7 @@ export const ConstructorCanvas = ({
                 elementRect={{ x: element.x, y: element.y, width: element.width, height: element.height }}
                 zoom={canvasZoom}
                 brushSize={inlineEraserBrushSize}
+                onBrushSizeChange={onChangeInlineEraserBrushSize}
                 onSave={(dataUrl) => onSaveInlineErase?.(dataUrl)}
                 onCancel={() => onStopInlineErase?.()}
               />

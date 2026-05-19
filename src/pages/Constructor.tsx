@@ -178,7 +178,7 @@ const Constructor = () => {
   const [isImageEraserOpen, setIsImageEraserOpen] = useState(false);
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
   const [inlineEraserElementId, setInlineEraserElementId] = useState<string | null>(null);
-  const [inlineEraserBrushSize] = useState(40);
+  const [inlineEraserBrushSize, setInlineEraserBrushSize] = useState(40);
   const prevCanvasSizeRef = useRef<{ width: number; height: number } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -2993,6 +2993,7 @@ const Constructor = () => {
             onStopInlineErase={() => setInlineEraserElementId(null)}
             onSaveInlineErase={handleInlineEraserSave}
             inlineEraserBrushSize={inlineEraserBrushSize}
+            onChangeInlineEraserBrushSize={setInlineEraserBrushSize}
           />
         </div>
 
